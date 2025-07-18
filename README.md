@@ -2,7 +2,6 @@
 
 ## 📁 Prerequisites
 
-- pnpm
 - docker
 
 ## Launch
@@ -13,22 +12,10 @@ Create the .env (and complete it)
 cp .env.example .env
 ```
 
-Install dependaces
-
-```bash
-pnpm i
-```
-
 Launch dockers
 
 ```bash
 docker compose up
-```
-
-Launch
-
-```bash
-pnpm dev
 ```
 
 ## Rules
@@ -52,6 +39,10 @@ pnpm add <package name>
 
 Use vite to dev and build
 
+In dev run on localhost:3001
+
+In prod render by the server
+
 ### libs workspace
 
 All exported function in the index.ts can be used in other workspaces
@@ -61,3 +52,5 @@ Compiled on save
 ### server workspace
 
 Hono server
+
+In dev run on localhost:3000
