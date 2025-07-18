@@ -32,11 +32,11 @@ services:
       db:
         condition: service_healthy
     command: bash -c "pnpm dev"
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "${SERVER_URL}/api/health"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "${SERVER_URL}/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   adminer:
     container_name: hypertube_adminer

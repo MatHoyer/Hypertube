@@ -3,4 +3,9 @@
 node_modules/
 dist/
 
+# Front
 .vite/
+
+# Back
+**/src/generated/prisma
+**/prisma/migrations

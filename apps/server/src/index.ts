@@ -1,12 +1,12 @@
 import { serve } from "@hono/node-server";
-import { test } from "@hypertube/libs";
 import { Hono } from "hono";
+import testRouter from "./routes/test.route.js";
 
 const app = new Hono();
 
-app.get("/", (c) => {
-  return c.text(test());
-});
+app.get("/api/health", (c) => c.text("OK"));
+
+app.route("/test", testRouter);
 
 serve(
   {

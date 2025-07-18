@@ -13,3 +13,6 @@ COPY package.json pnpm-lock.yaml ./
 COPY apps/libs/package.json apps/libs/package.json
 COPY apps/client/package.json apps/client/package.json
 COPY apps/server/package.json apps/server/package.json
+
+WORKDIR /hypertube/apps/server
+RUN pnpm prisma:migrate

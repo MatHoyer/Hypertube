@@ -4,15 +4,20 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "dotenv -e ../../.env -- npx prisma migrate dev"
   },
   "dependencies": {
-    "@hypertube/libs": "workspace:*",
     "@hono/node-server": "^1.16.0",
+    "@hypertube/libs": "workspace:*",
+    "@prisma/client": "^6.12.0",
     "hono": "^4.8.5"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
+    "dotenv-cli": "^8.0.0",
+    "prisma": "^6.12.0",
     "tsx": "^4.7.1"
   }
 }

@@ -6,7 +6,7 @@
 
 ## Launch
 
-Create the .env (and complete it)
+Create the root .env (and complete it)
 
 ```bash
 cp .env.example .env
