@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "clear": "rm -rf node_modules apps/client/node_modules apps/libs/node_modules apps/server/node_modules",
-    "dev": "pnpm -r --parallel dev"
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "start": "pnpm --filter server start"
   },
   "keywords": [],
   "author": "",

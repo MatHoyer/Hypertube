@@ -3,6 +3,7 @@
 ## 📁 Prerequisites
 
 - docker
+- pnpm
 
 ## Launch
 
@@ -12,10 +13,44 @@ Create the root .env (and complete it)
 cp .env.example .env
 ```
 
-Launch dockers
+Create the docker network
+
+```bash
+docker network create hypertube-network
+```
+
+Launch db dockers
 
 ```bash
 docker compose up
+```
+
+### Run in local (dev)
+
+Install dependances
+
+```bash
+pnpm i
+```
+
+Init db
+
+```bash
+pnpm --filter server prisma:migrate
+```
+
+Run
+
+```bash
+pnpm dev
+```
+
+### Run with Docker (42)
+
+Launch app dockers
+
+```bash
+docker compose -f docker-compose-app.yml up
 ```
 
 ## Rules
@@ -37,20 +72,26 @@ pnpm add <package name>
 
 ### client workspace
 
+```text
 Use vite to dev and build
 
 In dev run on localhost:3001
 
 In prod render by the server
+```
 
 ### libs workspace
 
+```text
 All exported function in the index.ts can be used in other workspaces
 
 Compiled on save
+```
 
 ### server workspace
 
+```text
 Hono server
 
 In dev run on localhost:3000
+```
