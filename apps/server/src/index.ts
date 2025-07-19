@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { env } from "./env.js";
 import testRouter from "./routes/test.route.js";
 
 const app = new Hono();
@@ -8,10 +9,12 @@ app.get("/api/health", (c) => c.text("OK"));
 
 app.route("/test", testRouter);
 
+console.log(env);
+
 serve(
   {
     fetch: app.fetch,
-    port: 3000,
+    port: env.SERVER_PORT,
   },
   (info) => {
     console.log(`Server is running on http://localhost:${info.port}`);
