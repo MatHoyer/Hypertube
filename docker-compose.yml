@@ -31,7 +31,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: bash -c "pnpm dev"
+    command: bash -c "umask 000 && pnpm i --frozen-lockfile && pnpm --filter server prisma:migrate && chmod -R 777 /hypertube && pnpm dev"
     healthcheck:
       test: ["CMD", "curl", "-f", "${SERVER_URL}/api/health"]
       interval: 30s

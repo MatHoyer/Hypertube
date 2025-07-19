@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "clear": "rm -rf node_modules apps/client/node_modules apps/libs/node_modules apps/server/node_modules",
     "dev": "pnpm -r --parallel dev"
   },
   "keywords": [],

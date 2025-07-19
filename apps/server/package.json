@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "prisma:generate": "npx prisma generate",
-    "prisma:migrate": "dotenv -e ../../.env -- npx prisma migrate dev"
+    "prisma:migrate": "dotenv -e ../../.env -- npx prisma migrate dev --name init"
   },
   "dependencies": {
     "@hono/node-server": "^1.16.0",
