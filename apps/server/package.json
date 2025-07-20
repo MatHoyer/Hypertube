@@ -2,6 +2,7 @@
   "name": "server",
   "type": "module",
   "scripts": {
+    "clear": "rm -rf node_modules dist",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
