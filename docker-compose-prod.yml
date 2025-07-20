@@ -1,7 +1,9 @@
 services:
   app:
-    container_name: hypertube
-    build: .
+    container_name: hypertube-prod
+    build:
+      context: .
+      dockerfile: ./Dockerfile.prod
     env_file: .env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public

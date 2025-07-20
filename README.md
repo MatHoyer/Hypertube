@@ -45,12 +45,18 @@ Run
 pnpm dev
 ```
 
-### Run with Docker (42)
+### Dev with docker (only for 42)
+
+```bash
+docker compose -f docker-compose-dev.yml up
+```
+
+### Prod with Docker
 
 Launch app dockers
 
 ```bash
-docker compose -f docker-compose-app.yml up
+docker compose -f docker-compose-prod.yml up
 ```
 
 ## Rules
