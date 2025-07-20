@@ -25,6 +25,7 @@
 
     "baseUrl": ".",
     "paths": {
+      "@hypertube/libs": ["../libs/src"],
       "@/*": ["./src/*"]
     }
   },

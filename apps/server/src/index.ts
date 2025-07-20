@@ -8,7 +8,7 @@ const app = new Hono();
 
 app.get(getUrl("api-health"), (c) => c.text("OK"));
 
-app.route("/test", testRouter);
+app.route("/api/test", testRouter);
 
 console.log(env);
 

@@ -1,14 +1,14 @@
-import { getServerUrl } from "./getServerUrl";
+import { getServerUrl } from "./getServerUrl.js";
 
-type TClientRouteDataRequirements = {
+export type TClientRouteDataRequirements = {
   "client-home": undefined;
-  "client-example-for-params": {
-    someInfos: string;
-  };
 };
 
-type TApiRouteDataRequirements = {
+export type TApiRouteDataRequirements = {
   "api-health": undefined;
+  "api-test": {
+    id: number;
+  };
 };
 
 type TRouteDataRequirements = TClientRouteDataRequirements &
@@ -25,10 +25,10 @@ const routes: {
 } = {
   // Client routes
   "client-home": () => "",
-  "client-example-for-params": ({ someInfos }) => `/example/${someInfos}`,
 
   // API routes
   "api-health": () => "/api/health",
+  "api-test": ({ id }) => `/api/test/test/${id}`,
 };
 
 type TUrlParams =
