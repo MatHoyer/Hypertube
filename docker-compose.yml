@@ -20,6 +20,8 @@ services:
     image: adminer
     ports:
       - "8080:8080"
+    networks:
+      - hypertube-network
     depends_on:
       db:
         condition: service_healthy
