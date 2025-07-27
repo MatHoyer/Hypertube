@@ -1,0 +1,11 @@
+{
+  "global": {
+    "hello": "Bonjour"
+  },
+  "combobox": {
+    "language": {
+      "search": "Rechercher une langue",
+      "noElementFound": "Aucune langue trouvée"
+    }
+  }
+}
