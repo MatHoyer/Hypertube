@@ -3,6 +3,7 @@ import { getUrl, testSchemas } from "@hypertube/libs";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { axiosFetch } from "./lib/fetch/axiosFetch";
 
 const App = () => {
@@ -29,6 +30,7 @@ const App = () => {
     <div className="size-full flex justify-center items-center">
       <Button onClick={() => testMutate.mutate()}>{t("global.hello")}</Button>
       <LanguageSwitcher />
+      <ThemeToggle />
     </div>
   );
 };
