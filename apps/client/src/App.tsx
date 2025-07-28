@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { getUrl, test, testSchemas } from "@hypertube/libs";
+import { getUrl, testSchemas } from "@hypertube/libs";
 import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "./components/LanguageSwitcher";
 import { axiosFetch } from "./lib/fetch/axiosFetch";
 
 const App = () => {
+  const { t } = useTranslation();
   const testMutate = useMutation({
     mutationFn: async () => {
       return await axiosFetch({
@@ -24,7 +27,8 @@ const App = () => {
 
   return (
     <div className="size-full flex justify-center items-center">
-      <Button onClick={() => testMutate.mutate()}>{test()}</Button>
+      <Button onClick={() => testMutate.mutate()}>{t("global.hello")}</Button>
+      <LanguageSwitcher />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import App from "./App.tsx";
 import { TailwindIndicator } from "./components/TailwindIndicator.tsx";
 import { ThemeProvider } from "./components/ThemeProvider.tsx";
 import "./index.css";
+import "./lib/i18n/i18n.ts";
 
 const queryClient = new QueryClient();
 
