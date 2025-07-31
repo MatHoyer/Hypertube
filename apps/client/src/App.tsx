@@ -7,7 +7,9 @@ import ReversibleCard, {
   ReversibleCardPattern,
 } from "./components/animated/reversible-card/ReversibleCard";
 import useReversibleCardState from "./components/animated/reversible-card/useReversibleCardState";
+import { openDialog } from "./components/dialogs/dialog.store";
 import { LanguageSwitcher } from "./components/LanguageSwitcher";
+import { LoadingButton } from "./components/LoadingButton";
 import { ThemeToggle } from "./components/theme/ThemeToggle";
 import { axiosFetch } from "./lib/fetch/axiosFetch";
 
@@ -30,7 +32,8 @@ const App = () => {
       });
     },
   });
-  const reversibleCardState = useReversibleCardState();
+  const { flip, setIsAnimating, isFlipped, isAnimating } =
+    useReversibleCardState();
 
   return (
     <div className="size-full flex justify-center items-center">
@@ -52,7 +55,8 @@ const App = () => {
       <ThemeToggle />
       <ReversibleCard
         className="size-32"
-        {...reversibleCardState}
+        isFlipped={isFlipped}
+        setIsAnimating={setIsAnimating}
         FrontComponent={() => (
           <ReversibleCardPattern className="bg-red-500">
             front
@@ -64,7 +68,18 @@ const App = () => {
           </ReversibleCardPattern>
         )}
       />
-      <Button onClick={() => reversibleCardState.flip()}>flip</Button>
+      <LoadingButton onClick={() => flip()} loading={isAnimating}>
+        flip
+      </LoadingButton>
+      <Button
+        onClick={() =>
+          openDialog("example", {
+            id: "1",
+          })
+        }
+      >
+        open
+      </Button>
     </div>
   );
 };

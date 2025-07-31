@@ -7,5 +7,11 @@
       "search": "Rechercher une langue",
       "noElementFound": "Aucune langue trouvée"
     }
+  },
+  "alert-dialog": {
+    "title": "Êtes-vous absolument sûr ?",
+    "description": "Cette action ne peut pas être annulée. Cela supprimera définitivement les données de nos serveurs.",
+    "cancel": "Annuler",
+    "continue": "Continuer"
   }
 }

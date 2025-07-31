@@ -21,17 +21,26 @@ import { useTranslation } from "react-i18next";
 // Add more placeholder types here
 type TPlaceholder = "language";
 
-export const Combobox: React.FC<{
+interface ComboboxProps {
   elements: { value: string; label: string }[];
   value: string;
   setValue: (value: string) => void;
   placeholderType: TPlaceholder;
-}> = ({ elements, value, setValue, placeholderType }) => {
+  modal?: boolean;
+}
+
+export const Combobox: React.FC<ComboboxProps> = ({
+  elements,
+  value,
+  setValue,
+  placeholderType,
+  modal = false,
+}) => {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={modal}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
