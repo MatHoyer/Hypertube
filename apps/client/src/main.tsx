@@ -3,6 +3,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
+import { GlobalAlertDialog } from "./components/dialogs/GlobalAlertDialog.tsx";
+import { GlobalDialog } from "./components/dialogs/GlobalDialog.tsx";
 import { TailwindIndicator } from "./components/TailwindIndicator.tsx";
 import { ThemeProvider } from "./components/theme/ThemeProvider.tsx";
 import { Toaster } from "./components/ui/sonner.tsx";
@@ -17,6 +19,8 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
           <App />
+          <GlobalDialog />
+          <GlobalAlertDialog />
           <Toaster />
           <TailwindIndicator />
         </ThemeProvider>
