@@ -16,9 +16,16 @@ const dialogComponents: Record<TDialogType, React.FC> = {
         <p>{data.id}</p>
         <Button
           onClick={() =>
-            openAlertDialog(() => {
-              closeDialog();
-            })
+            openAlertDialog(
+              () => {
+                closeDialog();
+              },
+              {
+                confirmLabel: "Close",
+                confirmTextToType: "example",
+                doubleConfirm: true,
+              }
+            )
           }
         >
           Close

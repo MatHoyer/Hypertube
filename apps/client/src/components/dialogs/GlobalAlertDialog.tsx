@@ -10,12 +10,25 @@ import {
   AlertDialogPortal,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Checkbox } from "../ui/checkbox";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import { useAlertDialogStore } from "./alert-dialog.store";
 
 export const GlobalAlertDialog = () => {
-  const { isOpen, cb, close } = useAlertDialogStore();
+  const { isOpen, cb, close, options } = useAlertDialogStore();
+  const [confirmTextToType, setConfirmTextToType] = useState("");
+  const [doubleConfirm, setDoubleConfirm] = useState(false);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (isOpen) {
+      setConfirmTextToType("");
+      setDoubleConfirm(false);
+    }
+  }, [isOpen]);
 
   return (
     <AlertDialog open={isOpen} onOpenChange={close}>
@@ -23,22 +36,59 @@ export const GlobalAlertDialog = () => {
         <AlertDialogOverlay className="z-[60]" />
         <AlertDialogContent className="z-[60]">
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("alert-dialog.title")}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {options?.title || t("alert-dialog.title")}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              {t("alert-dialog.description")}
+              {options?.description || t("alert-dialog.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
+          <div className="flex flex-col gap-4 py-4">
+            {!!options?.confirmTextToType && (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="confirmTextToType">
+                  {t("alert-dialog.confirmTextToType", {
+                    confirmTextToType: options.confirmTextToType,
+                  })}
+                </Label>
+                <Input
+                  id="confirmTextToType"
+                  value={confirmTextToType}
+                  onChange={(e) => setConfirmTextToType(e.target.value)}
+                />
+              </div>
+            )}
+            {!!options?.doubleConfirm && (
+              <div className="flex items-center justify-start gap-2">
+                <Checkbox
+                  id="doubleConfirm"
+                  checked={doubleConfirm}
+                  onCheckedChange={(checked) =>
+                    setDoubleConfirm(checked as boolean)
+                  }
+                />
+                <Label htmlFor="doubleConfirm">
+                  {t("alert-dialog.doubleConfirm")}
+                </Label>
+              </div>
+            )}
+          </div>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={close}>
-              {t("alert-dialog.cancel")}
+              {options?.cancelLabel || t("alert-dialog.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
+              disabled={
+                (!!options?.confirmTextToType &&
+                  confirmTextToType !== options.confirmTextToType) ||
+                (!!options?.doubleConfirm && !doubleConfirm)
+              }
               onClick={() => {
                 cb?.();
                 close();
               }}
             >
-              {t("alert-dialog.continue")}
+              {options?.confirmLabel || t("alert-dialog.continue")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
