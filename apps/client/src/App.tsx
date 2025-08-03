@@ -57,6 +57,7 @@ const App = () => {
         className="size-32"
         isFlipped={isFlipped}
         setIsAnimating={setIsAnimating}
+        transitionDuration={1}
         FrontComponent={() => (
           <ReversibleCardPattern className="bg-red-500">
             front
@@ -68,9 +69,14 @@ const App = () => {
           </ReversibleCardPattern>
         )}
       />
-      <LoadingButton onClick={() => flip()} loading={isAnimating}>
-        flip
+      <LoadingButton
+        onClick={() => flip()}
+        loading={isAnimating}
+        success={isAnimating === false}
+      >
+        flip with loading
       </LoadingButton>
+      <LoadingButton onClick={() => flip()}>flip without loading</LoadingButton>
       <Button
         onClick={() =>
           openDialog("example", {
