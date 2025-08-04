@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import prisma from "../lib/prisma.js";
+import prisma from "../../lib/prisma";
 
 export const getPrisma = async (c: Context) => {
   const profile = await prisma.profile.findFirst();

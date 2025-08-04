@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { getPrisma, postPrisma } from "../controllers/test.controller.js";
+import { getPrisma, postPrisma } from "./test.controller";
 
 const testRouter = new Hono();
 

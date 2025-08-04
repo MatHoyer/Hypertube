@@ -2,7 +2,7 @@ import { serve } from "@hono/node-server";
 import { getUrl } from "@hypertube/libs";
 import { Hono } from "hono";
 import { env } from "./env.js";
-import testRouter from "./routes/test.route.js";
+import testRouter from "./routes/test/test.route.js";
 
 const app = new Hono();
 
