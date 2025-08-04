@@ -1,5 +1,7 @@
+import { testSchemas } from "@hypertube/libs";
 import { Hono } from "hono";
-import { getPrisma, postPrisma } from "./test.controller";
+import { bodyParser } from "../../middleware/bodyParser";
+import { getPrisma, postPrisma, postTest } from "./test.controller";
 
 const testRouter = new Hono();
 
@@ -7,11 +9,6 @@ testRouter.get("/prisma", getPrisma);
 
 testRouter.post("/prisma", postPrisma);
 
-testRouter.post("/test/:id", async (c) => {
-  const body = await c.req.json();
-  return c.json({
-    id: `${c.req.param("id")}+${body.id}`,
-  });
-});
+testRouter.post("/test/:id", bodyParser(testSchemas.requirements), postTest);
 
 export default testRouter;
