@@ -1,7 +1,7 @@
 import type { TTestSchemas } from "@hypertube/libs";
 import type { Context } from "hono";
 import prisma from "../../lib/prisma";
-import type { TBodyParser } from "../../middleware/bodyParser";
+import type { TBodyParser } from "../../middlewares/bodyParser";
 
 export const getPrisma = async (c: Context) => {
   const profile = await prisma.profile.findFirst();

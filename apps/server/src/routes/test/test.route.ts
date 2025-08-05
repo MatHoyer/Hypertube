@@ -1,6 +1,6 @@
 import { testSchemas } from "@hypertube/libs";
 import { Hono } from "hono";
-import { bodyParser } from "../../middleware/bodyParser";
+import { bodyParser } from "../../middlewares/bodyParser";
 import { getPrisma, postPrisma, postTest } from "./test.controller";
 
 const testRouter = new Hono();
