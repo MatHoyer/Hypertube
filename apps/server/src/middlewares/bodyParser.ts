@@ -9,14 +9,16 @@ export const bodyParser = <T>(schema: ZodType<T>) => {
       const body = await c.req.json();
       const validatedBody = schema.parse(body);
       c.set("validatedBody", validatedBody);
-      console.log(validatedBody);
       await next();
     } catch (error) {
-      c.status(400);
-      return c.json({
-        message: "Validation failed",
-        cause: error,
-      });
+      console.log(error);
+      return c.json(
+        {
+          message: "Validation failed",
+          cause: error,
+        },
+        400
+      );
     }
   });
 };

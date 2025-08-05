@@ -10,6 +10,11 @@ const app = new Hono();
 
 app.get(getUrl("api-health"), (c) => c.text("OK"));
 
+app.onError((err: Error, c) => {
+  console.error(err);
+  return c.json({ error: "internal server error" }, 500);
+});
+
 app.use(logger(), cors());
 app.route("/api/test", testRouter);
 
