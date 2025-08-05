@@ -24,7 +24,7 @@ export const GlobalAlertDialog = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    if (isOpen) {
+    if (!isOpen) {
       setConfirmTextToType("");
       setDoubleConfirm(false);
     }
