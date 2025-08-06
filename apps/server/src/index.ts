@@ -5,6 +5,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { env } from "./env.js";
 import { YtsScrapper } from "./lib/scrapper/yts.scrapper.js";
+import ytsRouter from "./routes/scrappers/yts.route.js";
 import testRouter from "./routes/test/test.route.js";
 
 const app = new Hono();
@@ -18,6 +19,7 @@ app.onError((err: Error, c) => {
 
 app.use(logger(), cors());
 app.route("/api/test", testRouter);
+app.route("/api/scrappers/yts", ytsRouter);
 
 app.get("/", async (c) => {
   const ytsScrapper = await YtsScrapper.create();

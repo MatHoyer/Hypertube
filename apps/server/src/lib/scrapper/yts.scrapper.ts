@@ -15,13 +15,13 @@ const defaultYtsSearchParams = {
 const ytsUrl = "https://yts.pro/";
 
 export class YtsScrapper extends Scrapper {
-  private constructor(url: string) {
-    super(url);
+  constructor() {
+    super(ytsUrl);
     this.currentSearchParams = defaultYtsSearchParams;
   }
 
   static async create() {
-    const instance = new YtsScrapper(ytsUrl);
+    const instance = new YtsScrapper();
     await instance.init();
     return instance;
   }
