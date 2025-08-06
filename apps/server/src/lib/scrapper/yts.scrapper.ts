@@ -2,13 +2,14 @@ import type { Page } from "puppeteer";
 import { Scrapper } from "./scrapper";
 
 const defaultYtsSearchParams = {
-  keyword: "",
+  keyword: "interstellar",
   quality: "All",
   genre: "all",
   rating: "0",
   year: "0",
   language: "all",
   sort_by: "latest",
+  page: "1",
 };
 
 const ytsUrl = "https://yts.pro/";
@@ -16,6 +17,7 @@ const ytsUrl = "https://yts.pro/";
 export class YtsScrapper extends Scrapper {
   private constructor(url: string) {
     super(url);
+    this.currentSearchParams = defaultYtsSearchParams;
   }
 
   static async create() {
@@ -25,7 +27,25 @@ export class YtsScrapper extends Scrapper {
   }
 
   async scrape(page: Page) {
-    return {};
+    const container = await page.$("section");
+    const rows = await container?.$$("div.row");
+    const movies = await Promise.all(
+      rows?.map(async (row) => {
+        const movies = await row?.$$(
+          "div.browse-movie-wrap.col-xs-10.col-sm-4.col-md-5.col-lg-4"
+        );
+        return await Promise.all(
+          movies.map(async (movie) => {
+            return {
+              title: await movie?.$eval("a", (el) => el.title),
+              link: await movie?.$eval("a", (el) => el.href),
+              image: await movie?.$eval("img", (el) => el.src),
+            };
+          })
+        );
+      }) ?? []
+    );
+    return movies.flat();
   }
 
   async getFiltersScrape(page: Page) {

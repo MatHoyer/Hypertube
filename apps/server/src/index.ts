@@ -21,10 +21,11 @@ app.route("/api/test", testRouter);
 
 app.get("/", async (c) => {
   const ytsScrapper = await YtsScrapper.create();
-  const data = ytsScrapper.createSearchParams();
   console.log(ytsScrapper.searchParamsOptions);
+  console.log(`${ytsScrapper.url}?${ytsScrapper.createSearchParams()}`);
+  console.log(await ytsScrapper.defaultScrape());
 
-  return c.json({ data });
+  return c.json({});
 });
 
 serve(
