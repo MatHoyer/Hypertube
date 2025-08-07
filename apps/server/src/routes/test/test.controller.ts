@@ -2,6 +2,7 @@ import type { TTestSchemas } from "@hypertube/libs";
 import type { Context } from "hono";
 import prisma from "../../lib/prisma";
 import type { TBodyParser } from "../../middlewares/bodyParser";
+import type { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 
 export const getPrisma = async (c: Context) => {
   const profile = await prisma.profile.findFirst();
@@ -14,10 +15,14 @@ export const postPrisma = async (c: Context) => {
 };
 
 export const postTest = async (
-  c: Context<TBodyParser<TTestSchemas["requirements"]>>
+  c: Context<
+    TUrlParamsParser<TTestSchemas["requirements"]> &
+      TBodyParser<TTestSchemas["requirements"]>
+  >
 ) => {
   const body = c.get("validatedBody");
+  const urlParams = c.get("validatedUrlParams");
   return c.json({
-    id: `${c.req.param("id")}+${body.id}`,
+    id: `${urlParams.id}+${body.id}`,
   });
 };

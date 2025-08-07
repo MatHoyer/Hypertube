@@ -74,4 +74,32 @@ export class YtsScrapper extends Scrapper {
       })
       .reduce((acc, curr) => ({ ...acc, ...curr }), {});
   }
+
+  protected async getPaginationScrape(page: Page) {
+    const pagination = await page.$(
+      "ul.tsc_pagination.tsc_paginationA.tsc_paginationA06"
+    );
+    if (!pagination) return 1;
+
+    const paginationItems = await pagination.$$("li");
+    if (!paginationItems) return 1;
+
+    const paginationNumbers = (
+      await Promise.all(
+        paginationItems.map(async (item) => {
+          try {
+            const number = await item.$eval("a", (el) => el.title);
+            return number;
+          } catch (error) {
+            return null;
+          }
+        }) ?? []
+      )
+    ).filter(
+      (number): number is string =>
+        number !== null && typeof number === "string" && /^\d+$/.test(number)
+    );
+
+    return Math.max(...paginationNumbers.map((number) => parseInt(number)), 1);
+  }
 }

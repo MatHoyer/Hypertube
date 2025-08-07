@@ -10,11 +10,15 @@ export type {
 // API Schemas export
 export {
   getYtsFiltersSchemas,
+  getYtsPaginationSchemas,
   postYtsFiltersSchemas,
+  ytsMovieSchemas,
 } from "./schemas/api/scrapper.schema.js";
 export type {
   TGetYtsFiltersSchemas,
+  TGetYtsPaginationSchemas,
   TPostYtsFiltersSchemas,
+  TYtsMovieSchemas,
 } from "./schemas/api/scrapper.schema.js";
 export { testSchemas } from "./schemas/api/test.schema.js";
 export type { TTestSchemas } from "./schemas/api/test.schema.js";
