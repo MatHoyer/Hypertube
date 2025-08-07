@@ -26,7 +26,7 @@ export class YtsScrapper extends Scrapper {
     return instance;
   }
 
-  async scrape(page: Page) {
+  protected async scrape(page: Page) {
     const container = await page.$("section");
     const rows = await container?.$$("div.row");
     const movies = await Promise.all(
@@ -48,7 +48,7 @@ export class YtsScrapper extends Scrapper {
     return movies.flat();
   }
 
-  async getFiltersScrape(page: Page) {
+  protected async getFiltersScrape(page: Page) {
     const selectContainers = await page.$$("div.selects-container");
     const filters = await Promise.all(
       selectContainers.map(async (container) => {

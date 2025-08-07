@@ -4,7 +4,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { env } from "./env.js";
-import { YtsScrapper } from "./lib/scrapper/yts.scrapper.js";
+import { YtsScrapper } from "./lib/scrappers/yts.scrapper.js";
 import ytsRouter from "./routes/scrappers/yts.route.js";
 import testRouter from "./routes/test/test.route.js";
 

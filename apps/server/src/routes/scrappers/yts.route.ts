@@ -1,6 +1,6 @@
 import { postYtsFiltersSchemas } from "@hypertube/libs";
 import { Hono } from "hono";
-import { YtsScrapper } from "../../lib/scrapper/yts.scrapper.js";
+import { YtsScrapper } from "../../lib/scrappers/yts.scrapper.js";
 import { bodyParser } from "../../middlewares/bodyParser.js";
 import { getYtsFilters, postYtsFilters } from "./yts.controller.js";
 

@@ -3,15 +3,15 @@ import puppeteer, { Page } from "puppeteer";
 export abstract class Scrapper {
   url: string;
   currentSearchParams: Record<string, string>;
-  searchParamsOptions: Record<string, string[]>;
+  searchParamsOptions: Record<string, string[]> | null;
 
   protected constructor(url: string) {
     this.url = url;
     this.currentSearchParams = {};
-    this.searchParamsOptions = {};
+    this.searchParamsOptions = null;
   }
 
-  async init() {
+  protected async init() {
     await this.filterScrape();
   }
 
@@ -30,7 +30,7 @@ export abstract class Scrapper {
     return data;
   }
 
-  abstract scrape(page: Page): Promise<any>;
+  protected abstract scrape(page: Page): Promise<any>;
 
   async filterScrape() {
     const browser = await puppeteer.launch();
@@ -42,5 +42,7 @@ export abstract class Scrapper {
     await browser.close();
   }
 
-  abstract getFiltersScrape(page: Page): Promise<Record<string, string[]>>;
+  protected abstract getFiltersScrape(
+    page: Page
+  ): Promise<Record<string, string[]>>;
 }
