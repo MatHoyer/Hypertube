@@ -1,10 +1,15 @@
 import type {
+  TGetYtsMovieDataSchemas,
   TGetYtsPaginationSchemas,
-  TPostYtsFiltersSchemas,
 } from "@hypertube/libs";
+import { getYtsMovieDataSchemas } from "@hypertube/libs";
+import {
+  getYtsMoviesSchemas,
+  getYtsPaginationSchemas,
+  type TGetYtsMoviesSchemas,
+} from "@hypertube/libs/src/schemas/api/scrapper.schema.js";
 import type { Context } from "hono";
 import { YtsScrapper } from "../../lib/scrappers/yts.scrapper.js";
-import type { TBodyParser } from "../../middlewares/bodyParser.js";
 import type { TSearchParamsParser } from "../../middlewares/searchParamsParser.js";
 
 export const getYtsFilters = async (c: Context) => {
@@ -14,16 +19,24 @@ export const getYtsFilters = async (c: Context) => {
   return c.json(searchParamsOptions);
 };
 
-export const postYtsFilters = async (
-  c: Context<TBodyParser<TPostYtsFiltersSchemas["requirements"]>>
+export const getYtsMovies = async (
+  c: Context<TSearchParamsParser<TGetYtsMoviesSchemas["searchParams"]>>
 ) => {
   const ytsScrapper = new YtsScrapper();
-  ytsScrapper.currentSearchParams = c.get("validatedBody").filters;
+  ytsScrapper.currentSearchParams = c.get("validatedSearchParams");
   const movies = await ytsScrapper.defaultScrape();
 
-  return c.json({
-    movies,
-  });
+  return c.json(getYtsMoviesSchemas.response.parse({ movies }));
+};
+
+export const getYtsMovieData = async (
+  c: Context<TSearchParamsParser<TGetYtsMovieDataSchemas["searchParams"]>>
+) => {
+  const ytsScrapper = new YtsScrapper();
+  ytsScrapper.setCurrentUrl(c.get("validatedSearchParams").link);
+  const movieData = await ytsScrapper.movieDataScrape();
+
+  return c.json(getYtsMovieDataSchemas.response.parse(movieData));
 };
 
 export const getYtsPagination = async (
@@ -33,7 +46,5 @@ export const getYtsPagination = async (
   ytsScrapper.currentSearchParams = c.get("validatedSearchParams");
   const maxPagination = await ytsScrapper.paginationScrape();
 
-  return c.json({
-    maxPagination,
-  });
+  return c.json(getYtsPaginationSchemas.response.parse({ maxPagination }));
 };

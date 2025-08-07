@@ -2,7 +2,7 @@ import type { Page } from "puppeteer";
 import { Scrapper } from "./scrapper";
 
 const defaultYtsSearchParams = {
-  keyword: "interstellar",
+  keyword: "",
   quality: "All",
   genre: "all",
   rating: "0",
@@ -101,5 +101,52 @@ export class YtsScrapper extends Scrapper {
     );
 
     return Math.max(...paginationNumbers.map((number) => parseInt(number)), 1);
+  }
+
+  protected async getMovieDataScrape(page: Page) {
+    const container = await page.$("#movie-info");
+    const resolutionContainers = await container?.$$(
+      "a.torrent-modal-download"
+    );
+
+    if (resolutionContainers && resolutionContainers.length > 0) {
+      // Ensure element is visible and interactable
+      await page.evaluate((element) => {
+        element.scrollIntoView();
+      }, resolutionContainers[0]);
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      await page.click("a.torrent-modal-download");
+
+      // Wait for the modal to appear
+      await page.waitForSelector("div.modal-content", {
+        visible: true,
+        timeout: 5000,
+      });
+    }
+
+    const modal = await page.$("div.modal-content");
+    const resolutionLinkContainers = await modal?.$$("div.modal-torrent");
+    const resolutions = await Promise.all(
+      resolutionLinkContainers?.map(async (container) => {
+        const qualityPs = await container?.$$("p.quality-size");
+
+        return {
+          resolution: await container?.$eval(
+            "div.modal-quality span",
+            (el) => el.textContent
+          ),
+          size: await qualityPs?.[1]?.evaluate((el) => el.textContent?.trim()),
+          link: await container?.$eval("a.download-torrent", (el) => el.href),
+        };
+      }) ?? []
+    );
+
+    const subtitlesLink = await container?.$eval("a.button", (el) => el.href);
+
+    return {
+      resolutions,
+      subtitlesLink,
+    };
   }
 }

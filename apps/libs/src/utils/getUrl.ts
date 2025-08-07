@@ -9,6 +9,10 @@ export type TApiRouteDataRequirements = {
   "api-test": {
     id: number;
   };
+  "api-scrappers": {
+    scrapper: "yts";
+    endpoint?: "filters" | "movies" | "pagination";
+  };
 };
 
 type TRouteDataRequirements = TClientRouteDataRequirements &
@@ -29,26 +33,30 @@ const routes: {
   // API routes
   "api-health": () => "/api/health",
   "api-test": ({ id }) => `/api/test/test/${id}`,
+  "api-scrappers": ({ scrapper, endpoint }) => {
+    const baseUrl = `/api/scrappers/${scrapper}`;
+    return endpoint ? `${baseUrl}/${endpoint}` : baseUrl;
+  },
 };
 
-type TUrlParams =
+type TSearchParams =
   | string[][]
   | Record<string, string>
   | string
   | URLSearchParams;
 
 type TGetUrlArgs<T extends TRoute> = TRouteDataMap<T> extends undefined
-  ? { withServerUrl?: boolean; urlParams?: TUrlParams }
+  ? { withServerUrl?: boolean; searchParams?: TSearchParams }
   : TRouteDataMap<T> & {
       withServerUrl?: boolean;
-      urlParams?: TUrlParams;
+      searchParams?: TSearchParams;
     };
 
 export const getUrl = <T extends TRoute>(
   route: T,
   params?: TGetUrlArgs<T>
 ): string => {
-  const { withServerUrl = false, urlParams, ...rawParams } = params || {};
+  const { withServerUrl = false, searchParams, ...rawParams } = params || {};
 
   const routeParams = rawParams as TRouteDataMap<T>;
   const routeFn = routes[route];
@@ -56,11 +64,11 @@ export const getUrl = <T extends TRoute>(
   const computedUrl = routeFn(routeParams);
   const serverUrl = withServerUrl ? getServerUrl() : "";
 
-  const parsedUrlParams = urlParams
-    ? `?${new URLSearchParams(urlParams).toString()}`
+  const parsedSearchParams = searchParams
+    ? `?${new URLSearchParams(searchParams).toString()}`
     : "";
 
   return `${serverUrl}${
     serverUrl ? computedUrl.slice(1) : computedUrl
-  }${parsedUrlParams}`;
+  }${parsedSearchParams}`;
 };

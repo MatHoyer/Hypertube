@@ -4,7 +4,6 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { env } from "./env.js";
-import { YtsScrapper } from "./lib/scrappers/yts.scrapper.js";
 import ytsRouter from "./routes/scrappers/yts.route.js";
 import testRouter from "./routes/test/test.route.js";
 
@@ -18,16 +17,18 @@ app.onError((err: Error, c) => {
 });
 
 app.use(logger(), cors());
-app.route("/api/test", testRouter);
-app.route("/api/scrappers/yts", ytsRouter);
+app.route(getUrl("api-test"), testRouter);
+app.route(
+  getUrl("api-scrappers", {
+    scrapper: "yts",
+  }),
+  ytsRouter
+);
 
 app.get("/", async (c) => {
-  const ytsScrapper = await YtsScrapper.create();
-  console.log(ytsScrapper.searchParamsOptions);
-  console.log(`${ytsScrapper.url}?${ytsScrapper.createSearchParams()}`);
-  console.log(await ytsScrapper.defaultScrape());
-
-  return c.json({});
+  return c.json({
+    message: "Welcome to Hypertube API",
+  });
 });
 
 serve(
