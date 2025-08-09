@@ -1,0 +1,3 @@
+model Profile {
+  id Int @id @default(autoincrement())
+}

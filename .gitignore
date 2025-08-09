@@ -8,4 +8,7 @@ dist/
 
 # Back
 **/src/generated/prisma
-**/prisma/migrations
+**/prisma/**/migrations
+
+# Downloads
+**/downloads/**/*/*/*

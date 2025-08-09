@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import z from "zod";
 import { bodyParser } from "../../middlewares/bodyParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
-import { getPrisma, postPrisma, postTest } from "./test.controller";
+import { getPrisma, movieTest, postPrisma, postTest } from "./test.controller";
 
 const testRouter = new Hono();
 
@@ -17,5 +17,7 @@ testRouter.post(
   bodyParser(testSchemas.requirements),
   postTest
 );
+
+testRouter.get("/movie", movieTest);
 
 export default testRouter;
