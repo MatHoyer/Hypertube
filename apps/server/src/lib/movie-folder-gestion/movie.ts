@@ -3,14 +3,13 @@ import fs from "fs";
 import prisma from "../prisma";
 
 export const createMovie = async (movieData: Prisma.MovieCreateInput) => {
-  const movie = await prisma.movie.create({
-    data: {
-      ...movieData,
+  const movie = await prisma.movie.upsert({
+    where: {
+      title: movieData.title,
     },
+    update: movieData,
+    create: movieData,
   });
-  if (!movie) {
-    throw new Error("Failed to create movie");
-  }
 
   const movieFolderPath = getMovieFolderPath(movie.id);
   await fs.promises.mkdir(movieFolderPath, { recursive: true });
@@ -24,9 +23,6 @@ export const deleteMovie = async (movieId: Movie["id"]) => {
       id: movieId,
     },
   });
-  if (!movie) {
-    throw new Error("Failed to delete movie");
-  }
 
   const movieFolderPath = getMovieFolderPath(movie.id);
   await fs.promises.rm(movieFolderPath, { recursive: true });

@@ -1,5 +1,6 @@
 model Resolution {
   id         String @id @default(uuid())
+
   resolution String
   size       String
 
@@ -8,24 +9,13 @@ model Resolution {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
 
-model TmpResolution {
-  id         String @id @default(uuid())
-  resolution String
-  size       String
-
-  link        String
-
-  Movie   Movie?  @relation(fields: [movieId], references: [id])
-  movieId String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@unique([movieId, resolution])
 }
 
 model Subtitle {
   id       String @id @default(uuid())
+
   language String
 
   Movie   Movie?  @relation(fields: [movieId], references: [id])
@@ -33,20 +23,33 @@ model Subtitle {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([movieId, language])
 }
 
 model Movie {
   id          String @id @default(uuid())
-  title       String
+
+  title       String @unique
   description String
   imageUrl    String
 
   resolutions    Resolution[]
   subtitles      Subtitle[]
-  tmpResolutions TmpResolution[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   usedAt DateTime @default(now())
+}
+
+model TmpMovie {
+  id         String @id @default(uuid())
+
+  title       String
+  imageUrl    String
+  link        String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

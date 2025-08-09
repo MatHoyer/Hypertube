@@ -6,17 +6,19 @@ import { getMovieFolderPath } from "./movie";
 export const createSubtitle = async (
   subtitleData: Prisma.SubtitleCreateInput
 ) => {
-  const subtitle = await prisma.subtitle.create({
-    data: {
-      ...subtitleData,
+  const subtitle = await prisma.subtitle.upsert({
+    where: {
+      movieId_language: {
+        movieId: subtitleData.Movie?.connect?.id!,
+        language: subtitleData.language,
+      },
     },
+    update: subtitleData,
+    create: subtitleData,
   });
-  if (!subtitle || !subtitle.movieId) {
-    throw new Error("Failed to create subtitle");
-  }
 
   const subtitleFolderPath = getSubtitleFolderPath(
-    subtitle.movieId,
+    subtitle.movieId!,
     subtitle.language
   );
   await fs.promises.mkdir(subtitleFolderPath, {
@@ -30,12 +32,9 @@ export const deleteSubtitle = async (subtitleId: Subtitle["id"]) => {
   const subtitle = await prisma.subtitle.delete({
     where: { id: subtitleId },
   });
-  if (!subtitle || !subtitle.movieId) {
-    throw new Error("Failed to delete subtitle");
-  }
 
   const subtitleFolderPath = getSubtitleFolderPath(
-    subtitle.movieId,
+    subtitle.movieId!,
     subtitle.language
   );
   await fs.promises.rm(subtitleFolderPath, { recursive: true });

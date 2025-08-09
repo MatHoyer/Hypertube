@@ -14,7 +14,6 @@ export {
   getYtsMoviesSchemas,
   getYtsPaginationSchemas,
   ytsMovieDataSchemas,
-  ytsMovieSchemas,
 } from "./schemas/api/scrapper.schema.js";
 export type {
   TGetYtsFiltersSchemas,
@@ -22,7 +21,16 @@ export type {
   TGetYtsMoviesSchemas,
   TGetYtsPaginationSchemas,
   TYtsMovieDataSchemas,
-  TYtsMovieSchemas,
 } from "./schemas/api/scrapper.schema.js";
 export { testSchemas } from "./schemas/api/test.schema.js";
 export type { TTestSchemas } from "./schemas/api/test.schema.js";
+
+// Database Schemas export
+export {
+  movieSchemas,
+  tmpMovieSchemas,
+} from "./schemas/database/movie.schema.js";
+export type {
+  TMovieSchemas,
+  TTmpMovieSchemas,
+} from "./schemas/database/movie.schema.js";

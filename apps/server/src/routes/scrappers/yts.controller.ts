@@ -9,6 +9,7 @@ import {
   type TGetYtsMoviesSchemas,
 } from "@hypertube/libs/src/schemas/api/scrapper.schema.js";
 import type { Context } from "hono";
+import prisma from "../../lib/prisma.js";
 import { YtsScrapper } from "../../lib/scrappers/yts.scrapper.js";
 import type { TSearchParamsParser } from "../../middlewares/searchParamsParser.js";
 
@@ -26,14 +27,41 @@ export const getYtsMovies = async (
   ytsScrapper.currentSearchParams = c.get("validatedSearchParams");
   const movies = await ytsScrapper.defaultScrape();
 
-  return c.json(getYtsMoviesSchemas.response.parse({ movies }));
+  const dbMovies = await prisma.tmpMovie.createManyAndReturn({
+    data: movies.map((movie) => ({
+      title: movie.title,
+      imageUrl: movie.image,
+      link: movie.link,
+    })),
+    skipDuplicates: true,
+  });
+
+  return c.json(
+    getYtsMoviesSchemas.response.parse({
+      movies: dbMovies.map((movie) => ({
+        id: movie.id,
+        title: movie.title,
+        imageUrl: movie.imageUrl,
+      })),
+    })
+  );
 };
 
 export const getYtsMovieData = async (
   c: Context<TSearchParamsParser<TGetYtsMovieDataSchemas["searchParams"]>>
 ) => {
   const ytsScrapper = new YtsScrapper();
-  ytsScrapper.setCurrentUrl(c.get("validatedSearchParams").link);
+  const { id } = c.get("validatedSearchParams");
+  const tmpMovie = await prisma.tmpMovie.findUnique({
+    where: {
+      id,
+    },
+  });
+  if (!tmpMovie) {
+    return c.json({ error: "Movie not found" }, 404);
+  }
+
+  ytsScrapper.setCurrentUrl(tmpMovie.link);
   const movieData = await ytsScrapper.movieDataScrape();
 
   return c.json(getYtsMovieDataSchemas.response.parse(movieData));

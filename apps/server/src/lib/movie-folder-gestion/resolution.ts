@@ -6,17 +6,19 @@ import { getMovieFolderPath } from "./movie";
 export const createResolution = async (
   resolutionData: Prisma.ResolutionCreateInput
 ) => {
-  const resolution = await prisma.resolution.create({
-    data: {
-      ...resolutionData,
+  const resolution = await prisma.resolution.upsert({
+    where: {
+      movieId_resolution: {
+        movieId: resolutionData.Movie?.connect?.id!,
+        resolution: resolutionData.resolution,
+      },
     },
+    update: resolutionData,
+    create: resolutionData,
   });
-  if (!resolution || !resolution.movieId) {
-    throw new Error("Failed to create resolution");
-  }
 
   const resolutionFolderPath = getResolutionFolderPath(
-    resolution.movieId,
+    resolution.movieId!,
     resolution.resolution
   );
   await fs.promises.mkdir(resolutionFolderPath, {
@@ -32,12 +34,9 @@ export const deleteResolution = async (resolutionId: Resolution["id"]) => {
       id: resolutionId,
     },
   });
-  if (!resolution || !resolution.movieId) {
-    throw new Error("Failed to delete resolution");
-  }
 
   const resolutionFolderPath = getResolutionFolderPath(
-    resolution.movieId,
+    resolution.movieId!,
     resolution.resolution
   );
   await fs.promises.rm(resolutionFolderPath, { recursive: true });
