@@ -5,13 +5,6 @@ export const movieSchemas = z.object({
   title: z.string(),
   description: z.string(),
   imageUrl: z.string(),
+  link: z.url(),
 });
 export type TMovieSchemas = z.infer<typeof movieSchemas>;
-
-export const tmpMovieSchemas = z.object({
-  id: z.uuid(),
-  title: z.string(),
-  imageUrl: z.string(),
-  link: z.string(),
-});
-export type TTmpMovieSchemas = z.infer<typeof tmpMovieSchemas>;

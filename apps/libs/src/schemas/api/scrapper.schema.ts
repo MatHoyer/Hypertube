@@ -1,5 +1,5 @@
 import z from "zod";
-import { tmpMovieSchemas } from "../database/movie.schema.js";
+import { movieSchemas } from "../database/movie.schema.js";
 
 export const ytsMovieDataSchemas = z.object({
   resolutions: z.array(
@@ -26,7 +26,7 @@ export const getYtsMoviesSchemas = {
   searchParams: z.record(z.string(), z.string()),
   response: z.object({
     movies: z.array(
-      tmpMovieSchemas.pick({ id: true, title: true, imageUrl: true })
+      movieSchemas.pick({ id: true, title: true, imageUrl: true })
     ),
   }),
 };
@@ -36,13 +36,13 @@ export type TGetYtsMoviesSchemas = {
 };
 
 export const getYtsMovieDataSchemas = {
-  searchParams: z.object({
-    id: tmpMovieSchemas.shape.id,
+  urlParams: z.object({
+    id: movieSchemas.shape.id,
   }),
   response: ytsMovieDataSchemas,
 };
 export type TGetYtsMovieDataSchemas = {
-  searchParams: z.infer<typeof getYtsMovieDataSchemas.searchParams>;
+  urlParams: z.infer<typeof getYtsMovieDataSchemas.urlParams>;
   response: z.infer<typeof getYtsMovieDataSchemas.response>;
 };
 

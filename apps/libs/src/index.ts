@@ -26,11 +26,5 @@ export { testSchemas } from "./schemas/api/test.schema.js";
 export type { TTestSchemas } from "./schemas/api/test.schema.js";
 
 // Database Schemas export
-export {
-  movieSchemas,
-  tmpMovieSchemas,
-} from "./schemas/database/movie.schema.js";
-export type {
-  TMovieSchemas,
-  TTmpMovieSchemas,
-} from "./schemas/database/movie.schema.js";
+export { movieSchemas } from "./schemas/database/movie.schema.js";
+export type { TMovieSchemas } from "./schemas/database/movie.schema.js";

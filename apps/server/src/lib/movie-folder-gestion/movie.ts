@@ -5,7 +5,7 @@ import prisma from "../prisma";
 export const createMovie = async (movieData: Prisma.MovieCreateInput) => {
   const movie = await prisma.movie.upsert({
     where: {
-      title: movieData.title,
+      link: movieData.link,
     },
     update: movieData,
     create: movieData,

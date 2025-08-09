@@ -89,8 +89,11 @@ export abstract class Scrapper {
 
   async movieDataScrape() {
     if (!this.currentUrl) return null;
+    console.log("currentUrl", this.currentUrl);
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      headless: false,
+    });
     const page = await browser.newPage();
     await page.goto(this.currentUrl);
 
@@ -101,5 +104,12 @@ export abstract class Scrapper {
     return movieData;
   }
 
-  protected abstract getMovieDataScrape(page: Page): Promise<any>;
+  protected abstract getMovieDataScrape(page: Page): Promise<{
+    resolutions: {
+      resolution: string;
+      size: string;
+      link: string;
+    }[];
+    subtitlesLink: string;
+  }>;
 }

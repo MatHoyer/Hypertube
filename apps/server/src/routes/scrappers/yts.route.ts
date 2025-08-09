@@ -5,6 +5,7 @@ import {
 } from "@hypertube/libs";
 import { Hono } from "hono";
 import { searchParamsParser } from "../../middlewares/searchParamsParser.js";
+import { urlParamsParser } from "../../middlewares/urlParamsParser.js";
 import {
   getYtsFilters,
   getYtsMovieData,
@@ -23,8 +24,8 @@ ytsRouter.get(
 );
 
 ytsRouter.get(
-  "/movie",
-  searchParamsParser(getYtsMovieDataSchemas.searchParams),
+  "/movie/:id",
+  urlParamsParser(getYtsMovieDataSchemas.urlParams),
   getYtsMovieData
 );
 

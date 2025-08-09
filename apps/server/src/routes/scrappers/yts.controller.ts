@@ -9,9 +9,11 @@ import {
   type TGetYtsMoviesSchemas,
 } from "@hypertube/libs/src/schemas/api/scrapper.schema.js";
 import type { Context } from "hono";
+import { createMovie } from "../../lib/movie-folder-gestion/movie.js";
 import prisma from "../../lib/prisma.js";
 import { YtsScrapper } from "../../lib/scrappers/yts.scrapper.js";
 import type { TSearchParamsParser } from "../../middlewares/searchParamsParser.js";
+import type { TUrlParamsParser } from "../../middlewares/urlParamsParser.js";
 
 export const getYtsFilters = async (c: Context) => {
   const ytsScrapper = new YtsScrapper();
@@ -27,9 +29,10 @@ export const getYtsMovies = async (
   ytsScrapper.currentSearchParams = c.get("validatedSearchParams");
   const movies = await ytsScrapper.defaultScrape();
 
-  const dbMovies = await prisma.tmpMovie.createManyAndReturn({
+  const dbMovies = await prisma.movie.createManyAndReturn({
     data: movies.map((movie) => ({
       title: movie.title,
+      description: "",
       imageUrl: movie.image,
       link: movie.link,
     })),
@@ -48,23 +51,54 @@ export const getYtsMovies = async (
 };
 
 export const getYtsMovieData = async (
-  c: Context<TSearchParamsParser<TGetYtsMovieDataSchemas["searchParams"]>>
+  c: Context<TUrlParamsParser<TGetYtsMovieDataSchemas["urlParams"]>>
 ) => {
   const ytsScrapper = new YtsScrapper();
-  const { id } = c.get("validatedSearchParams");
-  const tmpMovie = await prisma.tmpMovie.findUnique({
+  const { id } = c.get("validatedUrlParams");
+  const movie = await prisma.movie.findUnique({
     where: {
       id,
     },
   });
-  if (!tmpMovie) {
+  if (!movie) {
     return c.json({ error: "Movie not found" }, 404);
   }
 
-  ytsScrapper.setCurrentUrl(tmpMovie.link);
+  ytsScrapper.setCurrentUrl(movie.link);
   const movieData = await ytsScrapper.movieDataScrape();
+  if (!movieData) {
+    return c.json({ error: "Movie data not found" }, 404);
+  }
 
-  return c.json(getYtsMovieDataSchemas.response.parse(movieData));
+  await createMovie({
+    title: movie.title,
+    description: "",
+    imageUrl: movie.imageUrl,
+    link: movie.link,
+  });
+
+  await prisma.resolution.createMany({
+    data: movieData.resolutions.map((resolution) => ({
+      movieId: movie.id,
+      resolution: resolution.resolution,
+      size: resolution.size,
+      link: resolution.link,
+    })),
+    skipDuplicates: true,
+  });
+
+  const resolutions = await prisma.resolution.findMany({
+    where: {
+      movieId: movie.id,
+    },
+  });
+
+  return c.json(
+    getYtsMovieDataSchemas.response.parse({
+      resolutions: movieData.resolutions,
+      subtitlesLink: movieData.subtitlesLink,
+    })
+  );
 };
 
 export const getYtsPagination = async (

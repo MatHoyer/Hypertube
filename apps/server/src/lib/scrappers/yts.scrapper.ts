@@ -12,7 +12,7 @@ const defaultYtsSearchParams = {
   page: "1",
 };
 
-const ytsUrl = "https://yts.pro/";
+const ytsUrl = "https://yts.st/";
 
 export class YtsScrapper extends Scrapper {
   constructor() {
@@ -104,48 +104,43 @@ export class YtsScrapper extends Scrapper {
   }
 
   protected async getMovieDataScrape(page: Page) {
-    const container = await page.$("#movie-info");
-    const resolutionContainers = await container?.$$(
-      "a.torrent-modal-download"
-    );
+    const getResolutions = async (page: Page) => {
+      const modalContainer = await page.$("div.modal.modal-download");
+      if (!modalContainer) return null;
+      const modal = await modalContainer.$("div.modal-content");
+      if (!modal) return null;
+      const resolutionLinkContainers = await modal.$$("div.modal-torrent");
+      if (!resolutionLinkContainers) return null;
+      return await Promise.all(
+        resolutionLinkContainers.map(async (container) => {
+          const qualityPs = await container.$$("p.quality-size");
 
-    if (resolutionContainers && resolutionContainers.length > 0) {
-      // Ensure element is visible and interactable
-      await page.evaluate((element) => {
-        element.scrollIntoView();
-      }, resolutionContainers[0]);
+          if (!qualityPs || qualityPs.length < 2) return null;
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      await page.click("a.torrent-modal-download");
+          return {
+            resolution: await container.$eval(
+              "div.modal-quality span",
+              (el) => el.textContent ?? ""
+            ),
+            size: await qualityPs[1].evaluate(
+              (el) => el.textContent?.trim() ?? ""
+            ),
+            link: await container.$eval(
+              "a.download-torrent",
+              (el) => el.href ?? ""
+            ),
+          };
+        }) ?? []
+      );
+    };
 
-      // Wait for the modal to appear
-      await page.waitForSelector("div.modal-content", {
-        visible: true,
-        timeout: 5000,
-      });
-    }
+    const resolutions = await getResolutions(page);
+    if (!resolutions) return { resolutions: [], subtitlesLink: "" };
 
-    const modal = await page.$("div.modal-content");
-    const resolutionLinkContainers = await modal?.$$("div.modal-torrent");
-    const resolutions = await Promise.all(
-      resolutionLinkContainers?.map(async (container) => {
-        const qualityPs = await container?.$$("p.quality-size");
-
-        return {
-          resolution: await container?.$eval(
-            "div.modal-quality span",
-            (el) => el.textContent
-          ),
-          size: await qualityPs?.[1]?.evaluate((el) => el.textContent?.trim()),
-          link: await container?.$eval("a.download-torrent", (el) => el.href),
-        };
-      }) ?? []
-    );
-
-    const subtitlesLink = await container?.$eval("a.button", (el) => el.href);
+    const subtitlesLink = await page.$eval("a.button", (el) => el.href ?? "");
 
     return {
-      resolutions,
+      resolutions: resolutions.filter((resolution) => !!resolution),
       subtitlesLink,
     };
   }
