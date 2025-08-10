@@ -13,7 +13,10 @@ import { createMovie } from "../../lib/movie-folder-gestion/movie.js";
 import { createResolution } from "../../lib/movie-folder-gestion/resolution.js";
 import { createSubtitle } from "../../lib/movie-folder-gestion/subtitle.js";
 import prisma from "../../lib/prisma.js";
-import { getSubtitlesDownloadLinks } from "../../lib/scrappers/yifysubtitles.scrapper.js";
+import {
+  downloadSubtitles,
+  getSubtitlesDownloadLinks,
+} from "../../lib/scrappers/yifysubtitles.scrapper.js";
 import { YtsScrapper } from "../../lib/scrappers/yts.scrapper.js";
 import type { TSearchParamsParser } from "../../middlewares/searchParamsParser.js";
 import type { TUrlParamsParser } from "../../middlewares/urlParamsParser.js";
@@ -118,6 +121,8 @@ export const getYtsMovieData = async (
         })
     )
   );
+
+  await downloadSubtitles(subtitles[0].id);
 
   return c.json(
     getYtsMovieDataSchemas.response.parse({

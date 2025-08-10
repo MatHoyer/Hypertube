@@ -45,3 +45,10 @@ export const getSubtitleFolderPath = (
 ) => {
   return `${getMovieFolderPath(movieId)}/subtitles/${language}`;
 };
+
+export const getSubtitleFilePath = (
+  movieId: Movie["id"],
+  language: Subtitle["language"]
+) => {
+  return `${getSubtitleFolderPath(movieId, language)}/subtitles.zip`;
+};

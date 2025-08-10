@@ -50,3 +50,10 @@ export const getResolutionFolderPath = (
 ) => {
   return `${getMovieFolderPath(movieId)}/resolutions/${resolution}`;
 };
+
+export const getResolutionFilePath = (
+  movieId: Movie["id"],
+  resolution: Resolution["resolution"]
+) => {
+  return `${getResolutionFolderPath(movieId, resolution)}/resolution`;
+};

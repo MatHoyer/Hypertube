@@ -1,6 +1,12 @@
+import type { Subtitle } from "@prisma/client";
+import path from "path";
 import puppeteer from "puppeteer";
+import { getSubtitleFolderPath } from "../movie-folder-gestion/subtitle";
+import { renameFile } from "../movie-folder-gestion/utils";
+import prisma from "../prisma";
+import { waitFile } from "../puppeteer.utils";
 
-const yifysubtitlesUrl = "https://yifysubtitles.ch/movie-imdb/";
+const yifysubtitlesUrl = "https://yifysubtitles.ch";
 
 // Movie id is like: tt0816692
 export const getSubtitlesDownloadLinks = async ({
@@ -12,7 +18,9 @@ export const getSubtitlesDownloadLinks = async ({
 }) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.goto(isCompleteUrl ? endpoint : `${yifysubtitlesUrl}${endpoint}`);
+  await page.goto(
+    isCompleteUrl ? endpoint : `${yifysubtitlesUrl}/movie-imdb/${endpoint}`
+  );
 
   const trs = await page.$$("tr");
 
@@ -48,4 +56,61 @@ export const getSubtitlesDownloadLinks = async ({
     ): subtitle is { language: string; rating: number; link: string } =>
       !!subtitle && !!subtitle.link && !!subtitle.language && !!subtitle.rating
   );
+};
+
+export const downloadSubtitles = async (subtitlesId: Subtitle["id"]) => {
+  const subtitle = await prisma.subtitle.findUnique({
+    where: {
+      id: subtitlesId,
+    },
+  });
+  if (!subtitle) {
+    throw new Error("Subtitle not found");
+  }
+  console.log(subtitle);
+
+  const browser = await puppeteer.launch({
+    headless: false,
+  });
+
+  const page = await browser.newPage();
+
+  const client = await page.target().createCDPSession();
+  await client.send("Page.setDownloadBehavior", {
+    behavior: "allow",
+    downloadPath: getSubtitleFolderPath(subtitle.movieId!, subtitle.language),
+  });
+  client.on("Page.downloadProgress", (event) => {
+    console.log(event);
+  });
+
+  await page.goto(subtitle.link);
+
+  await page.waitForSelector("a.btn-icon.download-subtitle");
+
+  // Get original filename before download
+  const originalHref = await page.$eval(
+    "a.btn-icon.download-subtitle",
+    (el) => el.href
+  );
+  const originalFilename = originalHref.split("/").pop();
+  if (!originalFilename) {
+    throw new Error("Original filename not found");
+  }
+
+  // Download the file
+  await page.click("a.btn-icon.download-subtitle");
+
+  const downloadDir = getSubtitleFolderPath(
+    subtitle.movieId!,
+    subtitle.language
+  );
+  const originalPath = path.join(downloadDir, originalFilename);
+
+  // Wait for original file to download
+  await waitFile(originalPath, 3000);
+
+  renameFile(originalPath, "subtitles.zip");
+
+  await browser.close();
 };
