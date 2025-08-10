@@ -1,4 +1,9 @@
+import type { Resolution } from "@prisma/client";
+import path from "path";
 import type { Page } from "puppeteer";
+import { getResolutionFolderPath } from "../movie-folder-gestion/resolution";
+import { renameFile } from "../movie-folder-gestion/utils";
+import { waitFile } from "../puppeteer.utils";
 import { Scrapper } from "./scrapper";
 
 const defaultYtsSearchParams = {
@@ -183,5 +188,24 @@ export class YtsScrapper extends Scrapper {
       resolutions,
       subtitlesLink,
     };
+  }
+
+  protected async downloadRes(page: Page, resolution: Resolution) {
+    const originalFilename = resolution.link.split("/").pop();
+    if (!originalFilename) {
+      throw new Error("Original filename not found");
+    }
+
+    await page.goto(resolution.link);
+
+    const downloadDir = getResolutionFolderPath(
+      resolution.movieId!,
+      resolution.resolution
+    );
+    const originalPath = path.join(downloadDir, originalFilename);
+    console.log(originalPath);
+    await waitFile(originalPath, 3000);
+
+    renameFile(originalPath, "resolution.torrent");
   }
 }

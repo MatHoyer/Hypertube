@@ -51,3 +51,14 @@ export type TGetYtsPaginationSchemas = {
   searchParams: z.infer<typeof getYtsPaginationSchemas.searchParams>;
   response: z.infer<typeof getYtsPaginationSchemas.response>;
 };
+
+export const getYtsDownloadMovieSchemas = {
+  urlParams: z.object({
+    movieId: movieSchemas.shape.id,
+    resolutionId: resolutionSchemas.shape.id,
+    subtitlesId: z.union([subtitleSchemas.shape.id, z.literal("none")]),
+  }),
+};
+export type TGetYtsDownloadMovieSchemas = {
+  urlParams: z.infer<typeof getYtsDownloadMovieSchemas.urlParams>;
+};

@@ -1,4 +1,5 @@
 import {
+  getYtsDownloadMovieSchemas,
   getYtsMovieDataSchemas,
   getYtsMoviesSchemas,
   getYtsPaginationSchemas,
@@ -7,6 +8,7 @@ import { Hono } from "hono";
 import { searchParamsParser } from "../../middlewares/searchParamsParser.js";
 import { urlParamsParser } from "../../middlewares/urlParamsParser.js";
 import {
+  getYtsDownloadMovie,
   getYtsFilters,
   getYtsMovieData,
   getYtsMovies,
@@ -27,6 +29,12 @@ ytsRouter.get(
   "/movie/:id",
   urlParamsParser(getYtsMovieDataSchemas.urlParams),
   getYtsMovieData
+);
+
+ytsRouter.get(
+  "/movie/:movieId/resolution/:resolutionId/subtitles/:subtitlesId/download",
+  urlParamsParser(getYtsDownloadMovieSchemas.urlParams),
+  getYtsDownloadMovie
 );
 
 ytsRouter.get(

@@ -55,5 +55,5 @@ export const getResolutionFilePath = (
   movieId: Movie["id"],
   resolution: Resolution["resolution"]
 ) => {
-  return `${getResolutionFolderPath(movieId, resolution)}/resolution`;
+  return `${getResolutionFolderPath(movieId, resolution)}/resolution.torrent`;
 };

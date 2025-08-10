@@ -1,6 +1,9 @@
 import { resolutionSchemas } from "@hypertube/libs";
+import type { Resolution } from "@prisma/client";
 import puppeteer, { Page } from "puppeteer";
 import type z from "zod";
+import { getResolutionFolderPath } from "../movie-folder-gestion/resolution";
+import prisma from "../prisma";
 
 export abstract class Scrapper {
   url: string;
@@ -105,4 +108,36 @@ export abstract class Scrapper {
     resolutions: Omit<z.infer<typeof resolutionSchemas>, "id">[];
     subtitlesLink: string;
   }>;
+
+  async downloadResolution(resolutionId: Resolution["id"]) {
+    const resolution = await prisma.resolution.findUnique({
+      where: {
+        id: resolutionId,
+      },
+    });
+    if (!resolution) {
+      throw new Error("Resolution not found");
+    }
+
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    const client = await page.createCDPSession();
+    await client.send("Page.setDownloadBehavior", {
+      behavior: "allow",
+      downloadPath: getResolutionFolderPath(
+        resolution.movieId!,
+        resolution.resolution
+      ),
+    });
+
+    await this.downloadRes(page, resolution);
+
+    await browser.close();
+  }
+
+  protected abstract downloadRes(
+    page: Page,
+    resolution: Resolution
+  ): Promise<void>;
 }

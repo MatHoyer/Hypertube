@@ -9,12 +9,14 @@ export type {
 
 // API Schemas export
 export {
+  getYtsDownloadMovieSchemas,
   getYtsFiltersSchemas,
   getYtsMovieDataSchemas,
   getYtsMoviesSchemas,
   getYtsPaginationSchemas,
 } from "./schemas/api/scrapper.schema.js";
 export type {
+  TGetYtsDownloadMovieSchemas,
   TGetYtsFiltersSchemas,
   TGetYtsMovieDataSchemas,
   TGetYtsMoviesSchemas,

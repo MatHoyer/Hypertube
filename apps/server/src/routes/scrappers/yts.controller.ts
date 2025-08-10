@@ -1,4 +1,5 @@
 import type {
+  TGetYtsDownloadMovieSchemas,
   TGetYtsMovieDataSchemas,
   TGetYtsPaginationSchemas,
 } from "@hypertube/libs";
@@ -13,7 +14,10 @@ import { createMovie } from "../../lib/movie-folder-gestion/movie.js";
 import { createResolution } from "../../lib/movie-folder-gestion/resolution.js";
 import { createSubtitle } from "../../lib/movie-folder-gestion/subtitle.js";
 import prisma from "../../lib/prisma.js";
-import { getSubtitlesDownloadLinks } from "../../lib/scrappers/yifysubtitles.scrapper.js";
+import {
+  downloadSubtitles,
+  getSubtitlesDownloadLinks,
+} from "../../lib/scrappers/yifysubtitles.scrapper.js";
 import { YtsScrapper } from "../../lib/scrappers/yts.scrapper.js";
 import type { TSearchParamsParser } from "../../middlewares/searchParamsParser.js";
 import type { TUrlParamsParser } from "../../middlewares/urlParamsParser.js";
@@ -139,4 +143,39 @@ export const getYtsPagination = async (
   const maxPagination = await ytsScrapper.paginationScrape();
 
   return c.json(getYtsPaginationSchemas.response.parse({ maxPagination }));
+};
+
+export const getYtsDownloadMovie = async (
+  c: Context<TUrlParamsParser<TGetYtsDownloadMovieSchemas["urlParams"]>>
+) => {
+  const { movieId, resolutionId, subtitlesId } = c.get("validatedUrlParams");
+
+  const movie = await prisma.movie.findUnique({
+    where: {
+      id: movieId,
+    },
+    include: {
+      resolutions: {
+        where: {
+          id: resolutionId,
+        },
+      },
+      subtitles: {
+        where: {
+          id: subtitlesId === "none" ? undefined : subtitlesId,
+        },
+      },
+    },
+  });
+  if (!movie) {
+    return c.json({ error: "Movie not found" }, 404);
+  }
+
+  const ytsScrapper = new YtsScrapper();
+  await ytsScrapper.downloadResolution(resolutionId);
+  if (subtitlesId !== "none") {
+    await downloadSubtitles(subtitlesId);
+  }
+
+  return c.json({ message: "Movie downloaded" });
 };

@@ -75,13 +75,10 @@ export const downloadSubtitles = async (subtitlesId: Subtitle["id"]) => {
 
   const page = await browser.newPage();
 
-  const client = await page.target().createCDPSession();
+  const client = await page.createCDPSession();
   await client.send("Page.setDownloadBehavior", {
     behavior: "allow",
     downloadPath: getSubtitleFolderPath(subtitle.movieId!, subtitle.language),
-  });
-  client.on("Page.downloadProgress", (event) => {
-    console.log(event);
   });
 
   await page.goto(subtitle.link);
