@@ -120,15 +120,10 @@ export class YtsScrapper extends Scrapper {
           return {
             resolution: await container.$eval(
               "div.modal-quality span",
-              (el) => el.textContent ?? ""
+              (el) => el.textContent
             ),
-            size: await qualityPs[1].evaluate(
-              (el) => el.textContent?.trim() ?? ""
-            ),
-            link: await container.$eval(
-              "a.download-torrent",
-              (el) => el.href ?? ""
-            ),
+            size: await qualityPs[1].evaluate((el) => el.textContent?.trim()),
+            link: await container.$eval("a.download-torrent", (el) => el.href),
           };
         }) ?? []
       );
@@ -137,10 +132,23 @@ export class YtsScrapper extends Scrapper {
     const resolutions = await getResolutions(page);
     if (!resolutions) return { resolutions: [], subtitlesLink: "" };
 
-    const subtitlesLink = await page.$eval("a.button", (el) => el.href ?? "");
+    const subtitlesLink = await page.$eval("a.button", (el) => el.href);
+    if (!subtitlesLink) return { resolutions: [], subtitlesLink: "" };
 
     return {
-      resolutions: resolutions.filter((resolution) => !!resolution),
+      resolutions: resolutions.filter(
+        (
+          resolution
+        ): resolution is {
+          resolution: string;
+          size: string;
+          link: string;
+        } =>
+          !!resolution &&
+          !!resolution.resolution &&
+          !!resolution.size &&
+          !!resolution.link
+      ),
       subtitlesLink,
     };
   }

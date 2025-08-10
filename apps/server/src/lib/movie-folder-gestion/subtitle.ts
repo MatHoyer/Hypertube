@@ -8,10 +8,7 @@ export const createSubtitle = async (
 ) => {
   const subtitle = await prisma.subtitle.upsert({
     where: {
-      movieId_language: {
-        movieId: subtitleData.Movie?.connect?.id!,
-        language: subtitleData.language,
-      },
+      link: subtitleData.link,
     },
     update: subtitleData,
     create: subtitleData,

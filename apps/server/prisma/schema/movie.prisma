@@ -18,6 +18,7 @@ model Subtitle {
   id String @id @default(uuid())
 
   language String
+  rating   Int
   link     String @unique
 
   Movie   Movie?  @relation(fields: [movieId], references: [id])
@@ -25,8 +26,6 @@ model Subtitle {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@unique([movieId, language])
 }
 
 model Movie {

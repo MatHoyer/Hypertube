@@ -9,7 +9,13 @@ export const ytsMovieDataSchemas = z.object({
       link: z.string(),
     })
   ),
-  subtitlesLink: z.string(),
+  subtitles: z.array(
+    z.object({
+      language: z.string(),
+      rating: z.coerce.number().int().positive(),
+      link: z.string(),
+    })
+  ),
 });
 export type TYtsMovieDataSchemas = z.infer<typeof ytsMovieDataSchemas>;
 

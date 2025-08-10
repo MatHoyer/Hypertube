@@ -11,7 +11,9 @@ import {
 import type { Context } from "hono";
 import { createMovie } from "../../lib/movie-folder-gestion/movie.js";
 import { createResolution } from "../../lib/movie-folder-gestion/resolution.js";
+import { createSubtitle } from "../../lib/movie-folder-gestion/subtitle.js";
 import prisma from "../../lib/prisma.js";
+import { getSubtitlesDownloadLinks } from "../../lib/scrappers/yifysubtitles.scrapper.js";
 import { YtsScrapper } from "../../lib/scrappers/yts.scrapper.js";
 import type { TSearchParamsParser } from "../../middlewares/searchParamsParser.js";
 import type { TUrlParamsParser } from "../../middlewares/urlParamsParser.js";
@@ -96,6 +98,27 @@ export const getYtsMovieData = async (
     )
   );
 
+  const subtitlesDownloadLinks = await getSubtitlesDownloadLinks({
+    endpoint: movieData.subtitlesLink,
+    isCompleteUrl: true,
+  });
+
+  const subtitles = await Promise.all(
+    subtitlesDownloadLinks.map(
+      async (subtitle) =>
+        await createSubtitle({
+          Movie: {
+            connect: {
+              id: movie.id,
+            },
+          },
+          language: subtitle.language,
+          rating: subtitle.rating,
+          link: subtitle.link,
+        })
+    )
+  );
+
   return c.json(
     getYtsMovieDataSchemas.response.parse({
       resolutions: resolutions.map((resolution) => ({
@@ -103,7 +126,11 @@ export const getYtsMovieData = async (
         size: resolution.size,
         link: resolution.link,
       })),
-      subtitlesLink: movieData.subtitlesLink,
+      subtitles: subtitles.map((subtitle) => ({
+        language: subtitle.language,
+        rating: subtitle.rating,
+        link: subtitle.link,
+      })),
     })
   );
 };
