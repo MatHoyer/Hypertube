@@ -2,7 +2,6 @@ model Resolution {
   id String @id @default(uuid())
 
   resolution String
-  size       String
   link       String @unique
 
   Movie   Movie?  @relation(fields: [movieId], references: [id])
@@ -32,6 +31,7 @@ model Movie {
   id String @id @default(uuid())
 
   title       String
+  year        Int?
   description String?
   imageUrl    String
   link        String  @unique

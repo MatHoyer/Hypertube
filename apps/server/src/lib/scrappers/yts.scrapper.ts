@@ -2,28 +2,63 @@ import type { Page } from "puppeteer";
 import { Scrapper } from "./scrapper";
 
 const defaultYtsSearchParams = {
-  keyword: "",
-  quality: "All",
-  genre: "all",
-  rating: "0",
-  year: "0",
-  language: "all",
-  sort_by: "latest",
   page: "1",
 };
+const defaultYtsFilters = {
+  keyword: "0",
+  quality: "all",
+  genre: "all",
+  rating: "0",
+  sort_by: "latest",
+  year: "0",
+  language: "all",
+};
 
-const ytsUrl = "https://yts.st/";
+const ytsUrl = "https://yts.mx/browse-movies";
 
 export class YtsScrapper extends Scrapper {
   constructor() {
     super(ytsUrl);
     this.currentSearchParams = defaultYtsSearchParams;
+    this.currentUrlParams = defaultYtsFilters;
   }
 
   static async create() {
     const instance = new YtsScrapper();
     await instance.init();
     return instance;
+  }
+
+  updateUrlParams(params: Record<string, string>) {
+    this.currentUrlParams = { ...this.currentUrlParams, ...params };
+  }
+
+  createUrl() {
+    let isModifiedRequest = false;
+
+    for (const [key, value] of Object.entries(this.currentUrlParams)) {
+      if (
+        key in defaultYtsFilters &&
+        value !== defaultYtsFilters[key as keyof typeof defaultYtsFilters]
+      ) {
+        isModifiedRequest = true;
+      }
+    }
+
+    if (isModifiedRequest) {
+      this.url =
+        ytsUrl +
+        "/" +
+        [
+          this.currentUrlParams.keyword,
+          this.currentUrlParams.quality,
+          this.currentUrlParams.genre,
+          this.currentUrlParams.rating,
+          this.currentUrlParams.sort_by,
+          this.currentUrlParams.year,
+          this.currentUrlParams.language,
+        ].join("/");
+    }
   }
 
   protected async scrape(page: Page) {
@@ -34,18 +69,38 @@ export class YtsScrapper extends Scrapper {
         const movies = await row?.$$(
           "div.browse-movie-wrap.col-xs-10.col-sm-4.col-md-5.col-lg-4"
         );
+
         return await Promise.all(
           movies.map(async (movie) => {
+            const bottomContainer = await movie.$("div.browse-movie-bottom");
+            if (!bottomContainer) return null;
+
+            const yearString = await bottomContainer?.$eval(
+              "div",
+              (el) => el.textContent
+            );
+            const year = yearString ? parseInt(yearString.trim()) : undefined;
+
             return {
-              title: await movie?.$eval("a", (el) => el.title),
-              link: await movie?.$eval("a", (el) => el.href),
+              title: await bottomContainer?.$eval("a", (el) => el.textContent),
+              year,
+              link: await bottomContainer?.$eval("a", (el) => el.href),
               imageUrl: await movie?.$eval("img", (el) => el.src),
             };
           })
         );
       }) ?? []
     );
-    return movies.flat().filter((movie) => movie.title);
+    return movies.flat().filter(
+      (
+        movie
+      ): movie is {
+        title: string;
+        year: number | undefined;
+        link: string;
+        imageUrl: string;
+      } => !!movie && !!movie.title && !!movie.link && !!movie.imageUrl
+    );
   }
 
   protected async getFiltersScrape(page: Page) {
@@ -58,9 +113,10 @@ export class YtsScrapper extends Scrapper {
         return {
           [label ?? ""]: options
             ? await Promise.all(
-                options.map((option) =>
-                  option.evaluate((el) => el.textContent ?? "")
-                )
+                options.map(async (option) => ({
+                  label: await option.evaluate((el) => el.textContent ?? ""),
+                  value: await option.evaluate((el) => el.value ?? ""),
+                }))
               )
             : [],
         };
@@ -88,7 +144,7 @@ export class YtsScrapper extends Scrapper {
       await Promise.all(
         paginationItems.map(async (item) => {
           try {
-            const number = await item.$eval("a", (el) => el.title);
+            const number = await item.$eval("a", (el) => el.textContent);
             return number;
           } catch (error) {
             return null;
@@ -100,55 +156,31 @@ export class YtsScrapper extends Scrapper {
         number !== null && typeof number === "string" && /^\d+$/.test(number)
     );
 
+    console.log(`${this.url}?${this.createSearchParams()}`);
+    console.log(...paginationNumbers.map((number) => parseInt(number)));
     return Math.max(...paginationNumbers.map((number) => parseInt(number)), 1);
   }
 
   protected async getMovieDataScrape(page: Page) {
-    const getResolutions = async (page: Page) => {
-      const modalContainer = await page.$("div.modal.modal-download");
-      if (!modalContainer) return null;
-      const modal = await modalContainer.$("div.modal-content");
-      if (!modal) return null;
-      const resolutionLinkContainers = await modal.$$("div.modal-torrent");
-      if (!resolutionLinkContainers) return null;
-      return await Promise.all(
-        resolutionLinkContainers.map(async (container) => {
-          const qualityPs = await container.$$("p.quality-size");
+    const container = await page.$("#movie-info");
+    if (!container) return { resolutions: [], subtitlesLink: "" };
 
-          if (!qualityPs || qualityPs.length < 2) return null;
-
-          return {
-            resolution: await container.$eval(
-              "div.modal-quality span",
-              (el) => el.textContent
-            ),
-            size: await qualityPs[1].evaluate((el) => el.textContent?.trim()),
-            link: await container.$eval("a.download-torrent", (el) => el.href),
-          };
-        }) ?? []
-      );
-    };
-
-    const resolutions = await getResolutions(page);
+    const resolutionContainer = await container.$("p.hidden-xs.hidden-sm");
+    const resolutions = await resolutionContainer?.$$eval("a", (el) =>
+      el.map((el) => ({
+        resolution: el.textContent ?? "",
+        link: el.href,
+      }))
+    );
     if (!resolutions) return { resolutions: [], subtitlesLink: "" };
 
-    const subtitlesLink = await page.$eval("a.button", (el) => el.href);
-    if (!subtitlesLink) return { resolutions: [], subtitlesLink: "" };
+    const subtitleEl = await page.$("a.button");
+    const subtitlesLink = subtitleEl
+      ? await subtitleEl.evaluate((el) => el.href)
+      : "";
 
     return {
-      resolutions: resolutions.filter(
-        (
-          resolution
-        ): resolution is {
-          resolution: string;
-          size: string;
-          link: string;
-        } =>
-          !!resolution &&
-          !!resolution.resolution &&
-          !!resolution.size &&
-          !!resolution.link
-      ),
+      resolutions,
       subtitlesLink,
     };
   }

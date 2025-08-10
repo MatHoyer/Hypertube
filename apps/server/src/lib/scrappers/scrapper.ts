@@ -1,18 +1,18 @@
+import { resolutionSchemas } from "@hypertube/libs";
 import puppeteer, { Page } from "puppeteer";
+import type z from "zod";
 
 export abstract class Scrapper {
   url: string;
   currentUrl: string | null;
   currentSearchParams: Record<string, string>;
-  searchParamsOptions: Record<string, string[]> | null;
-  maxPagination: number;
+  currentUrlParams: Record<string, string>;
 
   protected constructor(url: string) {
     this.url = url;
     this.currentUrl = null;
     this.currentSearchParams = {};
-    this.searchParamsOptions = null;
-    this.maxPagination = 1;
+    this.currentUrlParams = {};
   }
 
   protected async init() {
@@ -71,7 +71,7 @@ export abstract class Scrapper {
 
   protected abstract getFiltersScrape(
     page: Page
-  ): Promise<Record<string, string[]>>;
+  ): Promise<Record<string, { label: string; value: string }[]>>;
 
   async paginationScrape() {
     const browser = await puppeteer.launch();
@@ -102,11 +102,7 @@ export abstract class Scrapper {
   }
 
   protected abstract getMovieDataScrape(page: Page): Promise<{
-    resolutions: {
-      resolution: string;
-      size: string;
-      link: string;
-    }[];
+    resolutions: Omit<z.infer<typeof resolutionSchemas>, "id">[];
     subtitlesLink: string;
   }>;
 }

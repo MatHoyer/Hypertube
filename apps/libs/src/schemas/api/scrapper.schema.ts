@@ -1,23 +1,9 @@
 import z from "zod";
-import { movieSchemas } from "../database/movie.schema.js";
-
-export const ytsMovieDataSchemas = z.object({
-  resolutions: z.array(
-    z.object({
-      resolution: z.string(),
-      size: z.string(),
-      link: z.string(),
-    })
-  ),
-  subtitles: z.array(
-    z.object({
-      language: z.string(),
-      rating: z.coerce.number().int().positive(),
-      link: z.string(),
-    })
-  ),
-});
-export type TYtsMovieDataSchemas = z.infer<typeof ytsMovieDataSchemas>;
+import {
+  movieSchemas,
+  resolutionSchemas,
+  subtitleSchemas,
+} from "../database/movie.schema.js";
 
 export const getYtsFiltersSchemas = {
   response: z.object({
@@ -32,7 +18,7 @@ export const getYtsMoviesSchemas = {
   searchParams: z.record(z.string(), z.string()),
   response: z.object({
     movies: z.array(
-      movieSchemas.pick({ id: true, title: true, imageUrl: true })
+      movieSchemas.pick({ id: true, title: true, imageUrl: true, year: true })
     ),
   }),
 };
@@ -45,7 +31,10 @@ export const getYtsMovieDataSchemas = {
   urlParams: z.object({
     id: movieSchemas.shape.id,
   }),
-  response: ytsMovieDataSchemas,
+  response: z.object({
+    resolutions: z.array(resolutionSchemas),
+    subtitles: z.array(subtitleSchemas),
+  }),
 };
 export type TGetYtsMovieDataSchemas = {
   urlParams: z.infer<typeof getYtsMovieDataSchemas.urlParams>;

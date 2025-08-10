@@ -13,18 +13,24 @@ export {
   getYtsMovieDataSchemas,
   getYtsMoviesSchemas,
   getYtsPaginationSchemas,
-  ytsMovieDataSchemas,
 } from "./schemas/api/scrapper.schema.js";
 export type {
   TGetYtsFiltersSchemas,
   TGetYtsMovieDataSchemas,
   TGetYtsMoviesSchemas,
   TGetYtsPaginationSchemas,
-  TYtsMovieDataSchemas,
 } from "./schemas/api/scrapper.schema.js";
 export { testSchemas } from "./schemas/api/test.schema.js";
 export type { TTestSchemas } from "./schemas/api/test.schema.js";
 
 // Database Schemas export
-export { movieSchemas } from "./schemas/database/movie.schema.js";
-export type { TMovieSchemas } from "./schemas/database/movie.schema.js";
+export {
+  movieSchemas,
+  resolutionSchemas,
+  subtitleSchemas,
+} from "./schemas/database/movie.schema.js";
+export type {
+  TMovieSchemas,
+  TResolutionSchemas,
+  TSubtitleSchemas,
+} from "./schemas/database/movie.schema.js";

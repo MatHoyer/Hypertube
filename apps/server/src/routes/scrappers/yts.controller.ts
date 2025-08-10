@@ -13,26 +13,26 @@ import { createMovie } from "../../lib/movie-folder-gestion/movie.js";
 import { createResolution } from "../../lib/movie-folder-gestion/resolution.js";
 import { createSubtitle } from "../../lib/movie-folder-gestion/subtitle.js";
 import prisma from "../../lib/prisma.js";
-import {
-  downloadSubtitles,
-  getSubtitlesDownloadLinks,
-} from "../../lib/scrappers/yifysubtitles.scrapper.js";
+import { getSubtitlesDownloadLinks } from "../../lib/scrappers/yifysubtitles.scrapper.js";
 import { YtsScrapper } from "../../lib/scrappers/yts.scrapper.js";
 import type { TSearchParamsParser } from "../../middlewares/searchParamsParser.js";
 import type { TUrlParamsParser } from "../../middlewares/urlParamsParser.js";
 
 export const getYtsFilters = async (c: Context) => {
   const ytsScrapper = new YtsScrapper();
-  const searchParamsOptions = await ytsScrapper.filterScrape();
+  const filters = await ytsScrapper.filterScrape();
 
-  return c.json(searchParamsOptions);
+  return c.json(filters);
 };
 
 export const getYtsMovies = async (
   c: Context<TSearchParamsParser<TGetYtsMoviesSchemas["searchParams"]>>
 ) => {
   const ytsScrapper = new YtsScrapper();
-  ytsScrapper.currentSearchParams = c.get("validatedSearchParams");
+  const { page, ...rest } = c.get("validatedSearchParams");
+  ytsScrapper.currentSearchParams = { page: page };
+  ytsScrapper.updateUrlParams(rest);
+  ytsScrapper.createUrl();
   const movies = await ytsScrapper.defaultScrape();
 
   const dbMovies = await Promise.all(
@@ -50,11 +50,7 @@ export const getYtsMovies = async (
 
   return c.json(
     getYtsMoviesSchemas.response.parse({
-      movies: dbMovies.map((movie) => ({
-        id: movie.id,
-        title: movie.title,
-        imageUrl: movie.imageUrl,
-      })),
+      movies: dbMovies,
     })
   );
 };
@@ -95,47 +91,39 @@ export const getYtsMovieData = async (
             },
           },
           resolution: resolution.resolution,
-          size: resolution.size,
           link: resolution.link,
         })
     )
   );
 
-  const subtitlesDownloadLinks = await getSubtitlesDownloadLinks({
-    endpoint: movieData.subtitlesLink,
-    isCompleteUrl: true,
-  });
+  let subtitles: { link: string; language: string; rating: number }[] = [];
+  if (movieData.subtitlesLink) {
+    const subtitlesDownloadLinks = await getSubtitlesDownloadLinks({
+      endpoint: movieData.subtitlesLink,
+      isCompleteUrl: true,
+    });
 
-  const subtitles = await Promise.all(
-    subtitlesDownloadLinks.map(
-      async (subtitle) =>
-        await createSubtitle({
-          Movie: {
-            connect: {
-              id: movie.id,
+    subtitles = await Promise.all(
+      subtitlesDownloadLinks.map(
+        async (subtitle) =>
+          await createSubtitle({
+            Movie: {
+              connect: {
+                id: movie.id,
+              },
             },
-          },
-          language: subtitle.language,
-          rating: subtitle.rating,
-          link: subtitle.link,
-        })
-    )
-  );
-
-  await downloadSubtitles(subtitles[0].id);
+            language: subtitle.language,
+            rating: subtitle.rating,
+            link: subtitle.link,
+          })
+      )
+    );
+  }
 
   return c.json(
     getYtsMovieDataSchemas.response.parse({
-      resolutions: resolutions.map((resolution) => ({
-        resolution: resolution.resolution,
-        size: resolution.size,
-        link: resolution.link,
-      })),
-      subtitles: subtitles.map((subtitle) => ({
-        language: subtitle.language,
-        rating: subtitle.rating,
-        link: subtitle.link,
-      })),
+      resolutions,
+      subtitles,
     })
   );
 };
@@ -144,7 +132,10 @@ export const getYtsPagination = async (
   c: Context<TSearchParamsParser<TGetYtsPaginationSchemas["searchParams"]>>
 ) => {
   const ytsScrapper = new YtsScrapper();
-  ytsScrapper.currentSearchParams = c.get("validatedSearchParams");
+  const { page, ...rest } = c.get("validatedSearchParams");
+  ytsScrapper.currentSearchParams = { page: page };
+  ytsScrapper.updateUrlParams(rest);
+  ytsScrapper.createUrl();
   const maxPagination = await ytsScrapper.paginationScrape();
 
   return c.json(getYtsPaginationSchemas.response.parse({ maxPagination }));
