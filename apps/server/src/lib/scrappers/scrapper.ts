@@ -53,7 +53,7 @@ export abstract class Scrapper {
     {
       title: string;
       link: string;
-      image: string;
+      imageUrl: string;
     }[]
   >;
 
@@ -89,11 +89,8 @@ export abstract class Scrapper {
 
   async movieDataScrape() {
     if (!this.currentUrl) return null;
-    console.log("currentUrl", this.currentUrl);
 
-    const browser = await puppeteer.launch({
-      headless: false,
-    });
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(this.currentUrl);
 

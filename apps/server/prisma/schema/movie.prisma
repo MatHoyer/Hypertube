@@ -33,9 +33,9 @@ model Movie {
   id String @id @default(uuid())
 
   title       String
-  description String
+  description String?
   imageUrl    String
-  link        String @unique
+  link        String  @unique
 
   resolutions Resolution[]
   subtitles   Subtitle[]

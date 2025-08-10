@@ -10,6 +10,7 @@ import {
 } from "@hypertube/libs/src/schemas/api/scrapper.schema.js";
 import type { Context } from "hono";
 import { createMovie } from "../../lib/movie-folder-gestion/movie.js";
+import { createResolution } from "../../lib/movie-folder-gestion/resolution.js";
 import prisma from "../../lib/prisma.js";
 import { YtsScrapper } from "../../lib/scrappers/yts.scrapper.js";
 import type { TSearchParamsParser } from "../../middlewares/searchParamsParser.js";
@@ -29,15 +30,18 @@ export const getYtsMovies = async (
   ytsScrapper.currentSearchParams = c.get("validatedSearchParams");
   const movies = await ytsScrapper.defaultScrape();
 
-  const dbMovies = await prisma.movie.createManyAndReturn({
-    data: movies.map((movie) => ({
-      title: movie.title,
-      description: "",
-      imageUrl: movie.image,
-      link: movie.link,
-    })),
-    skipDuplicates: true,
-  });
+  const dbMovies = await Promise.all(
+    movies.map(
+      async (movie) =>
+        await prisma.movie.upsert({
+          where: {
+            link: movie.link,
+          },
+          update: movie,
+          create: movie,
+        })
+    )
+  );
 
   return c.json(
     getYtsMoviesSchemas.response.parse({
@@ -72,30 +76,33 @@ export const getYtsMovieData = async (
 
   await createMovie({
     title: movie.title,
-    description: "",
     imageUrl: movie.imageUrl,
     link: movie.link,
   });
 
-  await prisma.resolution.createMany({
-    data: movieData.resolutions.map((resolution) => ({
-      movieId: movie.id,
-      resolution: resolution.resolution,
-      size: resolution.size,
-      link: resolution.link,
-    })),
-    skipDuplicates: true,
-  });
-
-  const resolutions = await prisma.resolution.findMany({
-    where: {
-      movieId: movie.id,
-    },
-  });
+  const resolutions = await Promise.all(
+    movieData.resolutions.map(
+      async (resolution) =>
+        await createResolution({
+          Movie: {
+            connect: {
+              id: movie.id,
+            },
+          },
+          resolution: resolution.resolution,
+          size: resolution.size,
+          link: resolution.link,
+        })
+    )
+  );
 
   return c.json(
     getYtsMovieDataSchemas.response.parse({
-      resolutions: movieData.resolutions,
+      resolutions: resolutions.map((resolution) => ({
+        resolution: resolution.resolution,
+        size: resolution.size,
+        link: resolution.link,
+      })),
       subtitlesLink: movieData.subtitlesLink,
     })
   );

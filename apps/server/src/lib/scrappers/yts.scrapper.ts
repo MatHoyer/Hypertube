@@ -39,13 +39,13 @@ export class YtsScrapper extends Scrapper {
             return {
               title: await movie?.$eval("a", (el) => el.title),
               link: await movie?.$eval("a", (el) => el.href),
-              image: await movie?.$eval("img", (el) => el.src),
+              imageUrl: await movie?.$eval("img", (el) => el.src),
             };
           })
         );
       }) ?? []
     );
-    return movies.flat();
+    return movies.flat().filter((movie) => movie.title);
   }
 
   protected async getFiltersScrape(page: Page) {
