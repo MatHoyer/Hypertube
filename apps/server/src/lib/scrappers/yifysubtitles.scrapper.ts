@@ -2,25 +2,20 @@ import type { Subtitle } from "@prisma/client";
 import path from "path";
 import puppeteer from "puppeteer";
 import { getSubtitleFolderPath } from "../movie-folder-gestion/subtitle";
-import { renameFile } from "../movie-folder-gestion/utils";
+import { renameFile, waitFile } from "../movie-folder-gestion/utils";
 import prisma from "../prisma";
-import { waitFile } from "../puppeteer.utils";
 
-const yifysubtitlesUrl = "https://yifysubtitles.ch";
+const yifysubtitlesUrl = "https://yifysubtitles.ch/movie-imdb/";
 
-// Movie id is like: tt0816692
+// imdbId is like: tt0816692
 export const getSubtitlesDownloadLinks = async ({
-  endpoint,
-  isCompleteUrl = false,
+  imdbId,
 }: {
-  endpoint: string;
-  isCompleteUrl?: boolean;
+  imdbId: string;
 }) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  await page.goto(
-    isCompleteUrl ? endpoint : `${yifysubtitlesUrl}/movie-imdb/${endpoint}`
-  );
+  await page.goto(`${yifysubtitlesUrl}${imdbId}`);
 
   const trs = await page.$$("tr");
 
@@ -67,11 +62,8 @@ export const downloadSubtitles = async (subtitlesId: Subtitle["id"]) => {
   if (!subtitle) {
     throw new Error("Subtitle not found");
   }
-  console.log(subtitle);
 
-  const browser = await puppeteer.launch({
-    headless: false,
-  });
+  const browser = await puppeteer.launch();
 
   const page = await browser.newPage();
 
@@ -81,7 +73,7 @@ export const downloadSubtitles = async (subtitlesId: Subtitle["id"]) => {
     downloadPath: getSubtitleFolderPath(subtitle.movieId!, subtitle.language),
   });
 
-  await page.goto(subtitle.link);
+  await page.goto(subtitle.downloadLink);
 
   await page.waitForSelector("a.btn-icon.download-subtitle");
 

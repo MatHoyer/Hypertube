@@ -1,9 +1,10 @@
-import type { Resolution } from "@prisma/client";
+import type { Movie, Resolution } from "@prisma/client";
 import path from "path";
 import type { Page } from "puppeteer";
+import { getResolutionForMovie } from "../apis/yts.api";
 import { getResolutionFolderPath } from "../movie-folder-gestion/resolution";
-import { renameFile } from "../movie-folder-gestion/utils";
-import { waitFile } from "../puppeteer.utils";
+import { renameFile, waitFile } from "../movie-folder-gestion/utils";
+import prisma from "../prisma";
 import { Scrapper } from "./scrapper";
 
 const defaultYtsSearchParams = {
@@ -101,10 +102,15 @@ export class YtsScrapper extends Scrapper {
         movie
       ): movie is {
         title: string;
-        year: number | undefined;
+        year: number;
         link: string;
         imageUrl: string;
-      } => !!movie && !!movie.title && !!movie.link && !!movie.imageUrl
+      } =>
+        !!movie &&
+        !!movie.title &&
+        !!movie.link &&
+        !!movie.imageUrl &&
+        !!movie.year
     );
   }
 
@@ -166,42 +172,29 @@ export class YtsScrapper extends Scrapper {
     return Math.max(...paginationNumbers.map((number) => parseInt(number)), 1);
   }
 
-  protected async getMovieDataScrape(page: Page) {
-    const container = await page.$("#movie-info");
-    if (!container) return { resolutions: [], subtitlesLink: "" };
-
-    const resolutionContainer = await container.$("p.hidden-xs.hidden-sm");
-    const resolutions = await resolutionContainer?.$$eval("a", (el) =>
-      el.map((el) => ({
-        resolution: el.textContent ?? "",
-        link: el.href,
-      }))
-    );
-    if (!resolutions) return { resolutions: [], subtitlesLink: "" };
-
-    const subtitleEl = await page.$("a.button");
-    const subtitlesLink = subtitleEl
-      ? await subtitleEl.evaluate((el) => el.href)
-      : "";
-
-    return {
-      resolutions,
-      subtitlesLink,
-    };
-  }
-
-  protected async downloadRes(page: Page, resolution: Resolution) {
-    const originalFilename = resolution.link.split("/").pop();
-    if (!originalFilename) {
-      throw new Error("Original filename not found");
+  protected async downloadRes(
+    page: Page,
+    movieId: Movie["id"],
+    resolution: Resolution["resolution"]
+  ) {
+    const movie = await prisma.movie.findUnique({
+      where: {
+        id: movieId,
+      },
+    });
+    if (!movie) {
+      throw new Error("Movie not found");
     }
 
-    await page.goto(resolution.link);
-
-    const downloadDir = getResolutionFolderPath(
-      resolution.movieId!,
-      resolution.resolution
+    const resolutionData = await getResolutionForMovie(
+      movie.imdbId,
+      resolution
     );
+    const originalFilename = "resolution.torrent";
+
+    await page.goto(resolutionData.url);
+
+    const downloadDir = getResolutionFolderPath(movie.id, resolution);
     const originalPath = path.join(downloadDir, originalFilename);
     console.log(originalPath);
     await waitFile(originalPath, 3000);

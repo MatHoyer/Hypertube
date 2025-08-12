@@ -1,7 +1,5 @@
-import { resolutionSchemas } from "@hypertube/libs";
-import type { Resolution } from "@prisma/client";
+import type { Movie, Resolution } from "@prisma/client";
 import puppeteer, { Page } from "puppeteer";
-import type z from "zod";
 import { getResolutionFolderPath } from "../movie-folder-gestion/resolution";
 import prisma from "../prisma";
 
@@ -55,6 +53,7 @@ export abstract class Scrapper {
   protected abstract scrape(page: Page): Promise<
     {
       title: string;
+      year: number;
       link: string;
       imageUrl: string;
     }[]
@@ -90,32 +89,19 @@ export abstract class Scrapper {
 
   protected abstract getPaginationScrape(page: Page): Promise<number>;
 
-  async movieDataScrape() {
-    if (!this.currentUrl) return null;
-
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.goto(this.currentUrl);
-
-    const movieData = await this.getMovieDataScrape(page);
-
-    await browser.close();
-
-    return movieData;
-  }
-
-  protected abstract getMovieDataScrape(page: Page): Promise<{
-    resolutions: Omit<z.infer<typeof resolutionSchemas>, "id">[];
-    subtitlesLink: string;
-  }>;
-
-  async downloadResolution(resolutionId: Resolution["id"]) {
-    const resolution = await prisma.resolution.findUnique({
+  async downloadResolution(
+    movieId: Movie["id"],
+    resolution: Resolution["resolution"]
+  ) {
+    const movieResolution = await prisma.resolution.findUnique({
       where: {
-        id: resolutionId,
+        movieId_resolution: {
+          movieId,
+          resolution,
+        },
       },
     });
-    if (!resolution) {
+    if (!movieResolution) {
       throw new Error("Resolution not found");
     }
 
@@ -125,19 +111,17 @@ export abstract class Scrapper {
     const client = await page.createCDPSession();
     await client.send("Page.setDownloadBehavior", {
       behavior: "allow",
-      downloadPath: getResolutionFolderPath(
-        resolution.movieId!,
-        resolution.resolution
-      ),
+      downloadPath: getResolutionFolderPath(movieId, resolution),
     });
 
-    await this.downloadRes(page, resolution);
+    await this.downloadRes(page, movieId, resolution);
 
     await browser.close();
   }
 
   protected abstract downloadRes(
     page: Page,
-    resolution: Resolution
+    movieId: Movie["id"],
+    resolution: Resolution["resolution"]
   ): Promise<void>;
 }

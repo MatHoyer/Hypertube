@@ -1,9 +1,8 @@
 import { z } from "zod";
 
 export const resolutionSchemas = z.object({
-  id: z.uuid(),
   resolution: z.string(),
-  link: z.url(),
+  size: z.string(),
 });
 export type TResolutionSchemas = z.infer<typeof resolutionSchemas>;
 

@@ -2,7 +2,7 @@ model Resolution {
   id String @id @default(uuid())
 
   resolution String
-  link       String @unique
+  size       String
 
   Movie   Movie?  @relation(fields: [movieId], references: [id])
   movieId String?
@@ -16,9 +16,10 @@ model Resolution {
 model Subtitle {
   id String @id @default(uuid())
 
-  language String
-  rating   Int
-  link     String @unique
+  language     String
+  rating       Int
+  downloadLink String  @unique
+  downloaded   Boolean @default(false)
 
   Movie   Movie?  @relation(fields: [movieId], references: [id])
   movieId String?
@@ -31,10 +32,17 @@ model Movie {
   id String @id @default(uuid())
 
   title       String
-  year        Int?
   description String?
-  imageUrl    String
-  link        String  @unique
+  imdbId      String   @unique
+  year        Int
+  rating      Float
+  genres      String[]
+  language    String
+
+  backgroundImageUrl  String
+  smallCoverImageUrl  String
+  mediumCoverImageUrl String
+  largeCoverImageUrl  String
 
   resolutions Resolution[]
   subtitles   Subtitle[]

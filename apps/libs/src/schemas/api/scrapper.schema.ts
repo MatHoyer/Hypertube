@@ -55,8 +55,8 @@ export type TGetYtsPaginationSchemas = {
 export const getYtsDownloadMovieSchemas = {
   urlParams: z.object({
     movieId: movieSchemas.shape.id,
-    resolutionId: resolutionSchemas.shape.id,
-    subtitlesId: z.union([subtitleSchemas.shape.id, z.literal("none")]),
+    resolution: resolutionSchemas.shape.resolution,
+    subtitles: z.union([subtitleSchemas.shape.language, z.literal("none")]),
   }),
 };
 export type TGetYtsDownloadMovieSchemas = {

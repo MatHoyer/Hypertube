@@ -5,14 +5,14 @@ import type {
 } from "@hypertube/libs";
 import { getYtsMovieDataSchemas } from "@hypertube/libs";
 import {
-  getYtsMoviesSchemas,
   getYtsPaginationSchemas,
   type TGetYtsMoviesSchemas,
 } from "@hypertube/libs/src/schemas/api/scrapper.schema.js";
 import type { Context } from "hono";
-import { createMovie } from "../../lib/movie-folder-gestion/movie.js";
-import { createResolution } from "../../lib/movie-folder-gestion/resolution.js";
-import { createSubtitle } from "../../lib/movie-folder-gestion/subtitle.js";
+import {
+  getMovieByLongTitle,
+  getResolutionsForMovie,
+} from "../../lib/apis/yts.api.js";
 import prisma from "../../lib/prisma.js";
 import {
   downloadSubtitles,
@@ -39,30 +39,52 @@ export const getYtsMovies = async (
   ytsScrapper.createUrl();
   const movies = await ytsScrapper.defaultScrape();
 
-  const dbMovies = await Promise.all(
+  const movieData = await Promise.all(
     movies.map(
+      async (movie) => await getMovieByLongTitle(movie.title, movie.year)
+    )
+  );
+
+  const dbMovies = await Promise.all(
+    movieData.map(
       async (movie) =>
         await prisma.movie.upsert({
           where: {
-            link: movie.link,
+            imdbId: movie.imdb_code,
           },
-          update: movie,
-          create: movie,
+          update: {
+            title: movie.title_english,
+            year: movie.year,
+            rating: movie.rating,
+            genres: movie.genres,
+            language: movie.language,
+            backgroundImageUrl: movie.background_image,
+            smallCoverImageUrl: movie.small_cover_image,
+            mediumCoverImageUrl: movie.medium_cover_image,
+            largeCoverImageUrl: movie.large_cover_image,
+          },
+          create: {
+            imdbId: movie.imdb_code,
+            title: movie.title_english,
+            year: movie.year,
+            rating: movie.rating,
+            genres: movie.genres,
+            language: movie.language,
+            backgroundImageUrl: movie.background_image,
+            smallCoverImageUrl: movie.small_cover_image,
+            mediumCoverImageUrl: movie.medium_cover_image,
+            largeCoverImageUrl: movie.large_cover_image,
+          },
         })
     )
   );
 
-  return c.json(
-    getYtsMoviesSchemas.response.parse({
-      movies: dbMovies,
-    })
-  );
+  return c.json(dbMovies);
 };
 
 export const getYtsMovieData = async (
   c: Context<TUrlParamsParser<TGetYtsMovieDataSchemas["urlParams"]>>
 ) => {
-  const ytsScrapper = new YtsScrapper();
   const { id } = c.get("validatedUrlParams");
   const movie = await prisma.movie.findUnique({
     where: {
@@ -73,56 +95,29 @@ export const getYtsMovieData = async (
     return c.json({ error: "Movie not found" }, 404);
   }
 
-  ytsScrapper.setCurrentUrl(movie.link);
-  const movieData = await ytsScrapper.movieDataScrape();
-  if (!movieData) {
-    return c.json({ error: "Movie data not found" }, 404);
-  }
+  const resolutions = await getResolutionsForMovie(movie.imdbId);
 
-  await createMovie({
-    title: movie.title,
-    imageUrl: movie.imageUrl,
-    link: movie.link,
+  const subtitlesData = await getSubtitlesDownloadLinks({
+    imdbId: movie.imdbId,
   });
 
-  const resolutions = await Promise.all(
-    movieData.resolutions.map(
-      async (resolution) =>
-        await createResolution({
-          Movie: {
-            connect: {
-              id: movie.id,
-            },
+  const subtitles = await Promise.all(
+    subtitlesData.map(
+      async (subtitle) =>
+        await prisma.subtitle.upsert({
+          where: { downloadLink: subtitle.link },
+          update: {
+            language: subtitle.language,
+            rating: subtitle.rating,
           },
-          resolution: resolution.resolution,
-          link: resolution.link,
+          create: {
+            downloadLink: subtitle.link,
+            language: subtitle.language,
+            rating: subtitle.rating,
+          },
         })
     )
   );
-
-  let subtitles: { link: string; language: string; rating: number }[] = [];
-  if (movieData.subtitlesLink) {
-    const subtitlesDownloadLinks = await getSubtitlesDownloadLinks({
-      endpoint: movieData.subtitlesLink,
-      isCompleteUrl: true,
-    });
-
-    subtitles = await Promise.all(
-      subtitlesDownloadLinks.map(
-        async (subtitle) =>
-          await createSubtitle({
-            Movie: {
-              connect: {
-                id: movie.id,
-              },
-            },
-            language: subtitle.language,
-            rating: subtitle.rating,
-            link: subtitle.link,
-          })
-      )
-    );
-  }
 
   return c.json(
     getYtsMovieDataSchemas.response.parse({
@@ -148,7 +143,7 @@ export const getYtsPagination = async (
 export const getYtsDownloadMovie = async (
   c: Context<TUrlParamsParser<TGetYtsDownloadMovieSchemas["urlParams"]>>
 ) => {
-  const { movieId, resolutionId, subtitlesId } = c.get("validatedUrlParams");
+  const { movieId, resolution, subtitles } = c.get("validatedUrlParams");
 
   const movie = await prisma.movie.findUnique({
     where: {
@@ -157,12 +152,12 @@ export const getYtsDownloadMovie = async (
     include: {
       resolutions: {
         where: {
-          id: resolutionId,
+          resolution,
         },
       },
       subtitles: {
         where: {
-          id: subtitlesId === "none" ? undefined : subtitlesId,
+          language: subtitles,
         },
       },
     },
@@ -172,9 +167,9 @@ export const getYtsDownloadMovie = async (
   }
 
   const ytsScrapper = new YtsScrapper();
-  await ytsScrapper.downloadResolution(resolutionId);
-  if (subtitlesId !== "none") {
-    await downloadSubtitles(subtitlesId);
+  await ytsScrapper.downloadResolution(movieId, resolution);
+  if (subtitles !== "none") {
+    await downloadSubtitles(movie.subtitles[0].id);
   }
 
   return c.json({ message: "Movie downloaded" });
