@@ -70,6 +70,8 @@ export class YtsScrapper extends Scrapper {
   protected async scrape(page: Page) {
     const container = await page.$("section");
     const rows = await container?.$$("div.row");
+
+    console.log("rows", this.url);
     const movies = await Promise.all(
       rows?.map(async (row) => {
         const movies = await row?.$$(
@@ -88,7 +90,11 @@ export class YtsScrapper extends Scrapper {
             const year = yearString ? parseInt(yearString.trim()) : undefined;
 
             return {
-              title: await bottomContainer?.$eval("a", (el) => el.textContent),
+              title: await bottomContainer?.$eval("a", (el) => {
+                const span = el.querySelector("span");
+                span?.remove();
+                return el.textContent?.trim() ?? "";
+              }),
               year,
               link: await bottomContainer?.$eval("a", (el) => el.href),
               imageUrl: await movie?.$eval("img", (el) => el.src),

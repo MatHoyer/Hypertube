@@ -97,7 +97,7 @@ const ytsMovieSchema = z.object({
   genres: z.array(
     z.enum(ytsGenres.map((genre) => capitalizeAllWords(genre, "-")))
   ),
-  yt_trailer_code: z.url().optional(),
+  yt_trailer_code: z.string().optional(),
   language: z.string(),
   background_image: z.string(),
   small_cover_image: z.string(),
@@ -128,7 +128,12 @@ export const getMovies = async (params: TYtsMoviesSearchParams = {}) => {
   const response = await fetch(url);
   const data = await response.json();
 
-  return responseSchema(ytsGetMoviesResponseSchema).parse(data).data.movies;
+  const parsedData = responseSchema(ytsGetMoviesResponseSchema).safeParse(data);
+  if (!parsedData.success) {
+    return [];
+  }
+
+  return parsedData.data.data.movies;
 };
 
 export const getMovieByLongTitle = async (title: string, year: number) => {
@@ -138,7 +143,7 @@ export const getMovieByLongTitle = async (title: string, year: number) => {
   });
 
   if (movies.length === 0) {
-    throw new Error(`Movie ${title} (${year}) not found`);
+    return null;
   }
 
   return movies[0];
@@ -151,6 +156,7 @@ const ytsMovieDetailsResponseSchema = z.object({
 export const getMovieByImdbId = async (imdbId: string) => {
   const searchParams = new URLSearchParams({
     imdb_id: imdbId,
+    with_cast: "true",
   });
   const url = `${ytsApiUrl}/movie_details.json?${searchParams}`;
 

@@ -31,13 +31,14 @@ model Subtitle {
 model Movie {
   id String @id @default(uuid())
 
-  title       String
-  description String?
-  imdbId      String   @unique
-  year        Int
-  rating      Float
-  genres      String[]
-  language    String
+  title         String
+  description   String?
+  imdbId        String   @unique
+  year          Int
+  rating        Float
+  genres        String[]
+  language      String
+  ytTrailerCode String?
 
   backgroundImageUrl  String
   smallCoverImageUrl  String

@@ -39,11 +39,13 @@ export const getYtsMovies = async (
   ytsScrapper.createUrl();
   const movies = await ytsScrapper.defaultScrape();
 
-  const movieData = await Promise.all(
-    movies.map(
-      async (movie) => await getMovieByLongTitle(movie.title, movie.year)
+  const movieData = (
+    await Promise.all(
+      movies.map(
+        async (movie) => await getMovieByLongTitle(movie.title, movie.year)
+      )
     )
-  );
+  ).filter((movie) => movie !== null);
 
   const dbMovies = await Promise.all(
     movieData.map(
@@ -62,6 +64,7 @@ export const getYtsMovies = async (
             smallCoverImageUrl: movie.small_cover_image,
             mediumCoverImageUrl: movie.medium_cover_image,
             largeCoverImageUrl: movie.large_cover_image,
+            ytTrailerCode: movie.yt_trailer_code,
           },
           create: {
             imdbId: movie.imdb_code,
@@ -74,6 +77,7 @@ export const getYtsMovies = async (
             smallCoverImageUrl: movie.small_cover_image,
             mediumCoverImageUrl: movie.medium_cover_image,
             largeCoverImageUrl: movie.large_cover_image,
+            ytTrailerCode: movie.yt_trailer_code,
           },
         })
     )
@@ -121,8 +125,14 @@ export const getYtsMovieData = async (
 
   return c.json(
     getYtsMovieDataSchemas.response.parse({
-      resolutions,
-      subtitles,
+      resolutions: resolutions.map((resolution) => ({
+        resolution: resolution.quality,
+        size: resolution.size,
+      })),
+      subtitles: subtitles.map((subtitle) => ({
+        language: subtitle.language,
+        rating: subtitle.rating,
+      })),
     })
   );
 };

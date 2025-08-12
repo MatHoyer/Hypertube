@@ -17,9 +17,7 @@ export type TGetYtsFiltersSchemas = {
 export const getYtsMoviesSchemas = {
   searchParams: z.record(z.string(), z.string()),
   response: z.object({
-    movies: z.array(
-      movieSchemas.pick({ id: true, title: true, imageUrl: true, year: true })
-    ),
+    movies: z.array(movieSchemas),
   }),
 };
 export type TGetYtsMoviesSchemas = {
@@ -32,7 +30,9 @@ export const getYtsMovieDataSchemas = {
     id: movieSchemas.shape.id,
   }),
   response: z.object({
-    resolutions: z.array(resolutionSchemas),
+    resolutions: z.array(
+      resolutionSchemas.pick({ resolution: true, size: true })
+    ),
     subtitles: z.array(subtitleSchemas),
   }),
 };
