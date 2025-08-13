@@ -153,7 +153,8 @@ export const getYtsPagination = async (
 export const getYtsDownloadMovie = async (
   c: Context<TUrlParamsParser<TGetYtsDownloadMovieSchemas["urlParams"]>>
 ) => {
-  const { movieId, resolution, subtitles } = c.get("validatedUrlParams");
+  const { movieId, resolution, subtitlesLanguage } =
+    c.get("validatedUrlParams");
 
   const movie = await prisma.movie.findUnique({
     where: {
@@ -167,7 +168,7 @@ export const getYtsDownloadMovie = async (
       },
       subtitles: {
         where: {
-          language: subtitles,
+          language: subtitlesLanguage,
         },
       },
     },
@@ -178,7 +179,7 @@ export const getYtsDownloadMovie = async (
 
   const ytsScrapper = new YtsScrapper();
   await ytsScrapper.downloadResolution(movieId, resolution);
-  if (subtitles !== "none") {
+  if (subtitlesLanguage !== "none") {
     await downloadSubtitles(movie.subtitles[0].id);
   }
 

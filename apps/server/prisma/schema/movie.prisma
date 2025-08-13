@@ -1,8 +1,9 @@
 model Resolution {
   id String @id @default(uuid())
 
-  resolution String
-  size       String
+  resolution    String
+  size          String
+  downloadState String @default("not_downloaded")
 
   Movie   Movie?  @relation(fields: [movieId], references: [id])
   movieId String?
@@ -16,10 +17,10 @@ model Resolution {
 model Subtitle {
   id String @id @default(uuid())
 
-  language     String
-  rating       Int
-  downloadLink String  @unique
-  downloaded   Boolean @default(false)
+  language      String
+  rating        Int
+  downloadLink  String @unique
+  downloadState String @default("not_downloaded")
 
   Movie   Movie?  @relation(fields: [movieId], references: [id])
   movieId String?

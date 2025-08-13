@@ -32,7 +32,7 @@ ytsRouter.get(
 );
 
 ytsRouter.get(
-  "/movie/:movieId/resolution/:resolutionId/subtitles/:subtitlesId/download",
+  "/movie/:movieId/resolution/:resolution/subtitles/:subtitlesLanguage/download",
   urlParamsParser(getYtsDownloadMovieSchemas.urlParams),
   getYtsDownloadMovie
 );

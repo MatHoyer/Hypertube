@@ -1,4 +1,9 @@
-import { capitalizeAllWords } from "@hypertube/libs";
+import {
+  capitalizeAllWords,
+  ytsGenres,
+  ytsQualities,
+  ytsSortBy,
+} from "@hypertube/libs";
 import z from "zod";
 
 // https://yts.mx/api for documentation
@@ -11,56 +16,6 @@ const responseSchema = <T>(dataSchema: z.ZodSchema<T>) =>
     status_message: z.string(),
     data: dataSchema,
   });
-
-const ytsQualities = [
-  "480p",
-  "720p",
-  "1080p",
-  "1080p.x265",
-  "2160p",
-  "3D",
-] as const;
-
-const ytsGenres = [
-  "action",
-  "adventure",
-  "animation",
-  "biography",
-  "comedy",
-  "crime",
-  "documentary",
-  "drama",
-  "family",
-  "fantasy",
-  "film-noir",
-  "game-show",
-  "history",
-  "horror",
-  "music",
-  "musical",
-  "mystery",
-  "news",
-  "reality-tv",
-  "romance",
-  "sci-fi",
-  "short",
-  "sport",
-  "talk-show",
-  "thriller",
-  "war",
-  "western",
-] as const;
-
-const ytsSortBy = [
-  "title",
-  "year",
-  "rating",
-  "peers",
-  "seeds",
-  "download_count",
-  "like_count",
-  "date_added",
-] as const;
 
 const ytsMoviesSearchParamsSchema = z.object({
   limit: z.number().optional(),

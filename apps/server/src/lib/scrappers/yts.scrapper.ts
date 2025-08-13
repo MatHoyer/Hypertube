@@ -1,9 +1,12 @@
+import { ytsDownloadStates } from "@hypertube/libs/src/const/yts.const";
 import type { Movie, Resolution } from "@prisma/client";
-import path from "path";
+import { writeFile } from "fs/promises";
 import type { Page } from "puppeteer";
 import { getResolutionForMovie } from "../apis/yts.api";
-import { getResolutionFolderPath } from "../movie-folder-gestion/resolution";
-import { renameFile, waitFile } from "../movie-folder-gestion/utils";
+import {
+  createResolution,
+  getResolutionPath,
+} from "../movie-folder-gestion/resolution";
 import prisma from "../prisma";
 import { Scrapper } from "./scrapper";
 
@@ -178,8 +181,7 @@ export class YtsScrapper extends Scrapper {
     return Math.max(...paginationNumbers.map((number) => parseInt(number)), 1);
   }
 
-  protected async downloadRes(
-    page: Page,
+  async downloadResolution(
     movieId: Movie["id"],
     resolution: Resolution["resolution"]
   ) {
@@ -187,24 +189,103 @@ export class YtsScrapper extends Scrapper {
       where: {
         id: movieId,
       },
+      include: {
+        resolutions: {
+          where: {
+            resolution,
+          },
+        },
+      },
     });
     if (!movie) {
       throw new Error("Movie not found");
     }
 
-    const resolutionData = await getResolutionForMovie(
-      movie.imdbId,
-      resolution
-    );
-    const originalFilename = "resolution.torrent";
+    if (movie.resolutions.length === 0) {
+      try {
+        const resolutionData = await getResolutionForMovie(
+          movie.imdbId,
+          resolution
+        );
 
-    await page.goto(resolutionData.url);
+        const res = await fetch(resolutionData.url);
 
-    const downloadDir = getResolutionFolderPath(movie.id, resolution);
-    const originalPath = path.join(downloadDir, originalFilename);
-    console.log(originalPath);
-    await waitFile(originalPath, 3000);
+        const disposition = res.headers.get("content-disposition");
+        let filename = "downloaded_file";
 
-    renameFile(originalPath, "resolution.torrent");
+        if (disposition) {
+          const match = disposition.match(/filename="?([^"]+)"?/);
+          if (match) {
+            filename = match[1];
+          }
+        }
+
+        const arrayBuffer = await res.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        await createResolution(movieId, resolution);
+        await prisma.resolution.upsert({
+          where: {
+            movieId_resolution: {
+              movieId,
+              resolution,
+            },
+          },
+          create: {
+            movieId,
+            resolution,
+            size: resolutionData.size,
+            downloadState: ytsDownloadStates.DOWNLOADING,
+          },
+          update: {
+            size: resolutionData.size,
+            downloadState: ytsDownloadStates.DOWNLOADING,
+          },
+        });
+
+        const outputPath = getResolutionPath(movieId, resolution, true);
+        await writeFile(outputPath, buffer);
+
+        await prisma.resolution.upsert({
+          where: {
+            movieId_resolution: {
+              movieId,
+              resolution,
+            },
+          },
+          create: {
+            movieId,
+            resolution,
+            size: resolutionData.size,
+            downloadState: ytsDownloadStates.DOWNLOADED,
+          },
+          update: {
+            size: resolutionData.size,
+            downloadState: ytsDownloadStates.DOWNLOADED,
+          },
+        });
+      } catch (error) {
+        await prisma.resolution.upsert({
+          where: {
+            movieId_resolution: {
+              movieId,
+              resolution,
+            },
+          },
+          create: {
+            movieId,
+            resolution,
+            size: "0B",
+            downloadState: ytsDownloadStates.NOT_DOWNLOADED,
+          },
+          update: {
+            size: "0B",
+            downloadState: ytsDownloadStates.NOT_DOWNLOADED,
+          },
+        });
+      }
+    } else {
+      console.log("Resolution already downloaded");
+    }
   }
 }

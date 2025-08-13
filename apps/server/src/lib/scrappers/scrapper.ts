@@ -1,7 +1,5 @@
 import type { Movie, Resolution } from "@prisma/client";
 import puppeteer, { Page } from "puppeteer";
-import { getResolutionFolderPath } from "../movie-folder-gestion/resolution";
-import prisma from "../prisma";
 
 export abstract class Scrapper {
   url: string;
@@ -89,38 +87,7 @@ export abstract class Scrapper {
 
   protected abstract getPaginationScrape(page: Page): Promise<number>;
 
-  async downloadResolution(
-    movieId: Movie["id"],
-    resolution: Resolution["resolution"]
-  ) {
-    const movieResolution = await prisma.resolution.findUnique({
-      where: {
-        movieId_resolution: {
-          movieId,
-          resolution,
-        },
-      },
-    });
-    if (!movieResolution) {
-      throw new Error("Resolution not found");
-    }
-
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
-    const client = await page.createCDPSession();
-    await client.send("Page.setDownloadBehavior", {
-      behavior: "allow",
-      downloadPath: getResolutionFolderPath(movieId, resolution),
-    });
-
-    await this.downloadRes(page, movieId, resolution);
-
-    await browser.close();
-  }
-
-  protected abstract downloadRes(
-    page: Page,
+  abstract downloadResolution(
     movieId: Movie["id"],
     resolution: Resolution["resolution"]
   ): Promise<void>;

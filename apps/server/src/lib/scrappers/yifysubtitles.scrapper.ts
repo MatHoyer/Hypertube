@@ -1,7 +1,7 @@
 import type { Subtitle } from "@prisma/client";
 import path from "path";
 import puppeteer from "puppeteer";
-import { getSubtitleFolderPath } from "../movie-folder-gestion/subtitle";
+import { getSubtitlePath } from "../movie-folder-gestion/subtitle";
 import { renameFile, waitFile } from "../movie-folder-gestion/utils";
 import prisma from "../prisma";
 
@@ -70,7 +70,7 @@ export const downloadSubtitles = async (subtitlesId: Subtitle["id"]) => {
   const client = await page.createCDPSession();
   await client.send("Page.setDownloadBehavior", {
     behavior: "allow",
-    downloadPath: getSubtitleFolderPath(subtitle.movieId!, subtitle.language),
+    downloadPath: getSubtitlePath(subtitle.movieId!, subtitle.language),
   });
 
   await page.goto(subtitle.downloadLink);
@@ -90,10 +90,7 @@ export const downloadSubtitles = async (subtitlesId: Subtitle["id"]) => {
   // Download the file
   await page.click("a.btn-icon.download-subtitle");
 
-  const downloadDir = getSubtitleFolderPath(
-    subtitle.movieId!,
-    subtitle.language
-  );
+  const downloadDir = getSubtitlePath(subtitle.movieId!, subtitle.language);
   const originalPath = path.join(downloadDir, originalFilename);
 
   // Wait for original file to download

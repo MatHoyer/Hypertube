@@ -4,7 +4,7 @@ export { test } from "./lib/test.js";
 export { getUrl } from "./utils/getUrl.js";
 export type {
   TApiRouteDataRequirements,
-  TClientRouteDataRequirements
+  TClientRouteDataRequirements,
 } from "./utils/getUrl.js";
 export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
 
@@ -14,14 +14,14 @@ export {
   getYtsFiltersSchemas,
   getYtsMovieDataSchemas,
   getYtsMoviesSchemas,
-  getYtsPaginationSchemas
+  getYtsPaginationSchemas,
 } from "./schemas/api/scrapper.schema.js";
 export type {
   TGetYtsDownloadMovieSchemas,
   TGetYtsFiltersSchemas,
   TGetYtsMovieDataSchemas,
   TGetYtsMoviesSchemas,
-  TGetYtsPaginationSchemas
+  TGetYtsPaginationSchemas,
 } from "./schemas/api/scrapper.schema.js";
 export { testSchemas } from "./schemas/api/test.schema.js";
 export type { TTestSchemas } from "./schemas/api/test.schema.js";
@@ -30,11 +30,13 @@ export type { TTestSchemas } from "./schemas/api/test.schema.js";
 export {
   movieSchemas,
   resolutionSchemas,
-  subtitleSchemas
+  subtitleSchemas,
 } from "./schemas/database/movie.schema.js";
 export type {
   TMovieSchemas,
   TResolutionSchemas,
-  TSubtitleSchemas
+  TSubtitleSchemas,
 } from "./schemas/database/movie.schema.js";
 
+// Const export
+export { ytsGenres, ytsQualities, ytsSortBy } from "./const/yts.const.js";

@@ -56,7 +56,10 @@ export const getYtsDownloadMovieSchemas = {
   urlParams: z.object({
     movieId: movieSchemas.shape.id,
     resolution: resolutionSchemas.shape.resolution,
-    subtitles: z.union([subtitleSchemas.shape.language, z.literal("none")]),
+    subtitlesLanguage: z.union([
+      subtitleSchemas.shape.language,
+      z.literal("none"),
+    ]),
   }),
 };
 export type TGetYtsDownloadMovieSchemas = {
