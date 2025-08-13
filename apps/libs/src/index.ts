@@ -15,16 +15,16 @@ export {
   getYtsMovieDataSchemas,
   getYtsMoviesSchemas,
   getYtsPaginationSchemas,
-} from "./schemas/api/scrapper.schema.js";
+  ytsScrapperSearchParamsSchemas,
+} from "./schemas/api/yts.schema.js";
 export type {
   TGetYtsDownloadMovieSchemas,
   TGetYtsFiltersSchemas,
   TGetYtsMovieDataSchemas,
   TGetYtsMoviesSchemas,
   TGetYtsPaginationSchemas,
-} from "./schemas/api/scrapper.schema.js";
-export { testSchemas } from "./schemas/api/test.schema.js";
-export type { TTestSchemas } from "./schemas/api/test.schema.js";
+  TYtsScrapperSearchParamsSchemas,
+} from "./schemas/api/yts.schema.js";
 
 // Database Schemas export
 export {
@@ -39,7 +39,12 @@ export type {
 } from "./schemas/database/movie.schema.js";
 
 // Const export
-export { ytsGenres, ytsQualities, ytsSortBy } from "./const/yts.const.js";
+export {
+  ytsApiSortBy,
+  ytsGenres,
+  ytsQualities,
+  ytsScrapperSortBy,
+} from "./const/yts.const.js";
 
 // Global const export
 export { downloadStates, languageCodes } from "./const/global.const.js";

@@ -1,23 +1,15 @@
-import { downloadStates } from "@hypertube/libs";
-import type { Movie, Resolution } from "@prisma/client";
-import { writeFile } from "fs/promises";
+import type { TYtsScrapperSearchParamsSchemas } from "@hypertube/libs";
 import type { Page } from "puppeteer";
-import { getResolutionForMovie } from "../apis/yts.api";
-import {
-  createResolution,
-  getResolutionPath,
-} from "../movie-folder-gestion/resolution";
-import prisma from "../prisma";
 import { Scrapper } from "./scrapper";
 
 const defaultYtsSearchParams = {
   page: "1",
 };
-const defaultYtsFilters = {
+const defaultYtsFilters: TYtsScrapperSearchParamsSchemas = {
   keyword: "0",
   quality: "all",
   genre: "all",
-  rating: "0",
+  rating: 0,
   sort_by: "latest",
   year: "0",
   language: "all",
@@ -25,7 +17,7 @@ const defaultYtsFilters = {
 
 const ytsUrl = "https://yts.mx/browse-movies";
 
-export class YtsScrapper extends Scrapper {
+export class YtsScrapper extends Scrapper<TYtsScrapperSearchParamsSchemas> {
   constructor() {
     super(ytsUrl);
     this.currentSearchParams = defaultYtsSearchParams;
@@ -38,7 +30,7 @@ export class YtsScrapper extends Scrapper {
     return instance;
   }
 
-  updateUrlParams(params: Record<string, string>) {
+  updateUrlParams(params: TYtsScrapperSearchParamsSchemas) {
     this.currentUrlParams = { ...this.currentUrlParams, ...params };
   }
 
@@ -74,7 +66,6 @@ export class YtsScrapper extends Scrapper {
     const container = await page.$("section");
     const rows = await container?.$$("div.row");
 
-    console.log("rows", this.url);
     const movies = await Promise.all(
       rows?.map(async (row) => {
         const movies = await row?.$$(
@@ -176,115 +167,6 @@ export class YtsScrapper extends Scrapper {
         number !== null && typeof number === "string" && /^\d+$/.test(number)
     );
 
-    console.log(`${this.url}?${this.createSearchParams()}`);
-    console.log(...paginationNumbers.map((number) => parseInt(number)));
     return Math.max(...paginationNumbers.map((number) => parseInt(number)), 1);
-  }
-
-  async downloadResolution(
-    movieId: Movie["id"],
-    resolution: Resolution["resolution"]
-  ) {
-    const movie = await prisma.movie.findUnique({
-      where: {
-        id: movieId,
-      },
-      include: {
-        resolutions: {
-          where: {
-            resolution,
-          },
-        },
-      },
-    });
-    if (!movie) {
-      throw new Error("Movie not found");
-    }
-
-    if (movie.resolutions.length === 0) {
-      try {
-        const resolutionData = await getResolutionForMovie(
-          movie.imdbId,
-          resolution
-        );
-
-        const res = await fetch(resolutionData.url);
-
-        const disposition = res.headers.get("content-disposition");
-        let filename = "downloaded_file";
-
-        if (disposition) {
-          const match = disposition.match(/filename="?([^"]+)"?/);
-          if (match) {
-            filename = match[1];
-          }
-        }
-
-        const arrayBuffer = await res.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
-        await createResolution(movieId, resolution);
-        await prisma.resolution.upsert({
-          where: {
-            movieId_resolution: {
-              movieId,
-              resolution,
-            },
-          },
-          create: {
-            movieId,
-            resolution,
-            size: resolutionData.size,
-            downloadState: downloadStates.DOWNLOADING,
-          },
-          update: {
-            size: resolutionData.size,
-            downloadState: downloadStates.DOWNLOADING,
-          },
-        });
-
-        const outputPath = getResolutionPath(movieId, resolution, true);
-        await writeFile(outputPath, buffer);
-
-        await prisma.resolution.upsert({
-          where: {
-            movieId_resolution: {
-              movieId,
-              resolution,
-            },
-          },
-          create: {
-            movieId,
-            resolution,
-            size: resolutionData.size,
-            downloadState: downloadStates.DOWNLOADED,
-          },
-          update: {
-            size: resolutionData.size,
-            downloadState: downloadStates.DOWNLOADED,
-          },
-        });
-      } catch (error) {
-        await prisma.resolution.upsert({
-          where: {
-            movieId_resolution: {
-              movieId,
-              resolution,
-            },
-          },
-          create: {
-            movieId,
-            resolution,
-            size: "0B",
-            downloadState: downloadStates.NOT_DOWNLOADED,
-          },
-          update: {
-            downloadState: downloadStates.NOT_DOWNLOADED,
-          },
-        });
-      }
-    } else {
-      console.log("Resolution already downloaded");
-    }
   }
 }

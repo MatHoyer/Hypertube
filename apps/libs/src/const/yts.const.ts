@@ -37,7 +37,21 @@ export const ytsGenres = [
   "western",
 ] as const;
 
-export const ytsSortBy = [
+export const ytsScrapperSortBy = [
+  "latest",
+  "oldest",
+  "featured",
+  "seeds",
+  "peers",
+  "year",
+  "rating",
+  "likes",
+  "rt_audience",
+  "alphabetical",
+  "downloads",
+] as const;
+
+export const ytsApiSortBy = [
   "title",
   "year",
   "rating",
@@ -46,4 +60,19 @@ export const ytsSortBy = [
   "download_count",
   "like_count",
   "date_added",
+] as const;
+
+export const ytsYears = [
+  "0",
+  "2025",
+  "2024",
+  "2020-2025",
+  "2010-2025",
+  "2010-2019",
+  "2000-2009",
+  "1990-1999",
+  "1980-1989",
+  "1970-1979",
+  "1950-1969",
+  "1900-1949",
 ] as const;

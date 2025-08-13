@@ -21,7 +21,7 @@ ytsRouter.get("/filters", getYtsFilters);
 
 ytsRouter.get(
   "/movies",
-  searchParamsParser(getYtsMoviesSchemas.searchParams),
+  searchParamsParser(getYtsMoviesSchemas.searchParams.partial()),
   getYtsMovies
 );
 
@@ -39,7 +39,7 @@ ytsRouter.get(
 
 ytsRouter.get(
   "/pagination",
-  searchParamsParser(getYtsPaginationSchemas.searchParams),
+  searchParamsParser(getYtsPaginationSchemas.searchParams.partial()),
   getYtsPagination
 );
 

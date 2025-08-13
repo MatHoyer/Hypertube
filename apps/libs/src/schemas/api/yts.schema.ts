@@ -1,9 +1,29 @@
 import z from "zod";
+import { languageCodes } from "../../const/global.const.js";
+import {
+  ytsGenres,
+  ytsQualities,
+  ytsScrapperSortBy,
+  ytsYears,
+} from "../../const/yts.const.js";
 import {
   movieSchemas,
   resolutionSchemas,
   subtitleSchemas,
 } from "../database/movie.schema.js";
+
+export const ytsScrapperSearchParamsSchemas = z.object({
+  keyword: z.union([z.string(), z.literal("0")]),
+  quality: z.enum(["all", ...Object.values(ytsQualities)]),
+  genre: z.enum(["all", ...Object.values(ytsGenres)]),
+  rating: z.number().int().positive().max(10),
+  sort_by: z.enum(ytsScrapperSortBy),
+  year: z.enum(ytsYears),
+  language: z.enum(["all", ...Object.keys(languageCodes)]),
+});
+export type TYtsScrapperSearchParamsSchemas = z.infer<
+  typeof ytsScrapperSearchParamsSchemas
+>;
 
 export const getYtsFiltersSchemas = {
   response: z.object({
@@ -15,7 +35,10 @@ export type TGetYtsFiltersSchemas = {
 };
 
 export const getYtsMoviesSchemas = {
-  searchParams: z.record(z.string(), z.string()),
+  searchParams: z.object({
+    page: z.coerce.number().int().positive(),
+    ...ytsScrapperSearchParamsSchemas.shape,
+  }),
   response: z.object({
     movies: z.array(movieSchemas),
   }),
@@ -42,7 +65,10 @@ export type TGetYtsMovieDataSchemas = {
 };
 
 export const getYtsPaginationSchemas = {
-  searchParams: z.record(z.string(), z.string()),
+  searchParams: z.object({
+    page: z.coerce.number().int().positive(),
+    ...ytsScrapperSearchParamsSchemas.shape,
+  }),
   response: z.object({
     maxPagination: z.coerce.number().int().positive(),
   }),

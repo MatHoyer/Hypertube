@@ -1,17 +1,16 @@
-import type { Movie, Resolution } from "@prisma/client";
 import puppeteer, { Page } from "puppeteer";
 
-export abstract class Scrapper {
+export abstract class Scrapper<T extends Record<string, any>> {
   url: string;
   currentUrl: string | null;
   currentSearchParams: Record<string, string>;
-  currentUrlParams: Record<string, string>;
+  currentUrlParams: T;
 
   protected constructor(url: string) {
     this.url = url;
     this.currentUrl = null;
     this.currentSearchParams = {};
-    this.currentUrlParams = {};
+    this.currentUrlParams = {} as T;
   }
 
   protected async init() {
@@ -72,9 +71,4 @@ export abstract class Scrapper {
   }
 
   protected abstract getPaginationScrape(page: Page): Promise<number>;
-
-  abstract downloadResolution(
-    movieId: Movie["id"],
-    resolution: Resolution["resolution"]
-  ): Promise<void>;
 }

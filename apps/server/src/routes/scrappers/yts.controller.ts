@@ -3,13 +3,14 @@ import type {
   TGetYtsMovieDataSchemas,
   TGetYtsPaginationSchemas,
 } from "@hypertube/libs";
-import { getYtsMovieDataSchemas } from "@hypertube/libs";
 import {
+  getYtsMovieDataSchemas,
   getYtsPaginationSchemas,
   type TGetYtsMoviesSchemas,
-} from "@hypertube/libs/src/schemas/api/scrapper.schema.js";
+} from "@hypertube/libs";
 import type { Context } from "hono";
 import {
+  downloadResolution,
   getMovieByLongTitle,
   getResolutionsForMovie,
 } from "../../lib/apis/yts.api.js";
@@ -34,7 +35,7 @@ export const getYtsMovies = async (
 ) => {
   const ytsScrapper = new YtsScrapper();
   const { page, ...rest } = c.get("validatedSearchParams");
-  ytsScrapper.currentSearchParams = { page: page };
+  ytsScrapper.currentSearchParams = { page: "" + page };
   ytsScrapper.updateUrlParams(rest);
   ytsScrapper.createUrl();
   const movies = await ytsScrapper.defaultScrape();
@@ -142,7 +143,7 @@ export const getYtsPagination = async (
 ) => {
   const ytsScrapper = new YtsScrapper();
   const { page, ...rest } = c.get("validatedSearchParams");
-  ytsScrapper.currentSearchParams = { page: page };
+  ytsScrapper.currentSearchParams = { page: "" + page };
   ytsScrapper.updateUrlParams(rest);
   ytsScrapper.createUrl();
   const maxPagination = await ytsScrapper.paginationScrape();
@@ -177,8 +178,7 @@ export const getYtsDownloadMovie = async (
     return c.json({ error: "Movie not found" }, 404);
   }
 
-  const ytsScrapper = new YtsScrapper();
-  await ytsScrapper.downloadResolution(movieId, resolution);
+  downloadResolution(movieId, resolution);
   if (subtitlesLanguage !== "none") {
     await downloadSubtitles(movie.subtitles[0].id);
   }

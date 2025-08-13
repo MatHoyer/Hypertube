@@ -1,10 +1,18 @@
 import {
   capitalizeAllWords,
+  downloadStates,
+  ytsApiSortBy,
   ytsGenres,
   ytsQualities,
-  ytsSortBy,
 } from "@hypertube/libs";
+import type { Movie, Resolution } from "@prisma/client";
+import { writeFile } from "fs/promises";
 import z from "zod";
+import {
+  createResolution,
+  getResolutionPath,
+} from "../movie-folder-gestion/resolution";
+import prisma from "../prisma";
 
 // https://yts.mx/api for documentation
 
@@ -24,7 +32,7 @@ const ytsMoviesSearchParamsSchema = z.object({
   minimum_rating: z.number().int().positive().min(0).max(9).optional(),
   query_term: z.string().optional(),
   genre: z.enum(ytsGenres).optional(),
-  sort_by: z.enum(ytsSortBy).optional(),
+  sort_by: z.enum(ytsApiSortBy).optional(),
   order_by: z.enum(["desc", "asc"]).optional(),
   with_rt_ratings: z.boolean().optional(),
 });
@@ -79,7 +87,6 @@ export const getMovies = async (params: TYtsMoviesSearchParams = {}) => {
     searchParams ? `?${searchParams}` : ""
   }`;
 
-  console.log(url);
   const response = await fetch(url);
   const data = await response.json();
 
@@ -142,4 +149,111 @@ export const getResolutionForMovie = async (
   }
 
   return torrent;
+};
+
+export const downloadResolution = async (
+  movieId: Movie["id"],
+  resolution: Resolution["resolution"]
+) => {
+  const movie = await prisma.movie.findUnique({
+    where: {
+      id: movieId,
+    },
+    include: {
+      resolutions: {
+        where: {
+          resolution,
+        },
+      },
+    },
+  });
+  if (!movie) {
+    throw new Error("Movie not found");
+  }
+
+  if (movie.resolutions.length === 0) {
+    try {
+      const resolutionData = await getResolutionForMovie(
+        movie.imdbId,
+        resolution
+      );
+
+      const res = await fetch(resolutionData.url);
+
+      const disposition = res.headers.get("content-disposition");
+      let filename = "downloaded_file";
+
+      if (disposition) {
+        const match = disposition.match(/filename="?([^"]+)"?/);
+        if (match) {
+          filename = match[1];
+        }
+      }
+
+      const arrayBuffer = await res.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      await createResolution(movieId, resolution);
+      await prisma.resolution.upsert({
+        where: {
+          movieId_resolution: {
+            movieId,
+            resolution,
+          },
+        },
+        create: {
+          movieId,
+          resolution,
+          size: resolutionData.size,
+          downloadState: downloadStates.DOWNLOADING,
+        },
+        update: {
+          size: resolutionData.size,
+          downloadState: downloadStates.DOWNLOADING,
+        },
+      });
+
+      const outputPath = getResolutionPath(movieId, resolution, true);
+      await writeFile(outputPath, buffer);
+
+      await prisma.resolution.upsert({
+        where: {
+          movieId_resolution: {
+            movieId,
+            resolution,
+          },
+        },
+        create: {
+          movieId,
+          resolution,
+          size: resolutionData.size,
+          downloadState: downloadStates.DOWNLOADED,
+        },
+        update: {
+          size: resolutionData.size,
+          downloadState: downloadStates.DOWNLOADED,
+        },
+      });
+    } catch (error) {
+      await prisma.resolution.upsert({
+        where: {
+          movieId_resolution: {
+            movieId,
+            resolution,
+          },
+        },
+        create: {
+          movieId,
+          resolution,
+          size: "0B",
+          downloadState: downloadStates.NOT_DOWNLOADED,
+        },
+        update: {
+          downloadState: downloadStates.NOT_DOWNLOADED,
+        },
+      });
+    }
+  } else {
+    console.log("Resolution already downloaded");
+  }
 };
