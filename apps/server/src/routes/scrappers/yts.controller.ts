@@ -4,6 +4,7 @@ import type {
   TGetYtsPaginationSchemas,
 } from "@hypertube/libs";
 import {
+  DownloadStates,
   getYtsMovieDataSchemas,
   getYtsPaginationSchemas,
   type TGetYtsMoviesSchemas,
@@ -124,16 +125,47 @@ export const getYtsMovieData = async (
     )
   );
 
+  const dbResolutions = await prisma.resolution.findMany({
+    where: {
+      movieId: movie.id,
+      downloadState: "DOWNLOADED",
+    },
+  });
+
+  const dbSubtitles = await prisma.subtitle.findMany({
+    where: {
+      movieId: movie.id,
+      downloadState: "DOWNLOADED",
+    },
+  });
+
   return c.json(
     getYtsMovieDataSchemas.response.parse({
-      resolutions: resolutions.map((resolution) => ({
-        resolution: resolution.quality,
-        size: resolution.size,
-      })),
-      subtitles: subtitles.map((subtitle) => ({
-        language: subtitle.language,
-        rating: subtitle.rating,
-      })),
+      resolutions: resolutions.map((resolution) => {
+        const dbResolution = dbResolutions.find(
+          (dbResolution) => dbResolution.resolution === resolution.quality
+        );
+
+        return (
+          dbResolution ?? {
+            resolution: resolution.quality,
+            size: resolution.size,
+            downloadState: DownloadStates.NOT_DOWNLOADED,
+          }
+        );
+      }),
+      subtitles: subtitles.map((subtitle) => {
+        const dbSubtitle = dbSubtitles.find(
+          (dbSubtitle) => dbSubtitle.language === subtitle.language
+        );
+
+        return (
+          dbSubtitle ?? {
+            ...subtitle,
+            downloadState: DownloadStates.NOT_DOWNLOADED,
+          }
+        );
+      }),
     })
   );
 };

@@ -47,4 +47,4 @@ export {
 } from "./const/yts.const.js";
 
 // Global const export
-export { downloadStates, languageCodes } from "./const/global.const.js";
+export { DownloadStates, languageCodes } from "./const/global.const.js";

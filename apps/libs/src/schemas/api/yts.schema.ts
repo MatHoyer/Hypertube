@@ -54,7 +54,11 @@ export const getYtsMovieDataSchemas = {
   }),
   response: z.object({
     resolutions: z.array(
-      resolutionSchemas.pick({ resolution: true, size: true })
+      resolutionSchemas.pick({
+        resolution: true,
+        size: true,
+        downloadState: true,
+      })
     ),
     subtitles: z.array(subtitleSchemas),
   }),

@@ -1,9 +1,15 @@
+enum DownloadState {
+  NOT_DOWNLOADED
+  DOWNLOADING
+  DOWNLOADED
+}
+
 model Resolution {
   id String @id @default(uuid())
 
   resolution    String
   size          String
-  downloadState String @default("not_downloaded")
+  downloadState DownloadState @default(NOT_DOWNLOADED)
 
   Movie   Movie?  @relation(fields: [movieId], references: [id])
   movieId String?
@@ -19,8 +25,8 @@ model Subtitle {
 
   language      String
   rating        Int
-  downloadLink  String @unique
-  downloadState String @default("not_downloaded")
+  downloadLink  String        @unique
+  downloadState DownloadState @default(NOT_DOWNLOADED)
 
   Movie   Movie?  @relation(fields: [movieId], references: [id])
   movieId String?

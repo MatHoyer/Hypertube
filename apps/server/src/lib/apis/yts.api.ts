@@ -1,6 +1,5 @@
 import {
   capitalizeAllWords,
-  downloadStates,
   ytsApiSortBy,
   ytsGenres,
   ytsQualities,
@@ -180,20 +179,11 @@ export const downloadResolution = async (
 
       const res = await fetch(resolutionData.url);
 
-      const disposition = res.headers.get("content-disposition");
-      let filename = "downloaded_file";
-
-      if (disposition) {
-        const match = disposition.match(/filename="?([^"]+)"?/);
-        if (match) {
-          filename = match[1];
-        }
-      }
-
       const arrayBuffer = await res.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
       await createResolution(movieId, resolution);
+      // DL the torrent content before make a resolution downloaded
       await prisma.resolution.upsert({
         where: {
           movieId_resolution: {
@@ -205,11 +195,11 @@ export const downloadResolution = async (
           movieId,
           resolution,
           size: resolutionData.size,
-          downloadState: downloadStates.DOWNLOADING,
+          downloadState: "DOWNLOADING",
         },
         update: {
           size: resolutionData.size,
-          downloadState: downloadStates.DOWNLOADING,
+          downloadState: "DOWNLOADING",
         },
       });
 
@@ -227,11 +217,11 @@ export const downloadResolution = async (
           movieId,
           resolution,
           size: resolutionData.size,
-          downloadState: downloadStates.DOWNLOADED,
+          downloadState: "DOWNLOADED",
         },
         update: {
           size: resolutionData.size,
-          downloadState: downloadStates.DOWNLOADED,
+          downloadState: "DOWNLOADED",
         },
       });
     } catch (error) {
@@ -246,10 +236,10 @@ export const downloadResolution = async (
           movieId,
           resolution,
           size: "0B",
-          downloadState: downloadStates.NOT_DOWNLOADED,
+          downloadState: "NOT_DOWNLOADED",
         },
         update: {
-          downloadState: downloadStates.NOT_DOWNLOADED,
+          downloadState: "NOT_DOWNLOADED",
         },
       });
     }

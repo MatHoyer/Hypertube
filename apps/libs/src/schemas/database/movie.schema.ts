@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { downloadStates } from "../../const/global.const.js";
+import { DownloadStates } from "../../const/global.const.js";
 
 export const resolutionSchemas = z.object({
   id: z.uuid(),
 
   resolution: z.string(),
   size: z.string(),
-  downloadState: z.enum(Object.values(downloadStates)),
+  downloadState: z.enum(DownloadStates),
 });
 export type TResolutionSchemas = z.infer<typeof resolutionSchemas>;
 
@@ -16,7 +16,7 @@ export const subtitleSchemas = z.object({
   language: z.string(),
   rating: z.coerce.number().int().positive(),
   downloadLink: z.url(),
-  downloadState: z.enum(Object.values(downloadStates)),
+  downloadState: z.enum(DownloadStates),
 });
 export type TSubtitleSchemas = z.infer<typeof subtitleSchemas>;
 
