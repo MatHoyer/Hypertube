@@ -47,9 +47,3 @@ export const ytsSortBy = [
   "like_count",
   "date_added",
 ] as const;
-
-export const ytsDownloadStates = {
-  NOT_DOWNLOADED: "not_downloaded",
-  DOWNLOADING: "downloading",
-  DOWNLOADED: "downloaded",
-} as const;

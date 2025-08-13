@@ -22,20 +22,6 @@ export abstract class Scrapper {
     return new URLSearchParams(this.currentSearchParams).toString();
   }
 
-  setCurrentUrl(url: string) {
-    let cmpUrl = url;
-    if (url && typeof url === "string") {
-      const lastDot = url.lastIndexOf(".");
-      if (lastDot > 0) {
-        cmpUrl = url.substring(0, lastDot);
-      }
-    }
-
-    if (!this.url.startsWith(cmpUrl)) return;
-
-    this.currentUrl = url;
-  }
-
   async defaultScrape() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();

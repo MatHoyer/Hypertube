@@ -1,4 +1,4 @@
-import { ytsDownloadStates } from "@hypertube/libs/src/const/yts.const";
+import { downloadStates } from "@hypertube/libs";
 import type { Movie, Resolution } from "@prisma/client";
 import { writeFile } from "fs/promises";
 import type { Page } from "puppeteer";
@@ -235,11 +235,11 @@ export class YtsScrapper extends Scrapper {
             movieId,
             resolution,
             size: resolutionData.size,
-            downloadState: ytsDownloadStates.DOWNLOADING,
+            downloadState: downloadStates.DOWNLOADING,
           },
           update: {
             size: resolutionData.size,
-            downloadState: ytsDownloadStates.DOWNLOADING,
+            downloadState: downloadStates.DOWNLOADING,
           },
         });
 
@@ -257,11 +257,11 @@ export class YtsScrapper extends Scrapper {
             movieId,
             resolution,
             size: resolutionData.size,
-            downloadState: ytsDownloadStates.DOWNLOADED,
+            downloadState: downloadStates.DOWNLOADED,
           },
           update: {
             size: resolutionData.size,
-            downloadState: ytsDownloadStates.DOWNLOADED,
+            downloadState: downloadStates.DOWNLOADED,
           },
         });
       } catch (error) {
@@ -276,11 +276,10 @@ export class YtsScrapper extends Scrapper {
             movieId,
             resolution,
             size: "0B",
-            downloadState: ytsDownloadStates.NOT_DOWNLOADED,
+            downloadState: downloadStates.NOT_DOWNLOADED,
           },
           update: {
-            size: "0B",
-            downloadState: ytsDownloadStates.NOT_DOWNLOADED,
+            downloadState: downloadStates.NOT_DOWNLOADED,
           },
         });
       }

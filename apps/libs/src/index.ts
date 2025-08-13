@@ -40,3 +40,6 @@ export type {
 
 // Const export
 export { ytsGenres, ytsQualities, ytsSortBy } from "./const/yts.const.js";
+
+// Global const export
+export { downloadStates, languageCodes } from "./const/global.const.js";

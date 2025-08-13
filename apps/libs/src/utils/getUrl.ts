@@ -1,3 +1,6 @@
+import { languageCodes } from "../const/global.const.js";
+import { ytsQualities } from "../const/yts.const.js";
+import { TMovieSchemas } from "../schemas/database/movie.schema.js";
 import { getServerUrl } from "./getServerUrl.js";
 
 export type TClientRouteDataRequirements = {
@@ -6,13 +9,14 @@ export type TClientRouteDataRequirements = {
 
 export type TApiRouteDataRequirements = {
   "api-health": undefined;
-  "api-test": {
-    endpoint?: "test" | "movie" | "prisma";
-    id?: number;
-  };
   "api-scrappers": {
     scrapper: "yts";
-    endpoint?: "filters" | "movies" | "pagination";
+    endpoint?: "filters" | "movies" | "pagination" | "download";
+    urlParams?: {
+      movieId: TMovieSchemas["id"];
+      resolution: (typeof ytsQualities)[number];
+      subtitlesLanguage: keyof typeof languageCodes | "none";
+    };
   };
 };
 
@@ -33,12 +37,16 @@ const routes: {
 
   // API routes
   "api-health": () => "/api/health",
-  "api-test": ({ endpoint, id }) => {
-    const baseUrl = endpoint ? `/api/test/${endpoint}` : "/api/test";
-    return id ? `${baseUrl}/${id}` : baseUrl;
-  },
-  "api-scrappers": ({ scrapper, endpoint }) => {
+  "api-scrappers": ({ scrapper, endpoint, urlParams }) => {
     const baseUrl = `/api/scrappers/${scrapper}`;
+
+    if (endpoint === "download") {
+      if (!urlParams) {
+        throw new Error("Url params are required for download endpoint");
+      }
+      return `${baseUrl}/movie/${urlParams.movieId}/resolution/${urlParams.resolution}/subtitles/${urlParams.subtitlesLanguage}/${endpoint}`;
+    }
+
     return endpoint ? `${baseUrl}/${endpoint}` : baseUrl;
   },
 };
