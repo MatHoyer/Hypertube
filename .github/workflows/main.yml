@@ -1,0 +1,71 @@
+name: Test Docker Startup
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  docker-startup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          cat <<EOF > .env
+          POSTGRES_HOST={{ secrets.POSTGRES_HOST }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_PORT={{ secrets.POSTGRES_PORT }}
+      
+          SERVER_URL={{ secrets.SERVER_URL }}
+          SERVER_PORT={{ secrets.SERVER_PORT }}
+          CLIENT_PORT={{ secrets.CLIENT_PORT }}
+      
+          RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+          RESEND_API_EMAIL_FROM=${{ secrets.RESEND_API_EMAIL_FROM }}
+          RESEND_API_EMAIL_TO=${{ secrets.RESEND_API_EMAIL_TO }}
+          EOF
+
+      - name: Create Docker network
+        run: docker network create hypertube-network || echo "Network already exists"
+
+      - name: Start DB containers (docker-compose.yml)
+        run: docker compose up -d
+
+      - name: Wait for DBs to be ready
+        run: |
+          echo "Waiting for hypertube_db to be healthy..."
+          for i in {1..15}; do
+            status=$(docker inspect --format='{{.State.Health.Status}}' hypertube_db 2>/dev/null || echo "not found")
+            echo "Current status: $status"
+            if [ "$status" == "healthy" ]; then
+              echo "✅ Database is healthy!"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "❌ Database did not become healthy in time"
+          docker ps
+          exit 1
+
+      - name: Start App containers (docker-compose-prod.yml)
+        run: docker compose -f docker-compose-prod.yml up -d
+
+      - name: Show running containers
+        run: docker ps
+
+      - name: Check if all containers are up
+        run: |
+          docker compose ps
+          docker compose ps | grep "Up" || (echo "Some containers failed to start!" && exit 1)
+
+      - name: Shutdown all containers
+        if: always()
+        run: |
+          docker compose -f docker-compose-prod.yml down
+          docker compose down
