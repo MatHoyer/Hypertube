@@ -56,13 +56,21 @@ jobs:
       - name: Start App containers (docker-compose-prod.yml)
         run: docker compose -f docker-compose-prod.yml up -d
 
-      - name: Show running containers
-        run: docker ps
-
-      - name: Check if all containers are up
+      - name: Wait for App to be ready
         run: |
-          docker compose ps
-          docker compose ps | grep "Up" || (echo "Some containers failed to start!" && exit 1)
+          echo "Waiting for app to be healthy..."
+          for i in {1..60}; do
+            status=$(docker inspect --format='{{.State.Health.Status}}' app 2>/dev/null || echo "not found")
+            echo "Current status: $status"
+            if [ "$status" == "healthy" ]; then
+              echo "✅ App is healthy!"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "❌ App did not become healthy in time"
+          docker ps
+          exit 1
 
       - name: Shutdown all containers
         if: always()
