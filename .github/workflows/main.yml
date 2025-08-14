@@ -41,7 +41,7 @@ jobs:
         run: |
           echo "Waiting for hypertube_db to be healthy..."
           for i in {1..15}; do
-            status=$(docker inspect --format='{{.State.Health.Status}}' hypertube_db 2>/dev/null || echo "not found")
+            status=$(docker inspect --format='{{.State.Health.Status}}' ${{ secrets.POSTGRES_HOST }} 2>/dev/null || echo "not found")
             echo "Current status: $status"
             if [ "$status" == "healthy" ]; then
               echo "✅ Database is healthy!"
@@ -60,7 +60,7 @@ jobs:
         run: |
           echo "Waiting for app to be healthy..."
           for i in {1..60}; do
-            status=$(docker inspect --format='{{.State.Health.Status}}' app 2>/dev/null || echo "not found")
+            status=$(docker inspect --format='{{.State.Health.Status}}' hypertube-prod 2>/dev/null || echo "not found")
             echo "Current status: $status"
             if [ "$status" == "healthy" ]; then
               echo "✅ App is healthy!"
