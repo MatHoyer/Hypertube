@@ -14,7 +14,7 @@ export abstract class Scrapper<T extends Record<string, any>> {
   }
 
   createSearchParams() {
-    return new URLSearchParams(this.currentSearchParams).toString();
+    return "" + new URLSearchParams(this.currentSearchParams);
   }
 
   async defaultScrape() {

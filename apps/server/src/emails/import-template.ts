@@ -27,5 +27,5 @@ export const mailTemplate = (
     .replace(keyToReplace.content, content)
     .replace(keyToReplace.link, link)
     .replace(keyToReplace.linkText, linkText)
-    .replace(keyToReplace.year, year ?? getYear(new Date()).toString());
+    .replace(keyToReplace.year, year ?? "" + getYear(new Date()));
 };

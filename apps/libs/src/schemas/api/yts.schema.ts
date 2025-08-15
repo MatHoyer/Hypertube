@@ -36,7 +36,7 @@ export type TGetYtsFiltersSchemas = {
 
 export const getYtsMoviesSchemas = {
   searchParams: z.object({
-    page: z.coerce.number().int().positive(),
+    page: z.coerce.number().int().positive().default(1),
     ...ytsScrapperSearchParamsSchemas.shape,
   }),
   response: z.object({

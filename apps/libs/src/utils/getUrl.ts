@@ -77,7 +77,7 @@ export const getUrl = <T extends TRoute>(
   const serverUrl = withServerUrl ? getServerUrl() : "";
 
   const parsedSearchParams = searchParams
-    ? `?${new URLSearchParams(searchParams).toString()}`
+    ? `?${new URLSearchParams(searchParams)}`
     : "";
 
   return `${serverUrl}${

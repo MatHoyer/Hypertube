@@ -4,10 +4,10 @@ import {
   ytsGenres,
   ytsQualities,
 } from "@hypertube/libs";
-import type { Movie, Resolution } from "@prisma/client";
 import { writeFile } from "fs/promises";
 import z from "zod";
 
+import { TMovieSchema, TResolutionSchema } from "@hypertube/libs";
 import {
   createResolution,
   getResolutionPath,
@@ -80,7 +80,7 @@ export const getMovies = async (params: TYtsMoviesSearchParams = {}) => {
   const stringParams = Object.fromEntries(
     Object.entries(params)
       .filter(([_, value]) => value !== undefined)
-      .map(([key, value]) => [key, value.toString()])
+      .map(([key, value]) => [key, "" + value])
   );
   const searchParams = new URLSearchParams(stringParams);
   const url = `${ytsApiUrl}/list_movies.json${
@@ -152,8 +152,8 @@ export const getResolutionForMovie = async (
 };
 
 export const downloadResolution = async (
-  movieId: Movie["id"],
-  resolution: Resolution["resolution"]
+  movieId: TMovieSchema["id"],
+  resolution: TResolutionSchema["resolution"]
 ) => {
   const movie = await prisma.movie.findUnique({
     where: {
