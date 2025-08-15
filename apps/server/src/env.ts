@@ -16,6 +16,7 @@ const envSchema = z.object({
   RESEND_API_KEY: z.string(),
   RESEND_API_EMAIL_FROM: z.string(),
   RESEND_API_EMAIL_TO: z.string(),
+  VPN_IS_ACTIVE: z.coerce.boolean().default(false),
   NODE_ENV: z.enum(["DEV", "PROD"]).default("DEV"),
 });
 

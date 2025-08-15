@@ -7,6 +7,7 @@ import {
 import { Hono } from "hono";
 import { searchParamsParser } from "../../middlewares/searchParamsParser.js";
 import { urlParamsParser } from "../../middlewares/urlParamsParser.js";
+import { vpnChecker } from "../../middlewares/vpnChecker.js";
 import {
   getYtsDownloadMovie,
   getYtsFilters,
@@ -33,6 +34,7 @@ ytsRouter.get(
 
 ytsRouter.get(
   "/movie/:movieId/resolution/:resolution/subtitles/:subtitlesLanguage/download",
+  vpnChecker(),
   urlParamsParser(getYtsDownloadMovieSchemas.urlParams),
   getYtsDownloadMovie
 );
