@@ -36,7 +36,7 @@ export const getYtsMovies = async (
 ) => {
   const ytsScrapper = new YtsScrapper();
   const { page, ...rest } = c.get("validatedSearchParams");
-  ytsScrapper.currentSearchParams = { page: "" + page };
+  ytsScrapper.currentSearchParams = { page: page.toString() };
   ytsScrapper.updateUrlParams(rest);
   ytsScrapper.createUrl();
   const movies = await ytsScrapper.defaultScrape();
@@ -175,7 +175,7 @@ export const getYtsPagination = async (
 ) => {
   const ytsScrapper = new YtsScrapper();
   const { page, ...rest } = c.get("validatedSearchParams");
-  ytsScrapper.currentSearchParams = { page: "" + page };
+  ytsScrapper.currentSearchParams = { page: page.toString() };
   ytsScrapper.updateUrlParams(rest);
   ytsScrapper.createUrl();
   const maxPagination = await ytsScrapper.paginationScrape();
