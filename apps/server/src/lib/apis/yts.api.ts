@@ -1,5 +1,6 @@
 import {
   capitalizeAllWords,
+  convertObjectToSearchParams,
   ytsApiSortBy,
   ytsGenres,
   ytsQualities,
@@ -77,12 +78,7 @@ const ytsGetMoviesResponseSchema = z.object({
 });
 
 export const getMovies = async (params: TYtsMoviesSearchParams = {}) => {
-  const stringParams = Object.fromEntries(
-    Object.entries(params)
-      .filter(([_, value]) => value !== undefined)
-      .map(([key, value]) => [key, "" + value])
-  );
-  const searchParams = new URLSearchParams(stringParams);
+  const searchParams = convertObjectToSearchParams(params);
   const url = `${ytsApiUrl}/list_movies.json${
     searchParams ? `?${searchParams}` : ""
   }`;
@@ -116,10 +112,11 @@ const ytsMovieDetailsResponseSchema = z.object({
 });
 
 export const getMovieByImdbId = async (imdbId: string) => {
-  const searchParams = new URLSearchParams({
+  const params = {
     imdb_id: imdbId,
-    with_cast: "true",
-  });
+    with_cast: true,
+  };
+  const searchParams = convertObjectToSearchParams(params);
   const url = `${ytsApiUrl}/movie_details.json?${searchParams}`;
 
   const response = await fetch(url);

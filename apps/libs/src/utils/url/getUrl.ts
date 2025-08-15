@@ -1,6 +1,6 @@
-import { languageCodes } from "../const/global.const.js";
-import { ytsQualities } from "../const/yts.const.js";
-import type { TMovieSchema } from "../schemas/database/movie.schema.js";
+import { languageCodes } from "../../const/global.const.js";
+import { ytsQualities } from "../../const/yts.const.js";
+import { TMovieSchema } from "../../schemas/database/movie.schema.js";
 import { getServerUrl } from "./getServerUrl.js";
 
 export type TClientRouteDataRequirements = {

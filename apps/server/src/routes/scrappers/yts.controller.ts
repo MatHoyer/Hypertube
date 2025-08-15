@@ -12,8 +12,8 @@ import {
 import type { Context } from "hono";
 import {
   downloadResolution,
+  getMovieByImdbId,
   getMovieByLongTitle,
-  getResolutionsForMovie,
 } from "../../lib/apis/yts.api.js";
 import prisma from "../../lib/prisma.js";
 import {
@@ -36,7 +36,7 @@ export const getYtsMovies = async (
 ) => {
   const ytsScrapper = new YtsScrapper();
   const { page, ...rest } = c.get("validatedSearchParams");
-  ytsScrapper.currentSearchParams = { page: "" + page };
+  ytsScrapper.currentSearchParams = { page };
   ytsScrapper.updateUrlParams(rest);
   ytsScrapper.createUrl();
   const movies = await ytsScrapper.defaultScrape();
@@ -101,7 +101,9 @@ export const getYtsMovieData = async (
     return c.json({ error: "Movie not found" }, 404);
   }
 
-  const resolutions = await getResolutionsForMovie(movie.imdbId);
+  const movieData = await getMovieByImdbId(movie.imdbId);
+
+  const resolutions = movieData.torrents;
 
   const subtitlesData = await getSubtitlesDownloadLinks({
     imdbId: movie.imdbId,
@@ -175,7 +177,7 @@ export const getYtsPagination = async (
 ) => {
   const ytsScrapper = new YtsScrapper();
   const { page, ...rest } = c.get("validatedSearchParams");
-  ytsScrapper.currentSearchParams = { page: "" + page };
+  ytsScrapper.currentSearchParams = { page };
   ytsScrapper.updateUrlParams(rest);
   ytsScrapper.createUrl();
   const maxPagination = await ytsScrapper.paginationScrape();

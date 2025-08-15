@@ -1,10 +1,11 @@
 // Utils export
-export { getUrl } from "./utils/getUrl.js";
+export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
+export { getUrl } from "./utils/url/getUrl.js";
 export type {
   TApiRouteDataRequirements,
   TClientRouteDataRequirements,
-} from "./utils/getUrl.js";
-export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
+} from "./utils/url/getUrl.js";
+export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 
 // API Schemas export
 export {

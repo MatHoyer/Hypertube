@@ -1,9 +1,10 @@
+import { convertObjectToSearchParams } from "@hypertube/libs";
 import puppeteer, { Page } from "puppeteer";
 
 export abstract class Scrapper<T extends Record<string, any>> {
   url: string;
   currentUrl: string | null;
-  currentSearchParams: Record<string, string>;
+  currentSearchParams: Record<string, any>;
   currentUrlParams: T;
 
   protected constructor(url: string) {
@@ -14,7 +15,7 @@ export abstract class Scrapper<T extends Record<string, any>> {
   }
 
   createSearchParams() {
-    return "" + new URLSearchParams(this.currentSearchParams);
+    return convertObjectToSearchParams(this.currentSearchParams);
   }
 
   async defaultScrape() {
