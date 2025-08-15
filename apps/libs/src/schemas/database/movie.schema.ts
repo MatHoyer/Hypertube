@@ -1,16 +1,16 @@
 import { z } from "zod";
 import { DownloadStates } from "../../const/global.const.js";
 
-export const resolutionSchemas = z.object({
+export const resolutionSchema = z.object({
   id: z.uuid(),
 
   resolution: z.string(),
   size: z.string(),
   downloadState: z.enum(DownloadStates),
 });
-export type TResolutionSchemas = z.infer<typeof resolutionSchemas>;
+export type TResolutionSchema = z.infer<typeof resolutionSchema>;
 
-export const subtitleSchemas = z.object({
+export const subtitleSchema = z.object({
   id: z.uuid(),
 
   language: z.string(),
@@ -18,9 +18,9 @@ export const subtitleSchemas = z.object({
   downloadLink: z.url(),
   downloadState: z.enum(DownloadStates),
 });
-export type TSubtitleSchemas = z.infer<typeof subtitleSchemas>;
+export type TSubtitleSchema = z.infer<typeof subtitleSchema>;
 
-export const movieSchemas = z.object({
+export const movieSchema = z.object({
   id: z.uuid(),
 
   title: z.string(),
@@ -37,4 +37,4 @@ export const movieSchemas = z.object({
   mediumCoverImageUrl: z.url(),
   largeCoverImageUrl: z.url(),
 });
-export type TMovieSchemas = z.infer<typeof movieSchemas>;
+export type TMovieSchema = z.infer<typeof movieSchema>;

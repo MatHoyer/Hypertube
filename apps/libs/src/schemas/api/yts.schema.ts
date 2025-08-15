@@ -7,9 +7,9 @@ import {
   ytsYears,
 } from "../../const/yts.const.js";
 import {
-  movieSchemas,
-  resolutionSchemas,
-  subtitleSchemas,
+  movieSchema,
+  resolutionSchema,
+  subtitleSchema,
 } from "../database/movie.schema.js";
 
 export const ytsScrapperSearchParamsSchemas = z.object({
@@ -40,7 +40,7 @@ export const getYtsMoviesSchemas = {
     ...ytsScrapperSearchParamsSchemas.shape,
   }),
   response: z.object({
-    movies: z.array(movieSchemas),
+    movies: z.array(movieSchema),
   }),
 };
 export type TGetYtsMoviesSchemas = {
@@ -50,17 +50,17 @@ export type TGetYtsMoviesSchemas = {
 
 export const getYtsMovieDataSchemas = {
   urlParams: z.object({
-    id: movieSchemas.shape.id,
+    id: movieSchema.shape.id,
   }),
   response: z.object({
     resolutions: z.array(
-      resolutionSchemas.pick({
+      resolutionSchema.pick({
         resolution: true,
         size: true,
         downloadState: true,
       })
     ),
-    subtitles: z.array(subtitleSchemas),
+    subtitles: z.array(subtitleSchema),
   }),
 };
 export type TGetYtsMovieDataSchemas = {
@@ -84,10 +84,10 @@ export type TGetYtsPaginationSchemas = {
 
 export const getYtsDownloadMovieSchemas = {
   urlParams: z.object({
-    movieId: movieSchemas.shape.id,
-    resolution: resolutionSchemas.shape.resolution,
+    movieId: movieSchema.shape.id,
+    resolution: resolutionSchema.shape.resolution,
     subtitlesLanguage: z.union([
-      subtitleSchemas.shape.language,
+      subtitleSchema.shape.language,
       z.literal("none"),
     ]),
   }),

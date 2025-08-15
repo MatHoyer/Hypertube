@@ -1,4 +1,4 @@
-import type { Movie, Resolution } from "@prisma/client";
+import type { TMovieSchema, TResolutionSchema } from "@hypertube/libs";
 import * as fs from "fs";
 import { getMovieFolderPath } from "./movie";
 
@@ -6,8 +6,8 @@ const resolutionFolderName = "resolutions";
 const resolutionFilename = "resolution.torrent";
 
 export const getResolutionPath = (
-  movieId: Movie["id"],
-  resolution: Resolution["resolution"],
+  movieId: TMovieSchema["id"],
+  resolution: TResolutionSchema["resolution"],
   withFilename: boolean = false
 ) => {
   return `${getMovieFolderPath(movieId)}/${resolutionFolderName}/${resolution}${
@@ -16,8 +16,8 @@ export const getResolutionPath = (
 };
 
 export const createResolution = async (
-  movieId: Movie["id"],
-  resolution: Resolution["resolution"]
+  movieId: TMovieSchema["id"],
+  resolution: TResolutionSchema["resolution"]
 ) => {
   const resolutionFolderPath = getResolutionPath(movieId, resolution);
   await fs.promises.mkdir(resolutionFolderPath, {
@@ -26,8 +26,8 @@ export const createResolution = async (
 };
 
 export const deleteResolution = async (
-  movieId: Movie["id"],
-  resolution: Resolution["resolution"]
+  movieId: TMovieSchema["id"],
+  resolution: TResolutionSchema["resolution"]
 ) => {
   const resolutionFolderPath = getResolutionPath(movieId, resolution);
   await fs.promises.rm(resolutionFolderPath, { recursive: true });

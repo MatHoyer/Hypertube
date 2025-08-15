@@ -1,16 +1,16 @@
-import type { Movie } from "@prisma/client";
+import type { TMovieSchema } from "@hypertube/libs";
 import * as fs from "fs";
 
-export const getMovieFolderPath = (movieId: Movie["id"]) => {
+export const getMovieFolderPath = (movieId: TMovieSchema["id"]) => {
   return `./downloads/${movieId}`;
 };
 
-export const createMovieFolder = async (movieId: Movie["id"]) => {
+export const createMovieFolder = async (movieId: TMovieSchema["id"]) => {
   const movieFolderPath = getMovieFolderPath(movieId);
   await fs.promises.mkdir(movieFolderPath, { recursive: true });
 };
 
-export const deleteMovieFolder = async (movieId: Movie["id"]) => {
+export const deleteMovieFolder = async (movieId: TMovieSchema["id"]) => {
   const movieFolderPath = getMovieFolderPath(movieId);
   await fs.promises.rm(movieFolderPath, { recursive: true });
 };

@@ -1,5 +1,3 @@
-export { test } from "./lib/test.js";
-
 // Utils export
 export { getUrl } from "./utils/getUrl.js";
 export type {
@@ -28,14 +26,14 @@ export type {
 
 // Database Schemas export
 export {
-  movieSchemas,
-  resolutionSchemas,
-  subtitleSchemas,
+  movieSchema,
+  resolutionSchema,
+  subtitleSchema,
 } from "./schemas/database/movie.schema.js";
 export type {
-  TMovieSchemas,
-  TResolutionSchemas,
-  TSubtitleSchemas,
+  TMovieSchema,
+  TResolutionSchema,
+  TSubtitleSchema,
 } from "./schemas/database/movie.schema.js";
 
 // Const export

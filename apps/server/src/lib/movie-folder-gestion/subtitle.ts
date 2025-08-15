@@ -1,4 +1,4 @@
-import type { Movie, Subtitle } from "@prisma/client";
+import type { TMovieSchema, TSubtitleSchema } from "@hypertube/libs";
 import * as fs from "fs";
 import { getMovieFolderPath } from "./movie";
 
@@ -6,8 +6,8 @@ const subtitleFolderName = "subtitles";
 const subtitleFilename = "subtitles.zip";
 
 export const getSubtitlePath = (
-  movieId: Movie["id"],
-  language: Subtitle["language"],
+  movieId: TMovieSchema["id"],
+  language: TSubtitleSchema["language"],
   withFilename: boolean = false
 ) => {
   return `${getMovieFolderPath(movieId)}/${subtitleFolderName}/${language}${
@@ -16,8 +16,8 @@ export const getSubtitlePath = (
 };
 
 export const createSubtitle = async (
-  movieId: Movie["id"],
-  language: Subtitle["language"]
+  movieId: TMovieSchema["id"],
+  language: TSubtitleSchema["language"]
 ) => {
   const subtitleFolderPath = getSubtitlePath(movieId, language);
   await fs.promises.mkdir(subtitleFolderPath, {
@@ -26,8 +26,8 @@ export const createSubtitle = async (
 };
 
 export const deleteSubtitle = async (
-  movieId: Movie["id"],
-  language: Subtitle["language"]
+  movieId: TMovieSchema["id"],
+  language: TSubtitleSchema["language"]
 ) => {
   const subtitleFolderPath = getSubtitlePath(movieId, language);
   await fs.promises.rm(subtitleFolderPath, { recursive: true });

@@ -1,6 +1,6 @@
 import { languageCodes } from "../const/global.const.js";
 import { ytsQualities } from "../const/yts.const.js";
-import type { TMovieSchemas } from "../schemas/database/movie.schema.js";
+import type { TMovieSchema } from "../schemas/database/movie.schema.js";
 import { getServerUrl } from "./getServerUrl.js";
 
 export type TClientRouteDataRequirements = {
@@ -13,7 +13,7 @@ export type TApiRouteDataRequirements = {
     scrapper: "yts";
     endpoint?: "filters" | "movies" | "pagination" | "download";
     urlParams?: {
-      movieId: TMovieSchemas["id"];
+      movieId: TMovieSchema["id"];
       resolution: (typeof ytsQualities)[number];
       subtitlesLanguage: keyof typeof languageCodes | "none";
     };
