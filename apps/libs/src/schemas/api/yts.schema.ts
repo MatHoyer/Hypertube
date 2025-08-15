@@ -13,13 +13,13 @@ import {
 } from "../database/movie.schema.js";
 
 export const ytsScrapperSearchParamsSchemas = z.object({
-  keyword: z.union([z.string(), z.literal("0")]),
-  quality: z.enum(["all", ...Object.values(ytsQualities)]),
-  genre: z.enum(["all", ...Object.values(ytsGenres)]),
-  rating: z.number().int().positive().max(10),
-  sort_by: z.enum(ytsScrapperSortBy),
-  year: z.enum(ytsYears),
-  language: z.enum(["all", ...Object.keys(languageCodes)]),
+  keyword: z.union([z.literal("0"), z.string()]).default("0"),
+  quality: z.enum(["all", ...Object.values(ytsQualities)]).default("all"),
+  genre: z.enum(["all", ...Object.values(ytsGenres)]).default("all"),
+  rating: z.number().int().positive().max(10).default(0),
+  sort_by: z.enum(ytsScrapperSortBy).default("latest"),
+  year: z.enum(ytsYears).default("0"),
+  language: z.enum(["all", ...Object.keys(languageCodes)]).default("all"),
 });
 export type TYtsScrapperSearchParamsSchemas = z.infer<
   typeof ytsScrapperSearchParamsSchemas

@@ -20,26 +20,36 @@ import {
   downloadSubtitles,
   getSubtitlesDownloadLinks,
 } from "../../lib/scrappers/yifysubtitles.scrapper.js";
-import { YtsScrapper } from "../../lib/scrappers/yts.scrapper.js";
+import {
+  scrapeYtsFilters,
+  scrapeYtsMovies,
+  scrapeYtsPagination,
+} from "../../lib/scrappers/yts.scrapper.js";
 import type { TSearchParamsParser } from "../../middlewares/searchParamsParser.js";
 import type { TUrlParamsParser } from "../../middlewares/urlParamsParser.js";
 
 export const getYtsFilters = async (c: Context) => {
-  const ytsScrapper = new YtsScrapper();
-  const filters = await ytsScrapper.filterScrape();
+  const filters = await scrapeYtsFilters();
 
   return c.json(filters);
+};
+
+export const getYtsPagination = async (
+  c: Context<TSearchParamsParser<TGetYtsPaginationSchemas["searchParams"]>>
+) => {
+  const { page, ...rest } = c.get("validatedSearchParams");
+
+  const maxPagination = await scrapeYtsPagination(rest, page);
+
+  return c.json(getYtsPaginationSchemas.response.parse({ maxPagination }));
 };
 
 export const getYtsMovies = async (
   c: Context<TSearchParamsParser<TGetYtsMoviesSchemas["searchParams"]>>
 ) => {
-  const ytsScrapper = new YtsScrapper();
   const { page, ...rest } = c.get("validatedSearchParams");
-  ytsScrapper.currentSearchParams = { page };
-  ytsScrapper.updateUrlParams(rest);
-  ytsScrapper.createUrl();
-  const movies = await ytsScrapper.defaultScrape();
+
+  const movies = await scrapeYtsMovies(rest, page);
 
   const movieData = (
     await Promise.all(
@@ -172,19 +182,6 @@ export const getYtsMovieData = async (
   );
 };
 
-export const getYtsPagination = async (
-  c: Context<TSearchParamsParser<TGetYtsPaginationSchemas["searchParams"]>>
-) => {
-  const ytsScrapper = new YtsScrapper();
-  const { page, ...rest } = c.get("validatedSearchParams");
-  ytsScrapper.currentSearchParams = { page };
-  ytsScrapper.updateUrlParams(rest);
-  ytsScrapper.createUrl();
-  const maxPagination = await ytsScrapper.paginationScrape();
-
-  return c.json(getYtsPaginationSchemas.response.parse({ maxPagination }));
-};
-
 export const getYtsDownloadMovie = async (
   c: Context<TUrlParamsParser<TGetYtsDownloadMovieSchemas["urlParams"]>>
 ) => {
@@ -196,14 +193,12 @@ export const getYtsDownloadMovie = async (
       id: movieId,
     },
     include: {
-      resolutions: {
-        where: {
-          resolution,
-        },
-      },
       subtitles: {
         where: {
           language: subtitlesLanguage,
+        },
+        orderBy: {
+          rating: "desc",
         },
       },
     },
@@ -212,10 +207,10 @@ export const getYtsDownloadMovie = async (
     return c.json({ error: "Movie not found" }, 404);
   }
 
-  downloadResolution(movieId, resolution);
+  downloadResolution(movie.id, resolution);
   if (subtitlesLanguage !== "none") {
-    await downloadSubtitles(movie.subtitles[0].id);
+    downloadSubtitles(movie.subtitles[0].id);
   }
 
-  return c.json({ message: "Movie downloaded" });
+  return c.json({ message: "Movie downloading" });
 };
