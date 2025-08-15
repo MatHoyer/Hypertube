@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 import z from "zod";
 
 dotenv.config({ path: "../../.env" });
@@ -16,7 +16,7 @@ const envSchema = z.object({
   RESEND_API_KEY: z.string(),
   RESEND_API_EMAIL_FROM: z.string(),
   RESEND_API_EMAIL_TO: z.string(),
-  NODE_ENV: z.enum(["DEV", "PROD"]),
+  NODE_ENV: z.enum(["DEV", "PROD"]).default("DEV"),
 });
 
 export const env = envSchema.parse({

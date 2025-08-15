@@ -1,5 +1,5 @@
 import type { Movie, Subtitle } from "@prisma/client";
-import fs from "fs";
+import * as fs from "fs";
 import { getMovieFolderPath } from "./movie";
 
 const subtitleFolderName = "subtitles";

@@ -1,6 +1,6 @@
 import { languageCodes } from "../const/global.const.js";
 import { ytsQualities } from "../const/yts.const.js";
-import { TMovieSchemas } from "../schemas/database/movie.schema.js";
+import type { TMovieSchemas } from "../schemas/database/movie.schema.js";
 import { getServerUrl } from "./getServerUrl.js";
 
 export type TClientRouteDataRequirements = {
@@ -36,9 +36,9 @@ const routes: {
   "client-home": () => "",
 
   // API routes
-  "api-health": () => "/api/health",
+  "api-health": () => "api/health",
   "api-scrappers": ({ scrapper, endpoint, urlParams }) => {
-    const baseUrl = `/api/scrappers/${scrapper}`;
+    const baseUrl = `api/scrappers/${scrapper}`;
 
     if (endpoint === "download") {
       if (!urlParams) {

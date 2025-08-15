@@ -1,5 +1,5 @@
 import type { Movie } from "@prisma/client";
-import fs from "fs";
+import * as fs from "fs";
 
 export const getMovieFolderPath = (movieId: Movie["id"]) => {
   return `./downloads/${movieId}`;

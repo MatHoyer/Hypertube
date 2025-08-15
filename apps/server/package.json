@@ -1,17 +1,16 @@
 {
   "name": "server",
-  "type": "module",
   "prisma": {
     "schema": "./prisma/schema"
   },
   "scripts": {
-    "clear": "rm -rf node_modules dist",
+    "clear": "rm -rf node_modules dist prisma/schema/migrations",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/server/src/index.js",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx dotenv -e ../../.env -- npx prisma migrate dev --name init",
-    "prisma:migrate:reset": "npx dotenv -e ../../.env -- npx prisma migrate reset",
+    "prisma:migrate:reset": "npx dotenv -e ../../.env -- npx prisma migrate reset --force",
     "prisma:studio": "npx dotenv -e ../../.env -- npx prisma studio"
   },
   "dependencies": {

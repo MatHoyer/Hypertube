@@ -1,5 +1,5 @@
 import type { Subtitle } from "@prisma/client";
-import path from "path";
+import * as path from "path";
 import puppeteer from "puppeteer";
 import { getSubtitlePath } from "../movie-folder-gestion/subtitle";
 import { renameFile, waitFile } from "../movie-folder-gestion/utils";
