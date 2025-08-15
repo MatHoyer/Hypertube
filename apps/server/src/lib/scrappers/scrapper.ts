@@ -13,10 +13,6 @@ export abstract class Scrapper<T extends Record<string, any>> {
     this.currentUrlParams = {} as T;
   }
 
-  protected async init() {
-    await this.filterScrape();
-  }
-
   createSearchParams() {
     return new URLSearchParams(this.currentSearchParams).toString();
   }

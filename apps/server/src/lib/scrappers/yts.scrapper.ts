@@ -24,12 +24,6 @@ export class YtsScrapper extends Scrapper<TYtsScrapperSearchParamsSchemas> {
     this.currentUrlParams = defaultYtsFilters;
   }
 
-  static async create() {
-    const instance = new YtsScrapper();
-    await instance.init();
-    return instance;
-  }
-
   updateUrlParams(params: TYtsScrapperSearchParamsSchemas) {
     this.currentUrlParams = { ...this.currentUrlParams, ...params };
   }
