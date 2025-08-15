@@ -20,6 +20,15 @@ export const subtitleSchema = z.object({
 });
 export type TSubtitleSchema = z.infer<typeof subtitleSchema>;
 
+export const actorSchema = z.object({
+  id: z.uuid(),
+
+  imdbId: z.string(),
+  name: z.string(),
+  imageUrl: z.url().optional(),
+});
+export type TMovieActorSchema = z.infer<typeof actorSchema>;
+
 export const movieSchema = z.object({
   id: z.uuid(),
 

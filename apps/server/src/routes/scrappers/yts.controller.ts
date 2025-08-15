@@ -113,6 +113,55 @@ export const getYtsMovieData = async (
 
   const movieData = await getMovieByImdbId(movie.imdbId);
 
+  const actors = await Promise.all(
+    movieData.cast.map(async (actor) => {
+      return await prisma.actor.upsert({
+        where: { imdbId: actor.imdb_code },
+        update: {
+          name: actor.name,
+          imageUrl: actor.url_small_image,
+        },
+        create: {
+          imdbId: actor.imdb_code,
+          name: actor.name,
+          imageUrl: actor.url_small_image,
+        },
+      });
+    })
+  );
+
+  const resolvedActors = movieData.cast
+    .map((actor) => {
+      const dbActor = actors.find(
+        (dbActor) => dbActor.imdbId === actor.imdb_code
+      );
+      if (!dbActor) return null;
+
+      return {
+        ...dbActor,
+        characterName: actor.character_name,
+      };
+    })
+    .filter((actor) => actor !== null);
+
+  const movieActors = await Promise.all(
+    resolvedActors.map(async (actor) => {
+      return await prisma.movieActor.upsert({
+        where: {
+          movieId_actorId: { movieId: movie.id, actorId: actor.id },
+        },
+        update: {
+          characterName: actor.characterName,
+        },
+        create: {
+          movieId: movie.id,
+          actorId: actor.id,
+          characterName: actor.characterName,
+        },
+      });
+    })
+  );
+
   const resolutions = movieData.torrents;
 
   const subtitlesData = await getSubtitlesDownloadLinks({
@@ -151,6 +200,8 @@ export const getYtsMovieData = async (
     },
   });
 
+  console.log(resolvedActors);
+
   return c.json(
     getYtsMovieDataSchemas.response.parse({
       resolutions: resolutions.map((resolution) => {
@@ -166,6 +217,7 @@ export const getYtsMovieData = async (
           }
         );
       }),
+      actors: resolvedActors,
       subtitles: subtitles.map((subtitle) => {
         const dbSubtitle = dbSubtitles.find(
           (dbSubtitle) => dbSubtitle.language === subtitle.language

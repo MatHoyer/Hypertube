@@ -46,6 +46,13 @@ const ytsMovieTorrentSchema = z.object({
   size: z.string(),
 });
 
+const ytsMovieActorSchema = z.object({
+  name: z.string(),
+  character_name: z.string().optional(),
+  imdb_code: z.string(),
+  url_small_image: z.string().optional(),
+});
+
 const ytsMovieSchema = z.object({
   id: z.number(),
   url: z.url(),
@@ -68,13 +75,14 @@ const ytsMovieSchema = z.object({
   medium_cover_image: z.string(),
   large_cover_image: z.string(),
   torrents: z.array(ytsMovieTorrentSchema),
+  cast: z.array(ytsMovieActorSchema),
 });
 
 const ytsGetMoviesResponseSchema = z.object({
   movie_count: z.number(),
   limit: z.number(),
   page_number: z.number(),
-  movies: z.array(ytsMovieSchema),
+  movies: z.array(ytsMovieSchema.omit({ cast: true })),
 });
 
 export const getMovies = async (params: TYtsMoviesSearchParams = {}) => {

@@ -7,6 +7,7 @@ import {
   ytsYears,
 } from "../../const/yts.const.js";
 import {
+  actorSchema,
   movieSchema,
   resolutionSchema,
   subtitleSchema,
@@ -58,6 +59,12 @@ export const getYtsMovieDataSchemas = {
         resolution: true,
         size: true,
         downloadState: true,
+      })
+    ),
+    actors: z.array(
+      z.object({
+        ...actorSchema.shape,
+        characterName: z.string().optional(),
       })
     ),
     subtitles: z.array(subtitleSchema),

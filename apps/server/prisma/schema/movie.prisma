@@ -35,6 +35,17 @@ model Subtitle {
   updatedAt DateTime @updatedAt
 }
 
+model Actor {
+  id String @id @default(uuid())
+
+  imdbId String @unique
+  name   String
+
+  imageUrl String?
+
+  movies MovieActor[]
+}
+
 model Movie {
   id String @id @default(uuid())
 
@@ -54,9 +65,22 @@ model Movie {
 
   resolutions Resolution[]
   subtitles   Subtitle[]
+  actors      MovieActor[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   usedAt DateTime @default(now())
+}
+
+model MovieActor {
+  movie   Movie  @relation(fields: [movieId], references: [id])
+  movieId String
+
+  actor   Actor  @relation(fields: [actorId], references: [id])
+  actorId String
+
+  characterName String?
+
+  @@id([movieId, actorId])
 }

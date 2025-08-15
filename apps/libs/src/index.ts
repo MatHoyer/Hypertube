@@ -27,11 +27,13 @@ export type {
 
 // Database Schemas export
 export {
+  actorSchema,
   movieSchema,
   resolutionSchema,
   subtitleSchema,
 } from "./schemas/database/movie.schema.js";
 export type {
+  TMovieActorSchema,
   TMovieSchema,
   TResolutionSchema,
   TSubtitleSchema,
