@@ -1,0 +1,86 @@
+enum DownloadState {
+  NOT_DOWNLOADED
+  DOWNLOADING
+  DOWNLOADED
+}
+
+model Resolution {
+  id String @id @default(uuid())
+
+  resolution    String
+  size          String
+  downloadState DownloadState @default(NOT_DOWNLOADED)
+
+  Movie   Movie?  @relation(fields: [movieId], references: [id])
+  movieId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([movieId, resolution])
+}
+
+model Subtitle {
+  id String @id @default(uuid())
+
+  language      String
+  rating        Int
+  downloadLink  String        @unique
+  downloadState DownloadState @default(NOT_DOWNLOADED)
+
+  Movie   Movie?  @relation(fields: [movieId], references: [id])
+  movieId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Actor {
+  id String @id @default(uuid())
+
+  imdbId String @unique
+  name   String
+
+  imageUrl String?
+
+  movies MovieActor[]
+}
+
+model Movie {
+  id String @id @default(uuid())
+
+  title         String
+  description   String?
+  imdbId        String   @unique
+  year          Int
+  rating        Float
+  genres        String[]
+  language      String
+  ytTrailerCode String?
+
+  backgroundImageUrl  String
+  smallCoverImageUrl  String
+  mediumCoverImageUrl String
+  largeCoverImageUrl  String
+
+  resolutions Resolution[]
+  subtitles   Subtitle[]
+  actors      MovieActor[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  usedAt DateTime @default(now())
+}
+
+model MovieActor {
+  movie   Movie  @relation(fields: [movieId], references: [id])
+  movieId String
+
+  actor   Actor  @relation(fields: [actorId], references: [id])
+  actorId String
+
+  characterName String?
+
+  @@id([movieId, actorId])
+}
