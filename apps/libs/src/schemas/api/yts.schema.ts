@@ -54,6 +54,7 @@ export const getYtsMovieDataSchemas = {
     id: movieSchema.shape.id,
   }),
   response: z.object({
+    ...movieSchema.shape,
     resolutions: z.array(
       resolutionSchema.pick({
         resolution: true,

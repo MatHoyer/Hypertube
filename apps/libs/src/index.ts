@@ -29,12 +29,18 @@ export type {
 export {
   actorSchema,
   movieSchema,
+  movieWithResolutionsAndSubtitlesSchema,
+  movieWithResolutionsSchema,
+  movieWithSubtitlesSchema,
   resolutionSchema,
   subtitleSchema,
 } from "./schemas/database/movie.schema.js";
 export type {
   TMovieActorSchema,
   TMovieSchema,
+  TMovieWithResolutionsAndSubtitlesSchema,
+  TMovieWithResolutionsSchema,
+  TMovieWithSubtitlesSchema,
   TResolutionSchema,
   TSubtitleSchema,
 } from "./schemas/database/movie.schema.js";

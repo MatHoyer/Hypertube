@@ -8,7 +8,6 @@ import {
 import { writeFile } from "fs/promises";
 import z from "zod";
 
-import { TMovieSchema, TResolutionSchema } from "@hypertube/libs";
 import {
   createResolution,
   getResolutionPath,
@@ -156,100 +155,82 @@ export const getResolutionForMovie = async (
   return torrent;
 };
 
-export const downloadResolution = async (
-  movieId: TMovieSchema["id"],
-  resolution: TResolutionSchema["resolution"]
-) => {
-  const movie = await prisma.movie.findUnique({
-    where: {
-      id: movieId,
-    },
-    include: {
-      resolutions: {
-        where: {
-          resolution,
+export const downloadResolution = async (movie: {
+  id: string;
+  imdbId: string;
+  resolution: string;
+}) => {
+  try {
+    const resolutionData = await getResolutionForMovie(
+      movie.imdbId,
+      movie.resolution
+    );
+
+    const res = await fetch(resolutionData.url);
+
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    await createResolution(movie.id, movie.resolution);
+    // DL the torrent content before make a resolution downloaded
+    await prisma.resolution.upsert({
+      where: {
+        movieId_resolution: {
+          movieId: movie.id,
+          resolution: movie.resolution,
         },
       },
-    },
-  });
-  if (!movie) {
-    throw new Error("Movie not found");
-  }
+      create: {
+        movieId: movie.id,
+        resolution: movie.resolution,
+        size: resolutionData.size,
+        downloadState: "DOWNLOADING",
+      },
+      update: {
+        size: resolutionData.size,
+        downloadState: "DOWNLOADING",
+      },
+    });
 
-  if (movie.resolutions.length === 0) {
-    try {
-      const resolutionData = await getResolutionForMovie(
-        movie.imdbId,
-        resolution
-      );
+    const outputPath = getResolutionPath(movie.id, movie.resolution, true);
+    await writeFile(outputPath, buffer);
 
-      const res = await fetch(resolutionData.url);
-
-      const arrayBuffer = await res.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
-
-      await createResolution(movieId, resolution);
-      // DL the torrent content before make a resolution downloaded
-      await prisma.resolution.upsert({
-        where: {
-          movieId_resolution: {
-            movieId,
-            resolution,
-          },
+    await prisma.resolution.upsert({
+      where: {
+        movieId_resolution: {
+          movieId: movie.id,
+          resolution: movie.resolution,
         },
-        create: {
-          movieId,
-          resolution,
-          size: resolutionData.size,
-          downloadState: "DOWNLOADING",
+      },
+      create: {
+        movieId: movie.id,
+        resolution: movie.resolution,
+        size: resolutionData.size,
+        downloadState: "DOWNLOADED",
+      },
+      update: {
+        size: resolutionData.size,
+        downloadState: "DOWNLOADED",
+      },
+    });
+  } catch (error) {
+    await prisma.resolution.upsert({
+      where: {
+        movieId_resolution: {
+          movieId: movie.id,
+          resolution: movie.resolution,
         },
-        update: {
-          size: resolutionData.size,
-          downloadState: "DOWNLOADING",
-        },
-      });
-
-      const outputPath = getResolutionPath(movieId, resolution, true);
-      await writeFile(outputPath, buffer);
-
-      await prisma.resolution.upsert({
-        where: {
-          movieId_resolution: {
-            movieId,
-            resolution,
-          },
-        },
-        create: {
-          movieId,
-          resolution,
-          size: resolutionData.size,
-          downloadState: "DOWNLOADED",
-        },
-        update: {
-          size: resolutionData.size,
-          downloadState: "DOWNLOADED",
-        },
-      });
-    } catch (error) {
-      await prisma.resolution.upsert({
-        where: {
-          movieId_resolution: {
-            movieId,
-            resolution,
-          },
-        },
-        create: {
-          movieId,
-          resolution,
-          size: "0B",
-          downloadState: "NOT_DOWNLOADED",
-        },
-        update: {
-          downloadState: "NOT_DOWNLOADED",
-        },
-      });
-    }
-  } else {
-    console.log("Resolution already downloaded");
+      },
+      create: {
+        movieId: movie.id,
+        resolution: movie.resolution,
+        size: "0B",
+        downloadState: "NOT_DOWNLOADED",
+      },
+      update: {
+        downloadState: "NOT_DOWNLOADED",
+      },
+    });
+    console.error(error);
   }
 };

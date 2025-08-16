@@ -25,7 +25,7 @@ export const actorSchema = z.object({
 
   imdbId: z.string(),
   name: z.string(),
-  imageUrl: z.url().optional(),
+  imageUrl: z.url().nullable(),
 });
 export type TMovieActorSchema = z.infer<typeof actorSchema>;
 
@@ -33,13 +33,13 @@ export const movieSchema = z.object({
   id: z.uuid(),
 
   title: z.string(),
-  description: z.string().optional(),
+  description: z.string().nullable(),
   imdbId: z.string(),
   year: z.coerce.number().int().positive(),
-  rating: z.coerce.number().int().positive(),
+  rating: z.coerce.number().min(0).max(10).positive(),
   genres: z.array(z.string()),
   language: z.string(),
-  ytTrailerCode: z.string().optional(),
+  ytTrailerCode: z.string().nullable(),
 
   backgroundImageUrl: z.url(),
   smallCoverImageUrl: z.url(),
@@ -47,3 +47,25 @@ export const movieSchema = z.object({
   largeCoverImageUrl: z.url(),
 });
 export type TMovieSchema = z.infer<typeof movieSchema>;
+
+export const movieWithResolutionsSchema = movieSchema.extend({
+  resolutions: z.array(resolutionSchema),
+});
+export type TMovieWithResolutionsSchema = z.infer<
+  typeof movieWithResolutionsSchema
+>;
+
+export const movieWithSubtitlesSchema = movieSchema.extend({
+  subtitles: z.array(subtitleSchema),
+});
+export type TMovieWithSubtitlesSchema = z.infer<
+  typeof movieWithSubtitlesSchema
+>;
+
+export const movieWithResolutionsAndSubtitlesSchema =
+  movieWithResolutionsSchema.extend({
+    subtitles: z.array(subtitleSchema),
+  });
+export type TMovieWithResolutionsAndSubtitlesSchema = z.infer<
+  typeof movieWithResolutionsAndSubtitlesSchema
+>;

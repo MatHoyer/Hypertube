@@ -3,7 +3,6 @@ import * as path from "path";
 import puppeteer from "puppeteer";
 import { getSubtitlePath } from "../movie-folder-gestion/subtitle";
 import { renameFile, waitFile } from "../movie-folder-gestion/utils";
-import prisma from "../prisma";
 
 const yifysubtitlesUrl = "https://yifysubtitles.ch/movie-imdb/";
 
@@ -53,16 +52,7 @@ export const getSubtitlesDownloadLinks = async ({
   );
 };
 
-export const downloadSubtitles = async (subtitlesId: Subtitle["id"]) => {
-  const subtitle = await prisma.subtitle.findUnique({
-    where: {
-      id: subtitlesId,
-    },
-  });
-  if (!subtitle) {
-    throw new Error("Subtitle not found");
-  }
-
+export const downloadSubtitles = async (subtitles: Subtitle) => {
   const browser = await puppeteer.launch();
 
   const page = await browser.newPage();
@@ -70,10 +60,10 @@ export const downloadSubtitles = async (subtitlesId: Subtitle["id"]) => {
   const client = await page.createCDPSession();
   await client.send("Page.setDownloadBehavior", {
     behavior: "allow",
-    downloadPath: getSubtitlePath(subtitle.movieId!, subtitle.language),
+    downloadPath: getSubtitlePath(subtitles.movieId!, subtitles.language),
   });
 
-  await page.goto(subtitle.downloadLink);
+  await page.goto(subtitles.downloadLink);
 
   await page.waitForSelector("a.btn-icon.download-subtitle");
 
@@ -90,7 +80,7 @@ export const downloadSubtitles = async (subtitlesId: Subtitle["id"]) => {
   // Download the file
   await page.click("a.btn-icon.download-subtitle");
 
-  const downloadDir = getSubtitlePath(subtitle.movieId!, subtitle.language);
+  const downloadDir = getSubtitlePath(subtitles.movieId!, subtitles.language);
   const originalPath = path.join(downloadDir, originalFilename);
 
   // Wait for original file to download

@@ -144,7 +144,7 @@ export const getYtsMovieData = async (
     })
     .filter((actor) => actor !== null);
 
-  const movieActors = await Promise.all(
+  await Promise.all(
     resolvedActors.map(async (actor) => {
       return await prisma.movieActor.upsert({
         where: {
@@ -200,10 +200,11 @@ export const getYtsMovieData = async (
     },
   });
 
-  console.log(resolvedActors);
+  console.log(movie.rating);
 
   return c.json(
     getYtsMovieDataSchemas.response.parse({
+      ...movie,
       resolutions: resolutions.map((resolution) => {
         const dbResolution = dbResolutions.find(
           (dbResolution) => dbResolution.resolution === resolution.quality
@@ -245,6 +246,11 @@ export const getYtsDownloadMovie = async (
       id: movieId,
     },
     include: {
+      resolutions: {
+        where: {
+          resolution,
+        },
+      },
       subtitles: {
         where: {
           language: subtitlesLanguage,
@@ -259,10 +265,43 @@ export const getYtsDownloadMovie = async (
     return c.json({ error: "Movie not found" }, 404);
   }
 
-  downloadResolution(movie.id, resolution);
-  if (subtitlesLanguage !== "none") {
-    downloadSubtitles(movie.subtitles[0].id);
+  let returnMessage = {
+    message: "Movie downloading",
+    subtitles: {
+      message: "Subtitles downloading",
+      language: "",
+    },
+    resolutions: {
+      message: "Resolution downloading",
+      resolution: "",
+    },
+  };
+
+  if (movie.subtitles.length === 0 && subtitlesLanguage !== "none") {
+    returnMessage.subtitles.message = "Subtitle not found, skipping";
+  } else {
+    returnMessage.subtitles.language = movie.subtitles[0].language;
+    try {
+      downloadSubtitles(movie.subtitles[0]);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  return c.json({ message: "Movie downloading" });
+  if (movie.resolutions.length === 0) {
+    returnMessage.resolutions.resolution = resolution;
+    try {
+      downloadResolution({
+        id: movie.id,
+        imdbId: movie.imdbId,
+        resolution: resolution,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  } else {
+    returnMessage.resolutions.message = "Resolution already downloaded";
+  }
+
+  return c.json(returnMessage);
 };
