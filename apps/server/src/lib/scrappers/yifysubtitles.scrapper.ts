@@ -1,4 +1,4 @@
-import type { Subtitle } from "@prisma/client";
+import { TSubtitleSchema } from "@hypertube/libs";
 import * as path from "path";
 import puppeteer from "puppeteer";
 import { getSubtitlePath } from "../movie-folder-gestion/subtitle";
@@ -52,7 +52,9 @@ export const getSubtitlesDownloadLinks = async ({
   );
 };
 
-export const downloadSubtitles = async (subtitles: Subtitle) => {
+export const downloadSubtitles = async (
+  subtitles: TSubtitleSchema & { movieId: string }
+) => {
   const browser = await puppeteer.launch();
 
   const page = await browser.newPage();
@@ -60,7 +62,7 @@ export const downloadSubtitles = async (subtitles: Subtitle) => {
   const client = await page.createCDPSession();
   await client.send("Page.setDownloadBehavior", {
     behavior: "allow",
-    downloadPath: getSubtitlePath(subtitles.movieId!, subtitles.language),
+    downloadPath: getSubtitlePath(subtitles.movieId, subtitles.language),
   });
 
   await page.goto(subtitles.downloadLink);
@@ -80,7 +82,7 @@ export const downloadSubtitles = async (subtitles: Subtitle) => {
   // Download the file
   await page.click("a.btn-icon.download-subtitle");
 
-  const downloadDir = getSubtitlePath(subtitles.movieId!, subtitles.language);
+  const downloadDir = getSubtitlePath(subtitles.movieId, subtitles.language);
   const originalPath = path.join(downloadDir, originalFilename);
 
   // Wait for original file to download

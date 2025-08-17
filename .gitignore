@@ -10,6 +10,7 @@ dist/
 # Back
 **/src/generated/prisma
 **/prisma/**/migrations
+**/prisma/generated
 
 # Downloads
 **/downloads/**/*/*/*
