@@ -58,17 +58,27 @@ type TSearchParams =
   | URLSearchParams;
 
 type TGetUrlArgs<T extends TRoute> = TRouteDataMap<T> extends undefined
-  ? { withServerUrl?: boolean; searchParams?: TSearchParams }
+  ? {
+      withServerUrl?: boolean;
+      searchParams?: TSearchParams;
+      removeForwardSlash?: boolean;
+    }
   : TRouteDataMap<T> & {
       withServerUrl?: boolean;
       searchParams?: TSearchParams;
+      removeForwardSlash?: boolean;
     };
 
 export const getUrl = <T extends TRoute>(
   route: T,
   params?: TGetUrlArgs<T>
 ): string => {
-  const { withServerUrl = false, searchParams, ...rawParams } = params || {};
+  const {
+    withServerUrl = false,
+    searchParams,
+    removeForwardSlash = true,
+    ...rawParams
+  } = params || {};
 
   const routeParams = rawParams as TRouteDataMap<T>;
   const routeFn = routes[route];
@@ -80,5 +90,7 @@ export const getUrl = <T extends TRoute>(
     ? `?${new URLSearchParams(searchParams)}`
     : "";
 
-  return `${serverUrl}${computedUrl}${parsedSearchParams}`;
+  return `${serverUrl}${
+    removeForwardSlash ? computedUrl.slice(1) : computedUrl
+  }${parsedSearchParams}`;
 };
