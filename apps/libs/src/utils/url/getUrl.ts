@@ -33,21 +33,21 @@ const routes: {
   [T in TRoute]: (params: TRouteDataMap<T>) => string;
 } = {
   // Client routes
-  "client-home": () => "",
+  "client-home": () => "/",
 
   // API routes
-  "api-health": () => "api/health",
+  "api-health": () => "/api/health",
   "api-scrappers": ({ scrapper, endpoint, urlParams }) => {
-    const baseUrl = `api/scrappers/${scrapper}`;
+    const baseUrl = `/api/scrappers/${scrapper}`;
 
     if (endpoint === "download") {
       if (!urlParams) {
         throw new Error("Url params are required for download endpoint");
       }
-      return `${baseUrl}/movie/${urlParams.movieId}/resolution/${urlParams.resolution}/subtitles/${urlParams.subtitlesLanguage}/${endpoint}`;
+      return `/${baseUrl}/movie/${urlParams.movieId}/resolution/${urlParams.resolution}/subtitles/${urlParams.subtitlesLanguage}/${endpoint}`;
     }
 
-    return endpoint ? `${baseUrl}/${endpoint}` : baseUrl;
+    return endpoint ? `/${baseUrl}/${endpoint}` : baseUrl;
   },
 };
 
@@ -80,7 +80,5 @@ export const getUrl = <T extends TRoute>(
     ? `?${new URLSearchParams(searchParams)}`
     : "";
 
-  return `${serverUrl}${
-    serverUrl ? computedUrl.slice(1) : computedUrl
-  }${parsedSearchParams}`;
+  return `${serverUrl}${computedUrl}${parsedSearchParams}`;
 };
