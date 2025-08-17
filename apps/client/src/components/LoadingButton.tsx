@@ -63,19 +63,21 @@ export const LoadingButton = ({
       </motion.span>
 
       {/* Loading animation */}
-      <motion.span
-        initial={{
-          opacity: 0,
-          y: 10,
-        }}
-        animate={{
-          opacity: loading ? 1 : 0,
-          y: loading ? 0 : 10,
-        }}
-        className="absolute inset-0 flex items-center justify-center"
-      >
-        <AppLoader size={20} />
-      </motion.span>
+      {isAnimating && (
+        <motion.span
+          initial={{
+            opacity: 0,
+            y: 10,
+          }}
+          animate={{
+            opacity: loading ? 1 : 0,
+            y: loading ? 0 : 10,
+          }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <AppLoader size={20} />
+        </motion.span>
+      )}
 
       {/* Success animation */}
       {success !== undefined && (
