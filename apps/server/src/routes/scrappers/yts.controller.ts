@@ -181,6 +181,7 @@ export const getYtsMovieData = async (
             downloadLink: subtitle.link,
             language: subtitle.language,
             rating: subtitle.rating,
+            movieId: movie.id,
           },
         })
     )
