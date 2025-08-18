@@ -9,6 +9,7 @@ export type TClientRouteDataRequirements = {
 
 export type TApiRouteDataRequirements = {
   "api-health": undefined;
+  "api-auth": undefined;
   "api-scrappers": {
     scrapper: "yts";
     endpoint?: "filters" | "movies" | "pagination" | "download";
@@ -37,6 +38,7 @@ const routes: {
 
   // API routes
   "api-health": () => "/api/health",
+  "api-auth": () => "/api/auth",
   "api-scrappers": ({ scrapper, endpoint, urlParams }) => {
     const baseUrl = `/api/scrappers/${scrapper}`;
 

@@ -1,6 +1,7 @@
 // Utils export
 export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
 export { getUrl } from "./utils/url/getUrl.js";
+export { getServerUrl } from "./utils/url/getServerUrl.js";
 export type {
   TApiRouteDataRequirements,
   TClientRouteDataRequirements,
