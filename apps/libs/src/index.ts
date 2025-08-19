@@ -1,5 +1,5 @@
 // Utils export
-export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
+export { capitalize, capitalizeAllWords, isInt } from "./utils/string.utils.js";
 export { getUrl } from "./utils/url/getUrl.js";
 export type {
   TApiRouteDataRequirements,
