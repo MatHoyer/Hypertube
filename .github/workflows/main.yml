@@ -39,17 +39,21 @@ jobs:
       - name: Wait for DBs to be ready
         run: |
           echo "Waiting for hypertube_db to be healthy..."
+
+          docker logs -f ${{ secrets.POSTGRES_HOST }} &
+          LOGS_PID=$!
+          
           for i in {1..15}; do
             status=$(docker inspect --format='{{.State.Health.Status}}' ${{ secrets.POSTGRES_HOST }} 2>/dev/null || echo "not found")
-            echo "Current status: $status"
             if [ "$status" == "healthy" ]; then
               echo "✅ Database is healthy!"
+              kill $LOGS_PID
               exit 0
             fi
             sleep 2
           done
           echo "❌ Database did not become healthy in time"
-          docker ps
+          kill $LOGS_PID
           exit 1
 
       - name: Start App containers (docker-compose-prod.yml)
@@ -58,17 +62,21 @@ jobs:
       - name: Wait for App to be ready
         run: |
           echo "Waiting for app to be healthy..."
+
+          docker logs -f hypertube-prod &
+          LOGS_PID=$!
+          
           for i in {1..60}; do
             status=$(docker inspect --format='{{.State.Health.Status}}' hypertube-prod 2>/dev/null || echo "not found")
-            echo "Current status: $status"
             if [ "$status" == "healthy" ]; then
               echo "✅ App is healthy!"
+              kill $LOGS_PID
               exit 0
             fi
             sleep 2
           done
           echo "❌ App did not become healthy in time"
-          docker ps
+          kill $LOGS_PID
           exit 1
 
       - name: Shutdown all containers
