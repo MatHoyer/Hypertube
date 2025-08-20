@@ -39,13 +39,13 @@ class BencodeDecoder {
     let currentByte = this._getCurrentByte();
 
     while (currentByte !== "e") {
-      currentByte = this._getCurrentByte();
       if (!isInt(currentByte)) {
         throw new Error(
           `Invalid int pattern at ${this.cursor}: ${this.data[this.cursor]}`
         );
       }
       buffer += currentByte;
+      currentByte = this._getCurrentByte();
     }
 
     return parseInt(buffer);
@@ -72,7 +72,10 @@ class BencodeDecoder {
 
     while (currentByte !== "e") {
       lst.push(this.decode());
+      currentByte = this.data[this.cursor];
     }
+
+    this.cursor++;
 
     return lst;
   }
@@ -96,7 +99,10 @@ class BencodeDecoder {
 
       const value = this.decode();
       dict[key] = value;
+      currentByte = this.data[this.cursor];
     }
+
+    this.cursor++;
 
     return dict;
   }
@@ -116,6 +122,7 @@ class BencodeDecoder {
 
       default:
         let buffer = "";
+        if (this.data.length <= this.cursor) throw new Error("out");
         while (isInt(currentByte)) {
           buffer += currentByte;
           currentByte = this._getCurrentByte();
