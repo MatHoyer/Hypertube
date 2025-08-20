@@ -6,7 +6,7 @@ export const resolutionSchema = z.object({
 
   resolution: z.string(),
   size: z.string(),
-  downloadState: z.enum(DownloadStates),
+  downloadState: z.enum([...Object.values(DownloadStates)] as const),
 });
 export type TResolutionSchema = z.infer<typeof resolutionSchema>;
 
@@ -16,7 +16,7 @@ export const subtitleSchema = z.object({
   language: z.string(),
   rating: z.coerce.number().int().positive(),
   downloadLink: z.url(),
-  downloadState: z.enum(DownloadStates),
+  downloadState: z.enum([...Object.values(DownloadStates)] as const),
 });
 export type TSubtitleSchema = z.infer<typeof subtitleSchema>;
 
