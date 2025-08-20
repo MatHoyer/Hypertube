@@ -286,7 +286,7 @@ export const getYtsDownloadMovie = async (
       downloadSubtitles({
         ...movie.subtitles[0],
         movieId: movie.id,
-        downloadState: movie.subtitles[0].downloadState as DownloadStates,
+        downloadState: movie.subtitles[0].downloadState,
       });
     } catch (error) {
       console.error(error);

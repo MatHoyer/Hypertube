@@ -1,8 +1,8 @@
-export enum DownloadStates {
-  NOT_DOWNLOADED = "NOT_DOWNLOADED",
-  DOWNLOADING = "DOWNLOADING",
-  DOWNLOADED = "DOWNLOADED",
-}
+export const DownloadStates = {
+  NOT_DOWNLOADED: "NOT_DOWNLOADED",
+  DOWNLOADING: "DOWNLOADING",
+  DOWNLOADED: "DOWNLOADED",
+} as const;
 
 export const languageCodes = {
   en: "English",
