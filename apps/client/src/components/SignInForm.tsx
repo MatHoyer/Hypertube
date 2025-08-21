@@ -18,35 +18,26 @@ import InputPassword from "./ui/input-password";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 
-export const SignUpForm = () => {
+export const SignInForm = () => {
   const [wrongCredential, setWrongCredential] = useState(false);
   const formSchema = z.object({
     email: z.email(),
-    username: z.string().min(1).max(50),
     password: z.string().min(8).max(50),
-    firstName: z.string().min(1).max(50),
-    lastName: z.string().min(1).max(50),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      username: "",
       password: "",
-      firstName: "",
-      lastName: "",
     },
   });
 
   const onSubmit = async (userData: z.infer<typeof formSchema>) => {
-    await authClient.signUp.email(
+    await authClient.signIn.email(
       {
         email: userData.email,
-        name: userData.username,
         password: userData.password,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
       },
       {
         onSuccess: () => {
@@ -71,65 +62,7 @@ export const SignUpForm = () => {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="Email"
-                    autoComplete="email"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex gap-2 items-start w-full">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="First Name"
-                      autoComplete="given-name"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Last Name"
-                      autoComplete="family-name"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Username"
-                    autoComplete="username"
-                    {...field}
-                  />
+                  <Input placeholder="Email" autoComplete="email" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -139,7 +72,7 @@ export const SignUpForm = () => {
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem className="w-full">
+              <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <InputPassword placeholder="Password" {...field} />
@@ -150,11 +83,11 @@ export const SignUpForm = () => {
           />
           <div className={cn("flex text-red-500", wrongCredential || "hidden")}>
             <TriangleAlert />
-            <p>This email is already associated with an account.</p>
+            <p>Incorrect email or password.</p>
           </div>
           <div className="flex justify-between">
-            <Button type="button" variant={"link"}>
-              <Link to={"/login"}>Login</Link>
+            <Button type="button" variant={"link"} asChild>
+              <Link to={"/register"}>Register</Link>
             </Button>
             <Button type="submit">Submit</Button>
           </div>
