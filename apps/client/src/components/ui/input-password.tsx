@@ -15,9 +15,9 @@ const InputPassword: React.FC<
     <div>
       <div className="flex items-center gap-2">
         <Input
+          {...field}
           type={showPassword ? "text" : "password"}
           autoComplete="password"
-          {...field}
         />
         <Button
           type="button"
