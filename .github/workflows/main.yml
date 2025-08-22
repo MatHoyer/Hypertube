@@ -22,11 +22,6 @@ jobs:
           ./check_translation.sh
           cd -
 
-      - name: remove dependencies
-        if: always()
-        run: |
-          sudo apt remove jq
-
   docker-startup:
     runs-on: ubuntu-latest
     needs: pre-build-tests
@@ -110,6 +105,5 @@ jobs:
       - name: Shutdown all containers
         if: always()
         run: |
-          sudo apt remove curl
           docker compose -f docker-compose-prod.yml down
           docker compose down
