@@ -12,6 +12,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: |
+          apt update
+          apt install jq
+          apt install curl
+
+      - name: Check translation completeness
+        run: |
+          cd apps/client
+          ./check_translation.sh
+
       - name: Create .env file
         run: |
           cat <<EOF > .env
@@ -20,11 +31,11 @@ jobs:
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
-      
+
           SERVER_URL=${{ secrets.SERVER_URL }}
           SERVER_PORT=${{ secrets.SERVER_PORT }}
           CLIENT_PORT=${{ secrets.CLIENT_PORT }}
-      
+
           RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
           RESEND_API_EMAIL_FROM=${{ secrets.RESEND_API_EMAIL_FROM }}
           RESEND_API_EMAIL_TO=${{ secrets.RESEND_API_EMAIL_TO }}
@@ -42,7 +53,7 @@ jobs:
 
           docker logs -f ${{ secrets.POSTGRES_HOST }} &
           LOGS_PID=$!
-          
+
           for i in {1..15}; do
             status=$(docker inspect --format='{{.State.Health.Status}}' ${{ secrets.POSTGRES_HOST }} 2>/dev/null || echo "not found")
             if [ "$status" == "healthy" ]; then
@@ -65,7 +76,7 @@ jobs:
 
           docker logs -f hypertube-prod &
           LOGS_PID=$!
-          
+
           for i in {1..60}; do
             status=$(docker inspect --format='{{.State.Health.Status}}' hypertube-prod 2>/dev/null || echo "not found")
             if [ "$status" == "healthy" ]; then
@@ -82,5 +93,7 @@ jobs:
       - name: Shutdown all containers
         if: always()
         run: |
+          apt remove jq
+          apt remove curl
           docker compose -f docker-compose-prod.yml down
           docker compose down
