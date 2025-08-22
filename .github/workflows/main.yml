@@ -1,10 +1,32 @@
-name: Test Docker Startup
+name: production-build-test
 
 on:
   push:
   workflow_dispatch:
 
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install jq
+
+      - name: Check translation completeness
+        run: |
+          cd apps/client
+          ./check_translation.sh
+          cd -
+
+      - name: remove dependencies
+        if: always()
+        run: |
+          sudo apt remove jq
+
   docker-startup:
     runs-on: ubuntu-latest
 
@@ -15,13 +37,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install jq
           sudo apt install curl
-
-      - name: Check translation completeness
-        run: |
-          cd apps/client
-          ./check_translation.sh
 
       - name: Create .env file
         run: |
@@ -93,7 +109,6 @@ jobs:
       - name: Shutdown all containers
         if: always()
         run: |
-          sudo apt remove jq
           sudo apt remove curl
           docker compose -f docker-compose-prod.yml down
           docker compose down
