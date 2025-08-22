@@ -3,6 +3,7 @@ import { Input } from "./input";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "./button";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const InputPassword: React.FC<
   Omit<ComponentProps<typeof Input>, "type"> & {
@@ -10,6 +11,7 @@ const InputPassword: React.FC<
   }
 > = ({ forgetPasswordOption = false, ...field }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <div>
@@ -36,7 +38,7 @@ const InputPassword: React.FC<
           className="flex justify-end text-neutral-600"
           asChild
         >
-          <Link to={"/"}>Forget password ?</Link>
+          <Link to={"/"}>{t("sign.forgetPassword")}</Link>
         </Button>
       )}
     </div>

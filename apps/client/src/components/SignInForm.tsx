@@ -13,10 +13,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { TriangleAlert } from "lucide-react";
-import { cn } from "@/lib/utils";
 import InputPassword from "./ui/input-password";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { errorCodes } from "../lib/better-auth/constants";
 
 const formSchema = z.object({
   username: z.string().min(1).max(50),
@@ -24,7 +25,8 @@ const formSchema = z.object({
 });
 
 export const SignInForm = () => {
-  const [authError, setAuthError] = useState({ error: false, message: "" });
+  const [authMessageError, setAuthMessageError] = useState("");
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,11 +44,10 @@ export const SignInForm = () => {
       },
       {
         onSuccess: () => {
-          setAuthError({ error: false, message: "" });
-          console.log("Redirection on Profile page");
+          setAuthMessageError("");
         },
         onError: (ctx) => {
-          setAuthError({ error: true, message: ctx.error.message });
+          setAuthMessageError(ctx.error.code);
         },
       }
     );
@@ -60,11 +61,11 @@ export const SignInForm = () => {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>{t("sign.username")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Username"
+                  placeholder={t("sign.username")}
                   autoComplete="username"
                 />
               </FormControl>
@@ -77,11 +78,11 @@ export const SignInForm = () => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t("sign.password")}</FormLabel>
               <FormControl>
                 <InputPassword
                   {...field}
-                  placeholder="Password"
+                  placeholder={t("sign.password")}
                   forgetPasswordOption
                 />
               </FormControl>
@@ -89,15 +90,21 @@ export const SignInForm = () => {
             </FormItem>
           )}
         />
-        <div className={cn("flex text-red-500", authError.error || "hidden")}>
-          <TriangleAlert />
-          <p>{authError.message}</p>
-        </div>
+        {!!authMessageError && (
+          <div className={"flex text-red-500"}>
+            <TriangleAlert />
+            <p>
+              {t(
+                `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
+              )}
+            </p>
+          </div>
+        )}
         <div className="flex justify-between">
           <Button type="button" variant={"link"} asChild>
-            <Link to={"/register"}>Register</Link>
+            <Link to={"/register"}>{t("sign.up")}</Link>
           </Button>
-          <Button type="submit">Submit</Button>
+          <Button type="submit">{t("sign.in")}</Button>
         </div>
       </form>
     </Form>

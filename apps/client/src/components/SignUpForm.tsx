@@ -13,10 +13,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "react-router-dom";
 import { TriangleAlert } from "lucide-react";
-import { cn } from "@/lib/utils";
 import InputPassword from "./ui/input-password";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { errorCodes } from "@/lib/better-auth/constants";
 
 const formSchema = z.object({
   email: z.email(),
@@ -27,7 +28,8 @@ const formSchema = z.object({
 });
 
 export const SignUpForm = () => {
-  const [authError, setAuthError] = useState({ error: false, message: "" });
+  const [authMessageError, setAuthMessageError] = useState("");
+  const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,11 +52,10 @@ export const SignUpForm = () => {
       },
       {
         onSuccess: () => {
-          setAuthError({ error: false, message: "" });
-          console.log("Redirection on Profile page");
+          setAuthMessageError("");
         },
         onError: (ctx) => {
-          setAuthError({ error: true, message: ctx.error.message });
+          setAuthMessageError(ctx.error.code);
         },
       }
     );
@@ -68,12 +69,12 @@ export const SignUpForm = () => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("sign.email")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   type="email"
-                  placeholder="Email"
+                  placeholder={t("sign.email")}
                   autoComplete="email"
                 />
               </FormControl>
@@ -87,11 +88,11 @@ export const SignUpForm = () => {
             name="firstName"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>First Name</FormLabel>
+                <FormLabel>{t("sign.firstName")}</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="First Name"
+                    placeholder={t("sign.firstName")}
                     autoComplete="given-name"
                   />
                 </FormControl>
@@ -104,11 +105,11 @@ export const SignUpForm = () => {
             name="lastName"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel>{t("sign.lastName")}</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    placeholder="Last Name"
+                    placeholder={t("sign.lastName")}
                     autoComplete="family-name"
                   />
                 </FormControl>
@@ -122,11 +123,11 @@ export const SignUpForm = () => {
           name="username"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel>Username</FormLabel>
+              <FormLabel>{t("sign.username")}</FormLabel>
               <FormControl>
                 <Input
                   {...field}
-                  placeholder="Username"
+                  placeholder={t("sign.username")}
                   autoComplete="username"
                 />
               </FormControl>
@@ -139,23 +140,29 @@ export const SignUpForm = () => {
           name="password"
           render={({ field }) => (
             <FormItem className="w-full">
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t("sign.password")}</FormLabel>
               <FormControl>
-                <InputPassword {...field} placeholder="Password" />
+                <InputPassword {...field} placeholder={t("sign.password")} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div className={cn("flex text-red-500", authError.error || "hidden")}>
-          <TriangleAlert />
-          <p>{authError.message}</p>
-        </div>
+        {!!authMessageError && (
+          <div className={"flex text-red-500"}>
+            <TriangleAlert />
+            <p>
+              {t(
+                `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
+              )}
+            </p>
+          </div>
+        )}
         <div className="flex justify-between">
           <Button type="button" variant={"link"} asChild>
-            <Link to={"/login"}>Login</Link>
+            <Link to={"/login"}>{t("sign.in")}</Link>
           </Button>
-          <Button type="submit">Submit</Button>
+          <Button type="submit">{t("sign.up")}</Button>
         </div>
       </form>
     </Form>
