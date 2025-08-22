@@ -1,11 +1,11 @@
-name: production-build-test
+name: prod-build
 
 on:
   push:
   workflow_dispatch:
 
 jobs:
-  tests:
+  pre-build-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -29,6 +29,7 @@ jobs:
 
   docker-startup:
     runs-on: ubuntu-latest
+    needs: pre-build-tests
 
     steps:
       - name: Checkout repository
