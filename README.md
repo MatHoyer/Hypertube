@@ -25,7 +25,9 @@ Launch db dockers
 docker compose up
 ```
 
-### Run in local (dev)
+after, choose one of the three following options
+
+### 1. Run in local (dev)
 
 Install dependances
 
@@ -45,13 +47,13 @@ Run
 pnpm dev
 ```
 
-### Dev with docker (only for 42)
+### 2. Dev with docker (only for 42)
 
 ```bash
 docker compose -f docker-compose-dev.yml up
 ```
 
-### Prod with Docker
+### 3. Prod with Docker (not hot reload)
 
 Launch app dockers
 
