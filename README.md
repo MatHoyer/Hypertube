@@ -61,7 +61,7 @@ docker compose -f docker-compose-prod.yml up
 
 ## Rules
 
-This repo has 3 workspaces, if a packages is needed in more than 1 worksapce you can add it on the root package json
+This repo has 3 workspaces, if a packages is needed in more than 1 workspace you can add it on the root package json
 
 ```bash
 pnpm add <package name> -w
