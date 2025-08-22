@@ -1,47 +1,59 @@
 # Hypertube
 
-## 📁 Prerequisites
+## 📦 Prerequisites
 
-- docker
-- pnpm
+- [Docker](https://www.docker.com/) 🐳
+- [pnpm](https://pnpm.io/) 📦
 
-## Launch
+---
 
-Create the root .env (and complete it)
+## 🚀 Getting Started
+
+### 1. Configure environment variables
+
+Create the `.env` file from the example:
 
 ```bash
 cp .env.example .env
 ```
 
-Create the docker network
+⚠️ **Don’t forget to fill in the required values in `.env`.**
+
+---
+
+### 2. Create the Docker network
 
 ```bash
 docker network create hypertube-network
 ```
 
-Launch db dockers
+---
+
+### 3. Start the databases
 
 ```bash
 docker compose up
 ```
 
-## After, choose one of the three following options:
+---
 
-### **Run in local (dev)**
+## 📂 Launch Modes
 
-Install dependances
+### 🔹 Option 1 — Local (development)
+
+Install dependencies:
 
 ```bash
-pnpm i
+pnpm install
 ```
 
-Init db
+Initialize the database:
 
 ```bash
 pnpm --filter server prisma:migrate
 ```
 
-Run
+Run the app in dev mode (hot reload):
 
 ```bash
 pnpm dev
@@ -49,7 +61,7 @@ pnpm dev
 
 ---
 
-### **Dev with docker (only for 42)**
+### 🔹 Option 2 — Dev with Docker (only for 42)
 
 ```bash
 docker compose -f docker-compose-dev.yml up
@@ -57,53 +69,55 @@ docker compose -f docker-compose-dev.yml up
 
 ---
 
-### **Prod with Docker (not hot reload)**
-
-Launch app dockers
+### 🔹 Option 3 — Prod with Docker (no hot reload)
 
 ```bash
 docker compose -f docker-compose-prod.yml up
 ```
 
-## Rules
+---
 
-This repo has 3 workspaces, if a packages is needed in more than 1 workspace you can add it on the root package json
+## 📜 Dependency Installation Rules
+
+The project is split into **3 workspaces**:
+
+- **client** (`apps/client`)  
+- **server** (`apps/server`)  
+- **libs** (`libs`)
+
+### Install a dependency shared across multiple workspaces:
 
 ```bash
-pnpm add <package name> -w
+pnpm add <package-name> -w
 ```
 
-otherwise you will have to go in the workspace and install it localy
+### Install a dependency only for a specific workspace:
 
 ```bash
-cd apps/client
-pnpm add <package name>
+cd apps/client   # or apps/server / libs
+pnpm add <package-name>
 ```
 
-## Infos
+---
 
-### client workspace
+## ℹ️ Workspace Info
 
-```text
-Use vite to dev and build
+### 🖥️ Client (`apps/client`)
 
-In dev run on localhost:3001
+- Developed with **Vite**  
+- Runs in dev on: [http://localhost:3001](http://localhost:3001)  
+- In production: rendered by the server
 
-In prod render by the server
-```
+---
 
-### libs workspace
+### 📚 Libs (`libs`)
 
-```text
-All exported function in the index.ts can be used in other workspaces
+- Functions exported in `index.ts` can be used in other workspaces  
+- Compiles automatically on save
 
-Compiled on save
-```
+---
 
-### server workspace
+### ⚙️ Server (`apps/server`)
 
-```text
-Hono server
-
-In dev run on localhost:3000
-```
+- **Hono** server  
+- Runs in dev on: [http://localhost:3000](http://localhost:3000)
