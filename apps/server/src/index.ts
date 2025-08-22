@@ -5,6 +5,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { env } from "./env.js";
 import ytsRouter from "./routes/scrappers/yts.route.js";
+import authRouter from "./routes/auth/auth.route.js";
 
 const app = new Hono();
 
@@ -22,6 +23,8 @@ app.route(
   }),
   ytsRouter
 );
+
+app.route(getUrl("api-auth"), authRouter);
 
 app.get("/", async (c) => {
   return c.json({

@@ -44,13 +44,16 @@ jobs:
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
 
-          SERVER_URL=${{ secrets.SERVER_URL }}
+          HOSTNAME=${{ secrets.HOSTNAME }}
           SERVER_PORT=${{ secrets.SERVER_PORT }}
           CLIENT_PORT=${{ secrets.CLIENT_PORT }}
 
           RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
           RESEND_API_EMAIL_FROM=${{ secrets.RESEND_API_EMAIL_FROM }}
           RESEND_API_EMAIL_TO=${{ secrets.RESEND_API_EMAIL_TO }}
+
+          BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
           EOF
 
       - name: Create Docker network
