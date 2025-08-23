@@ -60,6 +60,10 @@ jobs:
           DISCORD_CLIENT_SECRET=${{ secrets.DISCORD_CLIENT_SECRET }}
           SCHOOL_42_CLIENT_ID=${{ secrets.SCHOOL_42_CLIENT_ID }}
           SCHOOL_42_CLIENT_SECRET=${{ secrets.SCHOOL_42_CLIENT_SECRET }}
+
+          TRANSMISSION_HOST=${{ secrets.TRANSMISSION_HOST }}
+          TRANSMISSION_RCP_PORT=${{ secrets.TRANSMISSION_RCP_PORT }}
+          TRANSMISSION_TORRENT_PORT=${{ secrets.TRANSMISSION_TORRENT_PORT }}
           EOF
 
       - name: Create Docker network
