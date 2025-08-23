@@ -6,6 +6,7 @@ export const useMouse = (
 ) => {
   const [mouseMoving, setMouseMoving] = useState(false);
   const [mouseClicked, setMouseClicked] = useState(false);
+  const [mouseIn, setMouseIn] = useState(false);
   const moveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -28,12 +29,23 @@ export const useMouse = (
     if (!containerRef?.current) return;
     const container = containerRef.current;
 
+    const handleMouseEnter = () => {
+      setMouseIn(true);
+    };
+    const handleMouseLeave = () => {
+      setMouseIn(false);
+    };
+
     container.addEventListener("mousemove", handleMouseMove);
     container.addEventListener("click", handleMouseClick);
+    container.addEventListener("mouseenter", handleMouseEnter);
+    container.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
       container.removeEventListener("mousemove", handleMouseMove);
       container.removeEventListener("click", handleMouseClick);
+      container.removeEventListener("mouseenter", handleMouseEnter);
+      container.removeEventListener("mouseleave", handleMouseLeave);
       if (moveTimeoutRef.current) clearTimeout(moveTimeoutRef.current);
       if (clickTimeoutRef.current) clearTimeout(clickTimeoutRef.current);
     };
@@ -42,6 +54,8 @@ export const useMouse = (
   return {
     mouseMoving,
     mouseClicked,
+    mouseIn,
     triggerMouseMove: handleMouseMove,
+    triggerMouseClick: handleMouseClick,
   };
 };

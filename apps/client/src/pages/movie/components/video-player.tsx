@@ -1,6 +1,8 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
-import { useAnimateApparitionAndDisparition } from "@/components/animated/animate-apparition/useAnimateApparition";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { useMouse } from "@/hooks/use-mouse";
+import { cn } from "@/lib/utils";
 import { Pause, Play, Volume2, VolumeX } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -12,7 +14,8 @@ const usePlayer = () => {
   const [volume, setVolume] = useState(20);
   const [muted, setMuted] = useState(false);
   const [progress, setProgress] = useState(0);
-  const { mouseMoving, mouseClicked, triggerMouseMove } = useMouse(videoRef);
+  const { mouseMoving, mouseClicked, triggerMouseMove, triggerMouseClick } =
+    useMouse(videoRef);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
@@ -27,14 +30,15 @@ const usePlayer = () => {
 
   const toggleMute = () => {
     if (!videoRef.current) return;
-    videoRef.current.muted = !muted;
-    setMuted((prev) => !prev);
+    videoRef.current.muted = !videoRef.current.muted;
+    setMuted(videoRef.current.muted);
   };
 
   const handleVolumeChange = (volume: number) => {
     if (!videoRef.current) return;
     videoRef.current.volume = volume / 100;
     setVolume(volume);
+    setMuted(volume === 0);
   };
 
   const handleProgress = () => {
@@ -42,6 +46,9 @@ const usePlayer = () => {
     const percent =
       (videoRef.current.currentTime / videoRef.current.duration) * 100;
     setProgress(percent);
+    if (percent >= 100) {
+      setPlaying(false);
+    }
   };
 
   const handleSeek = (progress: number) => {
@@ -54,14 +61,14 @@ const usePlayer = () => {
   const handleJumpVideo = (seconds: number) => {
     if (!videoRef.current) return;
     videoRef.current.currentTime += seconds;
-    setProgress(
+    handleSeek(
       (videoRef.current.currentTime / videoRef.current.duration) * 100
     );
   };
   const handleJumpVolume = (units: number) => {
     if (!videoRef.current) return;
     videoRef.current.volume += units / 100;
-    setVolume(videoRef.current.volume * 100);
+    handleVolumeChange(videoRef.current.volume * 100);
   };
 
   useEffect(() => {
@@ -72,6 +79,7 @@ const usePlayer = () => {
       e.preventDefault();
       triggerMouseMove();
       if (e.key === " ") {
+        triggerMouseClick();
         togglePlay();
       }
       if (e.key === "m") {
@@ -115,6 +123,52 @@ const usePlayer = () => {
   };
 };
 
+const VolumeControl: React.FC<{
+  muted: boolean;
+  volume: number;
+  toggleMute: () => void;
+  handleVolumeChange: (volume: number) => void;
+}> = ({ muted, volume, toggleMute, handleVolumeChange }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { mouseIn } = useMouse(containerRef);
+
+  return (
+    <div ref={containerRef} className="flex items-center gap-2 pr-2">
+      <Button
+        variant="ghost"
+        onClick={toggleMute}
+        className="dark p-2 rounded-full z-10"
+      >
+        {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+        <span className="sr-only">Toggle mute</span>
+      </Button>
+
+      <div
+        className={cn(
+          "flex items-center overflow-hidden transition-all duration-300",
+          mouseIn ? "w-24 opacity-100" : "w-0 opacity-0"
+        )}
+      >
+        <AnimateApparition
+          isAnimating={mouseIn}
+          animation="slideToRight"
+          className="flex items-center"
+        >
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="0.1"
+            value={muted ? 0 : volume}
+            onChange={(e) => handleVolumeChange(Number(e.target.value))}
+            className="w-full"
+          />
+        </AnimateApparition>
+      </div>
+    </div>
+  );
+};
+
 const VideoPlayer = () => {
   const {
     videoRef,
@@ -131,14 +185,14 @@ const VideoPlayer = () => {
     handleProgress,
   } = usePlayer();
 
-  const { isAnimating, animate } = useAnimateApparitionAndDisparition();
+  const controlsRef = useRef<HTMLDivElement>(null);
+  const { mouseIn } = useMouse(controlsRef);
 
   return (
     <div
       className="size-full bg-black rounded-2xl shadow-lg overflow-hidden relative"
       onClick={() => {
         togglePlay();
-        animate();
       }}
     >
       {/* Video */}
@@ -153,7 +207,7 @@ const VideoPlayer = () => {
       <AnimateApparition
         className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
         animation="fade"
-        isAnimating={isAnimating}
+        isAnimating={mouseClicked}
       >
         <div className="bg-black/50 rounded-full p-4">
           {playing ? (
@@ -166,49 +220,43 @@ const VideoPlayer = () => {
 
       {/* Controls */}
       <AnimateApparition
-        isAnimating={mouseMoving || mouseClicked}
+        ref={controlsRef}
+        isAnimating={mouseMoving || mouseClicked || mouseIn}
         animation="slideToTop"
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className="flex items-center justify-between p-3 absolute bottom-0 left-0 right-0 bg-black/30"
+        className="absolute bottom-0 left-0 right-0 p-2"
       >
-        {/* Play / Pause */}
-        <button
-          onClick={togglePlay}
-          className="p-2 hover:bg-gray-800 rounded-full"
-        >
-          {playing ? <Pause size={20} /> : <Play size={20} />}
-        </button>
+        <Card className="dark flex flex-row items-center justify-between size-full p-3 bg-black/30">
+          {/* Play / Pause */}
+          <Button
+            variant="ghost"
+            onClick={togglePlay}
+            className="dark p-2 rounded-full"
+          >
+            {playing ? <Pause size={20} /> : <Play size={20} />}
+          </Button>
 
-        {/* Progress bar */}
-        <input
-          type="range"
-          min="0"
-          max="100"
-          step="0.1"
-          value={progress}
-          onChange={(e) => handleSeek(Number(e.target.value))}
-          className="flex-1 mx-3 accent-red-500"
-        />
+          {/* Volume */}
+          <VolumeControl
+            muted={muted}
+            volume={volume}
+            toggleMute={toggleMute}
+            handleVolumeChange={handleVolumeChange}
+          />
 
-        {/* Mute */}
-        <button
-          onClick={toggleMute}
-          className="p-2 hover:bg-gray-800 rounded-full"
-        >
-          {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-        </button>
-
-        <input
-          type="range"
-          min="0"
-          max="100"
-          step="0.1"
-          value={volume}
-          onChange={(e) => handleVolumeChange(Number(e.target.value))}
-          className="flex-1 mx-3 accent-red-500"
-        />
+          {/* Progress bar */}
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="0.1"
+            value={progress}
+            onChange={(e) => handleSeek(Number(e.target.value))}
+            className="flex-1 mx-3 accent-red-500"
+          />
+        </Card>
       </AnimateApparition>
     </div>
   );
