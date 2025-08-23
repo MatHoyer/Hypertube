@@ -1,10 +1,14 @@
+import type { User } from "better-auth/types";
 import { createMiddleware } from "hono/factory";
 import { auth } from "../lib/auth";
 
+export type TIsLogged = { Variables: { user: User } };
+
 export const isLogged = () => {
-  return createMiddleware(async (c, next) => {
+  return createMiddleware<TIsLogged>(async (c, next) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session) return c.json({ error: "User is not logged" }, 401);
+
     c.set("user", session.user);
     await next();
   });
