@@ -69,7 +69,7 @@ The project is split into **3 workspaces**:
 
 - **client** (`apps/client`)
 - **server** (`apps/server`)
-- **libs** (`libs`)
+- **libs** (`apps/libs`)
 
 ### Install a dependency shared across multiple workspaces:
 
@@ -94,7 +94,7 @@ pnpm add <package-name>
 
 ---
 
-### 📚 Libs (`libs`)
+### 📚 Libs (`apps/libs`)
 
 - Functions exported in `index.ts` can be used in other workspaces
 - Compiles automatically on save
