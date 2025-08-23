@@ -173,7 +173,7 @@ export const downloadResolution = async (movie: {
     const buffer = Buffer.from(arrayBuffer);
 
     await createResolution(movie.id, movie.resolution);
-    // DL the torrent content before make a resolution downloaded
+
     await prisma.resolution.upsert({
       where: {
         movieId_resolution: {

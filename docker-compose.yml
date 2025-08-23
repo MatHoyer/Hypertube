@@ -26,6 +26,25 @@ services:
       db:
         condition: service_healthy
 
+  transmission:
+    container_name: transmission
+    image: linuxserver/transmission
+    ports:
+      - "${TRANSMISSION_RCP_PORT}:${TRANSMISSION_RCP_PORT}"
+      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}"
+      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}/udp"
+    env_file: .env
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - TRANSMISSION_RPC_ENABLED=true
+      - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=false
+    volumes:
+      - ./apps/server/downloads:/downloads
+    networks:
+      - hypertube-network
+
 volumes:
   hypertube_data:
 

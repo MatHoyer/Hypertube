@@ -15,6 +15,7 @@ import {
   getMovieByImdbId,
   getMovieByLongTitle,
 } from "../../lib/apis/yts.api.js";
+import { downloadMovie } from "../../lib/downloader/downloadMovie.js";
 import prisma from "../../lib/prisma.js";
 import {
   downloadSubtitles,
@@ -278,7 +279,7 @@ export const getYtsDownloadMovie = async (
     },
   };
 
-  if (movie.subtitles.length === 0 && subtitlesLanguage !== "none") {
+  if (movie.subtitles.length === 0 || subtitlesLanguage === "none") {
     returnMessage.subtitles.message = "Subtitle not found, skipping";
   } else {
     returnMessage.subtitles.language = movie.subtitles[0].language;
@@ -307,6 +308,9 @@ export const getYtsDownloadMovie = async (
   } else {
     returnMessage.resolutions.message = "Resolution already downloaded";
   }
+
+  // Download the torrent content before make a resolution downloaded
+  await downloadMovie(movie.id, "720p");
 
   return c.json(returnMessage);
 };
