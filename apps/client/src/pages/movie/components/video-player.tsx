@@ -342,7 +342,7 @@ const VideoPlayer = () => {
 
       <AnimateApparition
         ref={controlsRef}
-        isAnimating={mouseMoving || mouseClicked || mouseIn}
+        isAnimating={mouseMoving || mouseClicked || mouseIn || !playing}
         animation="slideToTop"
         onClick={(e) => {
           e.stopPropagation();

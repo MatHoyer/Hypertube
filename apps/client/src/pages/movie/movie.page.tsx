@@ -6,7 +6,7 @@ import VideoPlayer from "./components/video-player";
 
 const MovieInfo = () => {
   return (
-    <div className="grid grid-rows-2 gap-4 h-full">
+    <div className="grid grid-rows-2 gap-4 h-full p-4">
       <Card className="grid grid-cols-2 gap-2 p-4">
         <div className="grid grid-rows-2 gap-2">
           <Typography variant="h2">Movie Title</Typography>
