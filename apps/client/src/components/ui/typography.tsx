@@ -18,6 +18,7 @@ type DistributiveOmit<T, TOmitted extends PropertyKey> = T extends any
   ? Omit<T, TOmitted>
   : never;
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const typographyVariants = cva("", {
   variants: {
     variant: {

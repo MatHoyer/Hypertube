@@ -41,15 +41,25 @@ const AnimateApparition: React.FC<
     animationDuration?: number;
     isAnimating: boolean;
   } & ComponentProps<typeof motion.div>
-> = ({ animation, isAnimating, animationDuration = 0.3, ...props }) => {
+> = ({
+  animation,
+  isAnimating,
+  animationDuration = 0.3,
+  transition,
+  ...props
+}) => {
   return (
     <motion.div
-      variants={animations[animation]}
       initial="initial"
       animate={isAnimating ? "animate" : "exit"}
       exit="exit"
-      transition={{ duration: animationDuration, ease: "easeInOut" }}
+      transition={{
+        ...transition,
+        duration: animationDuration,
+        ease: "easeInOut",
+      }}
       {...props}
+      variants={animations[animation]}
     />
   );
 };

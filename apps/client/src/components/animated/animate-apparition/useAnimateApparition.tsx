@@ -1,13 +1,10 @@
+import { useToggle } from "@/hooks/use-toggle";
 import { useRef, useState } from "react";
 
 const useAnimateApparition = (initialState = false) => {
-  const [isAnimating, setIsAnimating] = useState(initialState);
+  const { value, toggle } = useToggle(initialState);
 
-  const animate = () => {
-    setIsAnimating((prev) => !prev);
-  };
-
-  return { isAnimating, animate };
+  return { isAnimating: value, animate: toggle };
 };
 
 const useAnimateApparitionAndDisparition = (initialState = false) => {
