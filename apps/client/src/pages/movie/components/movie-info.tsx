@@ -1,21 +1,75 @@
-import { Card } from "@/components/ui/card";
+import { ImageAvatar } from "@/components/images/Avatar";
+import { ImageContainer } from "@/components/images/ImageContainer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
+import { ArrowRightIcon } from "lucide-react";
 
 const MovieInfo = () => {
+  const cast = [
+    {
+      name: "John Doe",
+      imageSrc: "https://via.placeholder.com/150",
+    },
+    {
+      name: "Jane Doe",
+      imageSrc: "https://via.placeholder.com/150",
+    },
+  ];
+
   return (
-    <div className="grid grid-rows-2 gap-4 h-full p-4">
-      <Card className="grid grid-cols-2 gap-2 p-4">
-        <div className="grid grid-rows-2 gap-2">
-          <Typography variant="h2">Movie Title</Typography>
-          <Typography variant="p">Movie Description</Typography>
+    <ScrollArea className="h-[calc(100vh)]">
+      <div className="flex flex-col gap-4 h-full p-4">
+        <div className="flex justify-center gap-2">
+          <ImageContainer
+            imageSrc="https://via.placeholder.com/150"
+            altImage="Movie Poster"
+            size="lg"
+          />
         </div>
-        <img src="https://via.placeholder.com/150" />
-      </Card>
-      <Card className="flex flex-col gap-2 p-4">
-        <Typography variant="h2">Cast</Typography>
-        <Typography variant="p">Cast Description</Typography>
-      </Card>
-    </div>
+        <div className="flex flex-col gap-2">
+          <Typography variant="h1" className="text-center">
+            Movie Title
+          </Typography>
+          <div className="flex items-center justify-center">
+            <Typography variant="code">Movie Year</Typography>
+          </div>
+          <Typography variant="muted">Movie Description</Typography>
+        </div>
+        <Card className="p-4">
+          <CardTitle>Cast</CardTitle>
+          <CardContent>
+            <div className="flex flex-col gap-2">
+              {cast.map((person, index) => (
+                <div key={index} className="flex flex-col gap-2">
+                  <div className="flex justify-between items-center gap-2">
+                    <div className="flex items-center gap-2">
+                      <ImageAvatar
+                        name={person.name}
+                        imageSrc={person.imageSrc}
+                        size="sm"
+                      />
+                      <Typography>{person.name}</Typography>
+                    </div>
+                    <Button variant="outline" className="group">
+                      <img
+                        src="/images/IMDB_text_yellow.svg"
+                        alt="IMDB"
+                        className="inline-block w-12 h-12"
+                      />
+                      <ArrowRightIcon className="group-hover:-rotate-45 transition-transform" />
+                    </Button>
+                  </div>
+                  {index !== cast.length - 1 && <Separator />}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </ScrollArea>
   );
 };
 
