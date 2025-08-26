@@ -2,13 +2,10 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { PrivateLayout } from "./layouts/PrivateLayout";
 import { PublicLayout } from "./layouts/PublicLayout"
 import { authClient } from "./lib/auth-client";
-import { SignInPage } from "@/pages/signInPage/SignInPage";
-import { SignUpPage } from "@/pages/signUpPage/SignUpPage";
+import { SignInPage } from "@/pages/signIn/SignIn.page";
+import { SignUpPage } from "@/pages/signUp/SignUp.page";
 import { getUrl } from "@hypertube/libs";
-import { NotFoundPage } from "@/pages/notFoundPage/NotFoundPage";
-
-const signInPath = getUrl("client-signin");
-const signUpPath = getUrl("client-signup");
+import { NotFoundPage } from "@/pages/notFound/NotFound.page";
 
 const PublicRoute = () => {
   const session = authClient.useSession();
@@ -26,7 +23,7 @@ const PrivateRoute = () => {
   const session = authClient.useSession();
   const user = session?.data?.user;
 
-  if (!user) return <Navigate to={signInPath} replace />;
+  if (!user) return <Navigate to={getUrl("client-signin")} replace />;
   return (
     <PrivateLayout>
       <Outlet />
@@ -43,8 +40,8 @@ const App = () => {
       <Routes>
         {/* Routes publiques */}
         <Route element={<PublicRoute />}>
-          <Route path={signInPath} element={<SignInPage />} />
-          <Route path={signUpPath} element={<SignUpPage />} />
+          <Route path={getUrl("client-signin")} element={<SignInPage />} />
+          <Route path={getUrl("client-signup")} element={<SignUpPage />} />
         </Route>
 
         {/* Routes privées */}

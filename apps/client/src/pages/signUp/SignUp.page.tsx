@@ -2,7 +2,7 @@ import { SignUpForm } from "../../components/SignUpForm";
 
 export const SignUpPage = () => {
   return (
-	<div className="h-dvh w-dvw flex justify-center items-center">
+	 <div className="size-full">
 	  <SignUpForm />
 	</div>
   );
