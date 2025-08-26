@@ -4,6 +4,7 @@ import { initReactI18next } from "react-i18next";
 import z from "zod";
 import en from "./en.json";
 import fr from "./fr.json";
+import es from "./es.json"
 
 const resources = {
   en: {
@@ -11,6 +12,9 @@ const resources = {
   },
   fr: {
     translation: fr,
+  },
+  es: {
+    translation: es,
   },
 };
 
@@ -23,6 +27,7 @@ i18n.use(initReactI18next).use(LanguageDetector).init({
 const zodLocales = {
   en: z.locales.en(),
   fr: z.locales.fr(),
+  es: z.locales.es(),
 };
 
 i18n.on("languageChanged", (lng) => {
