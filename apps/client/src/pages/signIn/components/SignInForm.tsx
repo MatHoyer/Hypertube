@@ -1,4 +1,5 @@
-import { useForm } from "react-hook-form";
+import { OAuthButtons } from "@/components/OAuthButtons";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -6,18 +7,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
-import { TriangleAlert } from "lucide-react";
-import InputPassword from "./ui/input-password";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import InputPassword from "@/components/ui/input-password";
 import { authClient } from "@/lib/auth-client";
+import { errorCodes } from "@/lib/better-auth/constants";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { getUrl } from "@hypertube/libs";
+import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { errorCodes } from "../lib/better-auth/constants";
+import { Link } from "react-router-dom";
+import { z } from "zod";
 
 const formSchema = z.object({
   username: z.string().min(1).max(50),
@@ -100,9 +102,10 @@ export const SignInForm = () => {
             </p>
           </div>
         )}
+        <OAuthButtons />
         <div className="flex justify-between">
           <Button type="button" variant={"link"} asChild>
-            <Link to={"/register"}>{t("sign.up")}</Link>
+            <Link to={getUrl("client-signup")}>{t("sign.up")}</Link>
           </Button>
           <Button type="submit">{t("sign.in")}</Button>
         </div>

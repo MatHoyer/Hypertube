@@ -1,9 +1,9 @@
-import { SignUpForm } from "../../components/SignUpForm";
+import { SignUpForm } from "./components/SignUpForm";
 
 export const SignUpPage = () => {
   return (
-	 <div className="size-full">
-	  <SignUpForm />
-	</div>
+    <div className="size-full">
+      <SignUpForm />
+    </div>
   );
 };

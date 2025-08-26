@@ -1,11 +1,11 @@
-import { Navigate, Outlet, Route, Routes } from "react-router-dom";
-import { PrivateLayout } from "./layouts/PrivateLayout";
-import { PublicLayout } from "./layouts/PublicLayout"
-import { authClient } from "./lib/auth-client";
+import { NotFoundPage } from "@/pages/notFound/NotFound.page";
 import { SignInPage } from "@/pages/signIn/SignIn.page";
 import { SignUpPage } from "@/pages/signUp/SignUp.page";
 import { getUrl } from "@hypertube/libs";
-import { NotFoundPage } from "@/pages/notFound/NotFound.page";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
+import { PrivateLayout } from "./layouts/PrivateLayout";
+import { PublicLayout } from "./layouts/PublicLayout";
+import { authClient } from "./lib/auth-client";
 
 const PublicRoute = () => {
   const session = authClient.useSession();
@@ -16,7 +16,7 @@ const PublicRoute = () => {
     <PublicLayout>
       <Outlet />
     </PublicLayout>
-  )
+  );
 };
 
 const PrivateRoute = () => {
@@ -28,7 +28,7 @@ const PrivateRoute = () => {
     <PrivateLayout>
       <Outlet />
     </PrivateLayout>
-  )
+  );
 };
 
 const App = () => {

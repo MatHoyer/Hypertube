@@ -54,6 +54,14 @@ jobs:
 
           BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GITHUB_CLIENT_ID=${{ secrets.O_GITHUB_CLIENT_ID }}
+          GITHUB_CLIENT_SECRET=${{ secrets.O_GITHUB_CLIENT_SECRET }}
+          DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }}
+          DISCORD_CLIENT_SECRET=${{ secrets.DISCORD_CLIENT_SECRET }}
+          SCHOOL_42_CLIENT_ID=${{ secrets.SCHOOL_42_CLIENT_ID }}
+          SCHOOL_42_CLIENT_SECRET=${{ secrets.SCHOOL_42_CLIENT_SECRET }}
           EOF
 
       - name: Create Docker network
