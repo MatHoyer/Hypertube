@@ -5,6 +5,8 @@ import { getServerUrl } from "./getServerUrl.js";
 
 export type TClientRouteDataRequirements = {
   "client-home": undefined;
+  "client-signin": undefined;
+  "client-signup": undefined;
 };
 
 export type TApiRouteDataRequirements = {
@@ -35,6 +37,8 @@ const routes: {
 } = {
   // Client routes
   "client-home": () => "/",
+  "client-signin": () => "/signin",
+  "client-signup": () => "/signup",
 
   // API routes
   "api-health": () => "/api/health",

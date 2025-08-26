@@ -1,56 +1,53 @@
-import { Routes, Route, Outlet, Navigate } from "react-router-dom";
-import { SignInForm } from "../components/SignInForm";
-import { SignUpForm } from "../components/SignUpForm";
-import { authClient } from "../lib/auth-client";
-import { PublicLayout } from "../layouts/PublicLayout"
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { PrivateLayout } from "../layouts/PrivateLayout";
+import { PublicLayout } from "../layouts/PublicLayout";
+import { authClient } from "../lib/auth-client";
+import { SignInPage } from "@/pages/signInPage/SignInPage";
+import { SignUpPage } from  "@/pages/signUpPage/SignUpPage";
+import { getUrl } from "@hypertube/libs";
+import { NotFoundPage } from "@/pages/notFoundPage/NotFoundPage";
+
+const signInPath = getUrl("client-signin");
+const signUpPath = getUrl("client-signup");
 
 const PublicRoute = () => {
-  const user = authClient.useSession();
+  const session = authClient.useSession();
+  const user = session?.data?.user;
+
   if (user) return <Navigate to="/dashboard" replace />;
-  return <Outlet />;
+  return (
+    <PublicLayout>
+      <Outlet />
+    </PublicLayout>
+  )
 };
 
 const PrivateRoute = () => {
-  const user = authClient.useSession();
+  const session = authClient.useSession();
+  const user = session?.data?.user;
+
   if (!user) return <Navigate to="/signin" replace />;
-  return <Outlet />;
+  return (
+    <PrivateLayout>
+      <Outlet />
+    </PrivateLayout>
+  )
 };
 
 export const AppRoutes = () => {
   return (
     <Routes>
       <Route element={<PublicRoute />}>
-        <Route
-          path="/signin"
-          element={
-            <PublicLayout>
-              <SignInForm />
-            </PublicLayout>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <PublicLayout>
-              <SignUpForm />
-            </PublicLayout>
-          }
-        />
+        <Route path={signInPath} element={<SignInPage />} />
+        <Route path={signUpPath} element={<SignUpPage />} />
       </Route>
 
       <Route element={<PrivateRoute />}>
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateLayout>
-              <div>Dashboard</div>
-            </PrivateLayout>
-          }
-        />
+        <Route path="/dashboard" element={<div>Dashboard</div>} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/signin" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };
+

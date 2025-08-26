@@ -1,5 +1,5 @@
 import { authClient } from "./lib/auth-client";
-import MoviePage from "./pages/movie/movie.page";
+import { AppRoutes } from "./routes/AppRoutes";
 
 const App = () => {
   const user = authClient.useSession();
@@ -7,7 +7,7 @@ const App = () => {
 
   return (
     <div className="h-dvh w-dvw flex justify-center items-center">
-      <MoviePage />
+      <AppRoutes />
     </div>
   );
 };
