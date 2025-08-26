@@ -37,8 +37,8 @@ const routes: {
 } = {
   // Client routes
   "client-home": () => "/",
-  "client-signin": () => "/signin",
-  "client-signup": () => "/signup",
+  "client-signin": () => "/login",
+  "client-signup": () => "/register",
 
   // API routes
   "api-health": () => "/api/health",
