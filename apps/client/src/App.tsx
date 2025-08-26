@@ -6,6 +6,7 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { PrivateLayout } from "./layouts/PrivateLayout";
 import { PublicLayout } from "./layouts/PublicLayout";
 import { authClient } from "./lib/auth-client";
+import MoviePage from "./pages/movie/movie.page";
 
 const PublicRoute = () => {
   const session = authClient.useSession();
@@ -42,6 +43,12 @@ const App = () => {
         <Route element={<PublicRoute />}>
           <Route path={getUrl("client-signin")} element={<SignInPage />} />
           <Route path={getUrl("client-signup")} element={<SignUpPage />} />
+          <Route
+            path={getUrl("client-movie", {
+              movieId: ":movieId",
+            })}
+            element={<MoviePage />}
+          />
         </Route>
 
         {/* Routes privées */}

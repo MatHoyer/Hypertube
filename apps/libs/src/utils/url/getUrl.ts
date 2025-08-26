@@ -7,19 +7,34 @@ export type TClientRouteDataRequirements = {
   "client-home": undefined;
   "client-signin": undefined;
   "client-signup": undefined;
+  "client-movie": {
+    movieId: TMovieSchema["id"] | ":movieId";
+  };
 };
 
 export type TApiRouteDataRequirements = {
   "api-health": undefined;
   "api-auth": undefined;
-  "api-scrappers": {
+
+  // Scrappers routes
+  "api-filters": {
     scrapper: "yts";
-    endpoint?: "filters" | "movies" | "pagination" | "download";
-    urlParams?: {
-      movieId: TMovieSchema["id"];
-      resolution: (typeof ytsQualities)[number];
-      subtitlesLanguage: keyof typeof languageCodes | "none";
-    };
+  };
+  "api-movies": {
+    scrapper: "yts";
+  };
+  "api-pagination": {
+    scrapper: "yts";
+  };
+  "api-movie": {
+    scrapper: "yts";
+    movieId: TMovieSchema["id"];
+  };
+  "api-movie-download": {
+    scrapper: "yts";
+    movieId: TMovieSchema["id"];
+    resolution: (typeof ytsQualities)[number];
+    subtitlesLanguage: keyof typeof languageCodes | "none";
   };
 };
 
@@ -39,22 +54,25 @@ const routes: {
   "client-home": () => "/",
   "client-signin": () => "/sign-in",
   "client-signup": () => "/sign-up",
+  "client-movie": ({ movieId }) => `/movie/${movieId}`,
 
   // API routes
   "api-health": () => "/api/health",
   "api-auth": () => "/api/auth",
-  "api-scrappers": ({ scrapper, endpoint, urlParams }) => {
-    const baseUrl = `/api/scrappers/${scrapper}`;
 
-    if (endpoint === "download") {
-      if (!urlParams) {
-        throw new Error("Url params are required for download endpoint");
-      }
-      return `/${baseUrl}/movie/${urlParams.movieId}/resolution/${urlParams.resolution}/subtitles/${urlParams.subtitlesLanguage}/${endpoint}`;
-    }
-
-    return endpoint ? `/${baseUrl}/${endpoint}` : baseUrl;
-  },
+  // API scrappers routes
+  "api-filters": ({ scrapper }) => `/api/scrappers/${scrapper}/filters`,
+  "api-movies": ({ scrapper }) => `/api/scrappers/${scrapper}/movies`,
+  "api-pagination": ({ scrapper }) => `/api/scrappers/${scrapper}/pagination`,
+  "api-movie": ({ scrapper, movieId }) =>
+    `/api/scrappers/${scrapper}/movie/${movieId}`,
+  "api-movie-download": ({
+    scrapper,
+    movieId,
+    resolution,
+    subtitlesLanguage,
+  }) =>
+    `/api/scrappers/${scrapper}/movie/${movieId}/resolution/${resolution}/subtitles/${subtitlesLanguage}/download`,
 };
 
 type TSearchParams =
