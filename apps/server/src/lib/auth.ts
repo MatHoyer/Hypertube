@@ -5,6 +5,7 @@ import { genericOAuth, username } from "better-auth/plugins";
 import { v4 } from "uuid";
 import { env } from "../env";
 import prisma from "./prisma";
+import { sendEmail } from "./resend";
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
@@ -16,11 +17,24 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 50,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      await sendEmail({
+        to: user.email,
+        subject: "Reset your password",
+        text: `Click the link to reset your password: ${url}`,
+      });
+    },
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       if (ctx.path === "/sign-up/email" && ctx.body?.password) {
         if (!passwordRegex.test(ctx.body.password)) {
+          throw new APIError("BAD_REQUEST", {
+            code: "PASSWORD_POLICY",
+          });
+        }
+      } else if (ctx.path === "/reset-password" && ctx.body?.newPassword) {
+        if (!passwordRegex.test(ctx.body.newPassword)) {
           throw new APIError("BAD_REQUEST", {
             code: "PASSWORD_POLICY",
           });

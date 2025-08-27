@@ -1,6 +1,6 @@
+import { SignInPage } from "@/pages/auth/signIn/SignIn.page";
+import { SignUpPage } from "@/pages/auth/signUp/SignUp.page";
 import { NotFoundPage } from "@/pages/notFound/NotFound.page";
-import { SignInPage } from "@/pages/signIn/SignIn.page";
-import { SignUpPage } from "@/pages/signUp/SignUp.page";
 import { getUrl } from "@hypertube/libs";
 import { Navigate, Outlet, Route, Routes, useParams } from "react-router-dom";
 import type { ZodType } from "zod";
@@ -40,14 +40,14 @@ const ProtectedRoute = <T extends Record<string, unknown>>({
   schema: ZodType<T>;
 }) => {
   const params = useParams();
-  const result = schema.safeParse(params)
+  const result = schema.safeParse(params);
 
   if (!result.success) {
     return <NotFoundPage />;
   }
 
-  return <Outlet />
-}
+  return <Outlet />;
+};
 
 const App = () => {
   const session = authClient.useSession();
@@ -60,10 +60,15 @@ const App = () => {
         <Route element={<PublicRoute />}>
           <Route path={getUrl("client-signin")} element={<SignInPage />} />
           <Route path={getUrl("client-signup")} element={<SignUpPage />} />
-          <Route element={<ProtectedRoute
-            schema={z.object({
-              movieId: z.uuid(),
-            })} />}>
+          <Route
+            element={
+              <ProtectedRoute
+                schema={z.object({
+                  movieId: z.uuid(),
+                })}
+              />
+            }
+          >
             <Route
               path={getUrl("client-movie", {
                 movieId: ":movieId",

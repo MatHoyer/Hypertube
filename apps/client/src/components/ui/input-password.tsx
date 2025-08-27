@@ -1,9 +1,10 @@
-import { useState, type ComponentProps } from "react";
-import { Input } from "./input";
+import { getUrl } from "@hypertube/libs";
 import { Eye, EyeOff } from "lucide-react";
-import { Button } from "./button";
-import { Link } from "react-router-dom";
+import { useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { Button } from "./button";
+import { Input } from "./input";
 
 const InputPassword: React.FC<
   Omit<ComponentProps<typeof Input>, "type"> & {
@@ -38,7 +39,9 @@ const InputPassword: React.FC<
           className="flex justify-end text-neutral-600"
           asChild
         >
-          <Link to={"/"}>{t("sign.forgetPassword")}</Link>
+          <Link to={getUrl("client-forget-password")}>
+            {t("sign.forgetPassword")}
+          </Link>
         </Button>
       )}
     </div>

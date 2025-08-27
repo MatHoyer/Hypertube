@@ -59,6 +59,9 @@
     "forgetPassword": "Forget password ?",
     "up": "Sign up",
     "in": "Sign in",
-    "out": "Sign out"
+    "out": "Sign out",
+    "sendEmail": "Send email",
+    "resetPassword": "Reset password",
+    "resetSuccessMessage": "Your password changed successfully. You can now sign in."
   }
 }

@@ -59,6 +59,9 @@
     "forgetPassword": "¿Olvidaste tu contraseña?",
     "up": "Registrarse",
     "in": "Iniciar sesión",
-    "out": "Cerrar sesión"
+    "out": "Cerrar sesión",
+    "sendEmail": "",
+    "resetPassword": "",
+    "resetSuccessMessage": ""
   }
 }

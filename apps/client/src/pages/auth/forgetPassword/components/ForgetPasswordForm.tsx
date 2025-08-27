@@ -1,4 +1,3 @@
-import { OAuthButtons } from "@/components/OAuthButtons";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -9,11 +8,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import InputPassword from "@/components/ui/input-password";
 import { authClient } from "@/lib/auth-client";
 import { errorCodes } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUrl } from "@hypertube/libs";
+import { getServerUrl, getUrl } from "@hypertube/libs";
 import { TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -21,28 +19,24 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { z } from "zod";
 
-const formSchema = z.object({
-  username: z.string().min(1).max(50),
-  password: z.string().min(8).max(50),
-});
+const formSchema = z.object({ email: z.email() });
 
-export const SignInForm = () => {
+export const ForgetPasswordForm = () => {
   const [authMessageError, setAuthMessageError] = useState("");
   const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
-      password: "",
+      email: "",
     },
   });
 
   const onSubmit = async (userData: z.infer<typeof formSchema>) => {
-    await authClient.signIn.username(
+    await authClient.requestPasswordReset(
       {
-        username: userData.username,
-        password: userData.password,
+        email: userData.email,
+        redirectTo: getServerUrl() + getUrl("client-reset-password"),
       },
       {
         onSuccess: () => {
@@ -60,33 +54,12 @@ export const SignInForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="username"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("sign.username")}</FormLabel>
+              <FormLabel>{t("sign.email")}</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  placeholder={t("sign.username")}
-                  autoComplete="username"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("sign.password")}</FormLabel>
-              <FormControl>
-                <InputPassword
-                  {...field}
-                  placeholder={t("sign.password")}
-                  forgetPasswordOption
-                />
+                <Input {...field} placeholder={t("sign.email")} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -102,12 +75,14 @@ export const SignInForm = () => {
             </p>
           </div>
         )}
-        <OAuthButtons />
         <div className="flex justify-between">
           <Button type="button" variant={"link"} asChild>
             <Link to={getUrl("client-signup")}>{t("sign.up")}</Link>
           </Button>
-          <Button type="submit">{t("sign.in")}</Button>
+          <Button type="button" variant={"link"} asChild>
+            <Link to={getUrl("client-signin")}>{t("sign.in")}</Link>
+          </Button>
+          <Button>{t("sign.sendEmail")}</Button>
         </div>
       </form>
     </Form>

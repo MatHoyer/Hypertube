@@ -1,5 +1,5 @@
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "./ui/button";
 
 export const OAuthButtons = () => {
   const handleOAuth = async (provider: string) => {
@@ -12,9 +12,14 @@ export const OAuthButtons = () => {
       providerId: "school42",
     });
   };
+
   return (
     <div className="flex justify-evenly">
-      <Button onClick={() => handleOAuth("google")} type="button">
+      <Button
+        onClick={() => handleOAuth("google")}
+        type="button"
+        className="dark"
+      >
         <img
           src="/images/oauth_logo/google_logo.png"
           className="size-6"
@@ -23,7 +28,11 @@ export const OAuthButtons = () => {
           title="Google"
         />
       </Button>
-      <Button onClick={() => handleOAuth("github")} type="button">
+      <Button
+        onClick={() => handleOAuth("github")}
+        type="button"
+        className="dark"
+      >
         <img
           src="/images/oauth_logo/github_logo.svg"
           className="size-6"
@@ -32,7 +41,11 @@ export const OAuthButtons = () => {
           title="GitHub"
         />
       </Button>
-      <Button onClick={() => handleOAuth("discord")} type="button">
+      <Button
+        onClick={() => handleOAuth("discord")}
+        type="button"
+        className="dark"
+      >
         <img
           src="/images/oauth_logo/discord_logo.webp"
           className="size-6"
@@ -41,7 +54,7 @@ export const OAuthButtons = () => {
           title="Discord"
         />
       </Button>
-      <Button onClick={() => handle42OAuth()} type="button">
+      <Button onClick={() => handle42OAuth()} type="button" className="dark">
         <img
           src="/images/oauth_logo/42_logo.png"
           className="size-6"
