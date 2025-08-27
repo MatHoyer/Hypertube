@@ -266,7 +266,7 @@ export const getYtsDownloadMovie = async (
     return c.json({ error: "Movie not found" }, 404);
   }
 
-  let returnMessage = {
+  const returnMessage = {
     message: "Movie downloading",
     subtitles: {
       message: "Subtitles downloading",
