@@ -151,7 +151,7 @@ export const scrapeYtsPagination = async (
         try {
           const number = await item.$eval("a", (el) => el.textContent);
           return number;
-        } catch (error) {
+        } catch {
           return null;
         }
       }) ?? []
