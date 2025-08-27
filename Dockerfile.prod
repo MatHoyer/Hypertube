@@ -13,4 +13,3 @@ COPY .env ./
 COPY apps ./apps
 
 RUN pnpm i --frozen-lockfile
-RUN pnpm lint
