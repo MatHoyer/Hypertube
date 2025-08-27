@@ -3,10 +3,10 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
 import z from "zod";
 import en from "./en.json";
+import es from "./es.json";
 import fr from "./fr.json";
-import es from "./es.json"
 
-const resources = {
+export const resources = {
   en: {
     translation: en,
   },

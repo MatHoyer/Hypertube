@@ -10,6 +10,7 @@ const commonRules = {
     "error",
     { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
   ],
+  "@typescript-eslint/no-explicit-any": "warn",
 };
 
 const baseConfig = {
