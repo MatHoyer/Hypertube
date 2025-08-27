@@ -9,6 +9,7 @@ WORKDIR /hypertube
 COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY .env ./
+COPY .eslint.config.js ./
 
 COPY apps ./apps
 
