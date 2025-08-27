@@ -3,11 +3,11 @@ import { SignInPage } from "@/pages/signIn/SignIn.page";
 import { SignUpPage } from "@/pages/signUp/SignUp.page";
 import { getUrl } from "@hypertube/libs";
 import { Navigate, Outlet, Route, Routes, useParams } from "react-router-dom";
+import { z } from "zod";
 import { PrivateLayout } from "./layouts/PrivateLayout";
 import { PublicLayout } from "./layouts/PublicLayout";
 import { authClient } from "./lib/auth-client";
 import MoviePage from "./pages/movie/movie.page";
-import { z } from "zod";
 
 const PublicRoute = () => {
   const session = authClient.useSession();
@@ -33,14 +33,13 @@ const PrivateRoute = () => {
   );
 };
 
-const ProtectedRoute = ({ param }: { param: string }) => {
+const ProtectedRoute = ({ param, schema }: { param: string; schema: z.ZodSchema }) => {
   const params = useParams();
-  const uuidSchema = z.string().uuid();
 
   const paramValue = params[param];
-  const isValidUuid = uuidSchema.safeParse(paramValue).success;
+  const isValid = schema.safeParse(paramValue).success;
 
-  if (!isValidUuid) {
+  if (!isValid) {
     return <NotFoundPage />;
   }
 
@@ -58,7 +57,7 @@ const App = () => {
         <Route element={<PublicRoute />}>
           <Route path={getUrl("client-signin")} element={<SignInPage />} />
           <Route path={getUrl("client-signup")} element={<SignUpPage />} />
-          <Route element={<ProtectedRoute param="movieId" />}>
+          <Route element={<ProtectedRoute param="movieId" schema={z.uuid()} />}>
             <Route
               path={getUrl("client-movie", {
                 movieId: ":movieId",
