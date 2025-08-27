@@ -25,6 +25,7 @@ const responseSchema = <T>(dataSchema: z.ZodSchema<T>) =>
     data: dataSchema,
   });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ytsMoviesSearchParamsSchema = z.object({
   limit: z.number().optional(),
   page: z.number().int().positive().optional(),

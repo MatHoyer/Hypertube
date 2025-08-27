@@ -9,10 +9,10 @@ export const renameFile = (filePath: string, newName: string) => {
 };
 
 export const waitFile = async (filePath: string, timeout = 15000) => {
-  return new Promise<void>(async (resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const startTime = Date.now();
 
-    const check = async () => {
+    const check = () => {
       if (fs.existsSync(filePath)) {
         resolve();
       } else if (Date.now() - startTime > timeout) {
@@ -22,6 +22,6 @@ export const waitFile = async (filePath: string, timeout = 15000) => {
       }
     };
 
-    await check();
+    check();
   });
 };
