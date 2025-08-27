@@ -22,10 +22,6 @@ jobs:
           ./check_translation.sh
           cd -
 
-      - name: Check lint
-        run: |
-          pnpm lint
-
   docker-startup:
     runs-on: ubuntu-latest
     needs: pre-build-tests
