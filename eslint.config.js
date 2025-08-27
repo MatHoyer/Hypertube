@@ -10,7 +10,6 @@ const commonRules = {
     "error",
     { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
   ],
-  "@typescript-eslint/no-explicit-any": "warn",
 };
 
 const baseConfig = {
@@ -34,13 +33,6 @@ export default tseslint.config([
       "apps/server/prisma/migrations/**",
       "pnpm-lock.yaml",
     ],
-  },
-
-  // Base config for all TypeScript files
-  {
-    files: ["**/*.{ts,tsx}"],
-    ...baseConfig,
-    rules: commonRules,
   },
 
   // Client/React specific config
