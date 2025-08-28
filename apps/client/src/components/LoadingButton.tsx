@@ -33,8 +33,6 @@ export const LoadingButton = ({
       }, 1000);
       return () => clearTimeout(timer);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, success]);
 
   const isAnimating = loading || showSuccess;

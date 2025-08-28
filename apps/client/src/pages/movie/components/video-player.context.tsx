@@ -200,7 +200,6 @@ export const VideoPlayerProvider: React.FC<{
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoRef]);
 
   return (
@@ -237,7 +236,6 @@ export const VideoPlayerProvider: React.FC<{
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useVideoPlayer = () => {
   const ctx = useContext(VideoPlayerContext);
   if (!ctx)
