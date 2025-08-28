@@ -56,7 +56,7 @@ const App = () => {
   console.log(session?.data?.user);
 
   return (
-    <div className="h-dvh w-dvw flex justify-center items-center">
+    <div className="h-dvh w-dvw flex justify-center items-center bg-background">
       <Routes>
         {/* Routes publiques */}
         <Route element={<PublicRoute />}>

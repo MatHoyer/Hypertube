@@ -30,7 +30,7 @@ const TextSeparator: React.FC<React.ComponentProps<"span">> = ({
   return (
     <div className="flex items-center gap-2 w-full">
       <Separator className="flex-1" />
-      <span className={cn("text-primary", className)} {...props} />
+      <span className={cn("text-card-foreground", className)} {...props} />
       <Separator className="flex-1" />
     </div>
   );

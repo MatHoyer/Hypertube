@@ -18,7 +18,7 @@ export const OAuthButtons = () => {
       <Button
         onClick={() => handleOAuth("google")}
         type="button"
-        className="dark"
+        className="light bg-background"
       >
         <img
           src="/images/oauth_logo/google_logo.png"
@@ -31,7 +31,7 @@ export const OAuthButtons = () => {
       <Button
         onClick={() => handleOAuth("github")}
         type="button"
-        className="dark"
+        className="light bg-background"
       >
         <img
           src="/images/oauth_logo/github_logo.svg"
@@ -44,7 +44,7 @@ export const OAuthButtons = () => {
       <Button
         onClick={() => handleOAuth("discord")}
         type="button"
-        className="dark"
+        className="light bg-background"
       >
         <img
           src="/images/oauth_logo/discord_logo.webp"
@@ -54,7 +54,11 @@ export const OAuthButtons = () => {
           title="Discord"
         />
       </Button>
-      <Button onClick={() => handle42OAuth()} type="button" className="dark">
+      <Button
+        onClick={() => handle42OAuth()}
+        type="button"
+        className="light bg-background"
+      >
         <img
           src="/images/oauth_logo/42_logo.png"
           className="size-6"
