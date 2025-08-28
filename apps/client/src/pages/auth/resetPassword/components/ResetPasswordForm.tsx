@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -11,18 +12,18 @@ import InputPassword from "@/components/ui/input-password";
 import { authClient } from "@/lib/auth-client";
 import { errorCodes } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUrl } from "@hypertube/libs";
 import { ThumbsUp, TriangleAlert } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 import { z } from "zod";
 
 const formSchema = z.object({ password: z.string().min(8).max(50) });
 
-export const ResetPasswordForm = () => {
+export const ResetPasswordForm: React.FC<ComponentProps<"div">> = ({
+  ...props
+}) => {
   const [authMessageError, setAuthMessageError] = useState("");
   const [resetSuccess, setResetSuccess] = useState(false);
   const [token, _] = useQueryState("token", { defaultValue: "" });
@@ -55,47 +56,42 @@ export const ResetPasswordForm = () => {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("sign.password")}</FormLabel>
-              <FormControl>
-                <InputPassword {...field} placeholder={t("sign.password")} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+    <div {...props}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("sign.password")}</FormLabel>
+                <FormControl>
+                  <InputPassword {...field} placeholder={t("sign.password")} />
+                </FormControl>
+                <FormDescription>{t("sign.resetPasswordDesc")}</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {!!authMessageError && (
+            <div className={"flex text-red-500"}>
+              <TriangleAlert />
+              <p>
+                {t(
+                  `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
+                )}
+              </p>
+            </div>
           )}
-        />
-        {!!authMessageError && (
-          <div className={"flex text-red-500"}>
-            <TriangleAlert />
-            <p>
-              {t(
-                `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
-              )}
-            </p>
-          </div>
-        )}
-        {!!resetSuccess && (
-          <div className={"flex text-green-500"}>
-            <ThumbsUp />
-            <p>{t("sign.resetSuccessMessage")}</p>
-          </div>
-        )}
-        <div className="flex justify-between">
-          <Button type="button" variant={"link"} asChild>
-            <Link to={getUrl("client-signup")}>{t("sign.up")}</Link>
-          </Button>
-          <Button type="button" variant={"link"} asChild>
-            <Link to={getUrl("client-signin")}>{t("sign.in")}</Link>
-          </Button>
-          <Button>{t("sign.resetPassword")}</Button>
-        </div>
-      </form>
-    </Form>
+          {!!resetSuccess && (
+            <div className={"flex text-green-500"}>
+              <ThumbsUp />
+              <p>{t("sign.resetSuccessMessage")}</p>
+            </div>
+          )}
+          <Button className="w-full">{t("sign.resetPassword")}</Button>
+        </form>
+      </Form>
+    </div>
   );
 };

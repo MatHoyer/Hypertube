@@ -14,7 +14,7 @@ export const OAuthButtons = () => {
   };
 
   return (
-    <div className="flex justify-evenly">
+    <div className="flex justify-evenly gap-4">
       <Button
         onClick={() => handleOAuth("google")}
         type="button"

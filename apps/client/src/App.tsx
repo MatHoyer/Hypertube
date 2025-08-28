@@ -8,6 +8,8 @@ import { z } from "zod";
 import { PrivateLayout } from "./layouts/PrivateLayout";
 import { PublicLayout } from "./layouts/PublicLayout";
 import { authClient } from "./lib/auth-client";
+import { ForgetPasswordPage } from "./pages/auth/forgetPassword/ForgetPasswordPage";
+import { ResetPasswordPage } from "./pages/auth/resetPassword/ResetPasswordPage";
 import MoviePage from "./pages/movie/movie.page";
 
 const PublicRoute = () => {
@@ -60,6 +62,14 @@ const App = () => {
         <Route element={<PublicRoute />}>
           <Route path={getUrl("client-signin")} element={<SignInPage />} />
           <Route path={getUrl("client-signup")} element={<SignUpPage />} />
+          <Route
+            path={getUrl("client-forget-password")}
+            element={<ForgetPasswordPage />}
+          />
+          <Route
+            path={getUrl("client-reset-password")}
+            element={<ResetPasswordPage />}
+          />
           <Route
             element={
               <ProtectedRoute

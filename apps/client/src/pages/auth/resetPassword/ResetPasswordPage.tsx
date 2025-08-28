@@ -1,10 +1,27 @@
+import { Button } from "@/components/ui/button";
+import { Typography } from "@/components/ui/typography";
+import { getUrl } from "@hypertube/libs";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { AuthLayout } from "../AuthLayout";
 import { ResetPasswordForm } from "./components/ResetPasswordForm";
 
 export const ResetPasswordPage = () => {
+  const { t } = useTranslation();
   return (
-    <AuthLayout>
-      <ResetPasswordForm />
+    <AuthLayout className="w-1/4" title={t("sign.resetPassword")}>
+      <ResetPasswordForm className="w-full" />
+      <Typography variant="small">
+        {t("sign.rememberPassword")}
+        <Button
+          type="button"
+          variant={"link"}
+          className="text-muted-foreground"
+          asChild
+        >
+          <Link to={getUrl("client-signin")}>{t("sign.backToSignin")}</Link>
+        </Button>
+      </Typography>
     </AuthLayout>
   );
 };

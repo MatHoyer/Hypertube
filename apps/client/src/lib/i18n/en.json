@@ -1,6 +1,7 @@
 {
   "global": {
-    "hello": "Hello"
+    "hello": "Hello",
+    "or": "Or"
   },
   "combobox": {
     "language": {
@@ -56,12 +57,19 @@
     "firstName": "First Name",
     "lastName": "Last Name",
     "password": "Password",
-    "forgetPassword": "Forget password ?",
-    "up": "Sign up",
+    "forgetPassword": "Forgot your password ?",
+    "up": "Create account",
     "in": "Sign in",
     "out": "Sign out",
-    "sendEmail": "Send email",
+    "sendEmail": "Send Reset Link",
     "resetPassword": "Reset password",
-    "resetSuccessMessage": "Your password changed successfully. You can now sign in."
+    "resetSuccessMessage": "Your password changed successfully. You can now sign in.",
+    "emailExample": "m@example.com",
+    "forgetPasswordDesc": "A password reset link will be sent to the provided email address.",
+    "resetPasswordDesc": "Choose your new password.",
+    "rememberPassword": "Remembered your password?",
+    "backToSignin": "Go back to sign in",
+    "missAccount": "Don't have an account?",
+    "gotAccount": "Already have an account?"
   }
 }

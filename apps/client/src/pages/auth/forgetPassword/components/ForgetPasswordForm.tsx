@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -11,17 +12,18 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { errorCodes } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getServerUrl, getUrl } from "@hypertube/libs";
+import { getUrl } from "@hypertube/libs";
 import { TriangleAlert } from "lucide-react";
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 import { z } from "zod";
 
 const formSchema = z.object({ email: z.email() });
 
-export const ForgetPasswordForm = () => {
+export const ForgetPasswordForm: React.FC<ComponentProps<"div">> = ({
+  ...props
+}) => {
   const [authMessageError, setAuthMessageError] = useState("");
   const { t } = useTranslation();
 
@@ -36,7 +38,7 @@ export const ForgetPasswordForm = () => {
     await authClient.requestPasswordReset(
       {
         email: userData.email,
-        redirectTo: getServerUrl() + getUrl("client-reset-password"),
+        redirectTo: getUrl("client-reset-password", { withServerUrl: true }),
       },
       {
         onSuccess: () => {
@@ -50,41 +52,38 @@ export const ForgetPasswordForm = () => {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t("sign.email")}</FormLabel>
-              <FormControl>
-                <Input {...field} placeholder={t("sign.email")} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+    <div {...props}>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("sign.email")}</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder={t("sign.emailExample")} />
+                </FormControl>
+                <FormDescription>
+                  {t("sign.forgetPasswordDesc")}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {!!authMessageError && (
+            <div className={"flex text-red-500"}>
+              <TriangleAlert />
+              <p>
+                {t(
+                  `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
+                )}
+              </p>
+            </div>
           )}
-        />
-        {!!authMessageError && (
-          <div className={"flex text-red-500"}>
-            <TriangleAlert />
-            <p>
-              {t(
-                `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
-              )}
-            </p>
-          </div>
-        )}
-        <div className="flex justify-between">
-          <Button type="button" variant={"link"} asChild>
-            <Link to={getUrl("client-signup")}>{t("sign.up")}</Link>
-          </Button>
-          <Button type="button" variant={"link"} asChild>
-            <Link to={getUrl("client-signin")}>{t("sign.in")}</Link>
-          </Button>
-          <Button>{t("sign.sendEmail")}</Button>
-        </div>
-      </form>
-    </Form>
+          <Button className="w-full">{t("sign.sendEmail")}</Button>
+        </form>
+      </Form>
+    </div>
   );
 };

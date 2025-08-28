@@ -1,7 +1,7 @@
-import * as React from "react"
-import * as SeparatorPrimitive from "@radix-ui/react-separator"
+import * as SeparatorPrimitive from "@radix-ui/react-separator";
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 function Separator({
   className,
@@ -20,7 +20,20 @@ function Separator({
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Separator }
+const TextSeparator: React.FC<React.ComponentProps<"span">> = ({
+  className,
+  ...props
+}) => {
+  return (
+    <div className="flex items-center gap-2 w-full">
+      <Separator className="flex-1" />
+      <span className={cn("text-primary", className)} {...props} />
+      <Separator className="flex-1" />
+    </div>
+  );
+};
+
+export { Separator, TextSeparator };
