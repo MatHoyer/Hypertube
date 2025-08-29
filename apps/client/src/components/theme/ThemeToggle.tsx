@@ -19,7 +19,7 @@ export function ThemeToggle() {
 
   return (
     <motion.button
-      className="relative flex items-center justify-center w-14 h-8 rounded-full bg-secondary border border-border"
+      className="relative flex items-center justify-center w-14 h-8 rounded-full bg-card border border-border"
       onClick={() => setTheme(isDark ? "light" : "dark")}
       whileTap={{ scale: 0.95 }}
       whileHover={{ scale: 1.05 }}
@@ -43,9 +43,9 @@ export function ThemeToggle() {
           }}
         >
           {isDark ? (
-            <Moon className="w-4 h-4 text-secondary" />
+            <Moon className="w-4 h-4 text-background" />
           ) : (
-            <Sun className="w-4 h-4 text-secondary" />
+            <Sun className="w-4 h-4 text-background" />
           )}
         </motion.div>
       </motion.div>
