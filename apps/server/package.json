@@ -6,7 +6,7 @@
   "scripts": {
     "clear": "rm -rf node_modules dist prisma/schema/migrations",
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc && cp -r src/emails/default-email.html dist/server/src/emails",
     "start": "node dist/server/src/index.js",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx dotenv -e ../../.env -- npx prisma migrate dev --name init",
