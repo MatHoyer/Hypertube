@@ -1,6 +1,8 @@
 {
   "global": {
-    "hello": "Hola"
+    "hello": "Hola",
+    "error": "",
+    "or": ""
   },
   "combobox": {
     "language": {
@@ -56,9 +58,19 @@
     "firstName": "Nombre",
     "lastName": "Apellido",
     "password": "Contraseña",
-    "forgetPassword": "¿Olvidaste tu contraseña?",
-    "up": "Registrarse",
+    "forgetPassword": "",
+    "up": "",
     "in": "Iniciar sesión",
-    "out": "Cerrar sesión"
+    "out": "Cerrar sesión",
+    "sendEmail": "",
+    "resetPassword": "",
+    "resetSuccessMessage": "",
+    "emailExample": "",
+    "forgetPasswordDesc": "",
+    "resetPasswordDesc": "",
+    "rememberPassword": "",
+    "backToSignin": "",
+    "missAccount": "",
+    "gotAccount": ""
   }
 }

@@ -1,6 +1,6 @@
+import { SignInPage } from "@/pages/auth/signIn/SignIn.page";
+import { SignUpPage } from "@/pages/auth/signUp/SignUp.page";
 import { NotFoundPage } from "@/pages/notFound/NotFound.page";
-import { SignInPage } from "@/pages/signIn/SignIn.page";
-import { SignUpPage } from "@/pages/signUp/SignUp.page";
 import { getUrl } from "@hypertube/libs";
 import { Navigate, Outlet, Route, Routes, useParams } from "react-router-dom";
 import type { ZodType } from "zod";
@@ -8,6 +8,8 @@ import { z } from "zod";
 import { PrivateLayout } from "./layouts/PrivateLayout";
 import { PublicLayout } from "./layouts/PublicLayout";
 import { authClient } from "./lib/auth-client";
+import { ForgetPasswordPage } from "./pages/auth/forgetPassword/ForgetPasswordPage";
+import { ResetPasswordPage } from "./pages/auth/resetPassword/ResetPasswordPage";
 import MoviePage from "./pages/movie/movie.page";
 
 const PublicRoute = () => {
@@ -40,30 +42,43 @@ const ProtectedRoute = <T extends Record<string, unknown>>({
   schema: ZodType<T>;
 }) => {
   const params = useParams();
-  const result = schema.safeParse(params)
+  const result = schema.safeParse(params);
 
   if (!result.success) {
     return <NotFoundPage />;
   }
 
-  return <Outlet />
-}
+  return <Outlet />;
+};
 
 const App = () => {
   const session = authClient.useSession();
   console.log(session?.data?.user);
 
   return (
-    <div className="h-dvh w-dvw flex justify-center items-center">
+    <div className="h-dvh w-dvw flex justify-center items-center bg-background">
       <Routes>
         {/* Routes publiques */}
         <Route element={<PublicRoute />}>
           <Route path={getUrl("client-signin")} element={<SignInPage />} />
           <Route path={getUrl("client-signup")} element={<SignUpPage />} />
-          <Route element={<ProtectedRoute
-            schema={z.object({
-              movieId: z.uuid(),
-            })} />}>
+          <Route
+            path={getUrl("client-forget-password")}
+            element={<ForgetPasswordPage />}
+          />
+          <Route
+            path={getUrl("client-reset-password")}
+            element={<ResetPasswordPage />}
+          />
+          <Route
+            element={
+              <ProtectedRoute
+                schema={z.object({
+                  movieId: z.uuid(),
+                })}
+              />
+            }
+          >
             <Route
               path={getUrl("client-movie", {
                 movieId: ":movieId",

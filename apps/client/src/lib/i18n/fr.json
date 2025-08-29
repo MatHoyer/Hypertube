@@ -1,6 +1,8 @@
 {
   "global": {
-    "hello": "Bonjour"
+    "hello": "Bonjour",
+    "error": "Erreur",
+    "or": "Ou"
   },
   "combobox": {
     "language": {
@@ -57,8 +59,19 @@
     "lastName": "Nom",
     "password": "Mot de passe",
     "forgetPassword": "Mot de passe oublié ?",
-    "up": "S'enregistrer",
+    "up": "Créer votre compte",
     "in": "Se connecter",
-    "out": "Se déconnecter"
+    "out": "Se déconnecter",
+    "sendEmail": "Envoyer le lien de réinitialisation",
+    "resetPassword": "Réinitialiser votre mot de passe",
+    "resetSuccessMessage": "Votre mot de passe a bien été modifié. Vous pouvez maintenant vous connecter.",
+    "emailExample": "m@exemple.com",
+    "forgetPasswordDesc": "Un lien de réinitialisation de mot de passe sera envoyé à l'adresse email fournie.",
+    "resetPasswordDesc": "Choisissez votre nouveau mot de passe.",
+    "rememberPassword": "Vous vous souvenez de votre mot de passe ?",
+    "backToSignin": "Retour à la connexion",
+    "missAccount": "Vous n'avez pas de compte ?",
+    "gotAccount": "Vous avez déjà un compte ?",
+    "failed": "Erreur."
   }
 }

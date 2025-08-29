@@ -7,6 +7,8 @@ export type TClientRouteDataRequirements = {
   "client-home": undefined;
   "client-signin": undefined;
   "client-signup": undefined;
+  "client-forget-password": undefined;
+  "client-reset-password": undefined;
   "client-movie": {
     movieId: TMovieSchema["id"] | ":movieId";
   };
@@ -54,6 +56,8 @@ const routes: {
   "client-home": () => "/",
   "client-signin": () => "/sign-in",
   "client-signup": () => "/sign-up",
+  "client-forget-password": () => "/forget-password",
+  "client-reset-password": () => "/reset-password",
   "client-movie": ({ movieId }) => `/movie/${movieId}`,
 
   // API routes
@@ -97,12 +101,7 @@ export const getUrl = <T extends TRoute>(
   route: T,
   params?: TGetUrlArgs<T>
 ): string => {
-  const {
-    withServerUrl = false,
-    searchParams,
-    removeForwardSlash = true,
-    ...rawParams
-  } = params || {};
+  const { withServerUrl = false, searchParams, ...rawParams } = params || {};
 
   const routeParams = rawParams as TRouteDataMap<T>;
   const routeFn = routes[route];
@@ -114,7 +113,5 @@ export const getUrl = <T extends TRoute>(
     ? `?${new URLSearchParams(searchParams)}`
     : "";
 
-  return `${serverUrl}${
-    removeForwardSlash ? computedUrl.slice(1) : computedUrl
-  }${parsedSearchParams}`;
+  return `${serverUrl}${computedUrl}${parsedSearchParams}`;
 };
