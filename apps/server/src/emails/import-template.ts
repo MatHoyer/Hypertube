@@ -15,17 +15,25 @@ const template = fs.readFileSync(
   "utf-8"
 );
 
-export const mailTemplate = (
-  title: string,
-  content: string,
-  link: string,
-  linkText: string,
-  year?: string
-) => {
+type MailValues = {
+  title: string;
+  content: string;
+  link: string;
+  linkText: string;
+  year?: string;
+};
+
+type MailConfig = {
+  language: string;
+};
+
+export const mailTemplate = (values: MailValues, config: MailConfig) => {
+  console.log(config);
+
   return template
-    .replace(keyToReplace.title, title)
-    .replace(keyToReplace.content, content)
-    .replace(keyToReplace.link, link)
-    .replace(keyToReplace.linkText, linkText)
-    .replace(keyToReplace.year, year ?? "" + getYear(new Date()));
+    .replace(keyToReplace.title, values.title)
+    .replace(keyToReplace.content, values.content)
+    .replace(keyToReplace.link, values.link)
+    .replace(keyToReplace.linkText, values.linkText)
+    .replace(keyToReplace.year, values.year ?? "" + getYear(new Date()));
 };
