@@ -1,0 +1,9 @@
+{
+  "global": {
+    "hello": "Hola"
+  },
+  "email": {
+    "ignoreEmail": "",
+    "allRightsReserved": ""
+  }
+}

@@ -18,9 +18,7 @@ jobs:
 
       - name: Check translation completeness
         run: |
-          cd apps/client
           ./check_translation.sh
-          cd -
 
   docker-startup:
     runs-on: ubuntu-latest
