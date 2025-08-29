@@ -2,6 +2,7 @@ import * as SeparatorPrimitive from "@radix-ui/react-separator";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
+import { Typography } from "./typography";
 
 function Separator({
   className,
@@ -23,14 +24,18 @@ function Separator({
   );
 }
 
-const TextSeparator: React.FC<React.ComponentProps<"span">> = ({
+const TextSeparator: React.FC<React.ComponentProps<typeof Typography>> = ({
   className,
   ...props
 }) => {
   return (
     <div className="flex items-center gap-2 w-full">
       <Separator className="flex-1" />
-      <span className={cn("text-card-foreground", className)} {...props} />
+      <Typography
+        variant="small"
+        className={cn("text-muted-foreground", className)}
+        {...props}
+      />
       <Separator className="flex-1" />
     </div>
   );

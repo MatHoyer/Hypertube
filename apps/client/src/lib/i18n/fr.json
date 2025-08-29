@@ -1,6 +1,7 @@
 {
   "global": {
     "hello": "Bonjour",
+    "error": "Erreur",
     "or": "Ou"
   },
   "combobox": {
@@ -70,6 +71,7 @@
     "rememberPassword": "Vous vous souvenez de votre mot de passe ?",
     "backToSignin": "Retour à la connexion",
     "missAccount": "Vous n'avez pas de compte ?",
-    "gotAccount": "Vous avez déjà un compte ?"
+    "gotAccount": "Vous avez déjà un compte ?",
+    "failed": "Erreur."
   }
 }

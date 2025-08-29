@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { genericOAuth, username } from "better-auth/plugins";
 import { v4 } from "uuid";
+import { mailTemplate } from "../emails/import-template";
 import { env } from "../env";
 import prisma from "./prisma";
 import { sendEmail } from "./resend";
@@ -21,7 +22,15 @@ export const auth = betterAuth({
       await sendEmail({
         to: user.email,
         subject: "Reset your password",
-        text: `Click the link to reset your password: ${url}`,
+        html: mailTemplate(
+          {
+            title: "Reset your password",
+            content: "",
+            link: url,
+            linkText: "Reset",
+          },
+          { language: "en" }
+        ),
       });
     },
   },

@@ -1,6 +1,7 @@
 {
   "global": {
     "hello": "Hello",
+    "error": "Error",
     "or": "Or"
   },
   "combobox": {

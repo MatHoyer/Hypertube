@@ -1,3 +1,4 @@
+import { ErrorCard } from "@/components/ErrorCard";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,13 +11,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import type { errorCodes } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getUrl } from "@hypertube/libs";
 import { useState, type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { SignErrorCard } from "../../SignErrorCard";
 
 const formSchema = z.object({ email: z.email() });
 
@@ -71,7 +72,12 @@ export const ForgetPasswordForm: React.FC<ComponentProps<"div">> = ({
             )}
           />
           {!!authMessageError && (
-            <SignErrorCard authMessageError={authMessageError} />
+            <ErrorCard
+              title={t("global.error")}
+              message={t(
+                `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
+              )}
+            />
           )}
           <Button className="w-full">{t("sign.sendEmail")}</Button>
         </form>

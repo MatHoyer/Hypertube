@@ -1,3 +1,4 @@
+import { ErrorCard } from "@/components/ErrorCard";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,12 +11,12 @@ import {
 import { Input } from "@/components/ui/input";
 import InputPassword from "@/components/ui/input-password";
 import { authClient } from "@/lib/auth-client";
+import type { errorCodes } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { SignErrorCard } from "../../SignErrorCard";
 
 const formSchema = z.object({
   username: z.string().min(1).max(50),
@@ -86,7 +87,12 @@ export const SignInForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
             )}
           />
           {!!authMessageError && (
-            <SignErrorCard authMessageError={authMessageError} />
+            <ErrorCard
+              title={t("global.error")}
+              message={t(
+                `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
+              )}
+            />
           )}
           <Button type="submit" className="w-full">
             {t("sign.in")}

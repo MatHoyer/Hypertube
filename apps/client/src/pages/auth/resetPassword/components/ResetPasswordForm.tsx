@@ -1,3 +1,4 @@
+import { ErrorCard } from "@/components/ErrorCard";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/form";
 import InputPassword from "@/components/ui/input-password";
 import { authClient } from "@/lib/auth-client";
+import type { errorCodes } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getUrl } from "@hypertube/libs";
 import { useQueryState } from "nuqs";
@@ -19,7 +21,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
-import { SignErrorCard } from "../../SignErrorCard";
 
 const formSchema = z.object({ password: z.string().min(8).max(50) });
 
@@ -76,7 +77,12 @@ export const ResetPasswordForm: React.FC<ComponentProps<"div">> = ({
             )}
           />
           {!!authMessageError && (
-            <SignErrorCard authMessageError={authMessageError} />
+            <ErrorCard
+              title={t("global.error")}
+              message={t(
+                `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
+              )}
+            />
           )}
           <Button className="w-full">{t("sign.resetPassword")}</Button>
         </form>
