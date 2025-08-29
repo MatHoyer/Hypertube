@@ -14,7 +14,7 @@ export const SignInPage = () => {
     <AuthLayout className="w-1/5" title={t("sign.in")}>
       <OAuthButtons />
       <TextSeparator>{t("global.or")}</TextSeparator>
-      <SignInForm className="w-4/5" />
+      <SignInForm className="w-full" />
       <Button
         type="button"
         variant={"link"}

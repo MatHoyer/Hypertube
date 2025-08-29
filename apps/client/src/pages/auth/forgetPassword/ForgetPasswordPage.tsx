@@ -10,18 +10,15 @@ export const ForgetPasswordPage = () => {
   const { t } = useTranslation();
   return (
     <AuthLayout className="w-1/4" title={t("sign.forgetPassword")}>
-      <ForgetPasswordForm />
-      <Typography variant="small">
-        {t("sign.rememberPassword")}
-        <Button
-          type="button"
-          variant={"link"}
-          className="text-muted-foreground"
-          asChild
-        >
-          <Link to={getUrl("client-signin")}>{t("sign.backToSignin")}</Link>
+      <ForgetPasswordForm className="w-full" />
+      <div className="flex items-center">
+        <Typography variant="small">{t("sign.rememberPassword")}</Typography>
+        <Button type="button" variant={"link"} asChild>
+          <Link to={getUrl("client-signin")}>
+            <Typography variant="muted">{t("sign.backToSignin")}</Typography>
+          </Link>
         </Button>
-      </Typography>
+      </div>
     </AuthLayout>
   );
 };

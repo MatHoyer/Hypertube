@@ -14,7 +14,7 @@ export const SignUpPage = () => {
     <AuthLayout className="w-1/5" title={t("sign.up")}>
       <OAuthButtons />
       <TextSeparator>{t("global.or")}</TextSeparator>
-      <SignUpForm />
+      <SignUpForm className="w-full" />
       <div className="flex items-center">
         <Typography variant="small">{t("sign.gotAccount")}</Typography>
         <Button type="button" variant={"link"} asChild>

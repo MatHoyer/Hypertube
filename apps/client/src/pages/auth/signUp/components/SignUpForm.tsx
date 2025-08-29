@@ -10,13 +10,12 @@ import {
 import { Input } from "@/components/ui/input";
 import InputPassword from "@/components/ui/input-password";
 import { authClient } from "@/lib/auth-client";
-import type { errorCodes } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TriangleAlert } from "lucide-react";
 import { useState, type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
+import { SignErrorCard } from "../../SignErrorCard";
 
 const formSchema = z.object({
   email: z.email(),
@@ -149,14 +148,7 @@ export const SignUpForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
             )}
           />
           {!!authMessageError && (
-            <div className={"flex text-red-500"}>
-              <TriangleAlert />
-              <p>
-                {t(
-                  `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
-                )}
-              </p>
-            </div>
+            <SignErrorCard authMessageError={authMessageError} />
           )}
           <Button type="submit" className="w-full">
             {t("sign.up")}

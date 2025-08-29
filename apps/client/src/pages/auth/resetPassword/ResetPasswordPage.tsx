@@ -11,17 +11,14 @@ export const ResetPasswordPage = () => {
   return (
     <AuthLayout className="w-1/4" title={t("sign.resetPassword")}>
       <ResetPasswordForm className="w-full" />
-      <Typography variant="small">
-        {t("sign.rememberPassword")}
-        <Button
-          type="button"
-          variant={"link"}
-          className="text-muted-foreground"
-          asChild
-        >
-          <Link to={getUrl("client-signin")}>{t("sign.backToSignin")}</Link>
+      <div className="flex items-center">
+        <Typography variant="small">{t("sign.rememberPassword")}</Typography>
+        <Button type="button" variant={"link"} asChild>
+          <Link to={getUrl("client-signin")}>
+            <Typography variant="muted">{t("sign.backToSignin")}</Typography>
+          </Link>
         </Button>
-      </Typography>
+      </div>
     </AuthLayout>
   );
 };

@@ -10,14 +10,16 @@ import {
 } from "@/components/ui/form";
 import InputPassword from "@/components/ui/input-password";
 import { authClient } from "@/lib/auth-client";
-import { errorCodes } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ThumbsUp, TriangleAlert } from "lucide-react";
+import { getUrl } from "@hypertube/libs";
 import { useQueryState } from "nuqs";
 import { useState, type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { z } from "zod";
+import { SignErrorCard } from "../../SignErrorCard";
 
 const formSchema = z.object({ password: z.string().min(8).max(50) });
 
@@ -25,9 +27,9 @@ export const ResetPasswordForm: React.FC<ComponentProps<"div">> = ({
   ...props
 }) => {
   const [authMessageError, setAuthMessageError] = useState("");
-  const [resetSuccess, setResetSuccess] = useState(false);
   const [token, _] = useQueryState("token", { defaultValue: "" });
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,11 +47,11 @@ export const ResetPasswordForm: React.FC<ComponentProps<"div">> = ({
       {
         onSuccess: () => {
           setAuthMessageError("");
-          setResetSuccess(true);
+          toast.success(t("sign.resetSuccessMessage"));
+          navigate(getUrl("client-signin"));
         },
         onError: (ctx) => {
           setAuthMessageError(ctx.error.code);
-          setResetSuccess(false);
         },
       }
     );
@@ -74,20 +76,7 @@ export const ResetPasswordForm: React.FC<ComponentProps<"div">> = ({
             )}
           />
           {!!authMessageError && (
-            <div className={"flex text-red-500"}>
-              <TriangleAlert />
-              <p>
-                {t(
-                  `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
-                )}
-              </p>
-            </div>
-          )}
-          {!!resetSuccess && (
-            <div className={"flex text-green-500"}>
-              <ThumbsUp />
-              <p>{t("sign.resetSuccessMessage")}</p>
-            </div>
+            <SignErrorCard authMessageError={authMessageError} />
           )}
           <Button className="w-full">{t("sign.resetPassword")}</Button>
         </form>

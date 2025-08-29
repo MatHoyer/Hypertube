@@ -10,14 +10,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { errorCodes } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getUrl } from "@hypertube/libs";
-import { TriangleAlert } from "lucide-react";
 import { useState, type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
+import { SignErrorCard } from "../../SignErrorCard";
 
 const formSchema = z.object({ email: z.email() });
 
@@ -72,14 +71,7 @@ export const ForgetPasswordForm: React.FC<ComponentProps<"div">> = ({
             )}
           />
           {!!authMessageError && (
-            <div className={"flex text-red-500"}>
-              <TriangleAlert />
-              <p>
-                {t(
-                  `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
-                )}
-              </p>
-            </div>
+            <SignErrorCard authMessageError={authMessageError} />
           )}
           <Button className="w-full">{t("sign.sendEmail")}</Button>
         </form>
