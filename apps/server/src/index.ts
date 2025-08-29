@@ -24,6 +24,7 @@ app.use(
     convertDetectedLanguage: (lang) => lang.split("-")[0],
     supportedLanguages: ["en", "fr", "es"],
     fallbackLanguage: "en",
+    caches: [],
   }),
   async (c, next) => {
     i18next.changeLanguage(c.get("language"));
@@ -40,9 +41,9 @@ app.get("/", async (c) => {
 
 app.get(getUrl("api-health"), (c) => c.text("OK"));
 
-app.route("/api/scrappers/yts", ytsRouter);
-
 app.route(getUrl("api-auth"), authRouter);
+
+app.route("/api/scrappers/yts", ytsRouter);
 
 serve(
   {

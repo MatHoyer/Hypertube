@@ -19,8 +19,8 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
 const formSchema = z.object({
-  username: z.string().min(1).max(50),
-  password: z.string().min(8).max(50),
+  username: z.string().min(1),
+  password: z.string().min(1),
 });
 
 export const SignInForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
