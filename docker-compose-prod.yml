@@ -10,7 +10,7 @@ services:
       - NODE_ENV=PROD
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
-    command: bash -c "pnpm lint && pnpm --filter server prisma:migrate:reset --skip-seed && pnpm --filter server prisma:migrate && pnpm --filter server prisma:seed && pnpm build && pnpm start"
+    command: bash -c "pnpm lint && pnpm --filter server prisma:migrate:reset && pnpm --filter server prisma:migrate && pnpm --filter server prisma:seed && pnpm build && pnpm start"
     # volumes:
     #   - ./:/app
     #   - /app/node_modules

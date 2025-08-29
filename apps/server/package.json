@@ -11,7 +11,7 @@
     "start": "node dist/server/src/index.js",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx dotenv -e ../../.env -- npx prisma migrate dev --name init",
-    "prisma:migrate:reset": "npx dotenv -e ../../.env -- npx prisma migrate reset --force",
+    "prisma:migrate:reset": "npx dotenv -e ../../.env -- npx prisma migrate reset --force --skip-seed",
     "prisma:seed": "npx dotenv -e ../../.env -- npx prisma db seed",
     "prisma:studio": "npx dotenv -e ../../.env -- npx prisma studio"
   },
