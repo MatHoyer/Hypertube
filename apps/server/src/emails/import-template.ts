@@ -1,5 +1,6 @@
 import { getYear } from "date-fns";
 import * as fs from "fs";
+import i18next from "i18next";
 import * as path from "path";
 
 const keyToReplace = {
@@ -8,6 +9,9 @@ const keyToReplace = {
   link: "{{link}}",
   linkText: "{{linkText}}",
   year: "{{year}}",
+
+  ignoreEmail: "{{ignoreEmail}}",
+  allRightsReserved: "{{allRightsReserved}}",
 };
 
 const template = fs.readFileSync(
@@ -21,16 +25,25 @@ type MailValues = {
   link: string;
   linkText: string;
   year?: string;
+
+  ignoreEmail?: string;
+  allRightsReserved?: string;
 };
 
-type MailConfig = {
+type MailConfig = Partial<{
   language: string;
-};
+}>;
 
-export const mailTemplate = (values: MailValues, config: MailConfig) => {
-  console.log(config);
-
+export const mailTemplate = (values: MailValues, config?: MailConfig) => {
   return template
+    .replace(
+      keyToReplace.ignoreEmail,
+      i18next.t("email.ignoreEmail", { lng: config?.language })
+    )
+    .replace(
+      keyToReplace.allRightsReserved,
+      i18next.t("email.allRightsReserved", { lng: config?.language })
+    )
     .replace(keyToReplace.title, values.title)
     .replace(keyToReplace.content, values.content)
     .replace(keyToReplace.link, values.link)

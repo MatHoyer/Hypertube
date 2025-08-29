@@ -1,4 +1,4 @@
-import { languages } from "@/lib/i18n/constants";
+import { languageCodes } from "@hypertube/libs";
 import { useTranslation } from "react-i18next";
 import { Combobox } from "./ui/combobox";
 
@@ -7,7 +7,10 @@ export const LanguageSwitcher = () => {
 
   return (
     <Combobox
-      elements={languages}
+      elements={Object.entries(languageCodes).map(([value, label]) => ({
+        value,
+        label,
+      }))}
       value={i18n.language}
       setValue={(value) => i18n.changeLanguage(value)}
       placeholderType="language"
