@@ -17,9 +17,9 @@ app.onError((err: Error, c) => {
   return c.json({ error: "internal server error" }, 500);
 });
 
+app.use(logger(), cors());
+app.route(getUrl("api-auth"), authRouter);
 app.use(
-  logger(),
-  cors(),
   languageDetector({
     convertDetectedLanguage: (lang) => lang.split("-")[0],
     supportedLanguages: ["en", "fr", "es"],
@@ -41,8 +41,6 @@ app.get("/", async (c) => {
 app.get(getUrl("api-health"), (c) => c.text("OK"));
 
 app.route("/api/scrappers/yts", ytsRouter);
-
-app.route(getUrl("api-auth"), authRouter);
 
 serve(
   {
