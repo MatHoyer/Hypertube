@@ -41,6 +41,9 @@ export type TApiRouteDataRequirements = {
 };
 
 export type TExternalRouteDataRequirements = {
+  "external-imdb-movie": {
+    imdbId: string;
+  };
   "external-imdb-actor": {
     imdbId: string;
   };
@@ -86,6 +89,7 @@ const routes: {
     `/api/scrappers/${scrapper}/movie/${movieId}/resolution/${resolution}/subtitles/${subtitlesLanguage}/download`,
 
   // External routes
+  "external-imdb-movie": ({ imdbId }) => `https://www.imdb.com/title/${imdbId}`,
   "external-imdb-actor": ({ imdbId }) =>
     `https://www.imdb.com/name/nm${imdbId}`,
 };

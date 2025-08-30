@@ -1,39 +1,71 @@
 import { ImageAvatar } from "@/components/images/Avatar";
 import { ImageContainer } from "@/components/images/ImageContainer";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
-import { getUrl } from "@hypertube/libs";
-import { ArrowRightIcon } from "lucide-react";
+import {
+  getUrl,
+  type TMovieActorSchema,
+  type TMovieSchema,
+} from "@hypertube/libs";
+import { ArrowRightIcon, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const MovieInfo: React.FC<{
-  poster: string;
-  title: string;
-  year: number;
-  description: string;
-  cast: {
-    name: string;
-    imageSrc: string;
-    imdbId: string;
-  }[];
-}> = ({ poster, title, year, description, cast }) => {
+  movie: TMovieSchema & { actors: TMovieActorSchema[] };
+}> = ({
+  movie: {
+    imdbId,
+    largeCoverImageUrl,
+    title,
+    year,
+    description,
+    rating,
+    language,
+    actors,
+    genres,
+  },
+}) => {
   return (
     <ScrollArea className="h-[calc(100vh)]">
       <div className="flex flex-col gap-4 h-full p-4">
         <div className="flex justify-center gap-2">
-          <ImageContainer imageSrc={poster} altImage="Movie Poster" size="lg">
+          <ImageContainer
+            imageSrc={largeCoverImageUrl}
+            altImage="Movie Poster"
+            size="lg"
+          >
             <Typography variant="h3">{title}</Typography>
           </ImageContainer>
         </div>
         <div className="flex flex-col gap-2">
-          <Typography variant="h1" className="text-center">
-            {title}
-          </Typography>
-          <div className="flex items-center justify-center">
-            <Typography variant="code">{year}</Typography>
+          <Link
+            to={getUrl("external-imdb-movie", {
+              imdbId,
+            })}
+            target="_blank"
+          >
+            <Typography variant="h1" className="text-center hover:underline">
+              {title}
+            </Typography>
+          </Link>
+          <div className="flex items-center justify-center gap-2">
+            <Badge>{language.toUpperCase()}</Badge>
+            <Badge>{year}</Badge>
+          </div>
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            {genres.map((genre, index) => (
+              <Badge variant="outline" key={index}>
+                {genre}
+              </Badge>
+            ))}
+          </div>
+          <div className="flex items-center justify-center gap-2">
+            <Star className="text-primary fill-primary" />
+            <Typography variant="mono">{rating}/10</Typography>
           </div>
           <Typography variant="muted">{description}</Typography>
         </div>
@@ -41,13 +73,13 @@ const MovieInfo: React.FC<{
           <CardTitle>Cast</CardTitle>
           <CardContent>
             <div className="flex flex-col gap-2">
-              {cast.map((person, index) => (
+              {actors.map((person, index) => (
                 <div key={index} className="flex flex-col gap-2">
                   <div className="flex justify-between items-center gap-2">
                     <div className="flex items-center gap-2">
                       <ImageAvatar
                         name={person.name}
-                        imageSrc={person.imageSrc}
+                        imageSrc={person.imageUrl ?? ""}
                         size="sm"
                       />
                       <Typography>{person.name}</Typography>
@@ -70,7 +102,7 @@ const MovieInfo: React.FC<{
                       </Button>
                     )}
                   </div>
-                  {index !== cast.length - 1 && <Separator />}
+                  {index !== actors.length - 1 && <Separator />}
                 </div>
               ))}
             </div>

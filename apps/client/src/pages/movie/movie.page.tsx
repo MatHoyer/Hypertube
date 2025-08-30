@@ -64,17 +64,7 @@ const MoviePage = () => {
         </ScrollArea>
 
         <div className="sticky top-0">
-          <MovieInfo
-            poster={movie.largeCoverImageUrl}
-            title={movie.title}
-            year={movie.year}
-            description={movie.description ?? ""}
-            cast={movie.actors.map((actor) => ({
-              name: actor.name,
-              imageSrc: actor.imageUrl ?? "",
-              imdbId: actor.imdbId,
-            }))}
-          />
+          <MovieInfo movie={movie} />
         </div>
       </div>
     </VideoPlayerProvider>

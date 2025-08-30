@@ -33,6 +33,7 @@ export const typographyVariants = cva("", {
       small: "text-sm font-medium leading-none",
       muted: "text-sm text-muted-foreground",
       link: "font-medium text-cyan-600 hover:underline dark:text-primary",
+      mono: "font-mono",
     },
   },
   defaultVariants: {
@@ -53,6 +54,7 @@ const defaultElementMapping = {
   small: "p",
   muted: "p",
   link: "a",
+  mono: "p",
   default: "p",
 } satisfies Record<NonNullable<TypographyCvaProps["variant"]>, ElementType>;
 

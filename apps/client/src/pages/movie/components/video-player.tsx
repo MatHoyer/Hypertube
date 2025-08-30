@@ -151,7 +151,7 @@ const ProgressBar = () => {
           <Skeleton className="w-[85px] h-[20px]" />
         ) : (
           <Badge>
-            <Typography className="font-mono font-bold">
+            <Typography variant="mono" className="font-bold">
               {currentTime} / {duration}
             </Typography>
           </Badge>
