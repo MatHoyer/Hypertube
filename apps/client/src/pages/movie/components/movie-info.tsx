@@ -7,36 +7,32 @@ import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
 import { ArrowRightIcon } from "lucide-react";
 
-const MovieInfo = () => {
-  const cast = [
-    {
-      name: "John Doe",
-      imageSrc: "https://via.placeholder.com/150",
-    },
-    {
-      name: "Jane Doe",
-      imageSrc: "https://via.placeholder.com/150",
-    },
-  ];
-
+const MovieInfo: React.FC<{
+  poster: string;
+  title: string;
+  year: number;
+  description: string;
+  cast: {
+    name: string;
+    imageSrc: string;
+  }[];
+}> = ({ poster, title, year, description, cast }) => {
   return (
     <ScrollArea className="h-[calc(100vh)]">
       <div className="flex flex-col gap-4 h-full p-4">
         <div className="flex justify-center gap-2">
-          <ImageContainer
-            imageSrc="https://via.placeholder.com/150"
-            altImage="Movie Poster"
-            size="lg"
-          />
+          <ImageContainer imageSrc={poster} altImage="Movie Poster" size="lg">
+            <Typography variant="h3">{title}</Typography>
+          </ImageContainer>
         </div>
         <div className="flex flex-col gap-2">
           <Typography variant="h1" className="text-center">
-            Movie Title
+            {title}
           </Typography>
           <div className="flex items-center justify-center">
-            <Typography variant="code">Movie Year</Typography>
+            <Typography variant="code">{year}</Typography>
           </div>
-          <Typography variant="muted">Movie Description</Typography>
+          <Typography variant="muted">{description}</Typography>
         </div>
         <Card className="p-4">
           <CardTitle>Cast</CardTitle>

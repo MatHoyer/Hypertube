@@ -2,7 +2,8 @@
   "global": {
     "hello": "Bonjour",
     "error": "Erreur",
-    "or": "Ou"
+    "or": "Ou",
+    "loadingMessage": "Chargement {{resource}}"
   },
   "combobox": {
     "language": {
@@ -73,5 +74,8 @@
     "missAccount": "Vous n'avez pas de compte ?",
     "gotAccount": "Vous avez déjà un compte ?",
     "failed": "Erreur."
+  },
+  "movie": {
+    "loadingRessource": "du film"
   }
 }

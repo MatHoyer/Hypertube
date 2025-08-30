@@ -1,7 +1,13 @@
+import { AppLoader } from "@/components/ui/app-loader";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Typography } from "@/components/ui/typography";
 import { useConvertParams } from "@/hooks/use-convert-params";
-import { movieSchema } from "@hypertube/libs";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getUrl, getYtsMovieDataSchemas, movieSchema } from "@hypertube/libs";
+import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import z from "zod";
+import { NotFoundPage } from "../notFound/NotFound.page";
 import MovieInfo from "./components/movie-info";
 import MovieInteraction from "./components/movie-interaction";
 import VideoPlayer from "./components/video-player";
@@ -12,8 +18,38 @@ export const MoviePageParamsSchema = z.object({
 });
 
 const MoviePage = () => {
+  const { t } = useTranslation();
   const { movieId } = useConvertParams(MoviePageParamsSchema);
-  console.log(movieId);
+
+  const { data: movie, isLoading } = useQuery({
+    queryKey: ["movie", movieId],
+    queryFn: () =>
+      axiosFetch({
+        method: "GET",
+        url: getUrl("api-movie", {
+          scrapper: "yts",
+          movieId,
+        }),
+        schemas: getYtsMovieDataSchemas,
+      }),
+  });
+
+  if (isLoading) {
+    return (
+      <div className="size-full flex flex-col justify-center items-center gap-4">
+        <AppLoader size={60} />
+        <Typography variant="h3">
+          {t("global.loadingMessage", {
+            resource: t("movie.loadingRessource"),
+          })}
+        </Typography>
+      </div>
+    );
+  }
+
+  if (!movie) {
+    return <NotFoundPage />;
+  }
 
   return (
     <VideoPlayerProvider>
@@ -26,7 +62,16 @@ const MoviePage = () => {
         </ScrollArea>
 
         <div className="sticky top-0">
-          <MovieInfo />
+          <MovieInfo
+            poster={movie.largeCoverImageUrl}
+            title={movie.title}
+            year={movie.year}
+            description={movie.description ?? ""}
+            cast={movie.actors.map((actor) => ({
+              name: actor.name,
+              imageSrc: actor.imageUrl ?? "",
+            }))}
+          />
         </div>
       </div>
     </VideoPlayerProvider>

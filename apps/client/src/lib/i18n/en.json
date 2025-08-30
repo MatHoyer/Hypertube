@@ -2,7 +2,8 @@
   "global": {
     "hello": "Hello",
     "error": "Error",
-    "or": "Or"
+    "or": "Or",
+    "loadingMessage": "Loading {{resource}}"
   },
   "combobox": {
     "language": {
@@ -72,5 +73,8 @@
     "backToSignin": "Go back to sign in",
     "missAccount": "Don't have an account?",
     "gotAccount": "Already have an account?"
+  },
+  "movie": {
+    "loadingRessource": "movie"
   }
 }
