@@ -18,11 +18,19 @@ export const resources = {
   },
 };
 
-i18n.use(initReactI18next).use(LanguageDetector).init({
-  lng: "en",
-  fallbackLng: "en",
-  resources,
-});
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    detection: {
+      order: ["cookie", "navigator"],
+      lookupCookie: "language",
+      cookieMinutes: 365 * 24 * 60,
+      caches: ["cookie"],
+    },
+    fallbackLng: "en",
+    resources,
+  });
 
 const zodLocales = {
   en: z.locales.en(),
@@ -32,4 +40,5 @@ const zodLocales = {
 
 i18n.on("languageChanged", (lng) => {
   z.config(zodLocales[lng as keyof typeof zodLocales]);
+  console.log(lng);
 });
