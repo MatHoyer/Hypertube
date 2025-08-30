@@ -32,6 +32,7 @@ import {
   VolumeX,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useVideoPlayer } from "./video-player.context";
 
 const MiddleScreenInfo: React.FC<{
@@ -164,6 +165,8 @@ const ProgressBar = () => {
 const GlobalSettings: React.FC<{
   setSpeedType: () => void;
 }> = ({ setSpeedType }) => {
+  const { t } = useTranslation();
+
   return (
     <>
       <DropdownMenuGroup>
@@ -173,7 +176,7 @@ const GlobalSettings: React.FC<{
             setSpeedType();
           }}
         >
-          Speed
+          {t("movie.playerSettings.readingSpeed")}
         </DropdownMenuItem>
       </DropdownMenuGroup>
     </>
@@ -184,6 +187,7 @@ const SpeedSettings: React.FC<{
   goBack: () => void;
   closePopup: () => void;
 }> = ({ goBack, closePopup }) => {
+  const { t } = useTranslation();
   const { speed, handleSetSpeed } = useVideoPlayer();
 
   const handleClick = (speed: 0.5 | 1 | 1.5 | 2) => {
@@ -197,7 +201,7 @@ const SpeedSettings: React.FC<{
         <button className="rounded-full cursor-pointer" onClick={goBack}>
           <ChevronLeft size={20} />
         </button>
-        Speed
+        {t("movie.playerSettings.readingSpeed")}
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>

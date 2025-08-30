@@ -8,10 +8,12 @@ import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
 import {
   getUrl,
+  ytsGenres,
   type TMovieActorSchema,
   type TMovieSchema,
 } from "@hypertube/libs";
 import { ArrowRightIcon, Star } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 const MovieInfo: React.FC<{
@@ -29,6 +31,8 @@ const MovieInfo: React.FC<{
     genres,
   },
 }) => {
+  const { t } = useTranslation();
+
   return (
     <ScrollArea className="h-[calc(100vh)]">
       <div className="flex flex-col gap-4 h-full p-4">
@@ -59,7 +63,11 @@ const MovieInfo: React.FC<{
           <div className="flex items-center justify-center gap-2 flex-wrap">
             {genres.map((genre, index) => (
               <Badge variant="outline" key={index}>
-                {genre}
+                {t(
+                  `movie.genres.${
+                    genre.toLowerCase() as (typeof ytsGenres)[number]
+                  }`
+                )}
               </Badge>
             ))}
           </div>
@@ -70,7 +78,7 @@ const MovieInfo: React.FC<{
           <Typography variant="muted">{description}</Typography>
         </div>
         <Card className="p-4">
-          <CardTitle>Cast</CardTitle>
+          <CardTitle>{t("movie.cast")}</CardTitle>
           <CardContent>
             <div className="flex flex-col gap-2">
               {actors.map((person, index) => (

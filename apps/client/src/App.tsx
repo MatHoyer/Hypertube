@@ -28,7 +28,8 @@ const PrivateRoute = () => {
   const session = authClient.useSession();
   const user = session?.data?.user;
 
-  if (!user) return <Navigate to={getUrl("client-signin")} replace />;
+  if (!session.isPending && !user)
+    return <Navigate to={getUrl("client-signin")} replace />;
   return (
     <PrivateLayout>
       <Outlet />
@@ -70,6 +71,11 @@ const App = () => {
             path={getUrl("client-reset-password")}
             element={<ResetPasswordPage />}
           />
+        </Route>
+
+        {/* Routes privées */}
+        <Route element={<PrivateRoute />}>
+          <Route path="/dashboard" element={<div>Dashboard</div>} />
           <Route
             element={
               <ProtectedRoute
@@ -86,11 +92,6 @@ const App = () => {
               element={<MoviePage />}
             />
           </Route>
-        </Route>
-
-        {/* Routes privées */}
-        <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<div>Dashboard</div>} />
         </Route>
 
         {/* Route 404 */}
