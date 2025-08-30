@@ -9,6 +9,8 @@ import {
   useState,
 } from "react";
 
+type Speed = 0.5 | 1 | 1.5 | 2;
+
 type VideoPlayerContextType = {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -31,6 +33,9 @@ type VideoPlayerContextType = {
   handleProgress: () => void;
   handleSeek: (percent: number) => void;
   handleJumpVideo: (seconds: number) => void;
+
+  speed: Speed;
+  handleSetSpeed: (speed: Speed) => void;
 
   mouseMoving: boolean;
   mouseClicked: boolean;
@@ -65,6 +70,7 @@ export const VideoPlayerProvider: React.FC<{
     toggle: toggleFullscreen,
     setValue: setIsFullscreen,
   } = useToggle(false);
+  const [speed, setSpeed] = useState<Speed>(1);
 
   const { mouseMoving, mouseClicked, triggerMouseMove, triggerMouseClick } =
     useMouse(videoRef);
@@ -148,6 +154,12 @@ export const VideoPlayerProvider: React.FC<{
     setProgress(percent);
   };
 
+  const handleSetSpeed = (speed: Speed) => {
+    if (!videoRef.current) return;
+    setSpeed(speed);
+    videoRef.current.playbackRate = speed;
+  };
+
   // Code shortcuts
   const handleJumpVideo = useCallback(
     (seconds: number) => {
@@ -228,6 +240,9 @@ export const VideoPlayerProvider: React.FC<{
         handleProgress,
         handleSeek,
         handleJumpVideo,
+
+        speed,
+        handleSetSpeed,
 
         mouseMoving,
         mouseClicked,

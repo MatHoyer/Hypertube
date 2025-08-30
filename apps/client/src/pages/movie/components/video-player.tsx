@@ -1,13 +1,37 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
 import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
-import { Expand, Pause, Play, Shrink, Volume2, VolumeX } from "lucide-react";
-import { useEffect, useRef } from "react";
+import {
+  Check,
+  ChevronLeft,
+  Expand,
+  Pause,
+  PersonStanding,
+  Play,
+  Rabbit,
+  Settings,
+  Shrink,
+  Squirrel,
+  Turtle,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useVideoPlayer } from "./video-player.context";
 
 const MiddleScreenInfo: React.FC<{
@@ -126,12 +150,145 @@ const ProgressBar = () => {
         {currentTime === null || duration === null ? (
           <Skeleton className="w-[85px] h-[20px]" />
         ) : (
-          <Typography variant="code">
-            {currentTime} / {duration}
-          </Typography>
+          <Badge>
+            <Typography className="font-mono font-bold">
+              {currentTime} / {duration}
+            </Typography>
+          </Badge>
         )}
       </div>
     </div>
+  );
+};
+
+const GlobalSettings: React.FC<{
+  setSpeedType: () => void;
+}> = ({ setSpeedType }) => {
+  return (
+    <>
+      <DropdownMenuGroup>
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            setSpeedType();
+          }}
+        >
+          Speed
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+    </>
+  );
+};
+
+const SpeedSettings: React.FC<{
+  goBack: () => void;
+  closePopup: () => void;
+}> = ({ goBack, closePopup }) => {
+  const { speed, handleSetSpeed } = useVideoPlayer();
+
+  const handleClick = (speed: 0.5 | 1 | 1.5 | 2) => {
+    handleSetSpeed(speed);
+    closePopup();
+  };
+
+  return (
+    <>
+      <DropdownMenuLabel className="flex items-center gap-2">
+        <button className="rounded-full cursor-pointer" onClick={goBack}>
+          <ChevronLeft size={20} />
+        </button>
+        Speed
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        <DropdownMenuItem
+          onClick={() => handleClick(0.5)}
+          className="flex items-center justify-between"
+        >
+          <div className="flex items-center gap-2">
+            <Check className={cn(speed !== 0.5 && "invisible")} />
+            <Typography>0.5</Typography>
+          </div>
+          <Turtle />
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleClick(1)}
+          className="flex items-center justify-between"
+        >
+          <div className="flex items-center gap-2">
+            <Check className={cn(speed !== 1 && "invisible")} />
+            <Typography>1</Typography>
+          </div>
+          <PersonStanding />
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleClick(1.5)}
+          className="flex items-center justify-between"
+        >
+          <div className="flex items-center gap-2">
+            <Check className={cn(speed !== 1.5 && "invisible")} />
+            <Typography>1.5</Typography>
+          </div>
+          <Squirrel />
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleClick(2)}
+          className="flex items-center justify-between"
+        >
+          <div className="flex items-center gap-2">
+            <Check className={cn(speed !== 2 && "invisible")} />
+            <Typography>2</Typography>
+          </div>
+          <Rabbit />
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+    </>
+  );
+};
+
+const SettingsButton: React.FC<{
+  settingsOpen: boolean;
+  setSettingsOpen: (settingsOpen: boolean) => void;
+}> = ({ settingsOpen, setSettingsOpen }) => {
+  const [type, setType] = useState<"global" | "speed">("global");
+
+  const closePopup = () => {
+    setSettingsOpen(false);
+    setTimeout(() => {
+      setType("global");
+    }, 100);
+  };
+  const goGlobal = () => {
+    setType("global");
+  };
+  const goSpeed = () => {
+    setType("speed");
+  };
+
+  return (
+    <DropdownMenu open={settingsOpen} onOpenChange={setSettingsOpen}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className="p-2 rounded-full"
+          onClick={() => setSettingsOpen(true)}
+        >
+          <Settings size={20} color="white" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side="top" align="end">
+        {(() => {
+          switch (type) {
+            case "global":
+              return <GlobalSettings setSpeedType={goSpeed} />;
+            case "speed":
+              return (
+                <SpeedSettings goBack={goGlobal} closePopup={closePopup} />
+              );
+          }
+        })()}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
@@ -167,6 +324,7 @@ const VideoPlayer = () => {
 
   const controlsRef = useRef<HTMLDivElement>(null);
   const { mouseIn } = useMouse(controlsRef);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const { value: middleScreenInfo, setValue: setMiddleScreenInfo } =
     useTimeoutResetState<"volume" | "play" | null>(null, 1000);
@@ -203,7 +361,9 @@ const VideoPlayer = () => {
 
       <AnimateApparition
         ref={controlsRef}
-        isAnimating={mouseMoving || mouseClicked || mouseIn || !playing}
+        isAnimating={
+          mouseMoving || mouseClicked || mouseIn || !playing || settingsOpen
+        }
         animation="slideToTop"
         onClick={(e) => {
           e.stopPropagation();
@@ -214,6 +374,10 @@ const VideoPlayer = () => {
           <PlayPauseButton />
           <VolumeControl />
           <ProgressBar />
+          <SettingsButton
+            settingsOpen={settingsOpen}
+            setSettingsOpen={setSettingsOpen}
+          />
           <FullscreenButton />
         </Card>
       </AnimateApparition>

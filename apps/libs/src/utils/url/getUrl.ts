@@ -46,8 +46,6 @@ export type TExternalRouteDataRequirements = {
   };
 };
 
-type TExternalRoute = keyof TExternalRouteDataRequirements;
-
 type TRouteDataRequirements = TClientRouteDataRequirements &
   TApiRouteDataRequirements &
   TExternalRouteDataRequirements;
@@ -120,7 +118,9 @@ export const getUrl = <T extends TRoute>(
   const routeFn = routes[route];
 
   const computedUrl = routeFn(routeParams);
-  const serverUrl = withServerUrl ? getServerUrl() : "";
+
+  const serverUrl =
+    withServerUrl && !route.startsWith("external-") ? getServerUrl() : "";
 
   const parsedSearchParams = searchParams
     ? `?${new URLSearchParams(searchParams)}`
