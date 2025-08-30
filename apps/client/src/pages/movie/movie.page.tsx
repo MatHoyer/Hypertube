@@ -58,8 +58,8 @@ const MoviePage = () => {
   if (isMobile) {
     return (
       <VideoPlayerProvider>
-        <ScrollArea className="col-span-2 h-[calc(100vh)] p-4">
-          <div className="flex flex-col gap-4">
+        <ScrollArea className="h-[calc(100vh)]">
+          <div className="flex flex-col gap-4 p-4">
             <MovieInfo movie={movie} />
             <VideoPlayer />
             <MovieInteraction />
@@ -71,18 +71,20 @@ const MoviePage = () => {
 
   return (
     <VideoPlayerProvider>
-      <div className="grid grid-cols-3 size-full">
-        <ScrollArea className="col-span-2 h-[calc(100vh)] p-4">
-          <div className="flex flex-col gap-4">
-            <VideoPlayer />
-            <MovieInteraction />
+      <ScrollArea className="h-[calc(100vh)] lg:h-full">
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3">
+          <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-0">
+            <MovieInfo movie={movie} />
           </div>
-        </ScrollArea>
 
-        <div className="sticky top-0">
-          <MovieInfo movie={movie} />
+          <ScrollArea className="lg:col-start-1 lg:row-start-1 lg:col-span-2 lg:h-[calc(100vh)] p-4">
+            <div className="flex flex-col gap-4">
+              <VideoPlayer />
+              <MovieInteraction />
+            </div>
+          </ScrollArea>
         </div>
-      </div>
+      </ScrollArea>
     </VideoPlayerProvider>
   );
 };

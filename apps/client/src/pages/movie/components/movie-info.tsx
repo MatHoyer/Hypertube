@@ -6,8 +6,6 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@/lib/utils";
 import {
   getUrl,
   ytsGenres,
@@ -34,12 +32,11 @@ const MovieInfo: React.FC<{
   },
 }) => {
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
 
   return (
-    <ScrollArea className={cn("h-[calc(100vh)]", isMobile && "h-full")}>
+    <ScrollArea className="lg:h-[calc(100vh)]">
       <div className="flex flex-col gap-4 h-full p-4">
-        <div className="flex justify-center gap-2">
+        <div className="flex justify-center">
           <ImageContainer
             imageSrc={largeCoverImageUrl}
             altImage="Movie Poster"
