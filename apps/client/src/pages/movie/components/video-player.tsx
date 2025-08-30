@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
@@ -31,16 +32,21 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { useVideoPlayer } from "./video-player.context";
 
 const MiddleScreenInfo: React.FC<{
   type: "volume" | "play" | null;
 }> = ({ type }) => {
+  const isMobile = useIsMobile();
   const { volume, playing } = useVideoPlayer();
 
   if (type === null) return null;
+
+  if (isMobile) {
+    return null;
+  }
 
   switch (type) {
     case "volume":
@@ -69,11 +75,23 @@ const MiddleScreenInfo: React.FC<{
   }
 };
 
-const PlayPauseButton = () => {
+const PlayPauseButton: React.FC<ComponentProps<typeof Button>> = ({
+  className,
+  ...props
+}) => {
   const { playing, togglePlay } = useVideoPlayer();
   return (
-    <Button variant="ghost" onClick={togglePlay} className="p-2 rounded-full">
-      {playing ? <Pause size={20} /> : <Play size={20} />}
+    <Button
+      variant="ghost"
+      onClick={togglePlay}
+      className={cn("p-2 rounded-full", className)}
+      {...props}
+    >
+      {playing ? (
+        <Pause size={20} color="white" />
+      ) : (
+        <Play size={20} color="white" />
+      )}
     </Button>
   );
 };
@@ -250,10 +268,13 @@ const SpeedSettings: React.FC<{
   );
 };
 
-const SettingsButton: React.FC<{
-  settingsOpen: boolean;
-  setSettingsOpen: (settingsOpen: boolean) => void;
-}> = ({ settingsOpen, setSettingsOpen }) => {
+const SettingsButton: React.FC<
+  {
+    settingsOpen: boolean;
+    setSettingsOpen: (settingsOpen: boolean) => void;
+    side?: "top" | "bottom";
+  } & ComponentProps<typeof Button>
+> = ({ settingsOpen, setSettingsOpen, side = "top", className, ...props }) => {
   const [type, setType] = useState<"global" | "speed">("global");
 
   const closePopup = () => {
@@ -274,13 +295,14 @@ const SettingsButton: React.FC<{
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="p-2 rounded-full"
+          className={cn("p-2 rounded-full", className)}
+          {...props}
           onClick={() => setSettingsOpen(true)}
         >
           <Settings size={20} color="white" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side="top" align="end">
+      <DropdownMenuContent side={side} align="end">
         {(() => {
           switch (type) {
             case "global":
@@ -314,21 +336,79 @@ const FullscreenButton = () => {
   );
 };
 
+const ControlsBar = () => {
+  const isMobile = useIsMobile();
+
+  const controlsRef = useRef<HTMLDivElement>(null);
+  const { mouseIn } = useMouse(controlsRef);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const { playing, mouseMoving, mouseClicked } = useVideoPlayer();
+
+  return (
+    <>
+      {isMobile && (
+        <AnimateApparition
+          ref={controlsRef}
+          isAnimating={mouseClicked || !playing || settingsOpen}
+          animation="fade"
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <div className="rounded-full bg-black/30">
+            <PlayPauseButton
+              disabled={!(mouseClicked || !playing || settingsOpen)}
+            />
+          </div>
+          <div className="absolute top-2 right-2 rounded-full bg-black/30">
+            <SettingsButton
+              settingsOpen={settingsOpen}
+              setSettingsOpen={setSettingsOpen}
+              side="bottom"
+              disabled={!(mouseClicked || !playing || settingsOpen)}
+            />
+          </div>
+        </AnimateApparition>
+      )}
+      <AnimateApparition
+        ref={controlsRef}
+        isAnimating={
+          mouseMoving || mouseClicked || mouseIn || !playing || settingsOpen
+        }
+        animation="slideToTop"
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        className="absolute bottom-0 left-0 right-0 p-2"
+      >
+        <Card className="dark flex flex-row items-center justify-between size-full p-3 bg-black/30">
+          {!isMobile && <PlayPauseButton />}
+          {!isMobile && <VolumeControl />}
+          <ProgressBar />
+          {!isMobile && (
+            <SettingsButton
+              settingsOpen={settingsOpen}
+              setSettingsOpen={setSettingsOpen}
+            />
+          )}
+          <FullscreenButton />
+        </Card>
+      </AnimateApparition>
+    </>
+  );
+};
+
 const VideoPlayer = () => {
   const {
     videoRef,
     containerRef,
     playing,
     volume,
-    mouseMoving,
-    mouseClicked,
     togglePlay,
     handleProgress,
+    triggerMouseClick,
   } = useVideoPlayer();
 
-  const controlsRef = useRef<HTMLDivElement>(null);
-  const { mouseIn } = useMouse(controlsRef);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const { value: middleScreenInfo, setValue: setMiddleScreenInfo } =
     useTimeoutResetState<"volume" | "play" | null>(null, 1000);
@@ -345,7 +425,14 @@ const VideoPlayer = () => {
     <div
       ref={containerRef}
       className="size-full bg-black rounded-2xl shadow-lg overflow-hidden relative"
-      onClick={togglePlay}
+      onClick={
+        !isMobile
+          ? togglePlay
+          : (e) => {
+              e.stopPropagation();
+              triggerMouseClick();
+            }
+      }
     >
       <video
         ref={videoRef}
@@ -363,28 +450,7 @@ const VideoPlayer = () => {
         <MiddleScreenInfo type={middleScreenInfo} />
       </AnimateApparition>
 
-      <AnimateApparition
-        ref={controlsRef}
-        isAnimating={
-          mouseMoving || mouseClicked || mouseIn || !playing || settingsOpen
-        }
-        animation="slideToTop"
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-        className="absolute bottom-0 left-0 right-0 p-2"
-      >
-        <Card className="dark flex flex-row items-center justify-between size-full p-3 bg-black/30">
-          <PlayPauseButton />
-          <VolumeControl />
-          <ProgressBar />
-          <SettingsButton
-            settingsOpen={settingsOpen}
-            setSettingsOpen={setSettingsOpen}
-          />
-          <FullscreenButton />
-        </Card>
-      </AnimateApparition>
+      <ControlsBar />
     </div>
   );
 };

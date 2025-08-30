@@ -2,6 +2,7 @@ import { AppLoader } from "@/components/ui/app-loader";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Typography } from "@/components/ui/typography";
 import { useConvertParams } from "@/hooks/use-convert-params";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getUrl, getYtsMovieDataSchemas, movieSchema } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
@@ -18,6 +19,7 @@ export const MoviePageParamsSchema = z.object({
 });
 
 const MoviePage = () => {
+  const isMobile = useIsMobile();
   const { t } = useTranslation();
   const { movieId } = useConvertParams(MoviePageParamsSchema);
 
@@ -52,6 +54,20 @@ const MoviePage = () => {
   }
 
   console.log(movie);
+
+  if (isMobile) {
+    return (
+      <VideoPlayerProvider>
+        <ScrollArea className="col-span-2 h-[calc(100vh)] p-4">
+          <div className="flex flex-col gap-4">
+            <MovieInfo movie={movie} />
+            <VideoPlayer />
+            <MovieInteraction />
+          </div>
+        </ScrollArea>
+      </VideoPlayerProvider>
+    );
+  }
 
   return (
     <VideoPlayerProvider>

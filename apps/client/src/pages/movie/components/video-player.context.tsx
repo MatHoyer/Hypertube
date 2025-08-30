@@ -1,3 +1,4 @@
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
 import {
@@ -39,6 +40,8 @@ type VideoPlayerContextType = {
 
   mouseMoving: boolean;
   mouseClicked: boolean;
+  triggerMouseMove: () => void;
+  triggerMouseClick: () => void;
 };
 
 const VideoPlayerContext = createContext<VideoPlayerContextType | undefined>(
@@ -58,10 +61,16 @@ const usedKeys = [
 export const VideoPlayerProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const isMobile = useIsMobile();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { value: muted, toggle: toggleMute } = useToggle(false);
+  const {
+    value: muted,
+    toggle: toggleMute,
+    setValue: setMute,
+  } = useToggle(false);
   const { value: playing, toggle: togglePlay } = useToggle(false);
   const [volume, setVolume] = useState(20);
   const [progress, setProgress] = useState(0);
@@ -73,7 +82,7 @@ export const VideoPlayerProvider: React.FC<{
   const [speed, setSpeed] = useState<Speed>(1);
 
   const { mouseMoving, mouseClicked, triggerMouseMove, triggerMouseClick } =
-    useMouse(videoRef);
+    useMouse(videoRef, isMobile ? 3000 : undefined);
 
   // Play/Pause
   useEffect(() => {
@@ -92,7 +101,8 @@ export const VideoPlayerProvider: React.FC<{
     if (!videoRef.current) return;
 
     videoRef.current.muted = muted;
-  }, [muted]);
+    if (!muted && volume === 0) setVolume(20);
+  }, [muted, volume]);
 
   // Volume
   useEffect(() => {
@@ -105,6 +115,8 @@ export const VideoPlayerProvider: React.FC<{
     if (!videoRef.current) return;
     if (volume < 0) volume = 0;
     if (volume > 100) volume = 100;
+    if (volume === 0) setMute(true);
+    else setMute(false);
     setVolume(volume);
   };
 
@@ -246,6 +258,8 @@ export const VideoPlayerProvider: React.FC<{
 
         mouseMoving,
         mouseClicked,
+        triggerMouseMove,
+        triggerMouseClick,
       }}
     >
       {children}
