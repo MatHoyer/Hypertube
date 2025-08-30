@@ -5,7 +5,9 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
+import { getUrl } from "@hypertube/libs";
 import { ArrowRightIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const MovieInfo: React.FC<{
   poster: string;
@@ -15,6 +17,7 @@ const MovieInfo: React.FC<{
   cast: {
     name: string;
     imageSrc: string;
+    imdbId: string;
   }[];
 }> = ({ poster, title, year, description, cast }) => {
   return (
@@ -49,14 +52,23 @@ const MovieInfo: React.FC<{
                       />
                       <Typography>{person.name}</Typography>
                     </div>
-                    <Button variant="outline" className="group">
-                      <img
-                        src="/images/IMDB_text_yellow.svg"
-                        alt="IMDB"
-                        className="inline-block w-12 h-12"
-                      />
-                      <ArrowRightIcon className="group-hover:-rotate-45 transition-transform" />
-                    </Button>
+                    {person.imdbId && (
+                      <Button variant="outline" className="group" asChild>
+                        <Link
+                          to={getUrl("external-imdb-actor", {
+                            imdbId: person.imdbId,
+                          })}
+                          target="_blank"
+                        >
+                          <img
+                            src="/images/IMDB_text_yellow.svg"
+                            alt="IMDB"
+                            className="inline-block w-12 h-12"
+                          />
+                          <ArrowRightIcon className="group-hover:-rotate-45 transition-transform" />
+                        </Link>
+                      </Button>
+                    )}
                   </div>
                   {index !== cast.length - 1 && <Separator />}
                 </div>

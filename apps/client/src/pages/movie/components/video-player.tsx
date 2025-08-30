@@ -88,7 +88,7 @@ const VolumeControl = () => {
             step="0.1"
             value={muted ? 0 : volume}
             onChange={(e) => handleVolumeChange(Number(e.target.value))}
-            className="w-full"
+            className="w-full accent-primary"
           />
         </AnimateApparition>
       </div>
@@ -120,7 +120,7 @@ const ProgressBar = () => {
         step="0.1"
         value={progress}
         onChange={(e) => handleSeek(Number(e.target.value))}
-        className="flex-1 mx-3 accent-red-500"
+        className="flex-1 mx-3 accent-primary"
       />
       <div className="flex items-center">
         {currentTime === null || duration === null ? (

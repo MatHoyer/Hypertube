@@ -40,8 +40,17 @@ export type TApiRouteDataRequirements = {
   };
 };
 
+export type TExternalRouteDataRequirements = {
+  "external-imdb-actor": {
+    imdbId: string;
+  };
+};
+
+type TExternalRoute = keyof TExternalRouteDataRequirements;
+
 type TRouteDataRequirements = TClientRouteDataRequirements &
-  TApiRouteDataRequirements;
+  TApiRouteDataRequirements &
+  TExternalRouteDataRequirements;
 
 type TRoute = keyof TRouteDataRequirements;
 
@@ -77,6 +86,10 @@ const routes: {
     subtitlesLanguage,
   }) =>
     `/api/scrappers/${scrapper}/movie/${movieId}/resolution/${resolution}/subtitles/${subtitlesLanguage}/download`,
+
+  // External routes
+  "external-imdb-actor": ({ imdbId }) =>
+    `https://www.imdb.com/name/nm${imdbId}`,
 };
 
 type TSearchParams =

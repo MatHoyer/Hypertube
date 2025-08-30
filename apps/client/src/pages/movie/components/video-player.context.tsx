@@ -119,6 +119,8 @@ export const VideoPlayerProvider: React.FC<{
   }, [isFullscreen]);
 
   useEffect(() => {
+    if (document.readyState !== "complete") return;
+
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };

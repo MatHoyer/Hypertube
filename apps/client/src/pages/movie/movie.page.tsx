@@ -51,6 +51,8 @@ const MoviePage = () => {
     return <NotFoundPage />;
   }
 
+  console.log(movie);
+
   return (
     <VideoPlayerProvider>
       <div className="grid grid-cols-3 size-full">
@@ -70,6 +72,7 @@ const MoviePage = () => {
             cast={movie.actors.map((actor) => ({
               name: actor.name,
               imageSrc: actor.imageUrl ?? "",
+              imdbId: actor.imdbId,
             }))}
           />
         </div>
