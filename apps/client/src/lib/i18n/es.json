@@ -79,15 +79,16 @@
     "loadingRessource": "",
     "tabs": {
       "video": "",
-      "settings": ""
+      "download": ""
     },
-    "settingsPage": {
+    "downloadPage": {
       "title": "",
       "description": "",
       "resolutions": "",
       "subtitles": "",
       "noResolutions": "",
-      "noSubtitles": ""
+      "noSubtitles": "",
+      "download": ""
     },
     "playerSettings": {
       "readingSpeed": ""

@@ -79,15 +79,16 @@
     "loadingRessource": "du film",
     "tabs": {
       "video": "Vidéo",
-      "settings": "Paramètres"
+      "download": "Téléchargements"
     },
-    "settingsPage": {
-      "title": "Paramètres",
+    "downloadPage": {
+      "title": "Téléchargements",
       "description": "S'il vous plaît sélectionnez les paramètres que vous souhaitez télécharger",
       "resolutions": "Résolutions",
       "subtitles": "Sous-titres",
       "noResolutions": "Aucune résolution trouvée",
-      "noSubtitles": "Aucun sous-titre trouvé"
+      "noSubtitles": "Aucun sous-titre trouvé",
+      "download": "Télécharger"
     },
     "playerSettings": {
       "readingSpeed": "Vitesse de lecture"

@@ -10,11 +10,12 @@ import {
   movieSchema,
 } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import z from "zod";
 import { NotFoundPage } from "../notFound/NotFound.page";
 import MovieInfo from "./components/movie-info";
 import MovieInteraction from "./components/movie-interaction";
-import { SettingsSelector } from "./components/settings-selector";
+import { DownloadsSelector } from "./components/settings-selector";
 import VideoPlayer from "./components/video-player";
 import { VideoPlayerProvider } from "./components/video-player.context";
 
@@ -24,13 +25,6 @@ export const MoviePageParamsSchema = z.object({
 
 const MoviePage = () => {
   const { movieId } = useConvertParams(MoviePageParamsSchema);
-
-  const [selectedResolution, setSelectedResolution] = useQueryState(
-    "resolution",
-    parseAsString.withDefault("")
-  );
-  const [selectedSubtitlesLanguage, setSelectedSubtitlesLanguage] =
-    useQueryState("subtitlesLanguage", parseAsString.withDefault(""));
 
   const { data: movie, isLoading } = useQuery({
     queryKey: ["movie", movieId],
@@ -48,6 +42,11 @@ const MoviePage = () => {
   const filteredResolutions = useMemo(() => {
     if (!movie) return [];
     return groupBy(movie.resolutions, "downloadState");
+  }, [movie]);
+
+  const filteredSubtitles = useMemo(() => {
+    if (!movie) return [];
+    return groupBy(movie.subtitles, "downloadState");
   }, [movie]);
 
   if (isLoading) {
@@ -73,7 +72,7 @@ const MoviePage = () => {
                   Array.isArray(filteredResolutions)
                     ? "video"
                     : filteredResolutions?.NOT_DOWNLOADED?.length > 0
-                    ? "settings"
+                    ? "downloads"
                     : "video"
                 }
               >
@@ -81,25 +80,25 @@ const MoviePage = () => {
                   <TabsTrigger value="video">
                     {t("movie.tabs.video")}
                   </TabsTrigger>
-                  <TabsTrigger value="settings">
-                    {t("movie.tabs.settings")}
+                  <TabsTrigger value="downloads">
+                    {t("movie.tabs.downloads")}
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="video">
                   <VideoPlayer />
                 </TabsContent>
-                <TabsContent value="settings">
-                  <SettingsSelector
+                <TabsContent value="downloads">
+                  <DownloadsSelector
                     resolutions={
                       Array.isArray(filteredResolutions)
                         ? []
                         : filteredResolutions?.NOT_DOWNLOADED ?? []
                     }
-                    selectedResolution={selectedResolution}
-                    setSelectedResolution={setSelectedResolution}
-                    subtitlesLanguages={movie.subtitles}
-                    selectedSubtitlesLanguage={selectedSubtitlesLanguage}
-                    setSelectedSubtitlesLanguage={setSelectedSubtitlesLanguage}
+                    subtitlesLanguages={
+                      Array.isArray(filteredSubtitles)
+                        ? []
+                        : filteredSubtitles?.NOT_DOWNLOADED ?? []
+                    }
                   />
                 </TabsContent>
               </Tabs>
