@@ -77,6 +77,18 @@
   },
   "movie": {
     "loadingRessource": "movie",
+    "tabs": {
+      "video": "Video",
+      "settings": "Settings"
+    },
+    "settingsPage": {
+      "title": "Settings",
+      "description": "Please select the settings you want to download",
+      "resolutions": "Resolutions",
+      "subtitles": "Subtitles",
+      "noResolutions": "No resolutions found",
+      "noSubtitles": "No subtitles found"
+    },
     "playerSettings": {
       "readingSpeed": "Reading speed"
     },

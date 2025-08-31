@@ -1,7 +1,8 @@
 // Utils export
+export { groupBy } from "./utils/object.utils.js";
 export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
-export { getUrl } from "./utils/url/getUrl.js";
 export { getServerUrl } from "./utils/url/getServerUrl.js";
+export { getUrl } from "./utils/url/getUrl.js";
 export type {
   TApiRouteDataRequirements,
   TClientRouteDataRequirements,

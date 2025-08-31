@@ -10,7 +10,19 @@ const useReversibleCardState = (initialState = false) => {
     setState((prev) => !prev);
   };
 
-  return { isFlipped: state, flip, isAnimating, setIsAnimating };
+  const manualFlip = (state: boolean) => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setState(state);
+  };
+
+  return {
+    isFlipped: state,
+    flip,
+    isAnimating,
+    setIsAnimating,
+    manualFlip,
+  };
 };
 
 export default useReversibleCardState;

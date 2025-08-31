@@ -169,7 +169,29 @@ const fetchAdditionalInfo = async (movieId: string) => {
     })
   );
 
-  const resolutions = movieData.torrents;
+  const resolutionsData = movieData.torrents;
+
+  const resolutions = await Promise.all(
+    resolutionsData.map(async (resolution) => {
+      return await prisma.resolution.upsert({
+        where: {
+          movieId_resolution: {
+            movieId: movie.id,
+            resolution: resolution.quality,
+          },
+        },
+        create: {
+          movieId: movie.id,
+          resolution: resolution.quality,
+          size: resolution.size,
+          downloadState: DownloadStates.NOT_DOWNLOADED,
+        },
+        update: {
+          size: resolution.size,
+        },
+      });
+    })
+  );
 
   const subtitlesData = await getSubtitlesDownloadLinks({
     imdbId: movie.imdbId,
@@ -219,12 +241,12 @@ const fetchAdditionalInfo = async (movieId: string) => {
     ...movie,
     resolutions: resolutions.map((resolution) => {
       const dbResolution = dbResolutions.find(
-        (dbResolution) => dbResolution.resolution === resolution.quality
+        (dbResolution) => dbResolution.resolution === resolution.resolution
       );
 
       return (
         dbResolution ?? {
-          resolution: resolution.quality,
+          resolution: resolution.resolution,
           size: resolution.size,
           downloadState: DownloadStates.NOT_DOWNLOADED,
         }
