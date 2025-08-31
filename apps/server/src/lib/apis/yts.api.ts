@@ -68,6 +68,7 @@ const ytsMovieSchema = z.object({
   genres: z.array(
     z.enum(ytsGenres.map((genre) => capitalizeAllWords(genre, "-")))
   ),
+  description_full: z.string().optional(),
   yt_trailer_code: z.string().optional(),
   language: z.string(),
   background_image: z.string(),
