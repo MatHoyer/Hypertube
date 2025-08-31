@@ -2,7 +2,8 @@
   "global": {
     "hello": "Hello",
     "error": "Error",
-    "or": "Or"
+    "or": "Or",
+    "loadingMessage": "Loading {{resource}}"
   },
   "combobox": {
     "language": {
@@ -72,5 +73,41 @@
     "backToSignin": "Go back to sign in",
     "missAccount": "Don't have an account?",
     "gotAccount": "Already have an account?"
+  },
+  "movie": {
+    "loadingRessource": "movie",
+    "playerSettings": {
+      "readingSpeed": "Reading speed"
+    },
+    "cast": "Cast",
+    "genres": {
+      "action": "Action",
+      "adventure": "Adventure",
+      "animation": "Animation",
+      "biography": "Biography",
+      "comedy": "Comedy",
+      "crime": "Crime",
+      "documentary": "Documentary",
+      "drama": "Drama",
+      "family": "Family",
+      "fantasy": "Fantasy",
+      "film-noir": "Film Noir",
+      "game-show": "Game Show",
+      "history": "History",
+      "horror": "Horror",
+      "music": "Music",
+      "musical": "Musical",
+      "mystery": "Mystery",
+      "news": "News",
+      "reality-tv": "Reality TV",
+      "romance": "Romance",
+      "sci-fi": "Sci-Fi",
+      "short": "Short",
+      "sport": "Sport",
+      "talk-show": "Talk Show",
+      "thriller": "Thriller",
+      "war": "War",
+      "western": "Western"
+    }
   }
 }

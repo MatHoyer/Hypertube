@@ -1,3 +1,4 @@
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
 import {
@@ -8,6 +9,8 @@ import {
   useRef,
   useState,
 } from "react";
+
+type Speed = 0.5 | 1 | 1.5 | 2;
 
 type VideoPlayerContextType = {
   videoRef: React.RefObject<HTMLVideoElement | null>;
@@ -32,8 +35,13 @@ type VideoPlayerContextType = {
   handleSeek: (percent: number) => void;
   handleJumpVideo: (seconds: number) => void;
 
+  speed: Speed;
+  handleSetSpeed: (speed: Speed) => void;
+
   mouseMoving: boolean;
   mouseClicked: boolean;
+  triggerMouseMove: () => void;
+  triggerMouseClick: () => void;
 };
 
 const VideoPlayerContext = createContext<VideoPlayerContextType | undefined>(
@@ -53,10 +61,16 @@ const usedKeys = [
 export const VideoPlayerProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
+  const isMobile = useIsMobile();
+
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const { value: muted, toggle: toggleMute } = useToggle(false);
+  const {
+    value: muted,
+    toggle: toggleMute,
+    setValue: setMute,
+  } = useToggle(false);
   const { value: playing, toggle: togglePlay } = useToggle(false);
   const [volume, setVolume] = useState(20);
   const [progress, setProgress] = useState(0);
@@ -65,9 +79,10 @@ export const VideoPlayerProvider: React.FC<{
     toggle: toggleFullscreen,
     setValue: setIsFullscreen,
   } = useToggle(false);
+  const [speed, setSpeed] = useState<Speed>(1);
 
   const { mouseMoving, mouseClicked, triggerMouseMove, triggerMouseClick } =
-    useMouse(videoRef);
+    useMouse(videoRef, isMobile ? 3000 : undefined);
 
   // Play/Pause
   useEffect(() => {
@@ -86,7 +101,8 @@ export const VideoPlayerProvider: React.FC<{
     if (!videoRef.current) return;
 
     videoRef.current.muted = muted;
-  }, [muted]);
+    if (!muted && volume === 0) setVolume(20);
+  }, [muted, volume]);
 
   // Volume
   useEffect(() => {
@@ -99,6 +115,8 @@ export const VideoPlayerProvider: React.FC<{
     if (!videoRef.current) return;
     if (volume < 0) volume = 0;
     if (volume > 100) volume = 100;
+    if (volume === 0) setMute(true);
+    else setMute(false);
     setVolume(volume);
   };
 
@@ -119,6 +137,8 @@ export const VideoPlayerProvider: React.FC<{
   }, [isFullscreen]);
 
   useEffect(() => {
+    if (document.readyState !== "complete") return;
+
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
@@ -144,6 +164,12 @@ export const VideoPlayerProvider: React.FC<{
     if (!videoRef.current) return;
     videoRef.current.currentTime = (percent / 100) * videoRef.current.duration;
     setProgress(percent);
+  };
+
+  const handleSetSpeed = (speed: Speed) => {
+    if (!videoRef.current) return;
+    setSpeed(speed);
+    videoRef.current.playbackRate = speed;
   };
 
   // Code shortcuts
@@ -227,8 +253,13 @@ export const VideoPlayerProvider: React.FC<{
         handleSeek,
         handleJumpVideo,
 
+        speed,
+        handleSetSpeed,
+
         mouseMoving,
         mouseClicked,
+        triggerMouseMove,
+        triggerMouseClick,
       }}
     >
       {children}

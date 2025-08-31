@@ -40,8 +40,18 @@ export type TApiRouteDataRequirements = {
   };
 };
 
+export type TExternalRouteDataRequirements = {
+  "external-imdb-movie": {
+    imdbId: string;
+  };
+  "external-imdb-actor": {
+    imdbId: string;
+  };
+};
+
 type TRouteDataRequirements = TClientRouteDataRequirements &
-  TApiRouteDataRequirements;
+  TApiRouteDataRequirements &
+  TExternalRouteDataRequirements;
 
 type TRoute = keyof TRouteDataRequirements;
 
@@ -77,6 +87,11 @@ const routes: {
     subtitlesLanguage,
   }) =>
     `/api/scrappers/${scrapper}/movie/${movieId}/resolution/${resolution}/subtitles/${subtitlesLanguage}/download`,
+
+  // External routes
+  "external-imdb-movie": ({ imdbId }) => `https://www.imdb.com/title/${imdbId}`,
+  "external-imdb-actor": ({ imdbId }) =>
+    `https://www.imdb.com/name/nm${imdbId}`,
 };
 
 type TSearchParams =
@@ -107,7 +122,9 @@ export const getUrl = <T extends TRoute>(
   const routeFn = routes[route];
 
   const computedUrl = routeFn(routeParams);
-  const serverUrl = withServerUrl ? getServerUrl() : "";
+
+  const serverUrl =
+    withServerUrl && !route.startsWith("external-") ? getServerUrl() : "";
 
   const parsedSearchParams = searchParams
     ? `?${new URLSearchParams(searchParams)}`
