@@ -87,45 +87,47 @@ const MovieInfo: React.FC<{
             />
           )}
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("movie.cast")}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-2">
-            {actors.map((person, index) => (
-              <div key={index} className="flex flex-col gap-2">
-                <div className="flex justify-between items-center gap-2">
-                  <div className="flex items-center gap-2">
-                    <ImageAvatar
-                      name={person.name}
-                      imageSrc={person.imageUrl ?? ""}
-                      size="sm"
-                    />
-                    <Typography>{person.name}</Typography>
+        {actors.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("movie.cast")}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-2">
+              {actors.map((person, index) => (
+                <div key={index} className="flex flex-col gap-2">
+                  <div className="flex justify-between items-center gap-2">
+                    <div className="flex items-center gap-2">
+                      <ImageAvatar
+                        name={person.name}
+                        imageSrc={person.imageUrl ?? ""}
+                        size="sm"
+                      />
+                      <Typography>{person.name}</Typography>
+                    </div>
+                    {person.imdbId && (
+                      <Button variant="outline" className="group" asChild>
+                        <Link
+                          to={getUrl("external-imdb-actor", {
+                            imdbId: person.imdbId,
+                          })}
+                          target="_blank"
+                        >
+                          <img
+                            src="/images/IMDB_text_yellow.svg"
+                            alt="IMDB"
+                            className="inline-block w-12 h-12"
+                          />
+                          <ArrowRightIcon className="group-hover:-rotate-45 transition-transform" />
+                        </Link>
+                      </Button>
+                    )}
                   </div>
-                  {person.imdbId && (
-                    <Button variant="outline" className="group" asChild>
-                      <Link
-                        to={getUrl("external-imdb-actor", {
-                          imdbId: person.imdbId,
-                        })}
-                        target="_blank"
-                      >
-                        <img
-                          src="/images/IMDB_text_yellow.svg"
-                          alt="IMDB"
-                          className="inline-block w-12 h-12"
-                        />
-                        <ArrowRightIcon className="group-hover:-rotate-45 transition-transform" />
-                      </Link>
-                    </Button>
-                  )}
+                  {index !== actors.length - 1 && <Separator />}
                 </div>
-                {index !== actors.length - 1 && <Separator />}
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              ))}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </ScrollArea>
   );

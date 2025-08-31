@@ -76,7 +76,7 @@ const ytsMovieSchema = z.object({
   medium_cover_image: z.string(),
   large_cover_image: z.string(),
   torrents: z.array(ytsMovieTorrentSchema),
-  cast: z.array(ytsMovieActorSchema),
+  cast: z.array(ytsMovieActorSchema).optional().default([]),
 });
 
 const ytsGetMoviesResponseSchema = z.object({

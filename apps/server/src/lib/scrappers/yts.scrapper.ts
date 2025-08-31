@@ -32,7 +32,7 @@ export const scrapeYtsMovies = async (
   params: TYtsScrapperSearchParamsSchemas,
   pageNumber: number
 ) => {
-  const url = getYtsUrl(params) + `?page=${pageNumber}`;
+  const url = getYtsUrl(params) + (pageNumber > 1 ? `?page=${pageNumber}` : "");
 
   const { page, browser } = await createPuppeteer(url);
 

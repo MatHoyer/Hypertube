@@ -79,7 +79,7 @@
     "loadingRessource": "du film",
     "tabs": {
       "video": "Vidéo",
-      "download": "Téléchargements"
+      "downloads": "Téléchargements"
     },
     "downloadPage": {
       "title": "Téléchargements",
