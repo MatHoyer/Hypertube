@@ -29,6 +29,7 @@ const MovieInfo: React.FC<{
     language,
     actors,
     genres,
+    ytTrailerCode,
   },
 }) => {
   const { t } = useTranslation();
@@ -75,7 +76,16 @@ const MovieInfo: React.FC<{
             <Star className="text-primary fill-primary" />
             <Typography variant="mono">{rating}/10</Typography>
           </div>
-          <Typography variant="muted">{description}</Typography>
+          <Typography variant="muted" className="text-start">
+            {description}
+          </Typography>
+          {ytTrailerCode && (
+            <iframe
+              width="100%"
+              height="315"
+              src={`https://www.youtube.com/embed/${ytTrailerCode}`}
+            />
+          )}
         </div>
         <Card className="p-4">
           <CardTitle>{t("movie.cast")}</CardTitle>

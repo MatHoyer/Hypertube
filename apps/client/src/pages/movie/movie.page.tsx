@@ -2,7 +2,6 @@ import { AppLoader } from "@/components/ui/app-loader";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Typography } from "@/components/ui/typography";
 import { useConvertParams } from "@/hooks/use-convert-params";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getUrl, getYtsMovieDataSchemas, movieSchema } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
@@ -19,7 +18,6 @@ export const MoviePageParamsSchema = z.object({
 });
 
 const MoviePage = () => {
-  const isMobile = useIsMobile();
   const { t } = useTranslation();
   const { movieId } = useConvertParams(MoviePageParamsSchema);
 
@@ -55,36 +53,20 @@ const MoviePage = () => {
 
   console.log(movie);
 
-  if (isMobile) {
-    return (
-      <VideoPlayerProvider>
-        <ScrollArea className="h-[calc(100vh)]">
-          <div className="flex flex-col gap-4 p-4">
-            <MovieInfo movie={movie} />
+  return (
+    <VideoPlayerProvider>
+      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3">
+        <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-0">
+          <MovieInfo movie={movie} />
+        </div>
+
+        <ScrollArea className="lg:col-start-1 lg:row-start-1 lg:col-span-2 lg:h-[calc(100vh)] p-4">
+          <div className="flex flex-col gap-4">
             <VideoPlayer />
             <MovieInteraction />
           </div>
         </ScrollArea>
-      </VideoPlayerProvider>
-    );
-  }
-
-  return (
-    <VideoPlayerProvider>
-      <ScrollArea className="h-[calc(100vh)] lg:h-full">
-        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3">
-          <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-0">
-            <MovieInfo movie={movie} />
-          </div>
-
-          <ScrollArea className="lg:col-start-1 lg:row-start-1 lg:col-span-2 lg:h-[calc(100vh)] p-4">
-            <div className="flex flex-col gap-4">
-              <VideoPlayer />
-              <MovieInteraction />
-            </div>
-          </ScrollArea>
-        </div>
-      </ScrollArea>
+      </div>
     </VideoPlayerProvider>
   );
 };

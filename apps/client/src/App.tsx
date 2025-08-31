@@ -5,6 +5,7 @@ import { getUrl } from "@hypertube/libs";
 import { Navigate, Outlet, Route, Routes, useParams } from "react-router-dom";
 import type { ZodType } from "zod";
 import { z } from "zod";
+import { ScrollArea } from "./components/ui/scroll-area";
 import { PrivateLayout } from "./layouts/PrivateLayout";
 import { PublicLayout } from "./layouts/PublicLayout";
 import { authClient } from "./lib/auth-client";
@@ -28,8 +29,7 @@ const PrivateRoute = () => {
   const session = authClient.useSession();
   const user = session?.data?.user;
 
-  if (!session.isPending && !user)
-    return <Navigate to={getUrl("client-signin")} replace />;
+  if (!user) return <Navigate to={getUrl("client-signin")} replace />;
   return (
     <PrivateLayout>
       <Outlet />
@@ -58,45 +58,48 @@ const App = () => {
 
   return (
     <div className="h-dvh w-dvw flex justify-center items-center bg-background">
-      <Routes>
-        {/* Routes publiques */}
-        <Route element={<PublicRoute />}>
-          <Route path={getUrl("client-signin")} element={<SignInPage />} />
-          <Route path={getUrl("client-signup")} element={<SignUpPage />} />
-          <Route
-            path={getUrl("client-forget-password")}
-            element={<ForgetPasswordPage />}
-          />
-          <Route
-            path={getUrl("client-reset-password")}
-            element={<ResetPasswordPage />}
-          />
-        </Route>
-
-        {/* Routes privées */}
-        <Route element={<PrivateRoute />}>
-          <Route path="/dashboard" element={<div>Dashboard</div>} />
-          <Route
-            element={
-              <ProtectedRoute
-                schema={z.object({
-                  movieId: z.uuid(),
-                })}
-              />
-            }
-          >
+      <ScrollArea className="h-dvh w-dvw">
+        <Routes>
+          {/* Routes publiques */}
+          <Route element={<PublicRoute />}>
+            <Route path={getUrl("client-signin")} element={<SignInPage />} />
+            <Route path={getUrl("client-signup")} element={<SignUpPage />} />
             <Route
-              path={getUrl("client-movie", {
-                movieId: ":movieId",
-              })}
-              element={<MoviePage />}
+              path={getUrl("client-forget-password")}
+              element={<ForgetPasswordPage />}
             />
-          </Route>
-        </Route>
+            <Route
+              path={getUrl("client-reset-password")}
+              element={<ResetPasswordPage />}
+            />
 
-        {/* Route 404 */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+            <Route
+              element={
+                <ProtectedRoute
+                  schema={z.object({
+                    movieId: z.uuid(),
+                  })}
+                />
+              }
+            >
+              <Route
+                path={getUrl("client-movie", {
+                  movieId: ":movieId",
+                })}
+                element={<MoviePage />}
+              />
+            </Route>
+          </Route>
+
+          {/* Routes privées */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/dashboard" element={<div>Dashboard</div>} />
+          </Route>
+
+          {/* Route 404 */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </ScrollArea>
     </div>
   );
 };
