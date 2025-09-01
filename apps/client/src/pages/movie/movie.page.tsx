@@ -42,13 +42,13 @@ const MoviePage = () => {
   });
 
   const filteredResolutions = useMemo(() => {
-    if (!movie) return [];
+    if (!movie) return null;
     return groupBy(movie.resolutions, "downloadState");
   }, [movie]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filteredSubtitles = useMemo(() => {
-    if (!movie) return [];
+    if (!movie) return null;
     return groupBy(movie.subtitles, "downloadState");
   }, [movie]);
 
@@ -72,11 +72,11 @@ const MoviePage = () => {
             <div className="flex flex-col gap-1">
               <Tabs
                 defaultValue={
-                  Array.isArray(filteredResolutions)
+                  !!filteredResolutions &&
+                  filteredResolutions.DOWNLOADED &&
+                  filteredResolutions.DOWNLOADED.length > 0
                     ? "video"
-                    : filteredResolutions?.NOT_DOWNLOADED?.length > 0
-                    ? "downloads"
-                    : "video"
+                    : "downloads"
                 }
               >
                 <TabsList>
