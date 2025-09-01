@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { AppLoader } from "@/components/ui/app-loader";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,9 +9,49 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
-import { type TGetYtsMovieDataSchemas } from "@hypertube/libs";
+import { cn } from "@/lib/utils";
+import { DownloadStates, type TGetYtsMovieDataSchemas } from "@hypertube/libs";
+import type { VariantProps } from "class-variance-authority";
+import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+
+const DownloadButton: React.FC<{
+  label: string;
+  downloadState: keyof typeof DownloadStates;
+  selected: boolean;
+  onClick: () => void;
+}> = ({ label, downloadState, selected, onClick }) => {
+  let variant: VariantProps<typeof buttonVariants>["variant"];
+  switch (downloadState) {
+    case DownloadStates.DOWNLOADED:
+      variant = "success";
+      break;
+    case DownloadStates.DOWNLOADING:
+      variant = "default";
+      break;
+    default:
+      variant = "outline";
+      break;
+  }
+
+  return (
+    <Button
+      onClick={onClick}
+      variant={selected ? "default" : variant}
+      disabled={
+        downloadState === DownloadStates.DOWNLOADING ||
+        downloadState === DownloadStates.DOWNLOADED
+      }
+    >
+      {downloadState === DownloadStates.DOWNLOADED && (
+        <CheckIcon size={20} strokeWidth={3} />
+      )}
+      {downloadState === DownloadStates.DOWNLOADING && <AppLoader />}
+      {label}
+    </Button>
+  );
+};
 
 export const DownloadsSelector: React.FC<{
   resolutions: TGetYtsMovieDataSchemas["response"]["resolutions"];
@@ -39,17 +80,28 @@ export const DownloadsSelector: React.FC<{
             {resolutions.length > 0 ? (
               <div className="flex justify-start gap-2 flex-wrap">
                 {resolutions.map((resolution) => (
-                  <Button
+                  <div
                     key={resolution.resolution}
-                    onClick={() => setSelectedResolution(resolution.resolution)}
-                    variant={
-                      selectedResolution === resolution.resolution
-                        ? "default"
-                        : "outline"
-                    }
+                    className="flex flex-col items-center gap-1"
                   >
-                    {resolution.resolution}
-                  </Button>
+                    <DownloadButton
+                      label={resolution.resolution}
+                      downloadState={resolution.downloadState}
+                      selected={selectedResolution === resolution.resolution}
+                      onClick={() =>
+                        setSelectedResolution(resolution.resolution)
+                      }
+                    />
+                    <Typography
+                      variant="muted"
+                      className={cn(
+                        selectedResolution === resolution.resolution &&
+                          "text-primary"
+                      )}
+                    >
+                      {resolution.size}
+                    </Typography>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -70,19 +122,16 @@ export const DownloadsSelector: React.FC<{
             {subtitlesLanguages.length > 0 ? (
               <div className="flex justify-start gap-2 flex-wrap">
                 {subtitlesLanguages.map((subtitlesLanguage) => (
-                  <Button
-                    key={subtitlesLanguage.language}
+                  <DownloadButton
+                    label={subtitlesLanguage.language}
+                    downloadState={subtitlesLanguage.downloadState}
+                    selected={
+                      selectedSubtitlesLanguage === subtitlesLanguage.language
+                    }
                     onClick={() =>
                       setSelectedSubtitlesLanguage(subtitlesLanguage.language)
                     }
-                    variant={
-                      selectedSubtitlesLanguage === subtitlesLanguage.language
-                        ? "default"
-                        : "outline"
-                    }
-                  >
-                    {subtitlesLanguage.language}
-                  </Button>
+                  />
                 ))}
               </div>
             ) : (

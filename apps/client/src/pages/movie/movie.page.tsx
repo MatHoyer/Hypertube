@@ -11,6 +11,7 @@ import {
 } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import z from "zod";
 import { NotFoundPage } from "../notFound/NotFound.page";
 import MovieInfo from "./components/movie-info";
@@ -24,6 +25,7 @@ export const MoviePageParamsSchema = z.object({
 });
 
 const MoviePage = () => {
+  const { t } = useTranslation();
   const { movieId } = useConvertParams(MoviePageParamsSchema);
 
   const { data: movie, isLoading } = useQuery({
@@ -44,6 +46,7 @@ const MoviePage = () => {
     return groupBy(movie.resolutions, "downloadState");
   }, [movie]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filteredSubtitles = useMemo(() => {
     if (!movie) return [];
     return groupBy(movie.subtitles, "downloadState");
@@ -89,16 +92,8 @@ const MoviePage = () => {
                 </TabsContent>
                 <TabsContent value="downloads">
                   <DownloadsSelector
-                    resolutions={
-                      Array.isArray(filteredResolutions)
-                        ? []
-                        : filteredResolutions?.NOT_DOWNLOADED ?? []
-                    }
-                    subtitlesLanguages={
-                      Array.isArray(filteredSubtitles)
-                        ? []
-                        : filteredSubtitles?.NOT_DOWNLOADED ?? []
-                    }
+                    resolutions={movie.resolutions ?? []}
+                    subtitlesLanguages={movie.subtitles ?? []}
                   />
                 </TabsContent>
               </Tabs>
