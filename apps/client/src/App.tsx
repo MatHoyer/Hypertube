@@ -17,24 +17,29 @@ const PublicRoute = () => {
   const session = authClient.useSession();
   const user = session?.data?.user;
 
-  if (user) return <Navigate to="/dashboard" replace />;
-  return (
-    <PublicLayout>
-      <Outlet />
-    </PublicLayout>
-  );
+  if (!session.isPending) {
+    console.log(user)
+    if (user) return <Navigate to="/dashboard" replace />;
+    return (
+      <PublicLayout>
+        <Outlet />
+      </PublicLayout>
+    );
+  }
 };
 
 const PrivateRoute = () => {
   const session = authClient.useSession();
   const user = session?.data?.user;
 
-  if (!user) return <Navigate to={getUrl("client-signin")} replace />;
-  return (
-    <PrivateLayout>
-      <Outlet />
-    </PrivateLayout>
-  );
+  if (!session.isPending) {
+    if (!user) return <Navigate to={getUrl("client-signin")} replace />;
+    return (
+      <PrivateLayout>
+        <Outlet />
+      </PrivateLayout>
+    );
+  }
 };
 
 const ProtectedRoute = <T extends Record<string, unknown>>({
@@ -50,6 +55,19 @@ const ProtectedRoute = <T extends Record<string, unknown>>({
   }
 
   return <Outlet />;
+};
+
+const NotFoundHandler = () => {
+  const session = authClient.useSession();
+  const user = session?.data?.user;
+
+  if (!session.isPending) {
+    if (!user) {
+      return <Navigate to={getUrl("client-signin")} replace />;
+    }
+  
+    return <NotFoundPage />;
+  }
 };
 
 const App = () => {
