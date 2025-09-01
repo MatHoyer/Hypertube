@@ -57,19 +57,6 @@ const ProtectedRoute = <T extends Record<string, unknown>>({
   return <Outlet />;
 };
 
-const NotFoundHandler = () => {
-  const session = authClient.useSession();
-  const user = session?.data?.user;
-
-  if (!session.isPending) {
-    if (!user) {
-      return <Navigate to={getUrl("client-signin")} replace />;
-    }
-  
-    return <NotFoundPage />;
-  }
-};
-
 const App = () => {
   const session = authClient.useSession();
   console.log(session?.data?.user);
@@ -90,7 +77,6 @@ const App = () => {
               path={getUrl("client-reset-password")}
               element={<ResetPasswordPage />}
             />
-
             <Route
               element={
                 <ProtectedRoute
