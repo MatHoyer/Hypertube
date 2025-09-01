@@ -3,7 +3,8 @@
     "hello": "Bonjour",
     "error": "Erreur",
     "or": "Ou",
-    "loadingMessage": "Chargement {{resource}}"
+    "loadingMessage": "Chargement {{resource}}",
+    "loadingRessource": "..."
   },
   "combobox": {
     "language": {
