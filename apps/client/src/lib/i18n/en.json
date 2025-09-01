@@ -3,7 +3,8 @@
     "hello": "Hello",
     "error": "Error",
     "or": "Or",
-    "loadingMessage": "Loading {{resource}}"
+    "loadingMessage": "Loading {{resource}}",
+    "loadingRessource": "..."
   },
   "combobox": {
     "language": {

@@ -1,11 +1,9 @@
-import { AppLoader } from "@/components/ui/app-loader";
+import { LoadingPage } from "@/components/LoadingPage";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Typography } from "@/components/ui/typography";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getUrl, getYtsMovieDataSchemas, movieSchema } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslation } from "react-i18next";
 import z from "zod";
 import { NotFoundPage } from "../notFound/NotFound.page";
 import MovieInfo from "./components/movie-info";
@@ -18,7 +16,6 @@ export const MoviePageParamsSchema = z.object({
 });
 
 const MoviePage = () => {
-  const { t } = useTranslation();
   const { movieId } = useConvertParams(MoviePageParamsSchema);
 
   const { data: movie, isLoading } = useQuery({
@@ -35,16 +32,7 @@ const MoviePage = () => {
   });
 
   if (isLoading) {
-    return (
-      <div className="size-full flex flex-col justify-center items-center gap-4">
-        <AppLoader size={60} />
-        <Typography variant="h3">
-          {t("global.loadingMessage", {
-            resource: t("movie.loadingRessource"),
-          })}
-        </Typography>
-      </div>
-    );
+    return <LoadingPage resource="movie" />;
   }
 
   if (!movie) {

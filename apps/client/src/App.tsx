@@ -5,6 +5,7 @@ import { getUrl } from "@hypertube/libs";
 import { Navigate, Outlet, Route, Routes, useParams } from "react-router-dom";
 import type { ZodType } from "zod";
 import { z } from "zod";
+import { LoadingPage } from "./components/LoadingPage";
 import { ScrollArea } from "./components/ui/scroll-area";
 import { PrivateLayout } from "./layouts/PrivateLayout";
 import { PublicLayout } from "./layouts/PublicLayout";
@@ -17,8 +18,8 @@ const PublicRoute = () => {
   const session = authClient.useSession();
   const user = session?.data?.user;
 
-  if (session.isPending) return <div>Loading...</div>
-  
+  if (session.isPending) return <LoadingPage resource="global" />;
+
   if (user) return <Navigate to="/dashboard" replace />;
 
   return (
@@ -32,10 +33,10 @@ const PrivateRoute = () => {
   const session = authClient.useSession();
   const user = session?.data?.user;
 
-  if (session.isPending) return <div>Loading...</div>; 
-  
+  if (session.isPending) return <LoadingPage resource="global" />;
+
   if (!user) return <Navigate to={getUrl("client-signin")} replace />;
-  
+
   return (
     <PrivateLayout>
       <Outlet />
@@ -64,7 +65,6 @@ const App = () => {
 
   return (
     <div className="h-dvh w-dvw flex justify-center items-center bg-background">
-
       <ScrollArea className="h-dvh w-dvw">
         <Routes>
           {/* Public routes */}
