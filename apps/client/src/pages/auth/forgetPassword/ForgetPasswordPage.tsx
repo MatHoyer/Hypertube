@@ -14,9 +14,7 @@ export const ForgetPasswordPage = () => {
       <div className="flex items-center">
         <Typography variant="small">{t("sign.rememberPassword")}</Typography>
         <Button type="button" variant={"link"} asChild>
-          <Link to={getUrl("client-signin")}>
-            <Typography variant="muted">{t("sign.backToSignin")}</Typography>
-          </Link>
+          <Link to={getUrl("client-signin")}>{t("sign.backToSignin")}</Link>
         </Button>
       </div>
     </AuthLayout>

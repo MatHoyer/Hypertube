@@ -15,12 +15,7 @@ export const SignInPage = () => {
       <OAuthButtons />
       <TextSeparator>{t("global.or")}</TextSeparator>
       <SignInForm className="w-full" />
-      <Button
-        type="button"
-        variant={"link"}
-        className="text-muted-foreground"
-        asChild
-      >
+      <Button type="button" variant={"link"} asChild>
         <Link to={getUrl("client-forget-password")}>
           {t("sign.forgetPassword")}
         </Link>
@@ -28,9 +23,7 @@ export const SignInPage = () => {
       <div className="flex items-center">
         <Typography variant="small">{t("sign.missAccount")}</Typography>
         <Button type="button" variant={"link"} asChild>
-          <Link to={getUrl("client-signup")}>
-            <Typography variant="muted">{t("sign.up")}</Typography>
-          </Link>
+          <Link to={getUrl("client-signup")}>{t("sign.up")}</Link>
         </Button>
       </div>
     </AuthLayout>
