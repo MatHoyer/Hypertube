@@ -79,7 +79,9 @@ export const ForgetPasswordForm: React.FC<ComponentProps<"div">> = ({
               )}
             />
           )}
-          <Button className="w-full">{t("sign.sendEmail")}</Button>
+          <Button type="submit" className="w-full">
+            {t("sign.sendEmail")}
+          </Button>
         </form>
       </Form>
     </div>

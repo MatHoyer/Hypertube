@@ -84,7 +84,9 @@ export const ResetPasswordForm: React.FC<ComponentProps<"div">> = ({
               )}
             />
           )}
-          <Button className="w-full">{t("sign.resetPassword")}</Button>
+          <Button type="submit" className="w-full">
+            {t("sign.resetPassword")}
+          </Button>
         </form>
       </Form>
     </div>

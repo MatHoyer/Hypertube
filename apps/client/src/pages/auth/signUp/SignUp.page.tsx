@@ -18,9 +18,7 @@ export const SignUpPage = () => {
       <div className="flex items-center">
         <Typography variant="small">{t("sign.gotAccount")}</Typography>
         <Button type="button" variant={"link"} asChild>
-          <Link to={getUrl("client-signin")}>
-            <Typography variant="muted">{t("sign.in")}</Typography>
-          </Link>
+          <Link to={getUrl("client-signin")}>{t("sign.in")}</Link>
         </Button>
       </div>
     </AuthLayout>
