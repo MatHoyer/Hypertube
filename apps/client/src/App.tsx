@@ -17,7 +17,10 @@ const PublicRoute = () => {
   const session = authClient.useSession();
   const user = session?.data?.user;
 
+  if (session.isPending) return <div>Loading...</div>
+  
   if (user) return <Navigate to="/dashboard" replace />;
+
   return (
     <PublicLayout>
       <Outlet />
@@ -29,7 +32,10 @@ const PrivateRoute = () => {
   const session = authClient.useSession();
   const user = session?.data?.user;
 
+  if (session.isPending) return <div>Loading...</div>; 
+  
   if (!user) return <Navigate to={getUrl("client-signin")} replace />;
+  
   return (
     <PrivateLayout>
       <Outlet />
@@ -58,9 +64,10 @@ const App = () => {
 
   return (
     <div className="h-dvh w-dvw flex justify-center items-center bg-background">
+
       <ScrollArea className="h-dvh w-dvw">
         <Routes>
-          {/* Routes publiques */}
+          {/* Public routes */}
           <Route element={<PublicRoute />}>
             <Route path={getUrl("client-signin")} element={<SignInPage />} />
             <Route path={getUrl("client-signup")} element={<SignUpPage />} />
@@ -72,7 +79,12 @@ const App = () => {
               path={getUrl("client-reset-password")}
               element={<ResetPasswordPage />}
             />
+          </Route>
 
+          {/* Private routes */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/dashboard" element={<div>Dashboard</div>} />
+            <Route path="*" element={<NotFoundPage />} />
             <Route
               element={
                 <ProtectedRoute
@@ -90,14 +102,6 @@ const App = () => {
               />
             </Route>
           </Route>
-
-          {/* Routes privées */}
-          <Route element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<div>Dashboard</div>} />
-          </Route>
-
-          {/* Route 404 */}
-          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </ScrollArea>
     </div>
