@@ -11,7 +11,8 @@ export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 
 // API Schemas export
 export {
-  getYtsDownloadMovieSchemas,
+  getYtsDownloadResolutionSchemas,
+  getYtsDownloadSubtitlesSchemas,
   getYtsFiltersSchemas,
   getYtsMovieDataSchemas,
   getYtsMoviesSchemas,
@@ -19,7 +20,8 @@ export {
   ytsScrapperSearchParamsSchemas,
 } from "./schemas/api/yts.schema.js";
 export type {
-  TGetYtsDownloadMovieSchemas,
+  TGetYtsDownloadResolutionSchemas,
+  TGetYtsDownloadSubtitlesSchemas,
   TGetYtsFiltersSchemas,
   TGetYtsMovieDataSchemas,
   TGetYtsMoviesSchemas,

@@ -90,16 +90,22 @@ export type TGetYtsPaginationSchemas = {
   response: z.infer<typeof getYtsPaginationSchemas.response>;
 };
 
-export const getYtsDownloadMovieSchemas = {
+export const getYtsDownloadResolutionSchemas = {
   urlParams: z.object({
     movieId: movieSchema.shape.id,
     resolution: resolutionSchema.shape.resolution,
-    subtitlesLanguage: z.union([
-      subtitleSchema.shape.language,
-      z.literal("none"),
-    ]),
   }),
 };
-export type TGetYtsDownloadMovieSchemas = {
-  urlParams: z.infer<typeof getYtsDownloadMovieSchemas.urlParams>;
+export type TGetYtsDownloadResolutionSchemas = {
+  urlParams: z.infer<typeof getYtsDownloadResolutionSchemas.urlParams>;
+};
+
+export const getYtsDownloadSubtitlesSchemas = {
+  urlParams: z.object({
+    movieId: movieSchema.shape.id,
+    subtitlesLanguage: subtitleSchema.shape.language,
+  }),
+};
+export type TGetYtsDownloadSubtitlesSchemas = {
+  urlParams: z.infer<typeof getYtsDownloadSubtitlesSchemas.urlParams>;
 };

@@ -1,5 +1,6 @@
 import type {
-  TGetYtsDownloadMovieSchemas,
+  TGetYtsDownloadResolutionSchemas,
+  TGetYtsDownloadSubtitlesSchemas,
   TGetYtsMovieDataSchemas,
   TGetYtsPaginationSchemas,
 } from "@hypertube/libs";
@@ -321,11 +322,10 @@ export const getYtsMovieData = async (
   return c.json(getYtsMovieDataSchemas.response.parse(updatedMovie));
 };
 
-export const getYtsDownloadMovie = async (
-  c: Context<TUrlParamsParser<TGetYtsDownloadMovieSchemas["urlParams"]>>
+export const getYtsDownloadResolution = async (
+  c: Context<TUrlParamsParser<TGetYtsDownloadResolutionSchemas["urlParams"]>>
 ) => {
-  const { movieId, resolution, subtitlesLanguage } =
-    c.get("validatedUrlParams");
+  const { movieId, resolution } = c.get("validatedUrlParams");
 
   const movie = await prisma.movie.findUnique({
     where: {
@@ -337,6 +337,37 @@ export const getYtsDownloadMovie = async (
           resolution,
         },
       },
+    },
+  });
+  if (!movie) {
+    return c.json({ error: "Movie not found" }, 404);
+  }
+
+  try {
+    downloadResolution({
+      id: movie.id,
+      imdbId: movie.imdbId,
+      resolution: resolution,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+
+  await downloadMovie(movie.id, resolution);
+
+  return c.json({ message: "Resolution downloading" });
+};
+
+export const getYtsDownloadSubtitles = async (
+  c: Context<TUrlParamsParser<TGetYtsDownloadSubtitlesSchemas["urlParams"]>>
+) => {
+  const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
+
+  const movie = await prisma.movie.findUnique({
+    where: {
+      id: movieId,
+    },
+    include: {
       subtitles: {
         where: {
           language: subtitlesLanguage,
@@ -351,50 +382,15 @@ export const getYtsDownloadMovie = async (
     return c.json({ error: "Movie not found" }, 404);
   }
 
-  const returnMessage = {
-    message: "Movie downloading",
-    subtitles: {
-      message: "Subtitles downloading",
-      language: "",
-    },
-    resolutions: {
-      message: "Resolution downloading",
-      resolution: "",
-    },
-  };
-
-  if (movie.subtitles.length === 0 || subtitlesLanguage === "none") {
-    returnMessage.subtitles.message = "Subtitle not found, skipping";
-  } else {
-    returnMessage.subtitles.language = movie.subtitles[0].language;
-    try {
-      downloadSubtitles({
-        ...movie.subtitles[0],
-        movieId: movie.id,
-        downloadState: movie.subtitles[0].downloadState,
-      });
-    } catch (error) {
-      console.error(error);
-    }
+  try {
+    downloadSubtitles({
+      ...movie.subtitles[0],
+      movieId: movie.id,
+      downloadState: movie.subtitles[0].downloadState,
+    });
+  } catch (error) {
+    console.error(error);
   }
 
-  if (movie.resolutions.length === 0) {
-    returnMessage.resolutions.resolution = resolution;
-    try {
-      downloadResolution({
-        id: movie.id,
-        imdbId: movie.imdbId,
-        resolution: resolution,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  } else {
-    returnMessage.resolutions.message = "Resolution already downloaded";
-  }
-
-  // Download the torrent content before make a resolution downloaded
-  await downloadMovie(movie.id, "720p");
-
-  return c.json(returnMessage);
+  return c.json({ message: "Subtitles downloading" });
 };
