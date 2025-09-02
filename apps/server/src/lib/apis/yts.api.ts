@@ -12,7 +12,6 @@ import {
   createResolution,
   getResolutionPath,
 } from "../movie-folder-gestion/resolution";
-import prisma from "../prisma";
 
 // https://yts.mx/api for documentation
 
@@ -162,77 +161,18 @@ export const downloadResolution = async (movie: {
   imdbId: string;
   resolution: string;
 }) => {
-  try {
-    const resolutionData = await getResolutionForMovie(
-      movie.imdbId,
-      movie.resolution
-    );
+  const resolutionData = await getResolutionForMovie(
+    movie.imdbId,
+    movie.resolution
+  );
 
-    const res = await fetch(resolutionData.url);
+  const res = await fetch(resolutionData.url);
 
-    const arrayBuffer = await res.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+  const arrayBuffer = await res.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
 
-    await createResolution(movie.id, movie.resolution);
+  await createResolution(movie.id, movie.resolution);
 
-    await prisma.resolution.upsert({
-      where: {
-        movieId_resolution: {
-          movieId: movie.id,
-          resolution: movie.resolution,
-        },
-      },
-      create: {
-        movieId: movie.id,
-        resolution: movie.resolution,
-        size: resolutionData.size,
-        downloadState: "DOWNLOADING",
-      },
-      update: {
-        size: resolutionData.size,
-        downloadState: "DOWNLOADING",
-      },
-    });
-
-    const outputPath = getResolutionPath(movie.id, movie.resolution, true);
-    await writeFile(outputPath, buffer);
-
-    await prisma.resolution.upsert({
-      where: {
-        movieId_resolution: {
-          movieId: movie.id,
-          resolution: movie.resolution,
-        },
-      },
-      create: {
-        movieId: movie.id,
-        resolution: movie.resolution,
-        size: resolutionData.size,
-        downloadState: "DOWNLOADED",
-      },
-      update: {
-        size: resolutionData.size,
-        downloadState: "DOWNLOADED",
-      },
-    });
-  } catch (error) {
-    await prisma.resolution.upsert({
-      where: {
-        movieId_resolution: {
-          movieId: movie.id,
-          resolution: movie.resolution,
-        },
-      },
-      create: {
-        movieId: movie.id,
-        resolution: movie.resolution,
-        size: "0B",
-        downloadState: "NOT_DOWNLOADED",
-      },
-      update: {
-        downloadState: "NOT_DOWNLOADED",
-      },
-    });
-    console.error(error);
-  }
+  const outputPath = getResolutionPath(movie.id, movie.resolution, true);
+  await writeFile(outputPath, buffer);
 };

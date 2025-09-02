@@ -9,12 +9,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
+import { useConvertParams } from "@/hooks/use-convert-params";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { cn } from "@/lib/utils";
-import { DownloadStates, type TGetYtsMovieDataSchemas } from "@hypertube/libs";
+import {
+  DownloadStates,
+  getUrl,
+  getYtsDownloadResolutionSchemas,
+  getYtsDownloadSubtitlesSchemas,
+  languageCodes,
+  ytsQualities,
+  type TGetYtsMovieDataSchemas,
+} from "@hypertube/libs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { VariantProps } from "class-variance-authority";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { MoviePageParamsSchema } from "../movie.page";
 
 const DownloadButton: React.FC<{
   label: string;
@@ -57,6 +69,9 @@ export const DownloadsSelector: React.FC<{
   resolutions: TGetYtsMovieDataSchemas["response"]["resolutions"];
   subtitlesLanguages: TGetYtsMovieDataSchemas["response"]["subtitles"];
 }> = ({ resolutions, subtitlesLanguages }) => {
+  const { movieId } = useConvertParams(MoviePageParamsSchema);
+  const queryClient = useQueryClient();
+
   const { t } = useTranslation();
   const [selectedResolution, setSelectedResolution] = useState<string | null>(
     null
@@ -64,6 +79,46 @@ export const DownloadsSelector: React.FC<{
   const [selectedSubtitlesLanguage, setSelectedSubtitlesLanguage] = useState<
     string | null
   >(null);
+
+  const resolutionMutation = useMutation({
+    mutationFn: (resolution: (typeof ytsQualities)[number]) => {
+      return axiosFetch({
+        method: "GET",
+        url: getUrl("api-movie-download-resolution", {
+          scrapper: "yts",
+          movieId,
+          resolution,
+        }),
+        schemas: getYtsDownloadResolutionSchemas,
+        handleEnding: {
+          cb: () => {
+            queryClient.invalidateQueries({ queryKey: ["movie", movieId] });
+            setSelectedResolution(null);
+          },
+        },
+      });
+    },
+  });
+
+  const subtitlesMutation = useMutation({
+    mutationFn: (subtitlesLanguage: keyof typeof languageCodes) => {
+      return axiosFetch({
+        method: "GET",
+        url: getUrl("api-movie-download-subtitles", {
+          scrapper: "yts",
+          movieId,
+          subtitlesLanguage,
+        }),
+        schemas: getYtsDownloadSubtitlesSchemas,
+        handleEnding: {
+          cb: () => {
+            queryClient.invalidateQueries({ queryKey: ["movie", movieId] });
+            setSelectedSubtitlesLanguage(null);
+          },
+        },
+      });
+    },
+  });
 
   return (
     <Card className="size-full">
@@ -109,7 +164,14 @@ export const DownloadsSelector: React.FC<{
             )}
           </CardContent>
           <CardFooter>
-            <Button disabled={!selectedResolution}>
+            <Button
+              disabled={!selectedResolution}
+              onClick={() =>
+                resolutionMutation.mutate(
+                  selectedResolution as (typeof ytsQualities)[number]
+                )
+              }
+            >
               {t("movie.downloadPage.download")}
             </Button>
           </CardFooter>
@@ -139,7 +201,14 @@ export const DownloadsSelector: React.FC<{
             )}
           </CardContent>
           <CardFooter>
-            <Button disabled={!selectedSubtitlesLanguage}>
+            <Button
+              disabled={!selectedSubtitlesLanguage}
+              onClick={() =>
+                subtitlesMutation.mutate(
+                  selectedSubtitlesLanguage as keyof typeof languageCodes
+                )
+              }
+            >
               {t("movie.downloadPage.download")}
             </Button>
           </CardFooter>

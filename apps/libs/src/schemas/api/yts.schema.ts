@@ -95,6 +95,9 @@ export const getYtsDownloadResolutionSchemas = {
     movieId: movieSchema.shape.id,
     resolution: resolutionSchema.shape.resolution,
   }),
+  response: z.object({
+    message: z.string(),
+  }),
 };
 export type TGetYtsDownloadResolutionSchemas = {
   urlParams: z.infer<typeof getYtsDownloadResolutionSchemas.urlParams>;
@@ -104,6 +107,9 @@ export const getYtsDownloadSubtitlesSchemas = {
   urlParams: z.object({
     movieId: movieSchema.shape.id,
     subtitlesLanguage: subtitleSchema.shape.language,
+  }),
+  response: z.object({
+    message: z.string(),
   }),
 };
 export type TGetYtsDownloadSubtitlesSchemas = {

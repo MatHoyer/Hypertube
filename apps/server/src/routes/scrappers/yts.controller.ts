@@ -343,14 +343,37 @@ export const getYtsDownloadResolution = async (
     return c.json({ error: "Movie not found" }, 404);
   }
 
+  await prisma.resolution.update({
+    where: {
+      movieId_resolution: {
+        movieId: movie.id,
+        resolution,
+      },
+    },
+    data: {
+      downloadState: DownloadStates.DOWNLOADING,
+    },
+  });
+
   try {
-    downloadResolution({
+    await downloadResolution({
       id: movie.id,
       imdbId: movie.imdbId,
       resolution: resolution,
     });
   } catch (error) {
     console.error(error);
+    await prisma.resolution.update({
+      where: {
+        movieId_resolution: {
+          movieId: movie.id,
+          resolution,
+        },
+      },
+      data: {
+        downloadState: DownloadStates.NOT_DOWNLOADED,
+      },
+    });
   }
 
   await downloadMovie(movie.id, resolution);
@@ -382,6 +405,15 @@ export const getYtsDownloadSubtitles = async (
     return c.json({ error: "Movie not found" }, 404);
   }
 
+  await prisma.subtitle.update({
+    where: {
+      id: movie.subtitles[0].id,
+    },
+    data: {
+      downloadState: DownloadStates.DOWNLOADING,
+    },
+  });
+
   try {
     downloadSubtitles({
       ...movie.subtitles[0],
@@ -390,6 +422,23 @@ export const getYtsDownloadSubtitles = async (
     });
   } catch (error) {
     console.error(error);
+    await prisma.subtitle.update({
+      where: {
+        id: movie.subtitles[0].id,
+      },
+      data: {
+        downloadState: DownloadStates.NOT_DOWNLOADED,
+      },
+    });
+  } finally {
+    await prisma.subtitle.update({
+      where: {
+        id: movie.subtitles[0].id,
+      },
+      data: {
+        downloadState: DownloadStates.DOWNLOADED,
+      },
+    });
   }
 
   return c.json({ message: "Subtitles downloading" });
