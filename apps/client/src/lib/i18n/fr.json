@@ -86,7 +86,8 @@
     "updateInfoMessage": "Vos informations ont été mis à jour.",
     "updateEmailMessage": "Votre email a été mis à jour.",
     "newPassword": "Nouveau mot de passe",
-    "updatePasswordMessage": "Votre mot de passe a été mis à jour."
+    "updatePasswordMessage": "Votre mot de passe a été mis à jour.",
+    "deletePicture": "Supprimer votre photo de profil"
   },
   "movie": {
     "loadingRessource": "du film",

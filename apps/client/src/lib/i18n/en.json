@@ -86,7 +86,8 @@
     "updateInfoMessage": "Information successfully updated.",
     "updateEmailMessage": "Email successfully updated.",
     "newPassword": "New Password",
-    "updatePasswordMessage": "Password successfully updated."
+    "updatePasswordMessage": "Password successfully updated.",
+    "deletePicture": "Delete your profile picture"
   },
   "movie": {
     "loadingRessource": "movie",
