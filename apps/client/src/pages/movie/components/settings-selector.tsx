@@ -1,3 +1,4 @@
+import { LoadingButton } from "@/components/LoadingButton";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -44,7 +45,6 @@ const DownloadButton: React.FC<{
       break;
     default:
       variant = "outline";
-      break;
   }
 
   return (
@@ -164,8 +164,10 @@ export const DownloadsSelector: React.FC<{
             )}
           </CardContent>
           <CardFooter>
-            <Button
+            <LoadingButton
               disabled={!selectedResolution}
+              loading={resolutionMutation.isPending}
+              success={resolutionMutation.isSuccess}
               onClick={() =>
                 resolutionMutation.mutate(
                   selectedResolution as (typeof ytsQualities)[number]
@@ -173,7 +175,7 @@ export const DownloadsSelector: React.FC<{
               }
             >
               {t("movie.downloadPage.download")}
-            </Button>
+            </LoadingButton>
           </CardFooter>
         </Card>
         <Card>
@@ -201,8 +203,10 @@ export const DownloadsSelector: React.FC<{
             )}
           </CardContent>
           <CardFooter>
-            <Button
+            <LoadingButton
               disabled={!selectedSubtitlesLanguage}
+              loading={subtitlesMutation.isPending}
+              success={subtitlesMutation.isSuccess}
               onClick={() =>
                 subtitlesMutation.mutate(
                   selectedSubtitlesLanguage as keyof typeof languageCodes
@@ -210,7 +214,7 @@ export const DownloadsSelector: React.FC<{
               }
             >
               {t("movie.downloadPage.download")}
-            </Button>
+            </LoadingButton>
           </CardFooter>
         </Card>
       </CardContent>

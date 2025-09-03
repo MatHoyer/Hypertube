@@ -46,12 +46,6 @@ const MoviePage = () => {
     return groupBy(movie.resolutions, "downloadState");
   }, [movie]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const filteredSubtitles = useMemo(() => {
-    if (!movie) return null;
-    return groupBy(movie.subtitles, "downloadState");
-  }, [movie]);
-
   if (isLoading) {
     return <LoadingPage resource="movie" />;
   }

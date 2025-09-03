@@ -167,6 +167,9 @@ export const downloadResolution = async (movie: {
   );
 
   const res = await fetch(resolutionData.url);
+  if (!res.ok) {
+    throw new Error(`Failed to download resolution for movie ${movie.id}`);
+  }
 
   const arrayBuffer = await res.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
