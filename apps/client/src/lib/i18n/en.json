@@ -4,7 +4,8 @@
     "error": "Error",
     "or": "Or",
     "loadingMessage": "Loading {{resource}}",
-    "loadingRessource": "..."
+    "loadingRessource": "...",
+    "unexpected-error": "Unexpected error"
   },
   "footer": {
     "sourceCode": "Source code",
@@ -56,7 +57,8 @@
     "YOU_CANT_UNLINK_YOUR_LAST_ACCOUNT": "You can't unlink your last account",
     "ACCOUNT_NOT_FOUND": "Account not found",
     "USER_ALREADY_HAS_A_PASSWORD_PROVIDE_THAT_TO_DELETE_THE_ACCOUNT": "User already has a password. Provide that to delete the account.",
-    "PASSWORD_POLICY": "Password must contain at least 1 lowercase, 1 uppercase, 1 number, and 1 special character."
+    "PASSWORD_POLICY": "Password must contain at least 1 lowercase, 1 uppercase, 1 number, and 1 special character.",
+    "EMAIL_IS_THE_SAME": "Email is the same as it is now."
   },
   "sign": {
     "username": "Username",
@@ -78,6 +80,13 @@
     "backToSignin": "Go back to sign in",
     "missAccount": "Don't have an account?",
     "gotAccount": "Already have an account?"
+  },
+  "settings": {
+    "updateInfo": "Update",
+    "updateInfoMessage": "Information successfully updated.",
+    "updateEmailMessage": "Email successfully updated.",
+    "newPassword": "New Password",
+    "updatePasswordMessage": "Password successfully updated."
   },
   "movie": {
     "loadingRessource": "movie",

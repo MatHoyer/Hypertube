@@ -9,6 +9,7 @@ export type TClientRouteDataRequirements = {
   "client-signup": undefined;
   "client-forget-password": undefined;
   "client-reset-password": undefined;
+  "client-settings": undefined;
   "client-movie": {
     movieId: TMovieSchema["id"] | ":movieId";
   };
@@ -88,6 +89,7 @@ const routes: {
   "client-signup": () => "/sign-up",
   "client-forget-password": () => "/forget-password",
   "client-reset-password": () => "/reset-password",
+  "client-settings": () => "/settings",
   "client-movie": ({ movieId }) => `/movie/${movieId}`,
 
   // API routes

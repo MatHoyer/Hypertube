@@ -56,7 +56,8 @@
     "YOU_CANT_UNLINK_YOUR_LAST_ACCOUNT": "No puedes desvincular tu última cuenta",
     "ACCOUNT_NOT_FOUND": "Cuenta no encontrada",
     "USER_ALREADY_HAS_A_PASSWORD_PROVIDE_THAT_TO_DELETE_THE_ACCOUNT": "El usuario ya tiene una contraseña. Proporciónala para eliminar la cuenta.",
-    "PASSWORD_POLICY": "La contraseña debe contener al menos 1 letra minúscula, 1 letra mayúscula, 1 número y 1 carácter especial."
+    "PASSWORD_POLICY": "La contraseña debe contener al menos 1 letra minúscula, 1 letra mayúscula, 1 número y 1 carácter especial.",
+    "EMAIL_IS_THE_SAME": ""
   },
   "sign": {
     "username": "Nombre de usuario",
@@ -78,6 +79,13 @@
     "backToSignin": "Volver a iniciar sesión",
     "missAccount": "¿No tienes cuenta?",
     "gotAccount": "¿Ya tienes cuenta?"
+  },
+  "settings": {
+    "updateInfo": "",
+    "updateInfoMessage": "",
+    "updateEmailMessage": "",
+    "newPassword": "",
+    "updatePasswordMessage": ""
   },
   "movie": {
     "loadingRessource": "de la película",

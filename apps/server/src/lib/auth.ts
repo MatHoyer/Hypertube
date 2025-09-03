@@ -34,6 +34,9 @@ export const auth = betterAuth({
     },
   },
   user: {
+    changeEmail: {
+      enabled: true,
+    },
     additionalFields: {
       firstName: { type: "string" },
       lastName: { type: "string" },
@@ -47,7 +50,10 @@ export const auth = betterAuth({
             code: "PASSWORD_POLICY",
           });
         }
-      } else if (ctx.path === "/reset-password" && ctx.body?.newPassword) {
+      } else if (
+        (ctx.path === "/reset-password" || ctx.path === "/change-password") &&
+        ctx.body?.newPassword
+      ) {
         if (!passwordRegex.test(ctx.body.newPassword)) {
           throw new APIError("BAD_REQUEST", {
             code: "PASSWORD_POLICY",
