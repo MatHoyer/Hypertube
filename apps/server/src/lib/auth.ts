@@ -17,7 +17,6 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 8,
-    maxPasswordLength: 50,
     sendResetPassword: async ({ user, url }) => {
       await sendEmail({
         to: user.email,
@@ -32,6 +31,12 @@ export const auth = betterAuth({
           { language: "en" }
         ),
       });
+    },
+  },
+  user: {
+    additionalFields: {
+      firstName: { type: "string" },
+      lastName: { type: "string" },
     },
   },
   hooks: {
@@ -53,7 +58,7 @@ export const auth = betterAuth({
   },
   trustedOrigins: ["http://localhost:3001"],
   plugins: [
-    username({ minUsernameLength: 1, maxUsernameLength: 50 }),
+    username({ minUsernameLength: 1 }),
     genericOAuth({
       config: [
         {

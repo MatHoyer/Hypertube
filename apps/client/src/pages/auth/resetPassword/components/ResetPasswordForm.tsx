@@ -22,7 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const formSchema = z.object({ password: z.string().min(8).max(50) });
+const formSchema = z.object({ password: z.string().min(8) });
 
 export const ResetPasswordForm: React.FC<ComponentProps<"div">> = ({
   ...props
