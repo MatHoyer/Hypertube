@@ -26,6 +26,9 @@ const envSchema = z.object({
   DISCORD_CLIENT_SECRET: z.string(),
   SCHOOL_42_CLIENT_ID: z.string(),
   SCHOOL_42_CLIENT_SECRET: z.string(),
+  TRANSMISSION_HOST: z.string(),
+  TRANSMISSION_RCP_PORT: z.coerce.number(),
+  TRANSMISSION_TORRENT_PORT: z.coerce.number(),
   VPN_IS_ACTIVE: z.coerce.boolean().default(false),
   NODE_ENV: z.enum(["DEV", "PROD"]).default("DEV"),
 });

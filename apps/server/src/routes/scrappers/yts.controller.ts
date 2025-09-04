@@ -1,5 +1,6 @@
 import type {
-  TGetYtsDownloadMovieSchemas,
+  TGetYtsDownloadResolutionSchemas,
+  TGetYtsDownloadSubtitlesSchemas,
   TGetYtsMovieDataSchemas,
   TGetYtsPaginationSchemas,
 } from "@hypertube/libs";
@@ -15,6 +16,7 @@ import {
   getMovieByImdbId,
   getMovieByLongTitle,
 } from "../../lib/apis/yts.api.js";
+import { downloadMovie } from "../../lib/downloader/downloadMovie.js";
 import prisma from "../../lib/prisma.js";
 import {
   downloadSubtitles,
@@ -98,20 +100,26 @@ export const getYtsMovies = async (
   return c.json(dbMovies);
 };
 
-export const getYtsMovieData = async (
-  c: Context<TUrlParamsParser<TGetYtsMovieDataSchemas["urlParams"]>>
-) => {
-  const { id } = c.get("validatedUrlParams");
-  const movie = await prisma.movie.findUnique({
+const fetchAdditionalInfo = async (movieId: string) => {
+  let movie = await prisma.movie.findUnique({
     where: {
-      id,
+      id: movieId,
     },
   });
   if (!movie) {
-    return c.json({ error: "Movie not found" }, 404);
+    return null;
   }
 
   const movieData = await getMovieByImdbId(movie.imdbId);
+
+  movie = await prisma.movie.update({
+    where: {
+      id: movie.id,
+    },
+    data: {
+      description: movieData.description_full,
+    },
+  });
 
   const actors = await Promise.all(
     movieData.cast.map(async (actor) => {
@@ -162,7 +170,29 @@ export const getYtsMovieData = async (
     })
   );
 
-  const resolutions = movieData.torrents;
+  const resolutionsData = movieData.torrents;
+
+  const resolutions = await Promise.all(
+    resolutionsData.map(async (resolution) => {
+      return await prisma.resolution.upsert({
+        where: {
+          movieId_resolution: {
+            movieId: movie.id,
+            resolution: resolution.quality,
+          },
+        },
+        create: {
+          movieId: movie.id,
+          resolution: resolution.quality,
+          size: resolution.size,
+          downloadState: DownloadStates.NOT_DOWNLOADED,
+        },
+        update: {
+          size: resolution.size,
+        },
+      });
+    })
+  );
 
   const subtitlesData = await getSubtitlesDownloadLinks({
     imdbId: movie.imdbId,
@@ -190,57 +220,112 @@ export const getYtsMovieData = async (
   const dbResolutions = await prisma.resolution.findMany({
     where: {
       movieId: movie.id,
-      downloadState: "DOWNLOADED",
     },
   });
 
   const dbSubtitles = await prisma.subtitle.findMany({
     where: {
       movieId: movie.id,
-      downloadState: "DOWNLOADED",
     },
   });
 
-  console.log(movie.rating);
+  await prisma.movie.update({
+    where: {
+      id: movie.id,
+    },
+    data: {
+      additionalInfoFetched: true,
+    },
+  });
 
-  return c.json(
-    getYtsMovieDataSchemas.response.parse({
-      ...movie,
-      resolutions: resolutions.map((resolution) => {
-        const dbResolution = dbResolutions.find(
-          (dbResolution) => dbResolution.resolution === resolution.quality
-        );
+  return {
+    ...movie,
+    resolutions: resolutions.map((resolution) => {
+      const dbResolution = dbResolutions.find(
+        (dbResolution) => dbResolution.resolution === resolution.resolution
+      );
 
-        return (
-          dbResolution ?? {
-            resolution: resolution.quality,
-            size: resolution.size,
-            downloadState: DownloadStates.NOT_DOWNLOADED,
-          }
-        );
-      }),
-      actors: resolvedActors,
-      subtitles: subtitles.map((subtitle) => {
-        const dbSubtitle = dbSubtitles.find(
-          (dbSubtitle) => dbSubtitle.language === subtitle.language
-        );
+      return (
+        dbResolution ?? {
+          resolution: resolution.resolution,
+          size: resolution.size,
+          downloadState: DownloadStates.NOT_DOWNLOADED,
+        }
+      );
+    }),
+    actors: resolvedActors,
+    subtitles: subtitles.map((subtitle) => {
+      const dbSubtitle = dbSubtitles.find(
+        (dbSubtitle) => dbSubtitle.language === subtitle.language
+      );
 
-        return (
-          dbSubtitle ?? {
-            ...subtitle,
-            downloadState: DownloadStates.NOT_DOWNLOADED,
-          }
-        );
-      }),
-    })
-  );
+      return (
+        dbSubtitle ?? {
+          ...subtitle,
+          downloadState: DownloadStates.NOT_DOWNLOADED,
+        }
+      );
+    }),
+  };
 };
 
-export const getYtsDownloadMovie = async (
-  c: Context<TUrlParamsParser<TGetYtsDownloadMovieSchemas["urlParams"]>>
+export const getYtsMovieData = async (
+  c: Context<TUrlParamsParser<TGetYtsMovieDataSchemas["urlParams"]>>
 ) => {
-  const { movieId, resolution, subtitlesLanguage } =
-    c.get("validatedUrlParams");
+  const { id } = c.get("validatedUrlParams");
+  const movie = await prisma.movie.findUnique({
+    where: {
+      id,
+    },
+  });
+  if (!movie) {
+    return c.json({ error: "Movie not found" }, 404);
+  }
+
+  if (movie.additionalInfoFetched) {
+    const dbResolutions = await prisma.resolution.findMany({
+      where: {
+        movieId: movie.id,
+      },
+    });
+
+    const dbSubtitles = await prisma.subtitle.findMany({
+      where: {
+        movieId: movie.id,
+      },
+    });
+
+    const dbActors = await prisma.actor.findMany({
+      where: {
+        movies: {
+          some: {
+            movieId: movie.id,
+          },
+        },
+      },
+    });
+
+    fetchAdditionalInfo(movie.id);
+
+    return c.json(
+      getYtsMovieDataSchemas.response.parse({
+        ...movie,
+        resolutions: dbResolutions,
+        subtitles: dbSubtitles,
+        actors: dbActors,
+      })
+    );
+  }
+
+  const updatedMovie = await fetchAdditionalInfo(movie.id);
+
+  return c.json(getYtsMovieDataSchemas.response.parse(updatedMovie));
+};
+
+export const getYtsDownloadResolution = async (
+  c: Context<TUrlParamsParser<TGetYtsDownloadResolutionSchemas["urlParams"]>>
+) => {
+  const { movieId, resolution } = c.get("validatedUrlParams");
 
   const movie = await prisma.movie.findUnique({
     where: {
@@ -252,6 +337,60 @@ export const getYtsDownloadMovie = async (
           resolution,
         },
       },
+    },
+  });
+  if (!movie) {
+    return c.json({ error: "Movie not found" }, 404);
+  }
+
+  await prisma.resolution.update({
+    where: {
+      movieId_resolution: {
+        movieId: movie.id,
+        resolution,
+      },
+    },
+    data: {
+      downloadState: DownloadStates.DOWNLOADING,
+    },
+  });
+
+  try {
+    await downloadResolution({
+      id: movie.id,
+      imdbId: movie.imdbId,
+      resolution: resolution,
+    });
+  } catch (error) {
+    console.error(error);
+    await prisma.resolution.update({
+      where: {
+        movieId_resolution: {
+          movieId: movie.id,
+          resolution,
+        },
+      },
+      data: {
+        downloadState: DownloadStates.NOT_DOWNLOADED,
+      },
+    });
+  }
+
+  await downloadMovie(movie.id, resolution);
+
+  return c.json({ message: "Resolution downloading" });
+};
+
+export const getYtsDownloadSubtitles = async (
+  c: Context<TUrlParamsParser<TGetYtsDownloadSubtitlesSchemas["urlParams"]>>
+) => {
+  const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
+
+  const movie = await prisma.movie.findUnique({
+    where: {
+      id: movieId,
+    },
+    include: {
       subtitles: {
         where: {
           language: subtitlesLanguage,
@@ -266,47 +405,41 @@ export const getYtsDownloadMovie = async (
     return c.json({ error: "Movie not found" }, 404);
   }
 
-  const returnMessage = {
-    message: "Movie downloading",
-    subtitles: {
-      message: "Subtitles downloading",
-      language: "",
+  await prisma.subtitle.update({
+    where: {
+      id: movie.subtitles[0].id,
     },
-    resolutions: {
-      message: "Resolution downloading",
-      resolution: "",
+    data: {
+      downloadState: DownloadStates.DOWNLOADING,
     },
-  };
+  });
 
-  if (movie.subtitles.length === 0 && subtitlesLanguage !== "none") {
-    returnMessage.subtitles.message = "Subtitle not found, skipping";
-  } else {
-    returnMessage.subtitles.language = movie.subtitles[0].language;
-    try {
-      downloadSubtitles({
-        ...movie.subtitles[0],
-        movieId: movie.id,
-        downloadState: movie.subtitles[0].downloadState,
-      });
-    } catch (error) {
-      console.error(error);
-    }
+  try {
+    downloadSubtitles({
+      ...movie.subtitles[0],
+      movieId: movie.id,
+      downloadState: movie.subtitles[0].downloadState,
+    });
+  } catch (error) {
+    console.error(error);
+    await prisma.subtitle.update({
+      where: {
+        id: movie.subtitles[0].id,
+      },
+      data: {
+        downloadState: DownloadStates.NOT_DOWNLOADED,
+      },
+    });
+  } finally {
+    await prisma.subtitle.update({
+      where: {
+        id: movie.subtitles[0].id,
+      },
+      data: {
+        downloadState: DownloadStates.DOWNLOADED,
+      },
+    });
   }
 
-  if (movie.resolutions.length === 0) {
-    returnMessage.resolutions.resolution = resolution;
-    try {
-      downloadResolution({
-        id: movie.id,
-        imdbId: movie.imdbId,
-        resolution: resolution,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  } else {
-    returnMessage.resolutions.message = "Resolution already downloaded";
-  }
-
-  return c.json(returnMessage);
+  return c.json({ message: "Subtitles downloading" });
 };

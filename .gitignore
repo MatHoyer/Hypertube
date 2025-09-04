@@ -13,4 +13,4 @@ dist/
 **/prisma/generated
 
 # Downloads
-**/downloads/**/*/*/*
+**/downloads/**

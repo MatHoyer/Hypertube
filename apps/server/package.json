@@ -13,7 +13,8 @@
     "prisma:migrate": "npx dotenv -e ../../.env -- npx prisma migrate dev --name init",
     "prisma:migrate:reset": "npx dotenv -e ../../.env -- npx prisma migrate reset --force --skip-seed",
     "prisma:seed": "npx dotenv -e ../../.env -- npx prisma db seed",
-    "prisma:studio": "npx dotenv -e ../../.env -- npx prisma studio"
+    "prisma:studio": "npx dotenv -e ../../.env -- npx prisma studio",
+    "download:puppeteer": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "@hono/node-server": "^1.16.0",
@@ -23,7 +24,8 @@
     "hono": "^4.8.5",
     "puppeteer": "^24.16.0",
     "resend": "^4.7.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "transmission-promise": "^1.1.7"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",

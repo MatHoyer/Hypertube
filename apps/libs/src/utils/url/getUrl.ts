@@ -32,11 +32,15 @@ export type TApiRouteDataRequirements = {
     scrapper: "yts";
     movieId: TMovieSchema["id"];
   };
-  "api-movie-download": {
+  "api-movie-download-resolution": {
     scrapper: "yts";
     movieId: TMovieSchema["id"];
     resolution: (typeof ytsQualities)[number];
-    subtitlesLanguage: keyof typeof languageCodes | "none";
+  };
+  "api-movie-download-subtitles": {
+    scrapper: "yts";
+    movieId: TMovieSchema["id"];
+    subtitlesLanguage: keyof typeof languageCodes;
   };
 };
 
@@ -80,13 +84,10 @@ const routes: {
   "api-pagination": ({ scrapper }) => `/api/scrappers/${scrapper}/pagination`,
   "api-movie": ({ scrapper, movieId }) =>
     `/api/scrappers/${scrapper}/movie/${movieId}`,
-  "api-movie-download": ({
-    scrapper,
-    movieId,
-    resolution,
-    subtitlesLanguage,
-  }) =>
-    `/api/scrappers/${scrapper}/movie/${movieId}/resolution/${resolution}/subtitles/${subtitlesLanguage}/download`,
+  "api-movie-download-resolution": ({ scrapper, movieId, resolution }) =>
+    `/api/scrappers/${scrapper}/movie/${movieId}/resolution/${resolution}`,
+  "api-movie-download-subtitles": ({ scrapper, movieId, subtitlesLanguage }) =>
+    `/api/scrappers/${scrapper}/movie/${movieId}/subtitles/${subtitlesLanguage}`,
 
   // External routes
   "external-imdb-movie": ({ imdbId }) => `https://www.imdb.com/title/${imdbId}`,

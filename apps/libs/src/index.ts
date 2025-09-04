@@ -1,7 +1,8 @@
 // Utils export
+export { groupBy } from "./utils/object.utils.js";
 export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
-export { getUrl } from "./utils/url/getUrl.js";
 export { getServerUrl } from "./utils/url/getServerUrl.js";
+export { getUrl } from "./utils/url/getUrl.js";
 export type {
   TApiRouteDataRequirements,
   TClientRouteDataRequirements,
@@ -10,7 +11,8 @@ export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 
 // API Schemas export
 export {
-  getYtsDownloadMovieSchemas,
+  getYtsDownloadResolutionSchemas,
+  getYtsDownloadSubtitlesSchemas,
   getYtsFiltersSchemas,
   getYtsMovieDataSchemas,
   getYtsMoviesSchemas,
@@ -18,7 +20,8 @@ export {
   ytsScrapperSearchParamsSchemas,
 } from "./schemas/api/yts.schema.js";
 export type {
-  TGetYtsDownloadMovieSchemas,
+  TGetYtsDownloadResolutionSchemas,
+  TGetYtsDownloadSubtitlesSchemas,
   TGetYtsFiltersSchemas,
   TGetYtsMovieDataSchemas,
   TGetYtsMoviesSchemas,

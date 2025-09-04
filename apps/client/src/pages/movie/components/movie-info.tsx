@@ -2,7 +2,7 @@ import { ImageAvatar } from "@/components/images/Avatar";
 import { ImageContainer } from "@/components/images/ImageContainer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
@@ -87,10 +87,12 @@ const MovieInfo: React.FC<{
             />
           )}
         </div>
-        <Card className="p-4">
-          <CardTitle>{t("movie.cast")}</CardTitle>
-          <CardContent>
-            <div className="flex flex-col gap-2">
+        {actors.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("movie.cast")}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-2">
               {actors.map((person, index) => (
                 <div key={index} className="flex flex-col gap-2">
                   <div className="flex justify-between items-center gap-2">
@@ -123,9 +125,9 @@ const MovieInfo: React.FC<{
                   {index !== actors.length - 1 && <Separator />}
                 </div>
               ))}
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </ScrollArea>
   );

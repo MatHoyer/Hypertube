@@ -1,5 +1,6 @@
 import {
-  getYtsDownloadMovieSchemas,
+  getYtsDownloadResolutionSchemas,
+  getYtsDownloadSubtitlesSchemas,
   getYtsMovieDataSchemas,
   getYtsMoviesSchemas,
   getYtsPaginationSchemas,
@@ -9,7 +10,8 @@ import { searchParamsParser } from "../../middlewares/searchParamsParser.js";
 import { urlParamsParser } from "../../middlewares/urlParamsParser.js";
 import { vpnChecker } from "../../middlewares/vpnChecker.js";
 import {
-  getYtsDownloadMovie,
+  getYtsDownloadResolution,
+  getYtsDownloadSubtitles,
   getYtsFilters,
   getYtsMovieData,
   getYtsMovies,
@@ -33,10 +35,17 @@ ytsRouter.get(
 );
 
 ytsRouter.get(
-  "/movie/:movieId/resolution/:resolution/subtitles/:subtitlesLanguage/download",
+  "/movie/:movieId/resolution/:resolution",
   vpnChecker(),
-  urlParamsParser(getYtsDownloadMovieSchemas.urlParams),
-  getYtsDownloadMovie
+  urlParamsParser(getYtsDownloadResolutionSchemas.urlParams),
+  getYtsDownloadResolution
+);
+
+ytsRouter.get(
+  "/movie/:movieId/subtitles/:subtitlesLanguage",
+  vpnChecker(),
+  urlParamsParser(getYtsDownloadSubtitlesSchemas.urlParams),
+  getYtsDownloadSubtitles
 );
 
 ytsRouter.get(

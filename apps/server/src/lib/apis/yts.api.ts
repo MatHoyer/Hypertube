@@ -12,7 +12,6 @@ import {
   createResolution,
   getResolutionPath,
 } from "../movie-folder-gestion/resolution";
-import prisma from "../prisma";
 
 // https://yts.mx/api for documentation
 
@@ -68,6 +67,7 @@ const ytsMovieSchema = z.object({
   genres: z.array(
     z.enum(ytsGenres.map((genre) => capitalizeAllWords(genre, "-")))
   ),
+  description_full: z.string().optional(),
   yt_trailer_code: z.string().optional(),
   language: z.string(),
   background_image: z.string(),
@@ -75,7 +75,7 @@ const ytsMovieSchema = z.object({
   medium_cover_image: z.string(),
   large_cover_image: z.string(),
   torrents: z.array(ytsMovieTorrentSchema),
-  cast: z.array(ytsMovieActorSchema),
+  cast: z.array(ytsMovieActorSchema).optional().default([]),
 });
 
 const ytsGetMoviesResponseSchema = z.object({
@@ -161,77 +161,21 @@ export const downloadResolution = async (movie: {
   imdbId: string;
   resolution: string;
 }) => {
-  try {
-    const resolutionData = await getResolutionForMovie(
-      movie.imdbId,
-      movie.resolution
-    );
+  const resolutionData = await getResolutionForMovie(
+    movie.imdbId,
+    movie.resolution
+  );
 
-    const res = await fetch(resolutionData.url);
-
-    const arrayBuffer = await res.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    await createResolution(movie.id, movie.resolution);
-    // DL the torrent content before make a resolution downloaded
-    await prisma.resolution.upsert({
-      where: {
-        movieId_resolution: {
-          movieId: movie.id,
-          resolution: movie.resolution,
-        },
-      },
-      create: {
-        movieId: movie.id,
-        resolution: movie.resolution,
-        size: resolutionData.size,
-        downloadState: "DOWNLOADING",
-      },
-      update: {
-        size: resolutionData.size,
-        downloadState: "DOWNLOADING",
-      },
-    });
-
-    const outputPath = getResolutionPath(movie.id, movie.resolution, true);
-    await writeFile(outputPath, buffer);
-
-    await prisma.resolution.upsert({
-      where: {
-        movieId_resolution: {
-          movieId: movie.id,
-          resolution: movie.resolution,
-        },
-      },
-      create: {
-        movieId: movie.id,
-        resolution: movie.resolution,
-        size: resolutionData.size,
-        downloadState: "DOWNLOADED",
-      },
-      update: {
-        size: resolutionData.size,
-        downloadState: "DOWNLOADED",
-      },
-    });
-  } catch (error) {
-    await prisma.resolution.upsert({
-      where: {
-        movieId_resolution: {
-          movieId: movie.id,
-          resolution: movie.resolution,
-        },
-      },
-      create: {
-        movieId: movie.id,
-        resolution: movie.resolution,
-        size: "0B",
-        downloadState: "NOT_DOWNLOADED",
-      },
-      update: {
-        downloadState: "NOT_DOWNLOADED",
-      },
-    });
-    console.error(error);
+  const res = await fetch(resolutionData.url);
+  if (!res.ok) {
+    throw new Error(`Failed to download resolution for movie ${movie.id}`);
   }
+
+  const arrayBuffer = await res.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  await createResolution(movie.id, movie.resolution);
+
+  const outputPath = getResolutionPath(movie.id, movie.resolution, true);
+  await writeFile(outputPath, buffer);
 };

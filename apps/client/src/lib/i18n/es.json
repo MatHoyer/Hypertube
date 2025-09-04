@@ -77,6 +77,19 @@
   },
   "movie": {
     "loadingRessource": "",
+    "tabs": {
+      "video": "",
+      "downloads": ""
+    },
+    "downloadPage": {
+      "title": "",
+      "description": "",
+      "resolutions": "",
+      "subtitles": "",
+      "noResolutions": "",
+      "noSubtitles": "",
+      "download": ""
+    },
     "playerSettings": {
       "readingSpeed": ""
     },

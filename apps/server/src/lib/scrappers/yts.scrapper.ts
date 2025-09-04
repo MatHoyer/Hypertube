@@ -1,5 +1,5 @@
 import type { TYtsScrapperSearchParamsSchemas } from "@hypertube/libs";
-import puppeteer from "puppeteer";
+import { launchPuppeteer } from "./scrappers.utils";
 
 const ytsUrl = "https://yts.mx/browse-movies";
 
@@ -18,7 +18,7 @@ const getYtsUrl = (params: TYtsScrapperSearchParamsSchemas) => {
 };
 
 const createPuppeteer = async (url: string) => {
-  const browser = await puppeteer.launch();
+  const browser = await launchPuppeteer();
   const page = await browser.newPage();
   await page.goto(url);
 
@@ -32,7 +32,7 @@ export const scrapeYtsMovies = async (
   params: TYtsScrapperSearchParamsSchemas,
   pageNumber: number
 ) => {
-  const url = getYtsUrl(params) + `?page=${pageNumber}`;
+  const url = getYtsUrl(params) + (pageNumber > 1 ? `?page=${pageNumber}` : "");
 
   const { page, browser } = await createPuppeteer(url);
 
