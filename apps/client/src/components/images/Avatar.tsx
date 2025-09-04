@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export const ImageAvatar: React.FC<{
-  imageSrc: string;
+  imageSrc: string | undefined;
   name: string;
   size?: "sm" | "md" | "lg";
 }> = ({ imageSrc, name, size = "sm" }) => {

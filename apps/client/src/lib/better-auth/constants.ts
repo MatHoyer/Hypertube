@@ -34,6 +34,7 @@ const keyErrorCodes = [
   "USER_ALREADY_HAS_A_PASSWORD_PROVIDE_THAT_TO_DELETE_THE_ACCOUNT",
   "PASSWORD_POLICY",
   "EMAIL_IS_THE_SAME",
+  "COULDNT_UPDATE_YOUR_EMAIL",
 ] as const;
 
 export const errorCodes = keyErrorCodes.map(

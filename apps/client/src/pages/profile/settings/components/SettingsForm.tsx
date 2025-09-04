@@ -1,57 +1,47 @@
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import InputPassword from "@/components/ui/input-password";
+import { Label } from "@/components/ui/label";
+import { useRequiredUser } from "@/hooks/use-required-user";
 import { authClient } from "@/lib/auth-client";
 import { betterAuthTranslation } from "@/lib/better-auth/constants";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { type ComponentProps } from "react";
-import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
+import { useRef, useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { z } from "zod";
-
-const formSchema = z.object({
-  email: z.email(),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
-  password: z.string().optional(),
-  newPassword: z.string().optional(),
-});
 
 export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
-  const session = authClient.useSession();
-  const user = session?.data?.user;
+  const user = useRequiredUser();
+  const [names, setNames] = useState({
+    first: user.firstName,
+    last: user.lastName,
+  });
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
   const { t } = useTranslation();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: user?.email,
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      password: "",
-      newPassword: "",
+  const emailMutation = useMutation({
+    mutationFn: (newEmail: string) => {
+      const mut = authClient.changeEmail(
+        { newEmail: newEmail },
+        {
+          onSuccess: () => {
+            toast.success(t("settings.updateEmailMessage"));
+          },
+          onError: (ctx) => {
+            toast.error(betterAuthTranslation(t, ctx.error.code));
+          },
+        }
+      );
+      return mut;
     },
   });
 
-  const onSubmit = async (userData: z.infer<typeof formSchema>) => {
-    if (
-      userData.firstName !== user?.firstName ||
-      userData.lastName !== user?.lastName
-    ) {
-      await authClient.updateUser(
+  const nameMutation = useMutation({
+    mutationFn: (name: { firstName: string; lastName: string }) => {
+      const mut = authClient.updateUser(
         {
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          name: userData.firstName + " " + userData.lastName,
+          firstName: name.firstName,
+          lastName: name.lastName,
+          name: name.firstName + " " + name.lastName,
         },
         {
           onSuccess: () => {
@@ -62,135 +52,55 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
           },
         }
       );
-    }
-    if (userData.email !== user?.email) {
-      await authClient.changeEmail(
-        {
-          newEmail: userData.email,
-        },
-        {
-          onSuccess: () => {
-            toast.success(t("settings.updateEmailMessage"));
-          },
-          onError: (ctx) => {
-            toast.error(betterAuthTranslation(t, ctx.error.code));
-          },
-        }
-      );
-    }
-    if (userData.password && userData.newPassword) {
-      await authClient.changePassword(
-        {
-          newPassword: userData.newPassword as string,
-          currentPassword: userData.password as string,
-        },
-        {
-          onSuccess: () => {
-            toast.success(t("settings.updatePasswordMessage"));
-          },
-          onError: (ctx) => {
-            toast.error(betterAuthTranslation(t, ctx.error.code));
-          },
-        }
-      );
-    }
-  };
+      return mut;
+    },
+  });
 
   return (
     <div {...props}>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("sign.email")}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="email"
-                    placeholder={t("sign.email")}
-                    autoComplete="email"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="firstName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("sign.firstName")}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder={t("sign.firstName")}
-                    autoComplete="username"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="lastName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("sign.lastName")}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder={t("sign.lastName")}
-                    autoComplete="family-name"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("sign.password")}</FormLabel>
-                <FormControl>
-                  <InputPassword
-                    {...field}
-                    placeholder={t("sign.password")}
-                    autoComplete="new-password"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="newPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("settings.newPassword")}</FormLabel>
-                <FormControl>
-                  <InputPassword
-                    {...field}
-                    placeholder={t("settings.newPassword")}
-                    autoComplete="new-password"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full">
-            {t("settings.updateInfo")}
-          </Button>
-        </form>
-      </Form>
+      <Label htmlFor="input-email">{t("sign.email")}</Label>
+      <Input
+        onBlur={(e) => {
+          if (e.target.value !== user.email)
+            emailMutation.mutate(e.target.value);
+        }}
+        defaultValue={user.email}
+        type="email"
+        id="input-email"
+      />
+      <div
+        onBlur={(e) => {
+          if (
+            e.relatedTarget !== firstNameRef.current &&
+            e.relatedTarget !== lastNameRef.current &&
+            (names.first !== user.firstName || names.last !== user.lastName)
+          ) {
+            nameMutation.mutate({
+              firstName: names.first,
+              lastName: names.last,
+            });
+          }
+        }}
+      >
+        <Label htmlFor="input-first-name">{t("sign.firstName")}</Label>
+        <Input
+          ref={firstNameRef}
+          onChange={(e) => {
+            setNames((prev) => ({ ...prev, first: e.target.value }));
+          }}
+          defaultValue={user.firstName}
+          id="input-first-name"
+        />
+        <Label htmlFor="input-last-name">{t("sign.lastName")}</Label>
+        <Input
+          ref={lastNameRef}
+          onChange={(e) => {
+            setNames((prev) => ({ ...prev, last: e.target.value }));
+          }}
+          defaultValue={user.lastName}
+          id="input-last-name"
+        />
+      </div>
     </div>
   );
 };

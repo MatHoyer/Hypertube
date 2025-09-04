@@ -58,7 +58,8 @@
     "ACCOUNT_NOT_FOUND": "Compte introuvable",
     "USER_ALREADY_HAS_A_PASSWORD_PROVIDE_THAT_TO_DELETE_THE_ACCOUNT": "L'utilisateur a déjà un mot de passe. Fournissez-le pour supprimer le compte.",
     "PASSWORD_POLICY": "Le mot de passe doit contenir au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 caractère spécial.",
-    "EMAIL_IS_THE_SAME": "L'email est actuellement la même."
+    "EMAIL_IS_THE_SAME": "L'email est actuellement la même.",
+    "COULDNT_UPDATE_YOUR_EMAIL": "Impossible de mettre à jour l'adresse e-mail. Veuillez essayer avec une autre adresse e-mail."
   },
   "sign": {
     "username": "Nom d'utilisateur",

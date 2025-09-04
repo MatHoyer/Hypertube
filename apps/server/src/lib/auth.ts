@@ -22,15 +22,12 @@ export const auth = betterAuth({
       await sendEmail({
         to: user.email,
         subject: "Reset your password",
-        html: mailTemplate(
-          {
-            title: "Reset your password",
-            content: "",
-            link: url,
-            linkText: "Reset",
-          },
-          { language: "en" }
-        ),
+        html: mailTemplate({
+          title: "Reset your password",
+          content: "",
+          link: url,
+          linkText: "Reset",
+        }),
       });
     },
   },
@@ -51,10 +48,7 @@ export const auth = betterAuth({
             code: "PASSWORD_POLICY",
           });
         }
-      } else if (
-        (ctx.path === "/reset-password" || ctx.path === "/change-password") &&
-        ctx.body?.newPassword
-      ) {
+      } else if (ctx.path === "/reset-password" && ctx.body?.newPassword) {
         if (!passwordRegex.test(ctx.body.newPassword)) {
           throw new APIError("BAD_REQUEST", {
             code: "PASSWORD_POLICY",
