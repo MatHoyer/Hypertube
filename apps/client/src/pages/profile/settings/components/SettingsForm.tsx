@@ -43,7 +43,10 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
   });
 
   const onSubmit = async (userData: z.infer<typeof formSchema>) => {
-    const updateUser = async () => {
+    if (
+      userData.firstName !== user?.firstName ||
+      userData.lastName !== user?.lastName
+    ) {
       await authClient.updateUser(
         {
           firstName: userData.firstName,
@@ -59,8 +62,8 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
           },
         }
       );
-    };
-    const updateEmail = async () => {
+    }
+    if (userData.email !== user?.email) {
       await authClient.changeEmail(
         {
           newEmail: userData.email,
@@ -74,8 +77,8 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
           },
         }
       );
-    };
-    const updatePassword = async () => {
+    }
+    if (userData.password && userData.newPassword) {
       await authClient.changePassword(
         {
           newPassword: userData.newPassword as string,
@@ -90,14 +93,7 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
           },
         }
       );
-    };
-    if (
-      userData.firstName !== user?.firstName ||
-      userData.lastName !== user?.lastName
-    )
-      await updateUser();
-    if (userData.email !== user?.email) await updateEmail();
-    if (userData.password && userData.newPassword) await updatePassword();
+    }
   };
 
   return (
