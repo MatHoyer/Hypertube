@@ -1,8 +1,8 @@
 import { TSubtitleSchema } from "@hypertube/libs";
 import * as path from "path";
-import puppeteer from "puppeteer";
 import { getSubtitlePath } from "../movie-folder-gestion/subtitle";
 import { renameFile, waitFile } from "../movie-folder-gestion/utils";
+import { launchPuppeteer } from "./scrappers.utils";
 
 const yifysubtitlesUrl = "https://yifysubtitles.ch/movie-imdb/";
 
@@ -12,7 +12,7 @@ export const getSubtitlesDownloadLinks = async ({
 }: {
   imdbId: string;
 }) => {
-  const browser = await puppeteer.launch();
+  const browser = await launchPuppeteer();
   const page = await browser.newPage();
   await page.goto(`${yifysubtitlesUrl}${imdbId}`);
 
@@ -55,7 +55,7 @@ export const getSubtitlesDownloadLinks = async ({
 export const downloadSubtitles = async (
   subtitles: TSubtitleSchema & { movieId: string }
 ) => {
-  const browser = await puppeteer.launch();
+  const browser = await launchPuppeteer();
 
   const page = await browser.newPage();
 

@@ -1,5 +1,5 @@
 import type { TYtsScrapperSearchParamsSchemas } from "@hypertube/libs";
-import puppeteer from "puppeteer";
+import { launchPuppeteer } from "./scrappers.utils";
 
 const ytsUrl = "https://yts.mx/browse-movies";
 
@@ -18,7 +18,7 @@ const getYtsUrl = (params: TYtsScrapperSearchParamsSchemas) => {
 };
 
 const createPuppeteer = async (url: string) => {
-  const browser = await puppeteer.launch();
+  const browser = await launchPuppeteer();
   const page = await browser.newPage();
   await page.goto(url);
 
