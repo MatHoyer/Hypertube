@@ -134,11 +134,8 @@ export const DownloadsSelector: React.FC<{
           <CardContent>
             {resolutions.length > 0 ? (
               <div className="flex justify-start gap-2 flex-wrap">
-                {resolutions.map((resolution) => (
-                  <div
-                    key={resolution.resolution}
-                    className="flex flex-col items-center gap-1"
-                  >
+                {resolutions.map((resolution, index) => (
+                  <div key={index} className="flex flex-col items-center gap-1">
                     <DownloadButton
                       label={resolution.resolution}
                       downloadState={resolution.downloadState}
@@ -185,8 +182,9 @@ export const DownloadsSelector: React.FC<{
           <CardContent>
             {subtitlesLanguages.length > 0 ? (
               <div className="flex justify-start gap-2 flex-wrap">
-                {subtitlesLanguages.map((subtitlesLanguage) => (
+                {subtitlesLanguages.map((subtitlesLanguage, index) => (
                   <DownloadButton
+                    key={index}
                     label={subtitlesLanguage.language}
                     downloadState={subtitlesLanguage.downloadState}
                     selected={
