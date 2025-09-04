@@ -20,10 +20,10 @@ import { z } from "zod";
 
 const formSchema = z.object({
   email: z.email(),
-  username: z.string().min(1),
-  password: z.string().min(8),
-  firstName: z.string().min(1),
-  lastName: z.string().min(1),
+  username: z.string().min(1).max(50),
+  password: z.string().min(8).max(50),
+  firstName: z.string().min(1).max(50),
+  lastName: z.string().min(1).max(50),
 });
 
 export const SignUpForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
