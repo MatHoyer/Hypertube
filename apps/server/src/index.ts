@@ -5,6 +5,7 @@ import { cors } from "hono/cors";
 import { languageDetector } from "hono/language";
 import { logger } from "hono/logger";
 import i18next from "i18next";
+import "./cron.js";
 import { env } from "./env.js";
 import "./lib/i18n/i18n.js";
 import authRouter from "./routes/auth/auth.route.js";

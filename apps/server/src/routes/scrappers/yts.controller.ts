@@ -1,3 +1,4 @@
+import { TZDate } from "@date-fns/tz";
 import type {
   TGetYtsDownloadResolutionSchemas,
   TGetYtsDownloadSubtitlesSchemas,
@@ -281,6 +282,15 @@ export const getYtsMovieData = async (
   if (!movie) {
     return c.json({ error: "Movie not found" }, 404);
   }
+
+  await prisma.movie.update({
+    where: {
+      id: movie.id,
+    },
+    data: {
+      usedAt: new TZDate(new Date(), "UTC"),
+    },
+  });
 
   if (movie.additionalInfoFetched) {
     const dbResolutions = await prisma.resolution.findMany({
