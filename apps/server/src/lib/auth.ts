@@ -42,18 +42,43 @@ export const auth = betterAuth({
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
-      if (ctx.path === "/sign-up/email" && ctx.body?.password) {
-        if (!passwordRegex.test(ctx.body.password)) {
-          throw new APIError("BAD_REQUEST", {
-            code: "PASSWORD_POLICY",
-          });
-        }
-      } else if (ctx.path === "/reset-password" && ctx.body?.newPassword) {
-        if (!passwordRegex.test(ctx.body.newPassword)) {
-          throw new APIError("BAD_REQUEST", {
-            code: "PASSWORD_POLICY",
-          });
-        }
+      switch (ctx.path) {
+        case "/sign-up/email":
+          if (!ctx.body.password)
+            throw new APIError("BAD_REQUEST", {
+              code: "FAILED_TO_UPDATE_PASSWORD",
+            });
+          if (!passwordRegex.test(ctx.body.password)) {
+            throw new APIError("BAD_REQUEST", {
+              code: "PASSWORD_POLICY",
+            });
+          }
+          break;
+        case "/reset-password":
+          if (!ctx.body.newPassword)
+            throw new APIError("BAD_REQUEST", {
+              code: "FAILED_TO_UPDATE_PASSWORD",
+            });
+          if (!passwordRegex.test(ctx.body.newPassword)) {
+            throw new APIError("BAD_REQUEST", {
+              code: "PASSWORD_POLICY",
+            });
+          }
+          break;
+        case "/update-user":
+          if (!(ctx.body.firstName && ctx.body.lastName))
+            throw new APIError("BAD_REQUEST", {
+              code: "FAILED_TO_UPDATE_USER",
+            });
+          return {
+            context: {
+              ...ctx,
+              body: {
+                ...ctx.body,
+                name: `${ctx.body.firstName} ${ctx.body.lastName}`,
+              },
+            },
+          };
       }
     }),
   },

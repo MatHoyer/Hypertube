@@ -35,6 +35,7 @@ const keyErrorCodes = [
   "PASSWORD_POLICY",
   "EMAIL_IS_THE_SAME",
   "COULDNT_UPDATE_YOUR_EMAIL",
+  "FAILED_TO_UPDATE_PASSWORD",
 ] as const;
 
 export const errorCodes = keyErrorCodes.map(
@@ -47,7 +48,7 @@ export const betterAuthTranslation = (
 ): string => {
   try {
     return t(`better-auth-error.${code}` as (typeof errorCodes)[number]);
-  } catch (_) {
+  } catch {
     return t("global.unexpected-error");
   }
 };

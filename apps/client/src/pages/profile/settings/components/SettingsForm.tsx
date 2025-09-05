@@ -20,7 +20,7 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
 
   const emailMutation = useMutation({
     mutationFn: (newEmail: string) => {
-      const mut = authClient.changeEmail(
+      return authClient.changeEmail(
         { newEmail: newEmail },
         {
           onSuccess: () => {
@@ -31,17 +31,15 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
           },
         }
       );
-      return mut;
     },
   });
 
   const nameMutation = useMutation({
     mutationFn: (name: { firstName: string; lastName: string }) => {
-      const mut = authClient.updateUser(
+      return authClient.updateUser(
         {
           firstName: name.firstName,
           lastName: name.lastName,
-          name: name.firstName + " " + name.lastName,
         },
         {
           onSuccess: () => {
@@ -52,7 +50,6 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
           },
         }
       );
-      return mut;
     },
   });
 

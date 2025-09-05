@@ -40,7 +40,7 @@ export const ProfilePictureUpdate = () => {
   };
 
   return (
-    <div>
+    <>
       <Input type="file" onChange={(element) => changeImage(element)} />
       <ImageAvatar
         imageSrc={user.image ?? undefined}
@@ -56,6 +56,6 @@ export const ProfilePictureUpdate = () => {
       >
         {t("settings.deletePicture")}
       </Button>
-    </div>
+    </>
   );
 };
