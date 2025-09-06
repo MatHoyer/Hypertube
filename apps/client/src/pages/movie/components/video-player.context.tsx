@@ -1,6 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
+import type { TResolutionSchema, TSubtitleSchema } from "@hypertube/libs";
 import {
   createContext,
   useCallback,
@@ -42,6 +43,9 @@ type VideoPlayerContextType = {
   mouseClicked: boolean;
   triggerMouseMove: () => void;
   triggerMouseClick: () => void;
+
+  resolutions: TResolutionSchema[];
+  subtitles: TSubtitleSchema[];
 };
 
 const VideoPlayerContext = createContext<VideoPlayerContextType | undefined>(
@@ -60,7 +64,9 @@ const usedKeys = [
 
 export const VideoPlayerProvider: React.FC<{
   children: React.ReactNode;
-}> = ({ children }) => {
+  resolutions: TResolutionSchema[];
+  subtitles: TSubtitleSchema[];
+}> = ({ children, resolutions, subtitles }) => {
   const isMobile = useIsMobile();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -260,6 +266,9 @@ export const VideoPlayerProvider: React.FC<{
         mouseClicked,
         triggerMouseMove,
         triggerMouseClick,
+
+        resolutions,
+        subtitles,
       }}
     >
       {children}

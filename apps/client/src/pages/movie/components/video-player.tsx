@@ -1,4 +1,5 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
+import { AppLoader } from "@/components/ui/app-loader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,6 +18,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
+import { DownloadStates } from "@hypertube/libs";
 import {
   Check,
   ChevronLeft,
@@ -181,8 +183,8 @@ const ProgressBar = () => {
 };
 
 const GlobalSettings: React.FC<{
-  setSpeedType: () => void;
-}> = ({ setSpeedType }) => {
+  setType: (type: "speed" | "resolutions" | "subtitles") => void;
+}> = ({ setType }) => {
   const { t } = useTranslation();
 
   return (
@@ -191,10 +193,27 @@ const GlobalSettings: React.FC<{
         <DropdownMenuItem
           onClick={(e) => {
             e.preventDefault();
-            setSpeedType();
+            setType("speed");
           }}
         >
           {t("movie.playerSettings.readingSpeed")}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            setType("resolutions");
+          }}
+        >
+          {t("movie.playerSettings.resolutions")}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            setType("subtitles");
+          }}
+        >
+          {t("movie.playerSettings.subtitles")}
         </DropdownMenuItem>
       </DropdownMenuGroup>
     </>
@@ -268,6 +287,96 @@ const SpeedSettings: React.FC<{
   );
 };
 
+const ResolutionsSettings: React.FC<{
+  goBack: () => void;
+  closePopup: () => void;
+}> = ({ goBack, closePopup }) => {
+  const { t } = useTranslation();
+  const { resolutions } = useVideoPlayer();
+
+  return (
+    <>
+      <DropdownMenuLabel className="flex items-center gap-2">
+        <button className="rounded-full cursor-pointer" onClick={goBack}>
+          <ChevronLeft size={20} />
+        </button>
+        {t("movie.playerSettings.resolutions")}
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        {resolutions.length > 0 ? (
+          resolutions.map((resolution, index) => (
+            <DropdownMenuItem
+              key={index}
+              onClick={() => {
+                closePopup();
+              }}
+              className="flex items-center justify-between"
+            >
+              {resolution.resolution}
+              {resolution.downloadState === DownloadStates.DOWNLOADED && (
+                <Check size={20} />
+              )}
+              {resolution.downloadState === DownloadStates.DOWNLOADING && (
+                <AppLoader />
+              )}
+            </DropdownMenuItem>
+          ))
+        ) : (
+          <Typography variant="muted" className="p-2">
+            {t("movie.playerSettings.noResolutions")}
+          </Typography>
+        )}
+      </DropdownMenuGroup>
+    </>
+  );
+};
+
+const SubtitlesSettings: React.FC<{
+  goBack: () => void;
+  closePopup: () => void;
+}> = ({ goBack, closePopup }) => {
+  const { t } = useTranslation();
+  const { subtitles } = useVideoPlayer();
+
+  return (
+    <>
+      <DropdownMenuLabel className="flex items-center gap-2">
+        <button className="rounded-full cursor-pointer" onClick={goBack}>
+          <ChevronLeft size={20} />
+        </button>
+        {t("movie.playerSettings.subtitles")}
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        {subtitles.length > 0 ? (
+          subtitles.map((subtitle, index) => (
+            <DropdownMenuItem
+              key={index}
+              onClick={() => {
+                closePopup();
+              }}
+              className="flex items-center justify-between"
+            >
+              {subtitle.language}
+              {subtitle.downloadState === DownloadStates.DOWNLOADED && (
+                <Check size={20} />
+              )}
+              {subtitle.downloadState === DownloadStates.DOWNLOADING && (
+                <AppLoader />
+              )}
+            </DropdownMenuItem>
+          ))
+        ) : (
+          <Typography variant="muted" className="p-2">
+            {t("movie.playerSettings.noSubtitles")}
+          </Typography>
+        )}
+      </DropdownMenuGroup>
+    </>
+  );
+};
+
 const SettingsButton: React.FC<
   {
     settingsOpen: boolean;
@@ -275,7 +384,9 @@ const SettingsButton: React.FC<
     side?: "top" | "bottom";
   } & ComponentProps<typeof Button>
 > = ({ settingsOpen, setSettingsOpen, side = "top", className, ...props }) => {
-  const [type, setType] = useState<"global" | "speed">("global");
+  const [type, setType] = useState<
+    "global" | "speed" | "resolutions" | "subtitles"
+  >("global");
 
   const closePopup = () => {
     setSettingsOpen(false);
@@ -285,9 +396,6 @@ const SettingsButton: React.FC<
   };
   const goGlobal = () => {
     setType("global");
-  };
-  const goSpeed = () => {
-    setType("speed");
   };
 
   return (
@@ -306,10 +414,21 @@ const SettingsButton: React.FC<
         {(() => {
           switch (type) {
             case "global":
-              return <GlobalSettings setSpeedType={goSpeed} />;
+              return <GlobalSettings setType={(type) => setType(type)} />;
             case "speed":
               return (
                 <SpeedSettings goBack={goGlobal} closePopup={closePopup} />
+              );
+            case "resolutions":
+              return (
+                <ResolutionsSettings
+                  goBack={goGlobal}
+                  closePopup={closePopup}
+                />
+              );
+            case "subtitles":
+              return (
+                <SubtitlesSettings goBack={goGlobal} closePopup={closePopup} />
               );
           }
         })()}

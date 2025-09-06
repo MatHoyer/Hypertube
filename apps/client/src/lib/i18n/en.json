@@ -91,7 +91,11 @@
       "download": "Download"
     },
     "playerSettings": {
-      "readingSpeed": "Reading speed"
+      "readingSpeed": "Reading speed",
+      "resolutions": "Resolutions",
+      "subtitles": "Subtitles",
+      "noResolutions": "No resolutions downloaded or downloading",
+      "noSubtitles": "No subtitles downloaded or downloading"
     },
     "cast": "Cast",
     "genres": {

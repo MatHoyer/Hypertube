@@ -91,7 +91,11 @@
       "download": ""
     },
     "playerSettings": {
-      "readingSpeed": ""
+      "readingSpeed": "",
+      "resolutions": "",
+      "subtitles": "",
+      "noResolutions": "",
+      "noSubtitles": ""
     },
     "cast": "",
     "genres": {
