@@ -15,7 +15,7 @@ const scrapperPathParam = {
   in: "path",
   name: "scrapper",
   required: true,
-  schema: z.enum(["yts"]),
+  schema: { ...z.enum(["yts"]), enum: ["yts"] },
 };
 
 export const scrapperSwagger = {
@@ -115,7 +115,7 @@ export const scrapperSwagger = {
           in: "path",
           name: "resolution",
           required: true,
-          schema: z.enum(ytsQualities),
+          schema: { ...z.enum(ytsQualities), enum: ytsQualities },
         },
       ],
     },
@@ -140,7 +140,10 @@ export const scrapperSwagger = {
           in: "path",
           name: "subtitlesLanguage",
           required: true,
-          schema: z.enum(Object.keys(languageCodes)),
+          schema: {
+            ...z.enum(Object.keys(languageCodes)),
+            enum: Object.keys(languageCodes),
+          },
         },
       ],
     },

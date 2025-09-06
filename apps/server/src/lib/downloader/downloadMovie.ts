@@ -23,17 +23,13 @@ export const downloadMovie = async (
   movieId: TMovieSchema["id"],
   resolution: TResolutionSchema["resolution"]
 ) => {
-  const resolutionPath = getResolutionPath(
-    movieId,
-    resolution,
-    "resolution.torrent"
-  ).slice(1);
+  const resolutionPath = `/downloads/${movieId}/resolutions/${resolution}/resolution.torrent`;
 
   console.log("Downloading movie", resolutionPath);
 
   try {
     const result = await downloader.addFile(resolutionPath, {
-      "download-dir": getResolutionPath(movieId, resolution).slice(1),
+      "download-dir": `/downloads/${movieId}/resolutions/${resolution}`,
       paused: true,
     });
     console.log("Torrent added with ID:", result.id);
@@ -49,7 +45,10 @@ export const downloadMovie = async (
 
     await downloader.start(result.id);
 
-    const target = `./downloads/incomplete/${mp4File.name}`;
+    const target = path.resolve(
+      process.cwd(),
+      `./downloads/incomplete/${mp4File.name}`
+    );
     const linkPath = path.join(
       getResolutionPath(movieId, resolution),
       `/${defaultMovieName}`
