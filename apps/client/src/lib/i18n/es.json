@@ -128,5 +128,8 @@
       "war": "Guerra",
       "western": "Western"
     }
+  },
+  "navbar": {
+    "placeholder": "Buscar una película"
   }
 }
