@@ -176,6 +176,10 @@ export const downloadResolution = async (movie: {
 
   await createResolution(movie.id, movie.resolution);
 
-  const outputPath = getResolutionPath(movie.id, movie.resolution, true);
+  const outputPath = getResolutionPath(
+    movie.id,
+    movie.resolution,
+    "resolution.torrent"
+  );
   await writeFile(outputPath, buffer);
 };

@@ -109,3 +109,23 @@ export const getYtsDownloadSubtitlesSchemas = {
 export type TGetYtsDownloadSubtitlesSchemas = {
   urlParams: z.infer<typeof getYtsDownloadSubtitlesSchemas.urlParams>;
 };
+
+export const getYtsStreamingResolutionSchemas = {
+  urlParams: z.object({
+    movieId: movieSchema.shape.id,
+    resolution: resolutionSchema.shape.resolution,
+  }),
+};
+export type TGetYtsStreamingResolutionSchemas = {
+  urlParams: z.infer<typeof getYtsStreamingResolutionSchemas.urlParams>;
+};
+
+export const getYtsStreamingSubtitlesSchemas = {
+  urlParams: z.object({
+    movieId: movieSchema.shape.id,
+    subtitlesLanguage: subtitleSchema.shape.language,
+  }),
+};
+export type TGetYtsStreamingSubtitlesSchemas = {
+  urlParams: z.infer<typeof getYtsStreamingSubtitlesSchemas.urlParams>;
+};

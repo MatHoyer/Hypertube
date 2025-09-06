@@ -10,6 +10,7 @@ import { env } from "./env.js";
 import "./lib/i18n/i18n.js";
 import authRouter from "./routes/auth/auth.route.js";
 import ytsRouter from "./routes/scrappers/yts.route.js";
+import streamingRouter from "./routes/streaming/streaming.route.js";
 import swaggerRouter from "./routes/swagger/swagger.route.js";
 
 const app = new Hono();
@@ -48,6 +49,8 @@ app.get(getUrl("api-health"), (c) => c.text("OK"));
 app.route(getUrl("api-auth"), authRouter);
 
 app.route("/api/scrappers/yts", ytsRouter);
+
+app.route("/api/streaming", streamingRouter);
 
 serve(
   {

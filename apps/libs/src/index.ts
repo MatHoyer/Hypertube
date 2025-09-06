@@ -18,6 +18,8 @@ export {
   getYtsMovieDataSchemas,
   getYtsMoviesSchemas,
   getYtsPaginationSchemas,
+  getYtsStreamingResolutionSchemas,
+  getYtsStreamingSubtitlesSchemas,
   ytsScrapperSearchParamsSchemas,
 } from "./schemas/api/yts.schema.js";
 export type {
@@ -27,6 +29,8 @@ export type {
   TGetYtsMovieDataSchemas,
   TGetYtsMoviesSchemas,
   TGetYtsPaginationSchemas,
+  TGetYtsStreamingResolutionSchemas,
+  TGetYtsStreamingSubtitlesSchemas,
   TYtsScrapperSearchParamsSchemas,
 } from "./schemas/api/yts.schema.js";
 

@@ -23,7 +23,11 @@ export const downloadMovie = async (
   movieId: TMovieSchema["id"],
   resolution: TResolutionSchema["resolution"]
 ) => {
-  const resolutionPath = getResolutionPath(movieId, resolution, true).slice(1);
+  const resolutionPath = getResolutionPath(
+    movieId,
+    resolution,
+    "resolution.torrent"
+  ).slice(1);
 
   console.log("Downloading movie", resolutionPath);
 

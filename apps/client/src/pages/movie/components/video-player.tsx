@@ -14,11 +14,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
+import { useConvertParams } from "@/hooks/use-convert-params";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
-import { DownloadStates } from "@hypertube/libs";
+import {
+  DownloadStates,
+  getUrl,
+  languageCodes,
+  ytsQualities,
+} from "@hypertube/libs";
 import {
   Check,
   ChevronLeft,
@@ -36,6 +42,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
+import { MoviePageParamsSchema } from "../movie.page";
 import { useVideoPlayer } from "./video-player.context";
 
 const MiddleScreenInfo: React.FC<{
@@ -220,6 +227,26 @@ const GlobalSettings: React.FC<{
   );
 };
 
+const DropdownManuSelectedItem: React.FC<{
+  selected: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}> = ({ selected, onClick, icon, children }) => {
+  return (
+    <DropdownMenuItem
+      onClick={onClick}
+      className="flex items-center justify-between"
+    >
+      <div className="flex items-center gap-2">
+        <Check className={cn(!selected && "invisible")} />
+        {children}
+      </div>
+      {icon}
+    </DropdownMenuItem>
+  );
+};
+
 const SpeedSettings: React.FC<{
   goBack: () => void;
   closePopup: () => void;
@@ -242,46 +269,34 @@ const SpeedSettings: React.FC<{
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
-        <DropdownMenuItem
+        <DropdownManuSelectedItem
           onClick={() => handleClick(0.5)}
-          className="flex items-center justify-between"
+          selected={speed === 0.5}
+          icon={<Turtle />}
         >
-          <div className="flex items-center gap-2">
-            <Check className={cn(speed !== 0.5 && "invisible")} />
-            <Typography>0.5</Typography>
-          </div>
-          <Turtle />
-        </DropdownMenuItem>
-        <DropdownMenuItem
+          <Typography>0.5</Typography>
+        </DropdownManuSelectedItem>
+        <DropdownManuSelectedItem
           onClick={() => handleClick(1)}
-          className="flex items-center justify-between"
+          selected={speed === 1}
+          icon={<PersonStanding />}
         >
-          <div className="flex items-center gap-2">
-            <Check className={cn(speed !== 1 && "invisible")} />
-            <Typography>1</Typography>
-          </div>
-          <PersonStanding />
-        </DropdownMenuItem>
-        <DropdownMenuItem
+          <Typography>1</Typography>
+        </DropdownManuSelectedItem>
+        <DropdownManuSelectedItem
           onClick={() => handleClick(1.5)}
-          className="flex items-center justify-between"
+          selected={speed === 1.5}
+          icon={<Squirrel />}
         >
-          <div className="flex items-center gap-2">
-            <Check className={cn(speed !== 1.5 && "invisible")} />
-            <Typography>1.5</Typography>
-          </div>
-          <Squirrel />
-        </DropdownMenuItem>
-        <DropdownMenuItem
+          <Typography>1.5</Typography>
+        </DropdownManuSelectedItem>
+        <DropdownManuSelectedItem
           onClick={() => handleClick(2)}
-          className="flex items-center justify-between"
+          selected={speed === 2}
+          icon={<Rabbit />}
         >
-          <div className="flex items-center gap-2">
-            <Check className={cn(speed !== 2 && "invisible")} />
-            <Typography>2</Typography>
-          </div>
-          <Rabbit />
-        </DropdownMenuItem>
+          <Typography>2</Typography>
+        </DropdownManuSelectedItem>
       </DropdownMenuGroup>
     </>
   );
@@ -292,7 +307,8 @@ const ResolutionsSettings: React.FC<{
   closePopup: () => void;
 }> = ({ goBack, closePopup }) => {
   const { t } = useTranslation();
-  const { resolutions } = useVideoPlayer();
+  const { resolutions, selectedResolution, setSelectedResolution } =
+    useVideoPlayer();
 
   return (
     <>
@@ -306,21 +322,23 @@ const ResolutionsSettings: React.FC<{
       <DropdownMenuGroup>
         {resolutions.length > 0 ? (
           resolutions.map((resolution, index) => (
-            <DropdownMenuItem
+            <DropdownManuSelectedItem
               key={index}
               onClick={() => {
+                setSelectedResolution(resolution.resolution);
                 closePopup();
               }}
-              className="flex items-center justify-between"
+              selected={selectedResolution === resolution.resolution}
+              icon={
+                resolution.downloadState === DownloadStates.DOWNLOADED ? (
+                  <Check size={20} color="green" />
+                ) : (
+                  <AppLoader color="orange" />
+                )
+              }
             >
               {resolution.resolution}
-              {resolution.downloadState === DownloadStates.DOWNLOADED && (
-                <Check size={20} />
-              )}
-              {resolution.downloadState === DownloadStates.DOWNLOADING && (
-                <AppLoader />
-              )}
-            </DropdownMenuItem>
+            </DropdownManuSelectedItem>
           ))
         ) : (
           <Typography variant="muted" className="p-2">
@@ -337,7 +355,8 @@ const SubtitlesSettings: React.FC<{
   closePopup: () => void;
 }> = ({ goBack, closePopup }) => {
   const { t } = useTranslation();
-  const { subtitles } = useVideoPlayer();
+  const { subtitles, selectedSubtitlesLanguage, setSelectedSubtitlesLanguage } =
+    useVideoPlayer();
 
   return (
     <>
@@ -351,21 +370,23 @@ const SubtitlesSettings: React.FC<{
       <DropdownMenuGroup>
         {subtitles.length > 0 ? (
           subtitles.map((subtitle, index) => (
-            <DropdownMenuItem
+            <DropdownManuSelectedItem
               key={index}
               onClick={() => {
+                setSelectedSubtitlesLanguage(subtitle.language);
                 closePopup();
               }}
-              className="flex items-center justify-between"
+              selected={selectedSubtitlesLanguage === subtitle.language}
+              icon={
+                subtitle.downloadState === DownloadStates.DOWNLOADED ? (
+                  <Check size={20} color="green" />
+                ) : (
+                  <AppLoader color="orange" />
+                )
+              }
             >
               {subtitle.language}
-              {subtitle.downloadState === DownloadStates.DOWNLOADED && (
-                <Check size={20} />
-              )}
-              {subtitle.downloadState === DownloadStates.DOWNLOADING && (
-                <AppLoader />
-              )}
-            </DropdownMenuItem>
+            </DropdownManuSelectedItem>
           ))
         ) : (
           <Typography variant="muted" className="p-2">
@@ -399,7 +420,13 @@ const SettingsButton: React.FC<
   };
 
   return (
-    <DropdownMenu open={settingsOpen} onOpenChange={setSettingsOpen}>
+    <DropdownMenu
+      open={settingsOpen}
+      onOpenChange={(open) => {
+        setSettingsOpen(open);
+        if (!open) goGlobal();
+      }}
+    >
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -517,6 +544,8 @@ const ControlsBar = () => {
 };
 
 const VideoPlayer = () => {
+  const { movieId } = useConvertParams(MoviePageParamsSchema);
+
   const {
     videoRef,
     containerRef,
@@ -525,6 +554,12 @@ const VideoPlayer = () => {
     togglePlay,
     handleProgress,
     triggerMouseClick,
+
+    resolutions,
+    selectedResolution,
+    setSelectedResolution,
+
+    selectedSubtitlesLanguage,
   } = useVideoPlayer();
 
   const isMobile = useIsMobile();
@@ -539,6 +574,12 @@ const VideoPlayer = () => {
   useEffect(() => {
     setMiddleScreenInfo("volume");
   }, [volume, setMiddleScreenInfo]);
+
+  useEffect(() => {
+    if (!selectedResolution && resolutions.length > 0) {
+      setSelectedResolution(resolutions[0].resolution);
+    }
+  }, []);
 
   return (
     <div
@@ -555,11 +596,30 @@ const VideoPlayer = () => {
     >
       <video
         ref={videoRef}
-        src="/test-video.mp4"
         className="size-full"
         onTimeUpdate={handleProgress}
         controls={false}
-      />
+      >
+        <source
+          src={getUrl("api-streaming-movie-resolution", {
+            movieId,
+            resolution: selectedResolution as (typeof ytsQualities)[number],
+          })}
+          type="video/mp4"
+        />
+        {selectedSubtitlesLanguage && (
+          <track
+            src={getUrl("api-streaming-movie-subtitles", {
+              movieId,
+              subtitlesLanguage:
+                selectedSubtitlesLanguage as keyof typeof languageCodes,
+            })}
+            kind="subtitles"
+            srcLang={selectedSubtitlesLanguage}
+            default
+          />
+        )}
+      </video>
 
       <AnimateApparition
         className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
