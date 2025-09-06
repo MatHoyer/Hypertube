@@ -10,6 +10,7 @@ import { env } from "./env.js";
 import "./lib/i18n/i18n.js";
 import authRouter from "./routes/auth/auth.route.js";
 import ytsRouter from "./routes/scrappers/yts.route.js";
+import swaggerRouter from "./routes/swagger/swagger.route.js";
 
 const app = new Hono();
 
@@ -39,6 +40,8 @@ app.get("/", async (c) => {
     message: i18next.t("global.hello"),
   });
 });
+
+app.route("/api/swagger", swaggerRouter);
 
 app.get(getUrl("api-health"), (c) => c.text("OK"));
 
