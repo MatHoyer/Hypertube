@@ -20,27 +20,27 @@ export type TApiRouteDataRequirements = {
 
   // Scrappers routes
   "api-filters": {
-    scrapper: "yts";
+    scrapper: "yts" | "{scrapper}" | ":scrapper";
   };
   "api-movies": {
-    scrapper: "yts";
+    scrapper: "yts" | "{scrapper}" | ":scrapper";
   };
   "api-pagination": {
-    scrapper: "yts";
+    scrapper: "yts" | "{scrapper}" | ":scrapper";
   };
   "api-movie": {
-    scrapper: "yts";
+    scrapper: "yts" | "{scrapper}" | ":scrapper";
     movieId: TMovieSchema["id"];
   };
   "api-movie-download-resolution": {
-    scrapper: "yts";
+    scrapper: "yts" | "{scrapper}" | ":scrapper";
     movieId: TMovieSchema["id"];
-    resolution: (typeof ytsQualities)[number];
+    resolution: (typeof ytsQualities)[number] | "{resolution}";
   };
   "api-movie-download-subtitles": {
-    scrapper: "yts";
+    scrapper: "yts" | "{scrapper}" | ":scrapper";
     movieId: TMovieSchema["id"];
-    subtitlesLanguage: keyof typeof languageCodes;
+    subtitlesLanguage: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
 };
 

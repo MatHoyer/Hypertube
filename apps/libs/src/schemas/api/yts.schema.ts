@@ -51,7 +51,7 @@ export type TGetYtsMoviesSchemas = {
 
 export const getYtsMovieDataSchemas = {
   urlParams: z.object({
-    id: movieSchema.shape.id,
+    movieId: movieSchema.shape.id,
   }),
   response: z.object({
     ...movieSchema.shape,

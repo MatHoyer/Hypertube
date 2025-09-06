@@ -184,6 +184,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.16.0
         version: 1.16.0(hono@4.8.5)
+      '@hono/swagger-ui':
+        specifier: ^0.5.2
+        version: 0.5.2(hono@4.8.5)
       '@hypertube/libs':
         specifier: workspace:*
         version: link:../libs
@@ -625,6 +628,11 @@ packages:
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
+
+  '@hono/swagger-ui@0.5.2':
+    resolution: {integrity: sha512-7wxLKdb8h7JTdZ+K8DJNE3KXQMIpJejkBTQjrYlUWF28Z1PGOKw6kUykARe5NTfueIN37jbyG/sBYsbzXzG53A==}
+    peerDependencies:
+      hono: '*'
 
   '@hookform/resolvers@5.2.0':
     resolution: {integrity: sha512-3YI+VqxJQH6ryRWG+j3k+M19Wf37LeSKJDg6Vdjq6makLOqZGYn77iTaYLMLpVi/uHc1N6OTCmcxJwhOQV979g==}
@@ -3268,6 +3276,10 @@ snapshots:
   '@hexagon/base64@1.1.28': {}
 
   '@hono/node-server@1.16.0(hono@4.8.5)':
+    dependencies:
+      hono: 4.8.5
+
+  '@hono/swagger-ui@0.5.2(hono@4.8.5)':
     dependencies:
       hono: 4.8.5
 

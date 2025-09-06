@@ -273,10 +273,10 @@ const fetchAdditionalInfo = async (movieId: string) => {
 export const getYtsMovieData = async (
   c: Context<TUrlParamsParser<TGetYtsMovieDataSchemas["urlParams"]>>
 ) => {
-  const { id } = c.get("validatedUrlParams");
+  const { movieId } = c.get("validatedUrlParams");
   const movie = await prisma.movie.findUnique({
     where: {
-      id,
+      id: movieId,
     },
   });
   if (!movie) {

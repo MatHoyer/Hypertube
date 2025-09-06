@@ -29,7 +29,7 @@ ytsRouter.get(
 );
 
 ytsRouter.get(
-  "/movie/:id",
+  "/movie/:movieId",
   urlParamsParser(getYtsMovieDataSchemas.urlParams),
   getYtsMovieData
 );
