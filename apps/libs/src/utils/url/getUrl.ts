@@ -23,6 +23,12 @@ export type TApiRouteDataRequirements = {
   "api-health": undefined;
   "api-auth": undefined;
 
+  // Users routes
+  "api-users-upload-picture": undefined;
+  "api-users-get-picture": {
+    pictureName: string;
+  };
+
   // Scrappers routes
   "api-filters": {
     scrapper: "yts" | "{scrapper}" | ":scrapper";
@@ -96,6 +102,11 @@ const routes: {
   "api-swagger": ({ mode }) => (mode ? `/api/swagger/${mode}` : "/api/swagger"),
   "api-health": () => "/api/health",
   "api-auth": () => "/api/auth",
+
+  // API users
+  "api-users-upload-picture": () => "/api/users/upload-picture",
+  "api-users-get-picture": ({ pictureName }) =>
+    `/api/users/get-picture/${pictureName}`,
 
   // API scrappers routes
   "api-filters": ({ scrapper }) => `/api/scrappers/${scrapper}/filters`,

@@ -66,19 +66,23 @@ export const auth = betterAuth({
           }
           break;
         case "/update-user":
-          if (!(ctx.body.firstName && ctx.body.lastName))
+          if (ctx.body.image) {
+            console.log(ctx.body.image);
+          } else if (ctx.body.firstName && ctx.body.lastName)
+            return {
+              context: {
+                ...ctx,
+                body: {
+                  ...ctx.body,
+                  name: `${ctx.body.firstName} ${ctx.body.lastName}`,
+                },
+              },
+            };
+          else {
             throw new APIError("BAD_REQUEST", {
               code: "FAILED_TO_UPDATE_USER",
             });
-          return {
-            context: {
-              ...ctx,
-              body: {
-                ...ctx.body,
-                name: `${ctx.body.firstName} ${ctx.body.lastName}`,
-              },
-            },
-          };
+          }
       }
     }),
   },
