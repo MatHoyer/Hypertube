@@ -81,8 +81,10 @@ const MoviePage = () => {
               <Tabs
                 defaultValue={
                   !!filteredResolutions &&
-                  filteredResolutions.DOWNLOADED &&
-                  filteredResolutions.DOWNLOADED.length > 0
+                  ((filteredResolutions.DOWNLOADED &&
+                    filteredResolutions.DOWNLOADED.length > 0) ||
+                    (filteredResolutions.DOWNLOADING &&
+                      filteredResolutions.DOWNLOADING.length > 0))
                     ? "video"
                     : "downloads"
                 }

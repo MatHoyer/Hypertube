@@ -47,14 +47,18 @@ export const downloadMovie = async (
 
     const target = path.resolve(
       process.cwd(),
-      `./downloads/incomplete/${mp4File.name}`
+      `./downloads/incomplete/${mp4File.name}.part`
     );
+
+    console.log("Waiting for file to be downloaded", target);
+    await waitFile(target, 30000);
+
     const linkPath = path.join(
       getResolutionPath(movieId, resolution),
       `/${defaultMovieName}`
     );
-    console.log("Link path", linkPath);
     try {
+      await fs.promises.rm(linkPath, { recursive: true, force: true });
       await fs.promises.symlink(target, linkPath, "file");
     } catch (error) {
       console.error("Error symlinking movie", error);
