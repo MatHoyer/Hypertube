@@ -23,13 +23,13 @@ export const downloadMovie = async (
   movieId: TMovieSchema["id"],
   resolution: TResolutionSchema["resolution"]
 ) => {
-  const resolutionPath = getResolutionPath(movieId, resolution, true).slice(1);
+  const resolutionPath = `/downloads/${movieId}/resolutions/${resolution}/resolution.torrent`;
 
   console.log("Downloading movie", resolutionPath);
 
   try {
     const result = await downloader.addFile(resolutionPath, {
-      "download-dir": getResolutionPath(movieId, resolution).slice(1),
+      "download-dir": `/downloads/${movieId}/resolutions/${resolution}`,
       paused: true,
     });
     console.log("Torrent added with ID:", result.id);
@@ -45,13 +45,20 @@ export const downloadMovie = async (
 
     await downloader.start(result.id);
 
-    const target = `./downloads/incomplete/${mp4File.name}`;
+    const target = path.resolve(
+      process.cwd(),
+      `./downloads/incomplete/${mp4File.name}.part`
+    );
+
+    console.log("Waiting for file to be downloaded", target);
+    await waitFile(target, 30000);
+
     const linkPath = path.join(
       getResolutionPath(movieId, resolution),
       `/${defaultMovieName}`
     );
-    console.log("Link path", linkPath);
     try {
+      await fs.promises.rm(linkPath, { recursive: true, force: true });
       await fs.promises.symlink(target, linkPath, "file");
     } catch (error) {
       console.error("Error symlinking movie", error);

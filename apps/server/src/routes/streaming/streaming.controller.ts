@@ -1,0 +1,52 @@
+import {
+  TGetYtsStreamingResolutionSchemas,
+  TGetYtsStreamingSubtitlesSchemas,
+} from "@hypertube/libs";
+import * as fs from "fs";
+import { Context } from "hono";
+import { getResolutionPath } from "../../lib/movie-folder-gestion/resolution";
+import { getSubtitlePath } from "../../lib/movie-folder-gestion/subtitle";
+import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
+
+export const getYtsStreamingResolution = async (
+  c: Context<TUrlParamsParser<TGetYtsStreamingResolutionSchemas["urlParams"]>>
+) => {
+  const { movieId, resolution } = c.get("validatedUrlParams");
+  const filePath = getResolutionPath(movieId, resolution, "movie.mp4");
+  const stat = fs.statSync(filePath);
+  const fileSize = stat.size;
+  const range = c.req.header("range");
+
+  if (range) {
+    const parts = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    const chunkSize = end - start + 1;
+
+    const fileStream = fs.createReadStream(filePath, { start, end });
+
+    c.header("Content-Range", `bytes ${start}-${end}/${fileSize}`);
+    c.header("Accept-Ranges", "bytes");
+    c.header("Content-Length", chunkSize.toString());
+    c.header("Content-Type", "video/mp4");
+
+    return new Response(fileStream as any, { status: 206 });
+  } else {
+    c.header("Content-Length", fileSize.toString());
+    c.header("Content-Type", "video/mp4");
+    const fileStream = fs.createReadStream(filePath);
+    return new Response(fileStream as any);
+  }
+};
+
+export const getYtsStreamingSubtitles = async (
+  c: Context<TUrlParamsParser<TGetYtsStreamingSubtitlesSchemas["urlParams"]>>
+) => {
+  const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
+  const filePath = getSubtitlePath(movieId, subtitlesLanguage);
+  const file = fs.readFileSync(filePath);
+
+  return c.body(file, 200, {
+    "Content-Type": "text/vtt; charset=utf-8",
+  });
+};

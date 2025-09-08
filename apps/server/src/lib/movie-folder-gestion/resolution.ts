@@ -3,15 +3,14 @@ import * as fs from "fs";
 import { getMovieFolderPath } from "./movie";
 
 const resolutionFolderName = "resolutions";
-const resolutionFilename = "resolution.torrent";
 
 export const getResolutionPath = (
   movieId: TMovieSchema["id"],
   resolution: TResolutionSchema["resolution"],
-  withFilename: boolean = false
+  type?: "resolution.torrent" | "movie.mp4"
 ) => {
   return `${getMovieFolderPath(movieId)}/${resolutionFolderName}/${resolution}${
-    withFilename ? `/${resolutionFilename}` : ""
+    type ? `/${type}` : ""
   }`;
 };
 

@@ -1,4 +1,5 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
+import { AppLoader } from "@/components/ui/app-loader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,10 +14,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
+import { useConvertParams } from "@/hooks/use-convert-params";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
+import {
+  DownloadStates,
+  getUrl,
+  languageCodes,
+  ytsQualities,
+} from "@hypertube/libs";
 import {
   Check,
   ChevronLeft,
@@ -34,6 +42,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
+import { MoviePageParamsSchema } from "../movie.page";
 import { useVideoPlayer } from "./video-player.context";
 
 const MiddleScreenInfo: React.FC<{
@@ -181,8 +190,8 @@ const ProgressBar = () => {
 };
 
 const GlobalSettings: React.FC<{
-  setSpeedType: () => void;
-}> = ({ setSpeedType }) => {
+  setType: (type: "speed" | "resolutions" | "subtitles") => void;
+}> = ({ setType }) => {
   const { t } = useTranslation();
 
   return (
@@ -191,13 +200,50 @@ const GlobalSettings: React.FC<{
         <DropdownMenuItem
           onClick={(e) => {
             e.preventDefault();
-            setSpeedType();
+            setType("speed");
           }}
         >
           {t("movie.playerSettings.readingSpeed")}
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            setType("resolutions");
+          }}
+        >
+          {t("movie.playerSettings.resolutions")}
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.preventDefault();
+            setType("subtitles");
+          }}
+        >
+          {t("movie.playerSettings.subtitles")}
+        </DropdownMenuItem>
       </DropdownMenuGroup>
     </>
+  );
+};
+
+const DropdownManuSelectedItem: React.FC<{
+  selected: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}> = ({ selected, onClick, icon, children }) => {
+  return (
+    <DropdownMenuItem
+      onClick={onClick}
+      className="flex items-center justify-between"
+    >
+      <div className="flex items-center gap-2">
+        <Check className={cn(!selected && "invisible")} />
+        {children}
+      </div>
+      {icon}
+    </DropdownMenuItem>
   );
 };
 
@@ -223,46 +269,130 @@ const SpeedSettings: React.FC<{
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
-        <DropdownMenuItem
+        <DropdownManuSelectedItem
           onClick={() => handleClick(0.5)}
-          className="flex items-center justify-between"
+          selected={speed === 0.5}
+          icon={<Turtle />}
         >
-          <div className="flex items-center gap-2">
-            <Check className={cn(speed !== 0.5 && "invisible")} />
-            <Typography>0.5</Typography>
-          </div>
-          <Turtle />
-        </DropdownMenuItem>
-        <DropdownMenuItem
+          <Typography>0.5</Typography>
+        </DropdownManuSelectedItem>
+        <DropdownManuSelectedItem
           onClick={() => handleClick(1)}
-          className="flex items-center justify-between"
+          selected={speed === 1}
+          icon={<PersonStanding />}
         >
-          <div className="flex items-center gap-2">
-            <Check className={cn(speed !== 1 && "invisible")} />
-            <Typography>1</Typography>
-          </div>
-          <PersonStanding />
-        </DropdownMenuItem>
-        <DropdownMenuItem
+          <Typography>1</Typography>
+        </DropdownManuSelectedItem>
+        <DropdownManuSelectedItem
           onClick={() => handleClick(1.5)}
-          className="flex items-center justify-between"
+          selected={speed === 1.5}
+          icon={<Squirrel />}
         >
-          <div className="flex items-center gap-2">
-            <Check className={cn(speed !== 1.5 && "invisible")} />
-            <Typography>1.5</Typography>
-          </div>
-          <Squirrel />
-        </DropdownMenuItem>
-        <DropdownMenuItem
+          <Typography>1.5</Typography>
+        </DropdownManuSelectedItem>
+        <DropdownManuSelectedItem
           onClick={() => handleClick(2)}
-          className="flex items-center justify-between"
+          selected={speed === 2}
+          icon={<Rabbit />}
         >
-          <div className="flex items-center gap-2">
-            <Check className={cn(speed !== 2 && "invisible")} />
-            <Typography>2</Typography>
-          </div>
-          <Rabbit />
-        </DropdownMenuItem>
+          <Typography>2</Typography>
+        </DropdownManuSelectedItem>
+      </DropdownMenuGroup>
+    </>
+  );
+};
+
+const ResolutionsSettings: React.FC<{
+  goBack: () => void;
+  closePopup: () => void;
+}> = ({ goBack, closePopup }) => {
+  const { t } = useTranslation();
+  const { resolutions, selectedResolution, setSelectedResolution } =
+    useVideoPlayer();
+
+  return (
+    <>
+      <DropdownMenuLabel className="flex items-center gap-2">
+        <button className="rounded-full cursor-pointer" onClick={goBack}>
+          <ChevronLeft size={20} />
+        </button>
+        {t("movie.playerSettings.resolutions")}
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        {resolutions.length > 0 ? (
+          resolutions.map((resolution, index) => (
+            <DropdownManuSelectedItem
+              key={index}
+              onClick={() => {
+                setSelectedResolution(resolution.resolution);
+                closePopup();
+              }}
+              selected={selectedResolution === resolution.resolution}
+              icon={
+                resolution.downloadState === DownloadStates.DOWNLOADED ? (
+                  <Check size={20} color="green" />
+                ) : (
+                  <AppLoader color="orange" />
+                )
+              }
+            >
+              {resolution.resolution}
+            </DropdownManuSelectedItem>
+          ))
+        ) : (
+          <Typography variant="muted" className="p-2">
+            {t("movie.playerSettings.noResolutions")}
+          </Typography>
+        )}
+      </DropdownMenuGroup>
+    </>
+  );
+};
+
+const SubtitlesSettings: React.FC<{
+  goBack: () => void;
+  closePopup: () => void;
+}> = ({ goBack, closePopup }) => {
+  const { t } = useTranslation();
+  const { subtitles, selectedSubtitlesLanguage, setSelectedSubtitlesLanguage } =
+    useVideoPlayer();
+
+  return (
+    <>
+      <DropdownMenuLabel className="flex items-center gap-2">
+        <button className="rounded-full cursor-pointer" onClick={goBack}>
+          <ChevronLeft size={20} />
+        </button>
+        {t("movie.playerSettings.subtitles")}
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        {subtitles.length > 0 ? (
+          subtitles.map((subtitle, index) => (
+            <DropdownManuSelectedItem
+              key={index}
+              onClick={() => {
+                setSelectedSubtitlesLanguage(subtitle.language);
+                closePopup();
+              }}
+              selected={selectedSubtitlesLanguage === subtitle.language}
+              icon={
+                subtitle.downloadState === DownloadStates.DOWNLOADED ? (
+                  <Check size={20} color="green" />
+                ) : (
+                  <AppLoader color="orange" />
+                )
+              }
+            >
+              {subtitle.language}
+            </DropdownManuSelectedItem>
+          ))
+        ) : (
+          <Typography variant="muted" className="p-2">
+            {t("movie.playerSettings.noSubtitles")}
+          </Typography>
+        )}
       </DropdownMenuGroup>
     </>
   );
@@ -275,7 +405,9 @@ const SettingsButton: React.FC<
     side?: "top" | "bottom";
   } & ComponentProps<typeof Button>
 > = ({ settingsOpen, setSettingsOpen, side = "top", className, ...props }) => {
-  const [type, setType] = useState<"global" | "speed">("global");
+  const [type, setType] = useState<
+    "global" | "speed" | "resolutions" | "subtitles"
+  >("global");
 
   const closePopup = () => {
     setSettingsOpen(false);
@@ -286,12 +418,15 @@ const SettingsButton: React.FC<
   const goGlobal = () => {
     setType("global");
   };
-  const goSpeed = () => {
-    setType("speed");
-  };
 
   return (
-    <DropdownMenu open={settingsOpen} onOpenChange={setSettingsOpen}>
+    <DropdownMenu
+      open={settingsOpen}
+      onOpenChange={(open) => {
+        setSettingsOpen(open);
+        if (!open) goGlobal();
+      }}
+    >
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -306,10 +441,21 @@ const SettingsButton: React.FC<
         {(() => {
           switch (type) {
             case "global":
-              return <GlobalSettings setSpeedType={goSpeed} />;
+              return <GlobalSettings setType={(type) => setType(type)} />;
             case "speed":
               return (
                 <SpeedSettings goBack={goGlobal} closePopup={closePopup} />
+              );
+            case "resolutions":
+              return (
+                <ResolutionsSettings
+                  goBack={goGlobal}
+                  closePopup={closePopup}
+                />
+              );
+            case "subtitles":
+              return (
+                <SubtitlesSettings goBack={goGlobal} closePopup={closePopup} />
               );
           }
         })()}
@@ -398,6 +544,8 @@ const ControlsBar = () => {
 };
 
 const VideoPlayer = () => {
+  const { movieId } = useConvertParams(MoviePageParamsSchema);
+
   const {
     videoRef,
     containerRef,
@@ -406,6 +554,12 @@ const VideoPlayer = () => {
     togglePlay,
     handleProgress,
     triggerMouseClick,
+
+    resolutions,
+    selectedResolution,
+    setSelectedResolution,
+
+    selectedSubtitlesLanguage,
   } = useVideoPlayer();
 
   const isMobile = useIsMobile();
@@ -420,6 +574,12 @@ const VideoPlayer = () => {
   useEffect(() => {
     setMiddleScreenInfo("volume");
   }, [volume, setMiddleScreenInfo]);
+
+  useEffect(() => {
+    if (!selectedResolution && resolutions.length > 0) {
+      setSelectedResolution(resolutions[0].resolution);
+    }
+  }, []);
 
   return (
     <div
@@ -436,11 +596,30 @@ const VideoPlayer = () => {
     >
       <video
         ref={videoRef}
-        src="/test-video.mp4"
         className="size-full"
         onTimeUpdate={handleProgress}
         controls={false}
-      />
+      >
+        <source
+          src={getUrl("api-streaming-movie-resolution", {
+            movieId,
+            resolution: selectedResolution as (typeof ytsQualities)[number],
+          })}
+          type="video/mp4"
+        />
+        {selectedSubtitlesLanguage && (
+          <track
+            src={getUrl("api-streaming-movie-subtitles", {
+              movieId,
+              subtitlesLanguage:
+                selectedSubtitlesLanguage as keyof typeof languageCodes,
+            })}
+            kind="subtitles"
+            srcLang={selectedSubtitlesLanguage}
+            default
+          />
+        )}
+      </video>
 
       <AnimateApparition
         className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"

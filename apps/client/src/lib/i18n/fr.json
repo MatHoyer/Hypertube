@@ -91,7 +91,11 @@
       "download": "Télécharger"
     },
     "playerSettings": {
-      "readingSpeed": "Vitesse de lecture"
+      "readingSpeed": "Vitesse de lecture",
+      "resolutions": "Résolutions",
+      "subtitles": "Sous-titres",
+      "noResolutions": "Aucune résolution téléchargée ou en cours de téléchargement",
+      "noSubtitles": "Aucun sous-titre téléchargé ou en cours de téléchargement"
     },
     "cast": "Casting",
     "genres": {

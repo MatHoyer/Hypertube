@@ -1,8 +1,9 @@
 import type { TMovieSchema } from "@hypertube/libs";
 import * as fs from "fs";
+import path from "path";
 
 export const getMovieFolderPath = (movieId: TMovieSchema["id"]) => {
-  return `./downloads/${movieId}`;
+  return path.resolve(process.cwd(), `./downloads/${movieId}`);
 };
 
 export const createMovieFolder = async (movieId: TMovieSchema["id"]) => {

@@ -46,6 +46,11 @@ const MoviePage = () => {
     return groupBy(movie.resolutions, "downloadState");
   }, [movie]);
 
+  const filteredSubtitles = useMemo(() => {
+    if (!movie) return null;
+    return groupBy(movie.subtitles, "downloadState");
+  }, [movie]);
+
   if (isLoading) {
     return <LoadingPage resource="movie" />;
   }
@@ -55,7 +60,16 @@ const MoviePage = () => {
   }
 
   return (
-    <VideoPlayerProvider>
+    <VideoPlayerProvider
+      resolutions={[
+        ...(filteredResolutions?.DOWNLOADED ?? []),
+        ...(filteredResolutions?.DOWNLOADING ?? []),
+      ]}
+      subtitles={[
+        ...(filteredSubtitles?.DOWNLOADED ?? []),
+        ...(filteredSubtitles?.DOWNLOADING ?? []),
+      ]}
+    >
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3">
         <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-0">
           <MovieInfo movie={movie} />
@@ -67,8 +81,10 @@ const MoviePage = () => {
               <Tabs
                 defaultValue={
                   !!filteredResolutions &&
-                  filteredResolutions.DOWNLOADED &&
-                  filteredResolutions.DOWNLOADED.length > 0
+                  ((filteredResolutions.DOWNLOADED &&
+                    filteredResolutions.DOWNLOADED.length > 0) ||
+                    (filteredResolutions.DOWNLOADING &&
+                      filteredResolutions.DOWNLOADING.length > 0))
                     ? "video"
                     : "downloads"
                 }
