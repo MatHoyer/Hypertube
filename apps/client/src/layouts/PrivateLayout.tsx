@@ -1,14 +1,16 @@
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { SignOutButton } from "@/components/LogOutButton";
 import { Navbar } from "@/components/Navbar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const PrivateLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="size-full">
-      <Navbar />
-      <LanguageSwitcher />
-      {children}
-      <SignOutButton />
+    <div className="flex flex-col h-dvh">
+      <header className="h-[65px]">
+        <Navbar />
+      </header>
+      <ScrollArea>
+        <main className="min-h-[calc(100dvh-65px)]">{children}</main>
+      </ScrollArea>
+      <footer className="text-center">footer</footer>
     </div>
   );
 };

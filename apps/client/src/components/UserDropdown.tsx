@@ -9,11 +9,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
+import { getUrl } from "@hypertube/libs";
 import { ChevronsUpDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { ImageAvatar } from "./images/Avatar";
 
 export function UserDropdown() {
   const session = authClient.useSession();
+  const { t } = useTranslation();
 
   return (
     <DropdownMenu>
@@ -42,7 +46,16 @@ export function UserDropdown() {
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled>API</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Log out</DropdownMenuItem>
+        {session.data?.user && (
+          <DropdownMenuItem onClick={() => authClient.signOut()}>
+            {t("sign.out")}
+          </DropdownMenuItem>
+        )}
+        {!session.data?.user && (
+          <DropdownMenuItem asChild>
+            <Link to={getUrl("client-signin")}>{t("sign.in")}</Link>
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
