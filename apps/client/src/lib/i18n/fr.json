@@ -95,7 +95,8 @@
       "resolutions": "Résolutions",
       "subtitles": "Sous-titres",
       "noResolutions": "Aucune résolution téléchargée ou en cours de téléchargement",
-      "noSubtitles": "Aucun sous-titre téléchargé ou en cours de téléchargement"
+      "noSubtitles": "Aucun sous-titre téléchargé ou en cours de téléchargement",
+      "noSelectedSubtitles": "Aucun sous-titre"
     },
     "cast": "Casting",
     "genres": {

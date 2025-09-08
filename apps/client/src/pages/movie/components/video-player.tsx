@@ -368,6 +368,18 @@ const SubtitlesSettings: React.FC<{
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
+        {subtitles.length > 0 && (
+          <DropdownManuSelectedItem
+            onClick={() => {
+              setSelectedSubtitlesLanguage(null);
+              closePopup();
+            }}
+            selected={selectedSubtitlesLanguage === null}
+            icon={null}
+          >
+            {t("movie.playerSettings.noSelectedSubtitles")}
+          </DropdownManuSelectedItem>
+        )}
         {subtitles.length > 0 ? (
           subtitles.map((subtitle, index) => (
             <DropdownManuSelectedItem

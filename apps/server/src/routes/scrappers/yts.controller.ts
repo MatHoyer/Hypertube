@@ -315,7 +315,9 @@ export const getYtsMovieData = async (
       },
     });
 
-    fetchAdditionalInfo(movie.id);
+    if (!movie.demoMovie) {
+      fetchAdditionalInfo(movie.id);
+    }
 
     return c.json(
       getYtsMovieDataSchemas.response.parse({

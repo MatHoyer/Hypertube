@@ -2,10 +2,18 @@ import { SignInPage } from "@/pages/auth/signIn/SignIn.page";
 import { SignUpPage } from "@/pages/auth/signUp/SignUp.page";
 import { NotFoundPage } from "@/pages/notFound/NotFound.page";
 import { getUrl } from "@hypertube/libs";
-import { Navigate, Outlet, Route, Routes, useParams } from "react-router-dom";
+import {
+  Navigate,
+  Outlet,
+  Route,
+  Routes,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import type { ZodType } from "zod";
 import { z } from "zod";
 import { LoadingPage } from "./components/LoadingPage";
+import { Button } from "./components/ui/button";
 import { ScrollArea } from "./components/ui/scroll-area";
 import { PrivateLayout } from "./layouts/PrivateLayout";
 import { PublicLayout } from "./layouts/PublicLayout";
@@ -61,10 +69,22 @@ const ProtectedRoute = <T extends Record<string, unknown>>({
 
 const App = () => {
   const session = authClient.useSession();
+  const navigate = useNavigate();
   console.log(session?.data?.user);
 
   return (
     <div className="h-dvh w-dvw flex justify-center items-center bg-background">
+      <Button
+        onClick={() => {
+          navigate(
+            getUrl("client-movie", {
+              movieId: "00000000-0000-0000-0000-000000000000",
+            })
+          );
+        }}
+      >
+        Demo movie
+      </Button>
       <ScrollArea className="h-dvh w-dvw">
         <Routes>
           {/* Public routes */}

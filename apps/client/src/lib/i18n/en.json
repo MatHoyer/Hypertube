@@ -95,7 +95,8 @@
       "resolutions": "Resolutions",
       "subtitles": "Subtitles",
       "noResolutions": "No resolutions downloaded or downloading",
-      "noSubtitles": "No subtitles downloaded or downloading"
+      "noSubtitles": "No subtitles downloaded or downloading",
+      "noSelectedSubtitles": "No subtitles"
     },
     "cast": "Cast",
     "genres": {

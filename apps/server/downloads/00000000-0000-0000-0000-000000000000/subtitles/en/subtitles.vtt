@@ -1,0 +1,1375 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:03.000
+Ok, we want to create a virtual currency, Bitcoin.
+
+00:00:03.000 --> 00:00:05.800
+That people have a kind of wallet with their money on it,
+
+00:00:05.800 --> 00:00:09.200
+that they can transfer it to another one, and that's about it.
+
+00:00:09.200 --> 00:00:10.600
+It doesn't seem that complicated.
+
+00:00:10.600 --> 00:00:15.800
+Yeah, because to get there, we imagine an architecture with a trust entity, the bank.
+
+00:00:15.800 --> 00:00:18.100
+And there, it's actually trivial.
+
+00:00:18.100 --> 00:00:20.800
+This one has a database with each user.
+
+00:00:20.800 --> 00:00:24.500
+It can easily check its balance, see that it has enough money to make the transaction,
+
+00:00:24.500 --> 00:00:28.000
+check that it is him with a password, then change the corresponding balance.
+
+00:00:28.000 --> 00:00:30.300
+It's literally SELECTS and UPDATES.
+
+00:00:30.300 --> 00:00:33.100
+You can do that after a month of computer science.
+
+00:00:33.100 --> 00:00:35.400
+But Bitcoin sees that as a weakness.
+
+00:00:35.400 --> 00:00:38.500
+This central unit must be extremely robust.
+
+00:00:38.500 --> 00:00:41.300
+If it fails, you say goodbye to your money.
+
+00:00:41.300 --> 00:00:45.400
+So Bitcoin decided to delete this dependence on architecture.
+
+00:00:45.400 --> 00:00:48.900
+And there, the problem becomes much more complex.
+
+00:00:48.900 --> 00:00:55.100
+How to allow an act that requires absolute trust in a system where you can't trust anything?
+
+00:00:55.100 --> 00:00:56.700
+It seems impossible.
+
+00:00:56.700 --> 00:00:57.900
+And that's where the beauty of the methods is.
+
+00:00:57.900 --> 00:00:59.800
+Mathematics comes into play.
+
+00:00:59.800 --> 00:01:02.000
+It's in it that we place our trust.
+
+00:01:02.000 --> 00:01:04.500
+The first step is to reproduce this database.
+
+00:01:04.500 --> 00:01:07.900
+We need to store who has the money, gives it, receives it.
+
+00:01:07.900 --> 00:01:09.900
+And the first question is simple.
+
+00:01:09.900 --> 00:01:12.100
+What are the information that needs to be stored?
+
+00:01:12.100 --> 00:01:14.500
+The answer is much shorter than expected.
+
+00:01:14.500 --> 00:01:15.600
+Transactions.
+
+00:01:15.600 --> 00:01:16.500
+And that's it.
+
+00:01:16.500 --> 00:01:18.100
+Everything else can come from it.
+
+00:01:18.100 --> 00:01:20.900
+Here, I can quickly know how much bitcoin Bob has.
+
+00:01:20.900 --> 00:01:23.900
+I take all the transactions associated with him, a little calculation, and hop.
+
+00:01:23.900 --> 00:01:27.800
+And from there, if he decides to make a new transaction, I can see if he has enough money for it.
+
+00:01:27.900 --> 00:01:30.800
+But now, these transactions, we have to store them somewhere.
+
+00:01:30.800 --> 00:01:33.000
+Except that we have no more servers.
+
+00:01:33.000 --> 00:01:34.400
+But then, where do we put them?
+
+00:01:34.400 --> 00:01:36.300
+Well, at everyone's place.
+
+00:01:36.300 --> 00:01:40.100
+We use what we call a pair-to-pair model.
+
+00:01:40.100 --> 00:01:45.900
+In this model, each customer will be connected to several of his peers, each forming a knot in this network.
+
+00:01:45.900 --> 00:01:49.400
+The idea is that they will all store a copy of the list of transactions.
+
+00:01:49.400 --> 00:01:53.900
+And when a person wants to make a new one, they announce it and ask to add it to the list.
+
+00:01:53.900 --> 00:01:55.900
+The news spreads to its neighbors, who inform their neighbors, and so on, until they have enough money.
+
+00:01:55.900 --> 00:01:56.900
+And when a person wants to make a new one, they announce it and ask to add it to the list.
+
+00:01:57.900 --> 00:01:59.400
+And so on, until they have enough money, and so on, until they have enough money, and so on, until they have enough money.
+
+00:01:59.400 --> 00:02:02.400
+Let's put ourselves in the shoes of a computer that would like to join the network.
+
+00:02:02.400 --> 00:02:04.200
+And let's code that more precisely.
+
+00:02:04.200 --> 00:02:07.400
+The first step is to open and listen to port 8333.
+
+00:02:07.400 --> 00:02:12.400
+By doing this, as soon as an external computer tries to contact us via our IP by indicating this port,
+
+00:02:12.400 --> 00:02:16.400
+its message will be transmitted to our code, which will then be able to read it.
+
+00:02:16.400 --> 00:02:19.900
+But before receiving and sending messages to other nodes,
+
+00:02:19.900 --> 00:02:21.900
+well, we need to find them.
+
+00:02:21.900 --> 00:02:23.900
+Here we are a little alone.
+
+00:02:23.900 --> 00:02:27.600
+To do this, the fastest way is to use DNS Seeds.
+
+00:02:27.600 --> 00:02:33.600
+These are known servers by the community that maintain an active node IP list that is in the Bitcoin network.
+
+00:02:33.600 --> 00:02:38.600
+We can therefore contact several of them and ask for random node IPs that should be active.
+
+00:02:38.600 --> 00:02:45.100
+Once recovered, it is time to contact them using their IP and indicating the famous port 8333.
+
+00:02:45.100 --> 00:02:47.100
+But beware, we can't say anything.
+
+00:02:47.100 --> 00:02:49.100
+The language is standardized, precise.
+
+00:02:49.100 --> 00:02:51.100
+If you don't respect it, you will be ignored.
+
+00:02:51.100 --> 00:02:55.100
+Your message must start with what is called a magic byte of 4 octets,
+
+00:02:55.100 --> 00:02:57.600
+which indicates the network to which you want to participate.
+
+00:02:57.600 --> 00:03:01.600
+This value, for example, is to say that you want to be on the main Bitcoin network,
+
+00:03:01.600 --> 00:03:03.600
+because there are also networks to do tests, for example.
+
+00:03:03.600 --> 00:03:06.600
+Then you indicate the command you want to execute.
+
+00:03:06.600 --> 00:03:08.600
+There is a little a, we will see a few of them.
+
+00:03:08.600 --> 00:03:11.600
+And this command will require a payload,
+
+00:03:11.600 --> 00:03:15.600
+that is to say the information corresponding to what we are asking or what we want to transmit.
+
+00:03:15.600 --> 00:03:17.600
+For example, this command is to send a transaction.
+
+00:03:17.600 --> 00:03:21.600
+So in the payload, I put the information concerning this transaction.
+
+00:03:21.600 --> 00:03:27.600
+Once we have the payload, we add its size and we calculate a checksum to make sure it's integrity.
+
+00:03:27.600 --> 00:03:30.600
+And that's it, the message can be sent.
+
+00:03:30.600 --> 00:03:34.600
+Okay, we talked about it, but what will be our first words?
+
+00:03:34.600 --> 00:03:36.600
+Version. The version command.
+
+00:03:36.600 --> 00:03:42.600
+We will send it to the node we have recovered to ask them if we can become a partner and Bitcoin dealer.
+
+00:03:42.600 --> 00:03:46.600
+All this by specifying to them, in particular, the version of the Bitcoin code we use.
+
+00:03:46.600 --> 00:03:49.600
+They answer us with their version and the command to hack.
+
+00:03:49.600 --> 00:03:53.600
+Then we also send us to hack to confirm that we have everything and that everything is good.
+
+00:03:53.600 --> 00:03:55.600
+And we are now connected.
+
+00:03:55.600 --> 00:03:57.600
+You can do it with up to 8 nodes.
+
+00:03:57.600 --> 00:04:03.600
+We can send all the known transactions to us so that we are our own copy of this huge shared list.
+
+00:04:03.600 --> 00:04:05.600
+We made what is called a complete node.
+
+00:04:05.600 --> 00:04:12.600
+I can now also announce that I am Bob and that I want to make a transaction with Alice and ask for a modification of the list.
+
+00:04:12.600 --> 00:04:16.600
+This architecture that we have just created is absolutely uncensorable by a government.
+
+00:04:16.600 --> 00:04:20.600
+In the client server model seen at the very beginning, there would just be to destroy the server.
+
+00:04:20.600 --> 00:04:23.600
+Fuck in prison, it's managing and you say goodbye to Bitcoin.
+
+00:04:23.600 --> 00:04:25.600
+In our model, there are thousands of nodes.
+
+00:04:25.600 --> 00:04:26.600
+Everywhere in the world.
+
+00:04:26.600 --> 00:04:28.600
+You destroy one, it doesn't change anything.
+
+00:04:28.600 --> 00:04:31.600
+But there are two big drawbacks that you had to note.
+
+00:04:31.600 --> 00:04:33.600
+First, everyone knows all the transactions.
+
+00:04:33.600 --> 00:04:35.600
+There is absolute transparency.
+
+00:04:35.600 --> 00:04:38.600
+Everyone has seen that Bob is a huge simp.
+
+00:04:38.600 --> 00:04:41.600
+It looks like a erotic dream of a employee of the FISC.
+
+00:04:41.600 --> 00:04:43.600
+But yet there are criminals who use Bitcoin.
+
+00:04:43.600 --> 00:04:44.600
+Exactly.
+
+00:04:44.600 --> 00:04:46.600
+There I simplified by putting names.
+
+00:04:46.600 --> 00:04:47.600
+But in fact, everything is anonymous.
+
+00:04:47.600 --> 00:04:48.600
+We'll talk about it again.
+
+00:04:48.600 --> 00:04:51.600
+Second problem, the nodes can tell anything.
+
+00:04:51.600 --> 00:04:54.600
+Who tells you that it is Bob who announces that he wants to give money to Alice?
+
+00:04:54.600 --> 00:04:55.600
+Maybe it's Alice.
+
+00:04:55.600 --> 00:04:58.600
+Maybe it's Alice who said that and that Bob doesn't agree at all.
+
+00:04:58.600 --> 00:05:01.600
+What we need is to be able to check what a node announces.
+
+00:05:01.600 --> 00:05:03.600
+If we see that it is dishonest, we ignore it.
+
+00:05:03.600 --> 00:05:09.600
+And like that, our network will agree on a transaction list in which we can have confidence.
+
+00:05:09.600 --> 00:05:10.600
+Confidence.
+
+00:05:10.600 --> 00:05:12.600
+You know what it means if you followed.
+
+00:05:12.600 --> 00:05:14.600
+It's time to do math.
+
+00:05:14.600 --> 00:05:16.600
+It's them who allow these checks.
+
+00:05:16.600 --> 00:05:20.600
+What we want is for Bob to be able to add a signature to this transaction.
+
+00:05:20.600 --> 00:05:22.600
+To prove that it was him.
+
+00:05:22.600 --> 00:05:23.600
+But that's not enough.
+
+00:05:23.600 --> 00:05:24.600
+Because if I give you a signature on a transaction, it's not enough.
+
+00:05:24.600 --> 00:05:27.600
+If I give you a signature on a check, you can add a zero to the amount.
+
+00:05:27.600 --> 00:05:31.600
+It is also necessary to prove that the transaction has not been altered in the meantime.
+
+00:05:31.600 --> 00:05:35.600
+This problem can be solved with the mathematical domain of cryptography.
+
+00:05:35.600 --> 00:05:37.600
+Hence the name of CryptoMoney.
+
+00:05:37.600 --> 00:05:40.600
+The biggest obstacle is that we don't know Bob.
+
+00:05:40.600 --> 00:05:44.600
+We can't exchange with him, transmit him card codes that we can check or whatever.
+
+00:05:44.600 --> 00:05:51.600
+What would be interesting would be to find a mathematical problem that would be built from the information of the transaction.
+
+00:05:51.600 --> 00:05:53.600
+A problem that only Bob could solve.
+
+00:05:53.600 --> 00:05:56.600
+Thanks to a secret that he would keep private.
+
+00:05:56.600 --> 00:05:58.600
+Then Bob would publish the solution.
+
+00:05:58.600 --> 00:06:00.600
+Everyone could easily check it.
+
+00:06:00.600 --> 00:06:05.600
+But no one could reproduce the solution because no one else knows this private secret.
+
+00:06:05.600 --> 00:06:08.600
+It would prove that Bob is the one who asked for the transaction.
+
+00:06:08.600 --> 00:06:12.600
+And that the transaction has not been altered since it is part of the problem.
+
+00:06:12.600 --> 00:06:15.600
+If you change it, Bob's solution would not be exact.
+
+00:06:15.600 --> 00:06:20.600
+This mathematical problem that we are looking for, Bitcoin built it thanks to elliptical curves.
+
+00:06:20.600 --> 00:06:22.600
+An elliptical curve is defined by this equation.
+
+00:06:23.600 --> 00:06:25.600
+And this is what it looks like.
+
+00:06:25.600 --> 00:06:27.600
+We see all the points for which this equation is exact.
+
+00:06:27.600 --> 00:06:30.600
+In the case of Bitcoin, we use this version.
+
+00:06:30.600 --> 00:06:32.600
+Defined by this equation.
+
+00:06:32.600 --> 00:06:36.600
+These curves all have a very interesting mathematical property.
+
+00:06:36.600 --> 00:06:41.600
+To add two points to the curve, you just have to trace the right that connects them.
+
+00:06:41.600 --> 00:06:44.600
+Go to the place where this new right crosses the curve.
+
+00:06:44.600 --> 00:06:47.600
+Then take its symmetry compared to the horizontal axis.
+
+00:06:47.600 --> 00:06:51.600
+This technique can also be applied to add a point to itself.
+
+00:06:51.600 --> 00:06:53.600
+The right will then be the tangent.
+
+00:06:53.600 --> 00:06:57.600
+We cross the curve, then we do the symmetry and we get 2a.
+
+00:06:57.600 --> 00:06:59.600
+Let's call this new point P.
+
+00:06:59.600 --> 00:07:01.600
+And then you ask yourself, what?
+
+00:07:01.600 --> 00:07:04.600
+Well, adding a point to itself is very simple.
+
+00:07:04.600 --> 00:07:06.600
+But doing the opposite is impossible.
+
+00:07:06.600 --> 00:07:12.600
+If I just give you P and I ask you to find how many times I added a to itself to get it.
+
+00:07:12.600 --> 00:07:14.600
+You have no way to get there.
+
+00:07:14.600 --> 00:07:15.600
+Well, yes, you're stupid or what?
+
+00:07:15.600 --> 00:07:17.600
+Just divide P by a and that's it.
+
+00:07:17.600 --> 00:07:19.600
+Except no, it's not a multiplication.
+
+00:07:19.600 --> 00:07:20.600
+What we did, we did all that.
+
+00:07:20.600 --> 00:07:21.600
+It has nothing to do with it.
+
+00:07:21.600 --> 00:07:22.600
+And it's not even numbers, a and p.
+
+00:07:22.600 --> 00:07:24.600
+They are points on a curve.
+
+00:07:24.600 --> 00:07:26.600
+Divisions don't exist there.
+
+00:07:26.600 --> 00:07:29.600
+Your only way to find the unknown is to start from zero.
+
+00:07:29.600 --> 00:07:32.600
+To take a, add it to itself and check if you have the right result.
+
+00:07:32.600 --> 00:07:36.600
+Well, it's simple because the unknown, which we will call e, is worth 2.
+
+00:07:36.600 --> 00:07:40.600
+But when this unknown is bigger, something very interesting will happen.
+
+00:07:40.600 --> 00:07:45.600
+If I decide that I want to calculate 8 times a, we can be clever and get there much faster.
+
+00:07:45.600 --> 00:07:48.600
+I start by doing a plus a, it gives me 2a.
+
+00:07:48.600 --> 00:07:51.600
+But instead of doing 2a plus a, I do 2a plus 2a.
+
+00:07:51.600 --> 00:07:52.600
+To get 4a.
+
+00:07:52.600 --> 00:07:55.600
+Then 4a plus 4a to get 8 times a.
+
+00:07:55.600 --> 00:07:57.600
+I got it in 3 steps.
+
+00:07:57.600 --> 00:08:01.600
+But if you don't know in advance what I want to calculate 8 times a, you can't use this trick.
+
+00:08:01.600 --> 00:08:04.600
+You have to do a plus a 8 times.
+
+00:08:04.600 --> 00:08:05.600
+8 steps.
+
+00:08:05.600 --> 00:08:08.600
+If I decide to do 100 times a, I do it in 8 steps.
+
+00:08:08.600 --> 00:08:10.600
+You in 100 steps.
+
+00:08:10.600 --> 00:08:14.600
+And if the number is huge, my method allows me to get there ultra quickly.
+
+00:08:14.600 --> 00:08:16.600
+But you will never get there.
+
+00:08:16.600 --> 00:08:17.600
+There are too many steps.
+
+00:08:17.600 --> 00:08:20.600
+Even for a super powerful computer, it would take you trillions of years.
+
+00:08:20.600 --> 00:08:23.600
+We found our problem, which has a name.
+
+00:08:23.600 --> 00:08:26.600
+It's the problem of the discrete logarithm.
+
+00:08:26.600 --> 00:08:31.600
+So what Bitcoin does is that it arbitrarily chooses a point G on the curve called the generator.
+
+00:08:31.600 --> 00:08:33.600
+Everyone will start from this point.
+
+00:08:33.600 --> 00:08:38.600
+Then Bob randomly chooses a gigantic number that will be his secret key.
+
+00:08:38.600 --> 00:08:39.600
+We write it down, little e.
+
+00:08:39.600 --> 00:08:44.600
+He quickly calculates little e times G and he obtains a result that we write down P.
+
+00:08:44.600 --> 00:08:48.600
+Because it is a point and which corresponds to Bob's public key.
+
+00:08:48.600 --> 00:08:50.600
+We have a problem that we can solve.
+
+00:08:50.600 --> 00:08:56.600
+We have to give the answer publicly that only Bob can solve because he is the only one to have the secret key.
+
+00:08:56.600 --> 00:09:01.600
+And it is impossible to guess it from the public key because as we have seen, doing the opposite is impossible.
+
+00:09:01.600 --> 00:09:02.600
+We are almost there.
+
+00:09:02.600 --> 00:09:08.600
+We have to add the transaction that we want to secure in this mess to make sure that no one has modified it.
+
+00:09:08.600 --> 00:09:11.600
+First problem, it's not a number, it's text.
+
+00:09:11.600 --> 00:09:13.600
+Well, that, in fact, your computer doesn't care.
+
+00:09:13.600 --> 00:09:15.600
+A number, he sees it like that.
+
+00:09:15.600 --> 00:09:17.600
+A text, he sees it like that.
+
+00:09:17.600 --> 00:09:19.600
+But we will use a function called H256.
+
+00:09:20.600 --> 00:09:27.600
+And which basically allows you to take what you want to enter and it gives you a unique number of 256 bits.
+
+00:09:27.600 --> 00:09:30.600
+If you change the transaction, it will no longer be the same number.
+
+00:09:30.600 --> 00:09:37.600
+Now we have to find a problem that uses this number, which we will call Z, our private key and our public key that we saw before.
+
+00:09:37.600 --> 00:09:41.600
+For that, Bob can select a new random number that we will call K.
+
+00:09:41.600 --> 00:09:45.600
+He does the calculation K times G, as with them, it gives the point R as a result.
+
+00:09:45.600 --> 00:09:49.600
+But we will only be interested in the x coordinate of this point, which we will call little r.
+
+00:09:49.600 --> 00:09:59.600
+The problem that we will solve is to find a number S such as K times G is equal to Z divided by S times G plus R divided by S times P.
+
+00:09:59.600 --> 00:10:02.600
+And this equation, only Bob can solve it.
+
+00:10:02.600 --> 00:10:06.600
+Because he can replace P by E times G, since he knows E.
+
+00:10:06.600 --> 00:10:11.600
+We remove the G, there is no longer K is equal to Z divided by S plus R E divided by S.
+
+00:10:11.600 --> 00:10:13.600
+And so S is equal to that.
+
+00:10:13.600 --> 00:10:16.600
+And for those who wonder, yes, there we can make divisions.
+
+00:10:16.600 --> 00:10:18.600
+Because all the variables in minuscules are numbers.
+
+00:10:18.600 --> 00:10:20.600
+So the classic arithmetic works.
+
+00:10:20.600 --> 00:10:22.600
+We solved this problem and found S.
+
+00:10:22.600 --> 00:10:25.600
+And to find this S, we have to know the private key E.
+
+00:10:25.600 --> 00:10:30.600
+So only Bob can solve this problem in which there is his private key to prove that it is him
+
+00:10:30.600 --> 00:10:33.600
+and the H of the transaction to prove that it has not been altered.
+
+00:10:33.600 --> 00:10:35.600
+That's exactly what we wanted.
+
+00:10:35.600 --> 00:10:38.600
+Bob transmits P, R and S to the Bitcoin network.
+
+00:10:38.600 --> 00:10:42.600
+The HZ can be recalculated and with that, an E can check the result.
+
+00:10:42.600 --> 00:10:47.600
+If the x coordinate that we obtain by calculating the initial equation is equal to the little r transmitted by Bob,
+
+00:10:48.600 --> 00:10:51.600
+we can trust the associated transaction.
+
+00:10:51.600 --> 00:10:52.600
+It is now signed.
+
+00:10:52.600 --> 00:10:54.600
+So before we finish, we have to solve two little problems.
+
+00:10:54.600 --> 00:10:58.600
+For now, we do all this on a real-tooth elliptical curve.
+
+00:10:58.600 --> 00:11:05.600
+Except that among the real numbers, there can be irrational numbers, like Pi, for example, which are infinite.
+
+00:11:05.600 --> 00:11:07.600
+So if we fall on them, we would have to approximate them.
+
+00:11:07.600 --> 00:11:08.600
+And that, it's going to mess up.
+
+00:11:08.600 --> 00:11:09.600
+We have to get rid of them.
+
+00:11:09.600 --> 00:11:11.600
+Then we can have infinitely large numbers.
+
+00:11:11.600 --> 00:11:13.600
+And to store them, it's a problem.
+
+00:11:13.600 --> 00:11:17.600
+The solution is that instead of placing ourselves on the real ones, we place ourselves in a finite body,
+
+00:11:17.600 --> 00:11:20.600
+which contains all the whole numbers from 0 to this number.
+
+00:11:20.600 --> 00:11:21.600
+So why this one?
+
+00:11:21.600 --> 00:11:24.600
+Because this allows us to have a maximum number of 256 bits,
+
+00:11:24.600 --> 00:11:27.600
+and the rest is to fall on a first number.
+
+00:11:27.600 --> 00:11:29.600
+Because we love first numbers in math.
+
+00:11:29.600 --> 00:11:32.600
+So weird numbers like Pi, they don't exist anymore.
+
+00:11:32.600 --> 00:11:37.600
+And another property of a finite body is that if we do a calculation and the result is too large, it overflows,
+
+00:11:37.600 --> 00:11:39.600
+well, it happens like for the calculation of minutes.
+
+00:11:39.600 --> 00:11:43.600
+For example, if you do 50 minutes plus 20 minutes, it gives you 10 minutes.
+
+00:11:43.600 --> 00:11:44.600
+We take back from 0.
+
+00:11:44.600 --> 00:11:45.600
+Same with the finite body.
+
+00:11:45.600 --> 00:11:46.600
+These are modular calculations.
+
+00:11:46.600 --> 00:11:51.600
+If we have a number that becomes too large, it starts from 0 and comes back to our limits.
+
+00:11:51.600 --> 00:11:54.600
+It gives us a curve, which is actually a cloud of points.
+
+00:11:54.600 --> 00:11:58.600
+So yeah, it doesn't look too much like what we had before, but everything is the same.
+
+00:11:58.600 --> 00:12:04.600
+We are just now in conditions where we are sure that everything is going to be fine and that there is no security flaw.
+
+00:12:04.600 --> 00:12:06.600
+Let's recap quickly.
+
+00:12:06.600 --> 00:12:10.600
+Bob can choose a private key from which he derives a public key.
+
+00:12:10.600 --> 00:12:15.600
+Thanks to these private keys, he can solve a mathematical equation in which the transaction he wants to make is placed.
+
+00:12:15.600 --> 00:12:17.600
+The solution consists of two numbers.
+
+00:12:17.600 --> 00:12:21.600
+Bob provides them to the network node with his transaction and his public key.
+
+00:12:21.600 --> 00:12:27.600
+These information are sufficient to verify that the equation has been solved and that Bob wants to make this transaction.
+
+00:12:27.600 --> 00:12:30.600
+In the end, to identify Bob, we don't care about his name.
+
+00:12:30.600 --> 00:12:35.600
+What he identifies is his public key, which is mathematically linked to a single private key.
+
+00:12:35.600 --> 00:12:40.600
+When we make a transaction, we indicate two public keys, that of the sender and the receiver.
+
+00:12:40.600 --> 00:12:42.600
+We go back to what we said earlier.
+
+00:12:42.600 --> 00:12:45.600
+All transactions are visible, but everything is anonymous.
+
+00:12:45.600 --> 00:12:47.600
+Because it's just a key, a number.
+
+00:12:47.600 --> 00:12:52.600
+On the other hand, if someone knows that it's your public key, suddenly we would know all your transactions.
+
+00:12:52.600 --> 00:12:53.600
+It's not crazy.
+
+00:12:53.600 --> 00:12:56.600
+But Bitcoin is designed to be easily countable.
+
+00:12:56.600 --> 00:13:00.600
+Indeed, you can create as many private key pairs, public keys, as you wish.
+
+00:13:00.600 --> 00:13:04.600
+Every time you make a transaction, you create a new one, just for this transaction.
+
+00:13:04.600 --> 00:13:06.600
+And then you become invisible.
+
+00:13:06.600 --> 00:13:08.600
+You just have to note each pair somewhere.
+
+00:13:08.600 --> 00:13:10.600
+But this trick poses a new problem.
+
+00:13:10.600 --> 00:13:13.600
+If you have several keys on which you put bitcoins, it becomes impossible for the other nodes to know.
+
+00:13:13.600 --> 00:13:14.600
+It becomes impossible for the other nodes to know.
+
+00:13:14.600 --> 00:13:17.600
+It becomes impossible for the other nodes to determine how much bitcoins you have in all.
+
+00:13:17.600 --> 00:13:18.600
+Because they don't know anything.
+
+00:13:18.600 --> 00:13:20.600
+They, all these keys belong to you.
+
+00:13:20.600 --> 00:13:23.600
+It's up to you to indicate where you get your funds to make a transaction.
+
+00:13:23.600 --> 00:13:26.600
+We need to modify our current structure to allow it.
+
+00:13:26.600 --> 00:13:29.600
+If Bob wants to send 10 bitcoins to Alice.
+
+00:13:29.600 --> 00:13:30.600
+That's a hell of a sim, though.
+
+00:13:30.600 --> 00:13:33.600
+Before, we just wrote Bob's public key.
+
+00:13:33.600 --> 00:13:36.600
+Alice's, the amount and Bob's signature to approve.
+
+00:13:36.600 --> 00:13:37.600
+That, it can't work anymore.
+
+00:13:37.600 --> 00:13:40.600
+We're going to add all these additional details.
+
+00:13:40.600 --> 00:13:42.600
+In the input section, Bob must indicate transactions he has received.
+
+00:13:42.600 --> 00:13:45.600
+To prove he has enough bitcoins to pay Alice.
+
+00:13:45.600 --> 00:13:49.600
+For example, he's going to take this transaction in which he received 2 bitcoins on a public key.
+
+00:13:49.600 --> 00:13:51.600
+This one, where he received 3 on another key.
+
+00:13:51.600 --> 00:13:54.600
+And this one, where he received 6 bitcoins on a third key.
+
+00:13:54.600 --> 00:13:55.600
+The amount is higher than 10.
+
+00:13:55.600 --> 00:13:56.600
+We have enough funds.
+
+00:13:56.600 --> 00:13:58.600
+No need to indicate more transactions linked to Bob.
+
+00:13:58.600 --> 00:14:01.600
+For each of these transactions, he must prove that it is these bitcoins.
+
+00:14:01.600 --> 00:14:05.600
+With his signature, using the private key associated with each public key used.
+
+00:14:05.600 --> 00:14:09.600
+So he must add 3 signatures in a field called public key.
+
+00:14:09.600 --> 00:14:10.600
+And this is the public key.
+
+00:14:10.600 --> 00:14:11.600
+And this is the private key.
+
+00:14:11.600 --> 00:14:12.600
+And this is the public key.
+
+00:14:12.600 --> 00:14:14.600
+So in this case, it is a field called witness.
+
+00:14:14.600 --> 00:14:16.600
+Which allows us to prove that we have the right to use these funds.
+
+00:14:16.600 --> 00:14:17.600
+OK.
+
+00:14:17.600 --> 00:14:19.600
+Now we want to indicate who we send bitcoins to and how much.
+
+00:14:19.600 --> 00:14:21.600
+Because we can send them to several people at the same time.
+
+00:14:21.600 --> 00:14:23.600
+This is done via the output field.
+
+00:14:23.600 --> 00:14:25.600
+Bob is going to put Alice's public key.
+
+00:14:25.600 --> 00:14:27.600
+The amount he wishes to transfer to her.
+
+00:14:27.600 --> 00:14:28.600
+So 10 bitcoins.
+
+00:14:28.600 --> 00:14:30.600
+And also a condition to unlock these funds.
+
+00:14:30.600 --> 00:14:33.600
+Called the script pub key.
+
+00:14:33.600 --> 00:14:35.600
+Generally, the condition is Alice's signature.
+
+00:14:35.600 --> 00:14:37.600
+So as soon as she wants to use these funds.
+
+00:14:37.600 --> 00:14:39.600
+She has to sign with the right private key.
+
+00:14:39.600 --> 00:14:40.600
+But bitcoin is very permissive.
+
+00:14:40.600 --> 00:14:49.160
+very permissive. Let's say Bob is Alice's father. He may want Alice to also need his signature to spend the money he just gave him.
+
+00:14:49.160 --> 00:14:56.360
+And this condition that the sender chooses, as his name suggests, is a script. You can write a personalized one if you want, but it's at your risk and peril.
+
+00:14:56.360 --> 00:15:03.840
+Well, we brought 11 bitcoins as inputs, but we spent only 10. And that doesn't work. You have to spend all the inputs.
+
+00:15:03.840 --> 00:15:08.060
+Bob then sends himself the rest, quite simply.
+
+00:15:08.060 --> 00:15:15.800
+OK, the last interesting field that we added is the lock time. It allows you to ask that this transaction is effective only for a certain time. For example, for a week.
+
+00:15:15.800 --> 00:15:22.700
+And that's all good. Bob sends it to the network, which will check that everything is good. They will see that the signature is correct for each transaction,
+
+00:15:22.700 --> 00:15:30.180
+and they will also check that each transaction indicated in input has not already been spent by Bob. Because yes, he could have used them in a previous transaction.
+
+00:15:30.180 --> 00:15:33.820
+To do this, all nodes maintain a database in which they write
+
+00:15:33.820 --> 00:15:35.700
+what we call UTXOs.
+
+00:15:35.700 --> 00:15:39.060
+An UTXO is an output of a transaction that has not been spent.
+
+00:15:39.060 --> 00:15:40.900
+The node runs through Bob's inputs,
+
+00:15:40.900 --> 00:15:44.260
+and for each one, look if the associated UTXO is in the base.
+
+00:15:44.260 --> 00:15:47.060
+If so, we delete it to say that it has been spent
+
+00:15:47.060 --> 00:15:48.900
+and Bob's transaction is accepted.
+
+00:15:48.900 --> 00:15:52.180
+If not, we ignore the transaction of this clochard.
+
+00:15:52.180 --> 00:15:53.620
+And there, we're not bad, huh?
+
+00:15:53.620 --> 00:15:54.700
+We did it?
+
+00:15:54.700 --> 00:15:55.300
+No.
+
+00:15:55.300 --> 00:15:56.340
+There is a problem.
+
+00:15:56.340 --> 00:15:57.900
+No, calm down, it's the last one.
+
+00:15:57.900 --> 00:15:59.700
+But the most complicated.
+
+00:15:59.700 --> 00:16:03.940
+It's THE problem that has haunted cryptographic researchers for 20 years.
+
+00:16:03.940 --> 00:16:05.940
+For 20 years, we tried to make this cryptocurrency.
+
+00:16:05.940 --> 00:16:08.180
+20 years that we failed at this step.
+
+00:16:08.180 --> 00:16:10.140
+Then, out of nowhere, in 2008,
+
+00:16:10.140 --> 00:16:12.900
+you have a guy with the nickname Satoshi Nakamoto
+
+00:16:12.900 --> 00:16:16.380
+who releases a research paper to explain how to solve this problem.
+
+00:16:16.380 --> 00:16:19.660
+In this 9-page paper, he created Bitcoin
+
+00:16:19.660 --> 00:16:22.180
+and solved this fundamental problem.
+
+00:16:22.180 --> 00:16:23.180
+So what is it?
+
+00:16:23.180 --> 00:16:25.620
+And what is Satoshi's solution?
+
+00:16:25.620 --> 00:16:27.820
+It's the double spending problem.
+
+00:16:27.820 --> 00:16:29.020
+If Bob is malicious,
+
+00:16:29.020 --> 00:16:29.660
+he can send Satoshi
+
+00:16:29.660 --> 00:16:31.420
+this transaction to two different people
+
+00:16:31.420 --> 00:16:33.699
+using the same inputs at the same time
+
+00:16:33.699 --> 00:16:35.260
+and send them to two different nodes.
+
+00:16:35.260 --> 00:16:37.420
+Which would make him spend the inputs twice,
+
+00:16:37.420 --> 00:16:38.819
+which shouldn't be accepted.
+
+00:16:38.819 --> 00:16:40.780
+But this node, he only sees this transaction.
+
+00:16:40.780 --> 00:16:43.060
+He validates it, he doesn't know that there is another one at the same time.
+
+00:16:43.060 --> 00:16:44.900
+Same for this other node, he validates it.
+
+00:16:44.900 --> 00:16:46.500
+And they send it to the rest of the network
+
+00:16:46.500 --> 00:16:48.260
+until it's gone.
+
+00:16:48.260 --> 00:16:49.660
+And then, everything is ruined.
+
+00:16:49.660 --> 00:16:51.740
+We don't know which list of transactions to use.
+
+00:16:51.740 --> 00:16:53.020
+This one or that one?
+
+00:16:53.020 --> 00:16:53.660
+No idea.
+
+00:16:53.660 --> 00:16:55.980
+Everything collapses because we have no way of choosing.
+
+00:16:55.980 --> 00:16:58.579
+The network no longer follows the same transactions.
+
+00:16:58.579 --> 00:16:58.980
+That's where the idea of the blockchain comes in.
+
+00:16:58.980 --> 00:17:02.140
+The proof by the work.
+
+00:17:02.140 --> 00:17:03.940
+The proof of work.
+
+00:17:03.940 --> 00:17:06.860
+Each node will constitute what we call a mempool,
+
+00:17:06.860 --> 00:17:09.980
+in which all transaction requests it receives
+
+00:17:09.980 --> 00:17:12.099
+will be placed and validated by it.
+
+00:17:12.099 --> 00:17:13.780
+They differ from one block to the other.
+
+00:17:13.780 --> 00:17:16.099
+And since these transactions are all on the same node,
+
+00:17:16.099 --> 00:17:17.819
+there is no problem with double spending.
+
+00:17:17.819 --> 00:17:20.099
+Every 10 minutes, we would like to select
+
+00:17:20.099 --> 00:17:21.980
+a transaction block from the same pool
+
+00:17:21.980 --> 00:17:25.339
+and this block would be unanimously accepted by the entire network.
+
+00:17:25.339 --> 00:17:27.780
+So in the end, we would no longer have a transaction list,
+
+00:17:27.780 --> 00:17:28.300
+but a block list.
+
+00:17:28.300 --> 00:17:29.780
+A chain of transactions.
+
+00:17:29.780 --> 00:17:31.260
+A chain of blocks.
+
+00:17:31.260 --> 00:17:32.659
+A blockchain.
+
+00:17:32.659 --> 00:17:36.180
+The big question is how do we choose the block among all the possible ones?
+
+00:17:36.180 --> 00:17:39.620
+And how do we agree on the 10 minutes?
+
+00:17:39.620 --> 00:17:42.419
+By doing an algorithmic race.
+
+00:17:42.419 --> 00:17:46.060
+Let's say a node finished first in this famous race.
+
+00:17:46.060 --> 00:17:48.139
+Its block is spread in the network and accepted.
+
+00:17:48.139 --> 00:17:50.980
+And as soon as a node receives this block, if it is valid,
+
+00:17:50.980 --> 00:17:54.260
+it is the starting signal of the race to make the next block.
+
+00:17:54.260 --> 00:17:56.340
+The node starts by looking at its own pool
+
+00:17:56.340 --> 00:17:57.460
+and takes as many unprocessed transactions as possible.
+
+00:17:58.300 --> 00:17:59.700
+To build a block.
+
+00:17:59.700 --> 00:18:03.540
+And yes, there is a limit size, so some transactions will have to wait.
+
+00:18:03.540 --> 00:18:04.260
+We'll come back to that.
+
+00:18:04.260 --> 00:18:07.180
+In parallel, the node will try to solve a mathematical puzzle
+
+00:18:07.180 --> 00:18:09.940
+based on the random, which we will talk about in a moment.
+
+00:18:09.940 --> 00:18:13.740
+As soon as a node finds a solution, it can share it with its block.
+
+00:18:13.740 --> 00:18:16.260
+The other nodes check all this, the block is accepted
+
+00:18:16.260 --> 00:18:19.220
+and added to the blockchain and the race starts again.
+
+00:18:19.220 --> 00:18:22.500
+And if ever, by chance, two nodes end the race at the same time,
+
+00:18:22.500 --> 00:18:24.740
+we would have two versions of the blockchain that would spread.
+
+00:18:24.740 --> 00:18:26.260
+The same problem we wanted to solve.
+
+00:18:26.260 --> 00:18:27.700
+Except that, it doesn't matter.
+
+00:18:28.300 --> 00:18:30.020
+We would take the block we were looking at,
+
+00:18:30.020 --> 00:18:33.060
+and a block would be added to one of the two versions and transmitted to the network.
+
+00:18:33.060 --> 00:18:35.780
+And the nodes automatically take the version of the blockchain
+
+00:18:35.780 --> 00:18:39.700
+where there is the most blocks, where there is the most work evidence.
+
+00:18:39.700 --> 00:18:43.300
+So those who disagreed would drop it and accept the other version.
+
+00:18:43.300 --> 00:18:44.780
+Well, let's talk about the puzzle.
+
+00:18:44.780 --> 00:18:47.139
+We want it to contain our block and the previous block
+
+00:18:47.139 --> 00:18:49.980
+to prove that we started the race when you received it.
+
+00:18:49.980 --> 00:18:52.379
+Like before, we use hash 256.
+
+00:18:52.379 --> 00:18:56.060
+We take the header of our block, in which we add the hash of the previous block.
+
+00:18:56.060 --> 00:18:57.620
+And the function gives us a number, which is linked to the previous block.
+
+00:18:57.620 --> 00:18:58.139
+And the function gives us a number, which is linked to the previous block.
+
+00:18:58.300 --> 00:19:02.139
+to the two blocks as desired. The problem to be solved is to find a number
+
+00:19:02.139 --> 00:19:06.620
+called nonce, such that when we add it to this hash, then we hash it again
+
+00:19:06.620 --> 00:19:11.139
+the result starts with a certain number of zeros. And the only way to find
+
+00:19:11.139 --> 00:19:16.399
+is to test nonces randomly. A bunch of nonces. When we find a valid one,
+
+00:19:16.399 --> 00:19:21.220
+we fill the nonce and the block we want to create with the node, and from there it's easy to
+
+00:19:21.220 --> 00:19:25.180
+verify our solution. Two things influence the resolution time of this puzzle. The number of
+
+00:19:25.180 --> 00:19:30.160
+zeros to have in the target, the more there are, the more it will be hard to find a solution, and the number of
+
+00:19:30.160 --> 00:19:34.300
+nodes that participate. The larger the number, the more we are lucky to find. We can only influence
+
+00:19:34.300 --> 00:19:37.900
+the number of zeros. So that's what Bitcoin does if it sees that the resolution takes too much
+
+00:19:37.900 --> 00:19:42.940
+or not enough time. The goal being 10 minutes per block. If I want to win this race, I need
+
+00:19:42.940 --> 00:19:47.780
+luck but also a good equipment to make a maximum of attempts per second. And I pay
+
+00:19:47.780 --> 00:19:51.820
+electricity too. Except that for now I am doing charity. So we must add
+
+00:19:51.820 --> 00:19:55.060
+one last thing, a reward for those who provide this work.
+
+00:19:55.060 --> 00:19:58.840
+That it is lucrative. Two methods for that. Do you remember I told you that not all
+
+00:19:58.840 --> 00:20:02.860
+transactions of the same pool could be added to the block. So the node must select
+
+00:20:02.860 --> 00:20:07.300
+transactions. And how do we do that? To be selected first, by offering a transaction fee
+
+00:20:07.300 --> 00:20:11.200
+to the one who creates the block. Which is indicated and calculated according to what is left when
+
+00:20:11.200 --> 00:20:15.340
+we subtract the inputs and outputs of the transaction. The higher our offer is, the faster
+
+00:20:15.340 --> 00:20:20.340
+we will be taken. Second method of remuneration, the Coinbase. We will give a reward for the node
+
+00:20:20.340 --> 00:20:24.879
+who managed to create a block. This is how Bitcoin manages monetary creation.
+
+00:20:25.060 --> 00:20:30.399
+Our banknotes are printed, the gold is mined and the Bitcoin is created when a block is added.
+
+00:20:30.399 --> 00:20:34.179
+In all, there will be 21 million bitcoins created. Not a single more. No inflation.
+
+00:20:34.179 --> 00:20:38.620
+By 2140, there will be no more rewards for miners. There will only be transaction fees.
+
+00:20:38.620 --> 00:20:43.060
+By then, the rewards are halved every 210,000 blocks. And with these two
+
+00:20:43.060 --> 00:20:47.560
+incentives, it motivates people to maintain the Bitcoin network that we have just recreated.
+
+00:20:47.560 --> 00:20:51.460
+From scratch. Last point, here it looks like it's ultra technical. But having Bitcoin,
+
+00:20:51.460 --> 00:20:54.639
+it's simple, it's done in two clicks. If you're completely paranoid, you create yourself,
+
+00:20:55.060 --> 00:20:58.600
+you have your private and public keys and you write it down on a paper wallet. And there, you
+
+00:20:58.600 --> 00:21:01.060
+completely fuck yourself up. You can also buy cold wallets,
+
+00:21:01.060 --> 00:21:06.760
+kind of USB keys where all your private and public keys that you will use will be automatically stored.
+
+00:21:06.760 --> 00:21:11.260
+But if you lose your password to unlock your cold wallet, you say goodbye to all your money.
+
+00:21:11.260 --> 00:21:14.860
+So if you don't trust yourself too much with this responsibility, that you want a
+
+00:21:14.860 --> 00:21:19.899
+after-sales service and a simple, unbeatable use, you have the exchanges. They will keep
+
+00:21:19.899 --> 00:21:24.940
+your private keys for you. You don't even have access and your money is actually linked to an account that you have at home.
+
+00:21:25.060 --> 00:21:29.139
+So yeah, it's nice, but as I said, you don't hold your keys anymore. They belong to the exchange
+
+00:21:29.139 --> 00:21:33.639
+you have to trust. So overnight, they can very well take all your cryptos from you. And the
+
+00:21:33.639 --> 00:21:38.740
+scandal around FTX shows us that it is a very real possibility. But there is an alternative,
+
+00:21:38.740 --> 00:21:42.280
+a kind of hybrid that allows you to have the advantages of these platforms in terms of
+
+00:21:42.280 --> 00:21:47.800
+simplicity of use while having increased security, like on a cold wallet. This alternative is
+
+00:21:47.800 --> 00:21:52.960
+blocks. Already, it's French and regulated by the AMF and the ACPR. They have set up a system that
+
+00:21:52.960 --> 00:21:54.100
+makes them not know your private key via a network. And that's it. It's a very simple and simple system.
+
+00:21:54.100 --> 00:21:58.600
+Your private key via an MPC architecture. Even if blocks disappeared, you could
+
+00:21:58.600 --> 00:22:04.719
+still access your cryptos. Their value proposition is simple. Use cryptos to maximize your savings.
+
+00:22:04.719 --> 00:22:09.639
+You can buy, sell, deposit and withdraw your cryptos from your current account in self-custody
+
+00:22:09.639 --> 00:22:14.020
+with minimal, unlimited and 3-click fees. They also recently launched the
+
+00:22:14.020 --> 00:22:18.699
+Coffre product that allows you to generate up to 6% of your earnings with your euros in 2 clicks
+
+00:22:18.699 --> 00:22:23.080
+thanks to DeFi. With all this, you also have a classic current account. With a French IBAN,
+
+00:22:23.080 --> 00:22:24.040
+you can receive your salary
+
+00:22:24.040 --> 00:22:29.560
+and convert a part of it into crypto without any fees. That's strong to invest
+
+00:22:29.560 --> 00:22:33.340
+little by little. Then, of course, you can make instant and free transfers. You have a support
+
+00:22:33.340 --> 00:22:38.680
+in French and premium Visa cards and even an absolutely incredible LED metal card.
+
+00:22:38.680 --> 00:22:43.120
+Test all this with the link in the description. The account opening is free and use the code
+
+00:22:43.120 --> 00:22:48.159
+VICTOR3 to test their premium subscription for 3 months. You will have a 66% discount on all
+
+00:22:48.159 --> 00:22:53.800
+fees and a premium card for free. And I think we've done it. Thank you for watching the video. If it has
+
+00:22:54.040 --> 00:22:57.460
+been useful, do not hesitate to like, comment, subscribe. You also subscribe to my secondary channel
+
+00:22:57.460 --> 00:23:02.139
+for even more content and to follow me on social networks, Insta, X, all that. See you next time.

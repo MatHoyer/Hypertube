@@ -50,7 +50,7 @@ type VideoPlayerContextType = {
 
   subtitles: TSubtitleSchema[];
   selectedSubtitlesLanguage: string | null;
-  setSelectedSubtitlesLanguage: (language: string) => void;
+  setSelectedSubtitlesLanguage: (language: string | null) => void;
 };
 
 const VideoPlayerContext = createContext<VideoPlayerContextType | undefined>(

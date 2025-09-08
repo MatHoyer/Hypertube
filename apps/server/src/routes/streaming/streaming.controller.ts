@@ -43,7 +43,7 @@ export const getYtsStreamingSubtitles = async (
   c: Context<TUrlParamsParser<TGetYtsStreamingSubtitlesSchemas["urlParams"]>>
 ) => {
   const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
-  const filePath = getSubtitlePath(movieId, subtitlesLanguage);
+  const filePath = getSubtitlePath(movieId, subtitlesLanguage, true);
   const file = fs.readFileSync(filePath);
 
   return c.body(file, 200, {
