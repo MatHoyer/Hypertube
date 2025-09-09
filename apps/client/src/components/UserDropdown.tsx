@@ -38,10 +38,10 @@ export function UserDropdown() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="start">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("navbar.account")}</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem>{t("navbar.profile")}</DropdownMenuItem>
+          <DropdownMenuItem>{t("navbar.settings")}</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled>API</DropdownMenuItem>

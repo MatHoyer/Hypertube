@@ -130,6 +130,9 @@
     }
   },
   "navbar": {
-    "placeholder": "Rechercher un film"
+    "placeholder": "Rechercher un film",
+    "account": "Mon compte",
+    "profile": "Profil",
+    "settings": "Paramètres"
   }
 }
