@@ -32,6 +32,7 @@ type VideoPlayerContextType = {
   setIsFullscreen: (isFullscreen: boolean) => void;
 
   progress: number;
+  bufferedProgress: number;
   handleProgress: () => void;
   handleSeek: (percent: number) => void;
   handleJumpVideo: (seconds: number) => void;
@@ -85,6 +86,7 @@ export const VideoPlayerProvider: React.FC<{
   const { value: playing, toggle: togglePlay } = useToggle(false);
   const [volume, setVolume] = useState(20);
   const [progress, setProgress] = useState(0);
+  const [bufferedProgress, setBufferedProgress] = useState(0);
   const {
     value: isFullscreen,
     toggle: toggleFullscreen,
@@ -170,9 +172,17 @@ export const VideoPlayerProvider: React.FC<{
   // Progress
   const handleProgress = () => {
     if (!videoRef.current) return;
-    const percent =
-      (videoRef.current.currentTime / videoRef.current.duration) * 100;
+    const video = videoRef.current;
+    const percent = (video.currentTime / video.duration) * 100;
     setProgress(percent);
+
+    // Calculate buffered progress
+    if (video.buffered.length > 0) {
+      const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+      const bufferedPercent = (bufferedEnd / video.duration) * 100;
+      setBufferedProgress(bufferedPercent);
+    }
+
     if (percent >= 100) {
       togglePlay();
     }
@@ -267,6 +277,7 @@ export const VideoPlayerProvider: React.FC<{
         setIsFullscreen,
 
         progress,
+        bufferedProgress,
         handleProgress,
         handleSeek,
         handleJumpVideo,
