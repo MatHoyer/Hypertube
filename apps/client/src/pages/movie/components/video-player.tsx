@@ -164,8 +164,6 @@ const ProgressBar = () => {
   );
   const duration = formatTime(videoRef.current?.duration ?? 0);
 
-  console.log(bufferedProgress, progress);
-
   return (
     <div className="flex items-center w-full">
       <div className="relative flex-1 mx-3">
