@@ -9,10 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
-import { getUrl } from "@hypertube/libs";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, LogOut, Settings, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
 import { ImageAvatar } from "./images/Avatar";
 
 export function UserDropdown() {
@@ -40,22 +38,23 @@ export function UserDropdown() {
       <DropdownMenuContent className="w-56" align="start">
         <DropdownMenuLabel>{t("navbar.account")}</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem>{t("navbar.profile")}</DropdownMenuItem>
-          <DropdownMenuItem>{t("navbar.settings")}</DropdownMenuItem>
+          <DropdownMenuItem>
+            <User /> {t("navbar.profile")}
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Settings /> {t("navbar.settings")}
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled>API</DropdownMenuItem>
         <DropdownMenuSeparator />
-        {session.data?.user && (
-          <DropdownMenuItem onClick={() => authClient.signOut()}>
-            {t("sign.out")}
-          </DropdownMenuItem>
-        )}
-        {!session.data?.user && (
-          <DropdownMenuItem asChild>
-            <Link to={getUrl("client-signin")}>{t("sign.in")}</Link>
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem
+          className="bg-destructive"
+          onClick={() => authClient.signOut()}
+        >
+          <LogOut />
+          {t("sign.out")}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
