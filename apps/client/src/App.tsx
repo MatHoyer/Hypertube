@@ -14,7 +14,6 @@ import type { ZodType } from "zod";
 import { z } from "zod";
 import { LoadingPage } from "./components/LoadingPage";
 import { Button } from "./components/ui/button";
-import { ScrollArea } from "./components/ui/scroll-area";
 import { PrivateLayout } from "./layouts/PrivateLayout";
 import { PublicLayout } from "./layouts/PublicLayout";
 import { authClient } from "./lib/auth-client";
@@ -85,45 +84,64 @@ const App = () => {
       >
         Demo movie
       </Button>
-      <ScrollArea className="h-dvh w-dvw">
-        <Routes>
-          {/* Public routes */}
-          <Route element={<PublicRoute />}>
-            <Route path={getUrl("client-signin")} element={<SignInPage />} />
-            <Route path={getUrl("client-signup")} element={<SignUpPage />} />
-            <Route
-              path={getUrl("client-forget-password")}
-              element={<ForgetPasswordPage />}
-            />
-            <Route
-              path={getUrl("client-reset-password")}
-              element={<ResetPasswordPage />}
-            />
-          </Route>
+      <Routes>
+        {/* Public routes */}
+        <Route element={<PublicRoute />}>
+          <Route path={getUrl("client-signin")} element={<SignInPage />} />
+          <Route path={getUrl("client-signup")} element={<SignUpPage />} />
+          <Route
+            path={getUrl("client-forget-password")}
+            element={<ForgetPasswordPage />}
+          />
+          <Route
+            path={getUrl("client-reset-password")}
+            element={<ResetPasswordPage />}
+          />
+        </Route>
 
-          {/* Private routes */}
-          <Route element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<div>Dashboard</div>} />
-            <Route path="*" element={<NotFoundPage />} />
-            <Route
-              element={
-                <ProtectedRoute
-                  schema={z.object({
-                    movieId: z.uuid(),
-                  })}
-                />
-              }
-            >
-              <Route
-                path={getUrl("client-movie", {
-                  movieId: ":movieId",
+        {/* Private routes */}
+        <Route element={<PrivateRoute />}>
+          <Route
+            path="/dashboard"
+            element={
+              <div className="min-h-[50vh]">
+                <h1 className="text-2xl p-4">Dashboard</h1>
+                <div className="min-h-screen">
+                  <p>
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                    Quaerat quos dignissimos doloremque enim necessitatibus
+                    accusamus dolorum aperiam, at tempora vel?
+                  </p>
+                </div>
+                <div className="min-h-screen">
+                  <p>
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                    Quaerat quos dignissimos doloremque enim necessitatibus
+                    accusamus dolorum aperiam, at tempora vel?
+                  </p>
+                </div>
+              </div>
+            }
+          />
+          <Route path="*" element={<NotFoundPage />} />
+          <Route
+            element={
+              <ProtectedRoute
+                schema={z.object({
+                  movieId: z.uuid(),
                 })}
-                element={<MoviePage />}
               />
-            </Route>
+            }
+          >
+            <Route
+              path={getUrl("client-movie", {
+                movieId: ":movieId",
+              })}
+              element={<MoviePage />}
+            />
           </Route>
-        </Routes>
-      </ScrollArea>
+        </Route>
+      </Routes>
     </div>
   );
 };

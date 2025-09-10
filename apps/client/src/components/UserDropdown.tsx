@@ -27,7 +27,7 @@ export const UserDropdown = () => {
             imageSrc={session.data?.user.image ?? ""}
             size="sm"
           />
-          <div className="grid flex-1 text-left text-sm leading-tight">
+          <div className="grid flex-1 text-left">
             <Typography>{session.data?.user.name}</Typography>
             <Typography>{session.data?.user.email}</Typography>
           </div>
