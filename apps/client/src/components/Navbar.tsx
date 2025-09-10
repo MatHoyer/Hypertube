@@ -11,7 +11,7 @@ export const Navbar = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex items-center justify-between bg-sidebar-primary ">
+    <div className="flex items-center justify-between bg-sidebar">
       <div className="flex flex-1 justify-start">
         <Link to={getUrl("client-home")}>
           <img

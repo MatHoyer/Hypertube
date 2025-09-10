@@ -12,8 +12,9 @@ import { authClient } from "@/lib/auth-client";
 import { ChevronsUpDown, LogOut, Settings, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ImageAvatar } from "./images/Avatar";
+import { Typography } from "./ui/typography";
 
-export function UserDropdown() {
+export const UserDropdown = () => {
   const session = authClient.useSession();
   const { t } = useTranslation();
 
@@ -27,10 +28,8 @@ export function UserDropdown() {
             size="sm"
           />
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">
-              {session.data?.user.name}
-            </span>
-            <span className="truncate text-xs">{session.data?.user.email}</span>
+            <Typography>{session.data?.user.name}</Typography>
+            <Typography>{session.data?.user.email}</Typography>
           </div>
           <ChevronsUpDown className="ml-auto size-4" />
         </Button>
@@ -58,4 +57,4 @@ export function UserDropdown() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};
