@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
 import { useConvertParams } from "@/hooks/use-convert-params";
@@ -156,7 +157,7 @@ const formatTime = (seconds: number) => {
 };
 
 const ProgressBar = () => {
-  const { videoRef, progress, handleSeek } = useVideoPlayer();
+  const { videoRef, progress, bufferedProgress, handleSeek } = useVideoPlayer();
 
   const currentTime = formatTime(
     (progress * (videoRef.current?.duration ?? 0)) / 100
@@ -165,15 +166,37 @@ const ProgressBar = () => {
 
   return (
     <div className="flex items-center w-full">
-      <input
-        type="range"
-        min="0"
-        max="100"
-        step="0.1"
-        value={progress}
-        onChange={(e) => handleSeek(Number(e.target.value))}
-        className="flex-1 mx-3 accent-primary"
-      />
+      <div className="relative flex-1 mx-3">
+        {/* Background track */}
+        <Progress
+          className="absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 bg-white/20"
+          value={0}
+        />
+
+        {/* Buffered progress */}
+        <Progress
+          className="absolute inset-y-0 left-0 bg-transparent top-1/2 transform -translate-y-1/2"
+          progressClassName="bg-white/40 duration-500"
+          value={bufferedProgress}
+        />
+
+        {/* Current progress */}
+        <Progress
+          className="absolute inset-y-0 left-0 bg-transparent top-1/2 transform -translate-y-1/2"
+          progressClassName="transition-none"
+          value={progress}
+        />
+
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="0.1"
+          value={progress}
+          onChange={(e) => handleSeek(Number(e.target.value))}
+          className="w-full accent-primary z-10 opacity-0 cursor-pointer"
+        />
+      </div>
       <div className="flex items-center">
         {currentTime === null || duration === null ? (
           <Skeleton className="w-[85px] h-[20px]" />
@@ -227,7 +250,7 @@ const GlobalSettings: React.FC<{
   );
 };
 
-const DropdownManuSelectedItem: React.FC<{
+const DropdownMenuSelectedItem: React.FC<{
   selected: boolean;
   onClick: () => void;
   icon: React.ReactNode;
@@ -269,34 +292,34 @@ const SpeedSettings: React.FC<{
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
-        <DropdownManuSelectedItem
+        <DropdownMenuSelectedItem
           onClick={() => handleClick(0.5)}
           selected={speed === 0.5}
           icon={<Turtle />}
         >
           <Typography>0.5</Typography>
-        </DropdownManuSelectedItem>
-        <DropdownManuSelectedItem
+        </DropdownMenuSelectedItem>
+        <DropdownMenuSelectedItem
           onClick={() => handleClick(1)}
           selected={speed === 1}
           icon={<PersonStanding />}
         >
           <Typography>1</Typography>
-        </DropdownManuSelectedItem>
-        <DropdownManuSelectedItem
+        </DropdownMenuSelectedItem>
+        <DropdownMenuSelectedItem
           onClick={() => handleClick(1.5)}
           selected={speed === 1.5}
           icon={<Squirrel />}
         >
           <Typography>1.5</Typography>
-        </DropdownManuSelectedItem>
-        <DropdownManuSelectedItem
+        </DropdownMenuSelectedItem>
+        <DropdownMenuSelectedItem
           onClick={() => handleClick(2)}
           selected={speed === 2}
           icon={<Rabbit />}
         >
           <Typography>2</Typography>
-        </DropdownManuSelectedItem>
+        </DropdownMenuSelectedItem>
       </DropdownMenuGroup>
     </>
   );
@@ -322,7 +345,7 @@ const ResolutionsSettings: React.FC<{
       <DropdownMenuGroup>
         {resolutions.length > 0 ? (
           resolutions.map((resolution, index) => (
-            <DropdownManuSelectedItem
+            <DropdownMenuSelectedItem
               key={index}
               onClick={() => {
                 setSelectedResolution(resolution.resolution);
@@ -338,7 +361,7 @@ const ResolutionsSettings: React.FC<{
               }
             >
               {resolution.resolution}
-            </DropdownManuSelectedItem>
+            </DropdownMenuSelectedItem>
           ))
         ) : (
           <Typography variant="muted" className="p-2">
@@ -368,9 +391,21 @@ const SubtitlesSettings: React.FC<{
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
+        {subtitles.length > 0 && (
+          <DropdownMenuSelectedItem
+            onClick={() => {
+              setSelectedSubtitlesLanguage(null);
+              closePopup();
+            }}
+            selected={selectedSubtitlesLanguage === null}
+            icon={null}
+          >
+            {t("movie.playerSettings.noSelectedSubtitles")}
+          </DropdownMenuSelectedItem>
+        )}
         {subtitles.length > 0 ? (
           subtitles.map((subtitle, index) => (
-            <DropdownManuSelectedItem
+            <DropdownMenuSelectedItem
               key={index}
               onClick={() => {
                 setSelectedSubtitlesLanguage(subtitle.language);
@@ -386,7 +421,7 @@ const SubtitlesSettings: React.FC<{
               }
             >
               {subtitle.language}
-            </DropdownManuSelectedItem>
+            </DropdownMenuSelectedItem>
           ))
         ) : (
           <Typography variant="muted" className="p-2">
@@ -418,6 +453,7 @@ const SettingsButton: React.FC<
   const goGlobal = () => {
     setType("global");
   };
+  const { containerRef } = useVideoPlayer();
 
   return (
     <DropdownMenu
@@ -437,7 +473,11 @@ const SettingsButton: React.FC<
           <Settings size={20} color="white" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent side={side} align="end">
+      <DropdownMenuContent
+        side={side}
+        align="end"
+        container={containerRef.current ?? undefined}
+      >
         {(() => {
           switch (type) {
             case "global":
@@ -596,7 +636,7 @@ const VideoPlayer = () => {
     >
       <video
         ref={videoRef}
-        className="size-full"
+        className="size-full relative"
         onTimeUpdate={handleProgress}
         controls={false}
       >

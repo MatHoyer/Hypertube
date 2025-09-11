@@ -42,7 +42,7 @@ export const useMouse = (
       container.removeEventListener("mouseenter", handleMouseEnter);
       container.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [containerRef]);
+  }, [containerRef.current]);
 
   return {
     mouseMoving,

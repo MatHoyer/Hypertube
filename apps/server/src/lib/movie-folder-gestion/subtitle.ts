@@ -3,7 +3,7 @@ import * as fs from "fs";
 import { getMovieFolderPath } from "./movie";
 
 const subtitleFolderName = "subtitles";
-const subtitleFilename = "subtitles.zip";
+const subtitleFilename = "subtitles.vtt";
 
 export const getSubtitlePath = (
   movieId: TMovieSchema["id"],
