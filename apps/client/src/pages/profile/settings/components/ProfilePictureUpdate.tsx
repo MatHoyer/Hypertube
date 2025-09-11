@@ -15,10 +15,20 @@ export const ProfilePictureUpdate = () => {
   const user = useRequiredUser();
   const { t } = useTranslation();
 
-  const updatePicture = async (newPicture: string) => {
+  const deleteProfilePicture = async () => {
+    await fetch(
+      getUrl("api-image-delete", {
+        imageId: user.image ?? "",
+      })
+    );
+  };
+
+  const updateProfilePicture = async (imageId: string) => {
+    await deleteProfilePicture();
+    void imageId;
     await authClient.updateUser(
       {
-        image: newPicture,
+        image: imageId,
       },
       {
         onSuccess: () => {
@@ -31,45 +41,52 @@ export const ProfilePictureUpdate = () => {
     );
   };
 
-  const changeImage = async (element: ChangeEvent<HTMLInputElement>) => {
+  const uploadProfilePicture = async (
+    element: ChangeEvent<HTMLInputElement>
+  ) => {
     const file = element.currentTarget.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    const res = await axiosFetch({
-      method: "PUT",
-      url: getUrl("api-users-upload-picture"),
-      schemas: {
-        response: z.object({
-          data: z.string().optional(),
-          error: z.string().optional(),
-        }),
-      },
-      data: formData,
-      config: { headers: { "Content-Type": "multipart/form-data" } },
-    });
-
-    if (res.data) updatePicture(res.data);
+      const res = await axiosFetch({
+        method: "POST",
+        url: getUrl("api-image-upload"),
+        schemas: {
+          response: z.object({
+            data: z.string().optional(),
+            error: z.string().optional(),
+          }),
+        },
+        data: formData,
+        config: { headers: { "Content-Type": "multipart/form-data" } },
+      });
+      if (res.data) updateProfilePicture(res.data);
+      else throw new Error(res.error);
+    } catch {
+      toast.error(t("settings.updatePictureFailed"));
+    }
   };
 
   return (
     <>
-      <Input type="file" onChange={(element) => changeImage(element)} />
+      <Input
+        type="file"
+        onChange={(element) => uploadProfilePicture(element)}
+      />
       <ImageAvatar
-        imageSrc={getUrl("api-users-get-picture", {
-          pictureName: user.image ?? "",
+        imageSrc={getUrl("api-image-get", {
+          imageId: user.image ?? "",
         })}
         name={user.name}
-        size="lg"
       />
       <Button
         disabled={!user.image}
         type="button"
         onClick={async () => {
-          await updatePicture("");
-          // DELETE FILE IN THE SERVER
+          await updateProfilePicture(".");
         }}
       >
         {t("settings.deletePicture")}

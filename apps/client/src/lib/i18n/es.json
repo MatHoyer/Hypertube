@@ -88,7 +88,8 @@
     "updateEmailMessage": "",
     "newPassword": "",
     "updatePasswordMessage": "",
-    "deletePicture": ""
+    "deletePicture": "",
+    "updatePictureFailed": ""
   },
   "movie": {
     "loadingRessource": "de la película",

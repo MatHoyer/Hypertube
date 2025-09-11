@@ -1,4 +1,5 @@
 import { getUrl } from "@hypertube/libs";
+import { imageSwagger } from "../image/image.swagger";
 import { scrapperSwagger } from "../scrappers/scrapper.swagger";
 
 const openApiDoc = {
@@ -36,6 +37,7 @@ const openApiDoc = {
       },
     },
 
+    ...imageSwagger,
     ...scrapperSwagger,
   },
 };

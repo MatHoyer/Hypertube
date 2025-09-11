@@ -18,5 +18,5 @@ dist/
 !**/downloads/00000000-0000-0000-0000-000000000000/**
 
 # Profile pictures
-**/profile-pictures/*
-!**/profile-pictures/.gitkeep
+**/images/*
+!**/images/.gitkeep

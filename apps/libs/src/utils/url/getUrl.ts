@@ -23,10 +23,13 @@ export type TApiRouteDataRequirements = {
   "api-health": undefined;
   "api-auth": undefined;
 
-  // Users routes
-  "api-users-upload-picture": undefined;
-  "api-users-get-picture": {
-    pictureName: string;
+  // Image routes
+  "api-image-upload": undefined;
+  "api-image-get": {
+    imageId: string;
+  };
+  "api-image-delete": {
+    imageId: string;
   };
 
   // Scrappers routes
@@ -103,10 +106,10 @@ const routes: {
   "api-health": () => "/api/health",
   "api-auth": () => "/api/auth",
 
-  // API users
-  "api-users-upload-picture": () => "/api/users/upload-picture",
-  "api-users-get-picture": ({ pictureName }) =>
-    `/api/users/get-picture/${pictureName}`,
+  // API image
+  "api-image-upload": () => "/api/image/upload",
+  "api-image-get": ({ imageId }) => `/api/image/get/${imageId}`,
+  "api-image-delete": ({ imageId }) => `/api/image/delete/${imageId}`,
 
   // API scrappers routes
   "api-filters": ({ scrapper }) => `/api/scrappers/${scrapper}/filters`,
