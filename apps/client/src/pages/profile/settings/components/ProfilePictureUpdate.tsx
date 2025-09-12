@@ -6,7 +6,7 @@ import { authClient } from "@/lib/auth-client";
 import { betterAuthTranslation } from "@/lib/better-auth/constants";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getUrl } from "@hypertube/libs";
-import type { ChangeEvent } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import z from "zod";
@@ -15,66 +15,72 @@ export const ProfilePictureUpdate = () => {
   const user = useRequiredUser();
   const { t } = useTranslation();
 
-  const deleteProfilePicture = async () => {
-    await fetch(
-      getUrl("api-image-delete", {
-        imageId: user.image ?? "",
-      })
-    );
-  };
+  const updateMutation = useMutation({
+    mutationFn: async (file: File | undefined) => {
+      if (!file) return;
 
-  const updateProfilePicture = async (imageId: string) => {
-    await deleteProfilePicture();
-    void imageId;
-    await authClient.updateUser(
-      {
-        image: imageId,
-      },
-      {
-        onSuccess: () => {
-          toast.success(t("settings.updateInfoMessage"));
-        },
-        onError: (ctx) => {
-          toast.error(betterAuthTranslation(t, ctx.error.code));
-        },
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        const res = await axiosFetch({
+          method: "POST",
+          url: getUrl("api-image-upload"),
+          schemas: {
+            response: z.object({
+              data: z.string().optional(),
+              error: z.string().optional(),
+            }),
+          },
+          data: formData,
+          config: { headers: { "Content-Type": "multipart/form-data" } },
+        });
+
+        if (res.error) throw new Error();
+
+        await authClient.updateUser(
+          { image: res.data },
+          {
+            onSuccess: () => {
+              toast.success(t("settings.updateInfoMessage"));
+            },
+            onError: (ctx) => {
+              toast.error(betterAuthTranslation(t, ctx.error.code));
+            },
+          }
+        );
+      } catch {
+        toast.error(t("settings.updatePictureFailed"));
       }
-    );
-  };
+    },
+    onError: (e) => {
+      console.log("errerur ; ", e);
+    },
+  });
 
-  const uploadProfilePicture = async (
-    element: ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = element.currentTarget.files?.[0];
-    if (!file) return;
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await axiosFetch({
-        method: "POST",
-        url: getUrl("api-image-upload"),
+  const deleteMutation = useMutation({
+    mutationFn: async () =>
+      await axiosFetch({
+        method: "DELETE",
+        url: getUrl("api-image-delete", {
+          imageId: user.image ?? "",
+        }),
         schemas: {
           response: z.object({
             data: z.string().optional(),
             error: z.string().optional(),
           }),
         },
-        data: formData,
-        config: { headers: { "Content-Type": "multipart/form-data" } },
-      });
-      if (res.data) updateProfilePicture(res.data);
-      else throw new Error(res.error);
-    } catch {
-      toast.error(t("settings.updatePictureFailed"));
-    }
-  };
+      }),
+  });
 
   return (
     <>
       <Input
         type="file"
-        onChange={(element) => uploadProfilePicture(element)}
+        onChange={(element) => {
+          updateMutation.mutate(element.currentTarget.files?.[0]);
+        }}
       />
       <ImageAvatar
         imageSrc={getUrl("api-image-get", {
@@ -85,8 +91,9 @@ export const ProfilePictureUpdate = () => {
       <Button
         disabled={!user.image}
         type="button"
-        onClick={async () => {
-          await updateProfilePicture(".");
+        onClick={() => {
+          deleteMutation.mutate();
+          window.location.reload();
         }}
       >
         {t("settings.deletePicture")}

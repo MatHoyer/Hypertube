@@ -1,5 +1,4 @@
 model Image {
   id            String      @id @default(uuid())
-  path          String
-  updatedAt     DateTime
+  createdAt     DateTime    @default(now())
 }

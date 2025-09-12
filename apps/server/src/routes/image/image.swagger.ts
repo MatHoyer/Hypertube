@@ -58,9 +58,7 @@ export const imageSwagger = {
         },
       },
     },
-  },
-  [getUrl("api-image-delete", { imageId: "{imageId}" })]: {
-    get: {
+    delete: {
       summary: "Delete image",
       tags: ["Image"],
       parameters: [imagePathParam],

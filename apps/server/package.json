@@ -26,6 +26,7 @@
     "node-cron": "^4.2.1",
     "puppeteer": "^24.16.0",
     "resend": "^4.7.0",
+    "sharp": "^0.34.3",
     "transmission-promise": "^1.1.7",
     "uuid": "^11.1.0"
   },

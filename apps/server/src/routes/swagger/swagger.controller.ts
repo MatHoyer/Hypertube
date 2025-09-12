@@ -16,6 +16,10 @@ const openApiDoc = {
       description: "Health check endpoints",
     },
     {
+      name: "Image",
+      description: "Image endpoints",
+    },
+    {
       name: "Scrappers",
       description: "Movie scrapper endpoints",
     },

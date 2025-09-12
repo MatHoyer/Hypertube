@@ -107,9 +107,9 @@ const routes: {
   "api-auth": () => "/api/auth",
 
   // API image
-  "api-image-upload": () => "/api/image/upload",
-  "api-image-get": ({ imageId }) => `/api/image/get/${imageId}`,
-  "api-image-delete": ({ imageId }) => `/api/image/delete/${imageId}`,
+  "api-image-upload": () => "/api/image",
+  "api-image-get": ({ imageId }) => `/api/image/${imageId}`,
+  "api-image-delete": ({ imageId }) => `/api/image/${imageId}`,
 
   // API scrappers routes
   "api-filters": ({ scrapper }) => `/api/scrappers/${scrapper}/filters`,
