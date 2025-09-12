@@ -22,13 +22,7 @@ export type TApiRouteDataRequirements = {
 
   "api-health": undefined;
   "api-auth": undefined;
-
-  // Image routes
-  "api-image-upload": undefined;
-  "api-image-get": {
-    imageId: string;
-  };
-  "api-image-delete": {
+  "api-image": {
     imageId: string;
   };
 
@@ -105,11 +99,7 @@ const routes: {
   "api-swagger": ({ mode }) => (mode ? `/api/swagger/${mode}` : "/api/swagger"),
   "api-health": () => "/api/health",
   "api-auth": () => "/api/auth",
-
-  // API image
-  "api-image-upload": () => "/api/image",
-  "api-image-get": ({ imageId }) => `/api/image/${imageId}`,
-  "api-image-delete": ({ imageId }) => `/api/image/${imageId}`,
+  "api-image": ({ imageId }) => "/api/image" + (imageId ? `/${imageId}` : ""),
 
   // API scrappers routes
   "api-filters": ({ scrapper }) => `/api/scrappers/${scrapper}/filters`,

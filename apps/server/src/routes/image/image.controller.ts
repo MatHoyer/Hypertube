@@ -53,7 +53,7 @@ export const uploadImage = async (c: Context<TIsLogged>) => {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const webpBuffer = await sharp(buffer).webp({ quality: 80 }).toBuffer();
+    const webpBuffer = await sharp(buffer).webp().toBuffer();
 
     const image = await prisma.image.create({ data: {} });
 

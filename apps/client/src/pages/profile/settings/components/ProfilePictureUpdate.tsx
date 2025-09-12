@@ -25,7 +25,7 @@ export const ProfilePictureUpdate = () => {
 
         const res = await axiosFetch({
           method: "POST",
-          url: getUrl("api-image-upload"),
+          url: getUrl("api-image"),
           schemas: {
             response: z.object({
               data: z.string().optional(),
@@ -53,16 +53,13 @@ export const ProfilePictureUpdate = () => {
         toast.error(t("settings.updatePictureFailed"));
       }
     },
-    onError: (e) => {
-      console.log("errerur ; ", e);
-    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async () =>
       await axiosFetch({
         method: "DELETE",
-        url: getUrl("api-image-delete", {
+        url: getUrl("api-image", {
           imageId: user.image ?? "",
         }),
         schemas: {
@@ -78,12 +75,12 @@ export const ProfilePictureUpdate = () => {
     <>
       <Input
         type="file"
-        onChange={(element) => {
-          updateMutation.mutate(element.currentTarget.files?.[0]);
+        onChange={(event) => {
+          updateMutation.mutate(event.currentTarget.files?.[0]);
         }}
       />
       <ImageAvatar
-        imageSrc={getUrl("api-image-get", {
+        imageSrc={getUrl("api-image", {
           imageId: user.image ?? "",
         })}
         name={user.name}
