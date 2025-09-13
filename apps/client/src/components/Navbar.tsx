@@ -1,5 +1,6 @@
 import { authClient } from "@/lib/auth-client";
 import { getUrl } from "@hypertube/libs";
+import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
@@ -17,13 +18,17 @@ export const Navbar = () => {
           <img
             src="/images/Hypertube_logo.png"
             alt="Hypertube Logo"
-            width={64}
-            height={64}
+            className="w-10 h-10 md:w-16 md:h-16"
           />
         </Link>
       </div>
-      <div className="flex-1">
+      <div className="hidden md:flex flex-1">
         <Input placeholder={t("navbar.placeholder")} />
+      </div>
+      <div className="block md:hidden">
+        <Button variant="ghost" size="icon">
+          <Search />
+        </Button>
       </div>
       <div className="flex flex-1 justify-end">
         {session.data?.user && <UserDropdown />}
