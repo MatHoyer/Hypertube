@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import z from "zod";
 
 export const ProfilePictureUpdate = () => {
+  const session = authClient.useSession();
   const user = useRequiredUser();
   const { t } = useTranslation();
 
@@ -69,6 +70,9 @@ export const ProfilePictureUpdate = () => {
           }),
         },
       }),
+    onSuccess: () => {
+      session.refetch();
+    },
   });
 
   return (
@@ -90,7 +94,6 @@ export const ProfilePictureUpdate = () => {
         type="button"
         onClick={() => {
           deleteMutation.mutate();
-          window.location.reload();
         }}
       >
         {t("settings.deletePicture")}

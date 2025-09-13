@@ -104,5 +104,5 @@ export const deleteImage = async (
 
   if (res) return c.json({ error: res.error }, 404);
 
-  return c.json("OK", 200);
+  return c.json({ data: "OK" }, 200);
 };
