@@ -13,7 +13,7 @@ services:
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
-    command: bash -c "pnpm lint && pnpm --filter server prisma:migrate:reset && pnpm --filter server prisma:migrate && pnpm --filter server prisma:seed && pnpm build && pnpm start"
+    command: bash -c "pnpm lint && pnpm --filter server prisma:migrate:reset && pnpm --filter server prisma:migrate && pnpm --filter server prisma:seed && pnpm build:web && pnpm start:web"
     # volumes:
     #   - ./:/app
     #   - /app/node_modules

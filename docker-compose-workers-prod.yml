@@ -1,0 +1,18 @@
+services:
+  scrapper:
+    container_name: hypertube-scrapper-prod
+    build:
+      context: .
+      dockerfile: ./apps/scrapper/Dockerfile.prod
+    env_file: .env
+    networks:
+      - hypertube-network
+
+  downloader:
+    container_name: hypertube-downloader-prod
+    build:
+      context: .
+      dockerfile: ./apps/downloader/Dockerfile.prod
+    env_file: .env
+    networks:
+      - hypertube-network

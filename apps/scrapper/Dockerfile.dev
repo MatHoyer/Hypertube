@@ -1,7 +1,7 @@
 FROM node:22
 
 # Enable pnpm via corepack
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@latest --activate --yes
 
 RUN apt-get update && apt-get install -y \
     chromium \
@@ -24,14 +24,10 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /hypertube
 
-# Copy root files
+# Copy root package files
 COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY .env ./
-COPY eslint.config.js ./
 
-COPY apps/libs ./apps/libs
-COPY apps/server ./apps/server
-COPY apps/client ./apps/client
-
-RUN pnpm i --frozen-lockfile
+# Copy individual package.json files
+COPY apps/scrapper/package.json ./apps/scrapper/package.json

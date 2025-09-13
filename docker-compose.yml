@@ -45,8 +45,20 @@ services:
     networks:
       - hypertube-network
 
+  redis:
+    image: redis:7
+    container_name: redis
+    env_file: .env
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redis_data:/data
+    networks:
+      - hypertube-network
+
 volumes:
   hypertube_data:
+  redis_data:
 
 networks:
   hypertube-network:

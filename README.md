@@ -23,7 +23,7 @@ cp .env.example .env
 docker network create hypertube-network
 ```
 
-### 3. Start the databases
+### 3. Start the infra
 
 ```bash
 docker compose up
@@ -54,10 +54,18 @@ pnpm dev
 ### 🔹 Option 2 — Dev with Docker (only for 42)
 
 ```bash
+docker compose -f docker-compose-workers-dev.yml up
+```
+
+```bash
 docker compose -f docker-compose-dev.yml up
 ```
 
 ### 🔹 Option 3 — Prod with Docker (no hot reload)
+
+```bash
+docker compose -f docker-compose-workers-prod.yml up
+```
 
 ```bash
 docker compose -f docker-compose-prod.yml up

@@ -64,6 +64,9 @@ jobs:
           TRANSMISSION_HOST=${{ secrets.TRANSMISSION_HOST }}
           TRANSMISSION_RCP_PORT=${{ secrets.TRANSMISSION_RCP_PORT }}
           TRANSMISSION_TORRENT_PORT=${{ secrets.TRANSMISSION_TORRENT_PORT }}
+
+          REDIS_HOST=${{ secrets.REDIS_HOST }}
+          REDIS_PORT=${{ secrets.REDIS_PORT }}
           EOF
 
       - name: Create Docker network

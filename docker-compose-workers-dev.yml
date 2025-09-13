@@ -1,0 +1,18 @@
+services:
+  scrapper:
+    container_name: hypertube-scrapper-dev
+    build:
+      context: .
+      dockerfile: ./apps/scrapper/Dockerfile.dev
+    env_file: .env
+    networks:
+      - hypertube-network
+
+  downloader:
+    container_name: hypertube-downloader-dev
+    build:
+      context: .
+      dockerfile: ./apps/downloader/Dockerfile.dev
+    env_file: .env
+    networks:
+      - hypertube-network

@@ -6,7 +6,7 @@ export { getServerUrl } from "./utils/url/getServerUrl.js";
 export { getUrl } from "./utils/url/getUrl.js";
 export type {
   TApiRouteDataRequirements,
-  TClientRouteDataRequirements,
+  TClientRouteDataRequirements
 } from "./utils/url/getUrl.js";
 export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 
@@ -20,7 +20,7 @@ export {
   getYtsPaginationSchemas,
   getYtsStreamingResolutionSchemas,
   getYtsStreamingSubtitlesSchemas,
-  ytsScrapperSearchParamsSchemas,
+  ytsScrapperSearchParamsSchemas
 } from "./schemas/api/yts.schema.js";
 export type {
   TGetYtsDownloadResolutionSchemas,
@@ -31,7 +31,7 @@ export type {
   TGetYtsPaginationSchemas,
   TGetYtsStreamingResolutionSchemas,
   TGetYtsStreamingSubtitlesSchemas,
-  TYtsScrapperSearchParamsSchemas,
+  TYtsScrapperSearchParamsSchemas
 } from "./schemas/api/yts.schema.js";
 
 // Database Schemas export
@@ -42,7 +42,7 @@ export {
   movieWithResolutionsSchema,
   movieWithSubtitlesSchema,
   resolutionSchema,
-  subtitleSchema,
+  subtitleSchema
 } from "./schemas/database/movie.schema.js";
 export type {
   TMovieActorSchema,
@@ -51,7 +51,7 @@ export type {
   TMovieWithResolutionsSchema,
   TMovieWithSubtitlesSchema,
   TResolutionSchema,
-  TSubtitleSchema,
+  TSubtitleSchema
 } from "./schemas/database/movie.schema.js";
 
 // Const export
@@ -59,8 +59,15 @@ export {
   ytsApiSortBy,
   ytsGenres,
   ytsQualities,
-  ytsScrapperSortBy,
+  ytsScrapperSortBy
 } from "./const/yts.const.js";
 
-// Global const export
+export {
+  DOWNLOADER_QUEUE, SCRAPPER_QUEUE
+} from "./const/workers.js";
+export type {
+  TDownloaderJobData,
+  TScrapperJobData
+} from "./const/workers.js";
+
 export { DownloadStates, languageCodes } from "./const/global.const.js";
