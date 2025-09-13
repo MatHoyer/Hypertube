@@ -18,21 +18,18 @@ export const Navbar = () => {
           <img
             src="/images/Hypertube_logo.png"
             alt="Hypertube Logo"
-            className="w-10 h-10 md:w-16 md:h-16"
+            className="size-10 md:size-16"
           />
         </Link>
       </div>
-      <div className="hidden md:flex flex-1">
+      <div className="flex flex-[2] md:flex-1 items-center gap-2">
+        <Search />
         <Input placeholder={t("navbar.placeholder")} />
       </div>
-      <div className="block md:hidden">
-        <Button variant="ghost" size="icon">
-          <Search />
-        </Button>
-      </div>
       <div className="flex flex-1 justify-end">
-        {session.data?.user && <UserDropdown />}
-        {!session.data?.user && (
+        {session.data?.user ? (
+          <UserDropdown />
+        ) : (
           <Button asChild>
             <Link to={getUrl("client-signin")}>{t("sign.in")}</Link>
           </Button>
