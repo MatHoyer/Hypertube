@@ -64,10 +64,10 @@ export {
 
 export {
   DOWNLOADER_QUEUE, SCRAPPER_QUEUE
-} from "./const/workers.js";
+} from "./const/workers.const.js";
 export type {
   TDownloaderJobData,
   TScrapperJobData
-} from "./const/workers.js";
+} from "./const/workers.const.js";
 
 export { DownloadStates, languageCodes } from "./const/global.const.js";

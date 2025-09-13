@@ -1,7 +1,7 @@
 FROM node:22
 
 # Enable pnpm via corepack
-RUN corepack enable && corepack prepare pnpm@latest --activate --yes
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /hypertube
 
@@ -9,8 +9,8 @@ WORKDIR /hypertube
 COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY .env ./
-COPY eslint.config.js ./
 
 COPY apps/downloader ./apps/downloader
+COPY apps/libs ./apps/libs
 
 RUN pnpm i --frozen-lockfile

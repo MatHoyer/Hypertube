@@ -184,6 +184,9 @@ importers:
       '@hypertube/libs':
         specifier: workspace:*
         version: link:../libs
+      ioredis:
+        specifier: ^5.7.0
+        version: 5.7.0
     devDependencies:
       '@types/node':
         specifier: ^20.11.17
@@ -203,6 +206,9 @@ importers:
       '@hypertube/libs':
         specifier: workspace:*
         version: link:../libs
+      ioredis:
+        specifier: ^5.7.0
+        version: 5.7.0
     devDependencies:
       '@types/node':
         specifier: ^20.11.17

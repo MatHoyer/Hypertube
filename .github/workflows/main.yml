@@ -95,6 +95,9 @@ jobs:
           kill $LOGS_PID
           exit 1
 
+      - name: Start Workers containers (docker-compose-workers-prod.yml)
+        run: docker compose -f docker-compose-workers-prod.yml up -d
+
       - name: Start App containers (docker-compose-prod.yml)
         run: docker compose -f docker-compose-prod.yml up -d
 

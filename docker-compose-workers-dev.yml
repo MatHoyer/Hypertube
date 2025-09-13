@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: ./apps/scrapper/Dockerfile.dev
     env_file: .env
+    command: bash -c "umask 000 && pnpm i --frozen-lockfile && chmod 777 -R /hypertube/apps/scrapper/node_modules && pnpm dev:workers:scrapper"
     networks:
       - hypertube-network
 
@@ -14,5 +15,10 @@ services:
       context: .
       dockerfile: ./apps/downloader/Dockerfile.dev
     env_file: .env
+    command: bash -c "umask 000 && pnpm i --frozen-lockfile && chmod 777 -R /hypertube/apps/downloader/node_modules && pnpm dev:workers:downloader"
     networks:
       - hypertube-network
+
+networks:
+  hypertube-network:
+    external: true

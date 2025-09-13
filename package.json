@@ -7,12 +7,20 @@
   "scripts": {
     "clear": "rm -rf node_modules && pnpm -r clear",
     "dev": "pnpm -r --parallel dev",
-    "dev:workers": "pnpm --filter downloader --filter scrapper --parallel dev",
+    "build": "pnpm -r --parallel build",
+
     "dev:web": "pnpm --filter lib --filter server --filter client --parallel dev",
     "build:web": "pnpm --filter libs --filter server --filter client build",
     "start:web": "pnpm --filter server start",
-    "build:workers": "pnpm --filter libs --filter downloader --filter scrapper build",
-    "start:workers": "pnpm --filter downloader --filter scrapper --parallel start",
+
+    "dev:workers:scrapper": "pnpm --filter scrapper dev",
+    "build:workers:scrapper": "pnpm --filter libs --filter scrapper build",
+    "start:workers:scrapper": "pnpm --filter scrapper start",
+
+    "dev:workers:downloader": "pnpm --filter downloader dev",
+    "build:workers:downloader": "pnpm --filter libs --filter downloader build",
+    "start:workers:downloader": "pnpm --filter downloader start",
+    
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

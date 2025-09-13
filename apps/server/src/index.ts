@@ -42,12 +42,6 @@ app.get("/", async (c) => {
   });
 });
 
-app.get("/api/test", (c) => {
-  return c.json({
-    message: "Hello World",
-  });
-});
-
 app.route("/api/swagger", swaggerRouter);
 
 app.get(getUrl("api-health"), (c) => c.text("OK"));

@@ -5,6 +5,9 @@ services:
       context: .
       dockerfile: ./apps/scrapper/Dockerfile.prod
     env_file: .env
+    environment:
+      - REDIS_HOST=redis
+    command: bash -c "pnpm build:workers:scrapper && pnpm start:workers:scrapper"
     networks:
       - hypertube-network
 
@@ -14,5 +17,12 @@ services:
       context: .
       dockerfile: ./apps/downloader/Dockerfile.prod
     env_file: .env
+    environment:
+      - REDIS_HOST=redis
+    command: bash -c "pnpm build:workers:downloader && pnpm start:workers:downloader"
     networks:
       - hypertube-network
+
+networks:
+  hypertube-network:
+    external: true
