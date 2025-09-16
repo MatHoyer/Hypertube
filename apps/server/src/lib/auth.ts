@@ -67,7 +67,7 @@ export const auth = betterAuth({
           break;
         case "/update-user":
           if (ctx.body.image) {
-            console.log(ctx.body.image);
+            console.log("server side : *", ctx.body.image, "*");
           } else if (ctx.body.firstName && ctx.body.lastName)
             return {
               context: {

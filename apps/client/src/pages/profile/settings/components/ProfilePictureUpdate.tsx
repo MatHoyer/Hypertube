@@ -1,19 +1,21 @@
 import { ImageAvatar } from "@/components/images/Avatar";
+import { LoadingPage } from "@/components/LoadingPage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRequiredUser } from "@/hooks/use-required-user";
 import { authClient } from "@/lib/auth-client";
 import { betterAuthTranslation } from "@/lib/better-auth/constants";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { NotFoundPage } from "@/pages/notFound/NotFound.page";
 import { getUrl } from "@hypertube/libs";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import z from "zod";
 
 export const ProfilePictureUpdate = () => {
-  const session = authClient.useSession();
-  const user = useRequiredUser();
+  const { user, isLoading, isError } = useRequiredUser();
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
 
   const updateMutation = useMutation({
@@ -37,7 +39,7 @@ export const ProfilePictureUpdate = () => {
           config: { headers: { "Content-Type": "multipart/form-data" } },
         });
 
-        if (res.error) throw new Error();
+        if (res.error || !res.data) throw new Error();
 
         await authClient.updateUser(
           { image: res.data },
@@ -54,6 +56,9 @@ export const ProfilePictureUpdate = () => {
         toast.error(t("settings.updatePictureFailed"));
       }
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
   });
 
   const deleteMutation = useMutation({
@@ -61,7 +66,7 @@ export const ProfilePictureUpdate = () => {
       await axiosFetch({
         method: "DELETE",
         url: getUrl("api-image", {
-          imageId: user.image ?? "",
+          imageId: user!.image ?? "",
         }),
         schemas: {
           response: z.object({
@@ -71,9 +76,12 @@ export const ProfilePictureUpdate = () => {
         },
       }),
     onSuccess: () => {
-      session.refetch();
+      queryClient.invalidateQueries({ queryKey: ["user"] });
     },
   });
+
+  if (isLoading) return <LoadingPage resource="global" />;
+  if (isError || !user) return <NotFoundPage />;
 
   return (
     <>

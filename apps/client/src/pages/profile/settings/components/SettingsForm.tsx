@@ -1,19 +1,18 @@
+import { LoadingPage } from "@/components/LoadingPage";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRequiredUser } from "@/hooks/use-required-user";
 import { authClient } from "@/lib/auth-client";
 import { betterAuthTranslation } from "@/lib/better-auth/constants";
+import { NotFoundPage } from "@/pages/notFound/NotFound.page";
 import { useMutation } from "@tanstack/react-query";
 import { useRef, useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
-  const user = useRequiredUser();
-  const [names, setNames] = useState({
-    first: user.firstName,
-    last: user.lastName,
-  });
+  const { user, isLoading, isError } = useRequiredUser();
+  const [names, setNames] = useState({ first: "", last: "" });
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
   const { t } = useTranslation();
@@ -52,6 +51,11 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
       );
     },
   });
+
+  if (isLoading) return <LoadingPage resource="global" />;
+  if (isError || !user) return <NotFoundPage />;
+
+  setNames({ first: user.firstName, last: user.lastName });
 
   return (
     <div {...props}>
