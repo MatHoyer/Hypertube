@@ -6,7 +6,6 @@ import { useRequiredUser } from "@/hooks/use-required-user";
 import { authClient } from "@/lib/auth-client";
 import { betterAuthTranslation } from "@/lib/better-auth/constants";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
-import { NotFoundPage } from "@/pages/notFound/NotFound.page";
 import { getUrl } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -81,7 +80,7 @@ export const ProfilePictureUpdate = () => {
   });
 
   if (isLoading) return <LoadingPage resource="global" />;
-  if (isError || !user) return <NotFoundPage />;
+  if (isError || !user) return <></>;
 
   return (
     <>

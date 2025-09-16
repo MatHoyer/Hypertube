@@ -47,6 +47,10 @@ export const betterAuthTranslation = (
   code: (typeof keyErrorCodes)[number]
 ): string => {
   try {
+    if (!errorCodes.includes(`better-auth-error.${code}`)) {
+      console.log("better-auth error code : ", code);
+      return t("global.unexpected-error");
+    }
     return t(`better-auth-error.${code}` as (typeof errorCodes)[number]);
   } catch {
     return t("global.unexpected-error");

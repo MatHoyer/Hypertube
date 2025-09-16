@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { auth } from "../../lib/auth";
 import { cors } from "hono/cors";
 import { env } from "../../env";
+import { auth } from "../../lib/auth";
 
 const authRouter = new Hono();
 
