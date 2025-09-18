@@ -72,18 +72,7 @@ const App = () => {
   console.log(session?.data?.user);
 
   return (
-    <div className="h-dvh w-dvw flex justify-center items-center bg-background">
-      <Button
-        onClick={() => {
-          navigate(
-            getUrl("client-movie", {
-              movieId: "00000000-0000-0000-0000-000000000000",
-            })
-          );
-        }}
-      >
-        Demo movie
-      </Button>
+    <div className="h-dvh w-dvw bg-background">
       <Routes>
         {/* Public routes */}
         <Route element={<PublicRoute />}>
@@ -96,6 +85,24 @@ const App = () => {
           <Route
             path={getUrl("client-reset-password")}
             element={<ResetPasswordPage />}
+          />
+          <Route
+            path="/demo"
+            element={
+              <div className="p-4">
+                <Button
+                  onClick={() => {
+                    navigate(
+                      getUrl("client-movie", {
+                        movieId: "00000000-0000-0000-0000-000000000000",
+                      })
+                    );
+                  }}
+                >
+                  Demo movie
+                </Button>
+              </div>
+            }
           />
         </Route>
 
