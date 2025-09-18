@@ -8,7 +8,7 @@ import { ResetPasswordPage } from "./pages/auth/resetPassword/ResetPasswordPage"
 import { HomePage } from "./pages/home/home.page";
 import MoviePage, { MoviePageParamsSchema } from "./pages/movie/movie.page";
 import { PlaygroundPage } from "./pages/playground/playground.page";
-import { BaseLayoutRoute } from "./routes/BaseLayout";
+import { BaseLayoutRoute } from "./routes/BaseLayoutRoute";
 import { PrivateOnlyRoute } from "./routes/PrivateOnlyRoute";
 import { ProtectedUrlRoute } from "./routes/ProtectedUrlRoute";
 import { PublicOnlyRoute } from "./routes/PublicOnlyRoute";

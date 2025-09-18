@@ -1,5 +1,6 @@
 import { LoadingPage } from "@/components/LoadingPage";
 import { authClient } from "@/lib/auth-client";
+import { getUrl } from "@hypertube/libs";
 import { Navigate, Outlet } from "react-router-dom";
 
 export const PublicOnlyRoute = () => {
@@ -8,7 +9,7 @@ export const PublicOnlyRoute = () => {
 
   if (session.isPending) return <LoadingPage resource="global" />;
 
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) return <Navigate to={getUrl("client-home")} replace />;
 
   return <Outlet />;
 };

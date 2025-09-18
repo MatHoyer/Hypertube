@@ -49,7 +49,13 @@ export const UserDropdown = () => {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          onClick={() => navigate(getUrl("api-swagger", { mode: "ui" }))}
+          onClick={() =>
+            // Do not use navigate because we need to reload the page to see the swagger UI
+            (document.location.href = getUrl("api-swagger", {
+              mode: "ui",
+              withServerUrl: true,
+            }))
+          }
         >
           <File /> API
         </DropdownMenuItem>
