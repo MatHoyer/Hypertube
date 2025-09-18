@@ -42,7 +42,7 @@ app.get("/", async (c) => {
   });
 });
 
-app.route("/api/swagger", swaggerRouter);
+app.route(getUrl("api-swagger"), swaggerRouter);
 
 app.get(getUrl("api-health"), (c) => c.text("OK"));
 

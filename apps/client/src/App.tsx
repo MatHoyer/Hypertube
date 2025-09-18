@@ -72,84 +72,82 @@ const App = () => {
   console.log(session?.data?.user);
 
   return (
-    <div className="h-dvh w-dvw bg-background">
-      <Routes>
-        {/* Public routes */}
-        <Route element={<PublicRoute />}>
-          <Route path={getUrl("client-signin")} element={<SignInPage />} />
-          <Route path={getUrl("client-signup")} element={<SignUpPage />} />
-          <Route
-            path={getUrl("client-forget-password")}
-            element={<ForgetPasswordPage />}
-          />
-          <Route
-            path={getUrl("client-reset-password")}
-            element={<ResetPasswordPage />}
-          />
-          <Route
-            path="/demo"
-            element={
-              <div className="p-4">
-                <Button
-                  onClick={() => {
-                    navigate(
-                      getUrl("client-movie", {
-                        movieId: "00000000-0000-0000-0000-000000000000",
-                      })
-                    );
-                  }}
-                >
-                  Demo movie
-                </Button>
-              </div>
-            }
-          />
-        </Route>
+    <Routes>
+      {/* Public routes */}
+      <Route element={<PublicRoute />}>
+        <Route path={getUrl("client-signin")} element={<SignInPage />} />
+        <Route path={getUrl("client-signup")} element={<SignUpPage />} />
+        <Route
+          path={getUrl("client-forget-password")}
+          element={<ForgetPasswordPage />}
+        />
+        <Route
+          path={getUrl("client-reset-password")}
+          element={<ResetPasswordPage />}
+        />
+        <Route
+          path="/demo"
+          element={
+            <div className="p-4">
+              <Button
+                onClick={() => {
+                  navigate(
+                    getUrl("client-movie", {
+                      movieId: "00000000-0000-0000-0000-000000000000",
+                    })
+                  );
+                }}
+              >
+                Demo movie
+              </Button>
+            </div>
+          }
+        />
+      </Route>
 
-        {/* Private routes */}
-        <Route element={<PrivateRoute />}>
-          <Route
-            path="/dashboard"
-            element={
-              <div className="min-h-[50vh]">
-                <h1 className="text-2xl p-4">Dashboard</h1>
-                <div className="min-h-screen">
-                  <p>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Quaerat quos dignissimos doloremque enim necessitatibus
-                    accusamus dolorum aperiam, at tempora vel?
-                  </p>
-                </div>
-                <div className="min-h-screen">
-                  <p>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Quaerat quos dignissimos doloremque enim necessitatibus
-                    accusamus dolorum aperiam, at tempora vel?
-                  </p>
-                </div>
+      {/* Private routes */}
+      <Route element={<PrivateRoute />}>
+        <Route
+          path="/dashboard"
+          element={
+            <div className="h-[1500px]">
+              <h1 className="text-2xl">Dashboard</h1>
+              <div>
+                <p>
+                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                  Quaerat quos dignissimos doloremque enim necessitatibus
+                  accusamus dolorum aperiam, at tempora vel?
+                </p>
               </div>
-            }
-          />
-          <Route path="*" element={<NotFoundPage />} />
-          <Route
-            element={
-              <ProtectedRoute
-                schema={z.object({
-                  movieId: z.uuid(),
-                })}
-              />
-            }
-          >
-            <Route
-              path={getUrl("client-movie", {
-                movieId: ":movieId",
+              <div>
+                <p>
+                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                  Quaerat quos dignissimos doloremque enim necessitatibus
+                  accusamus dolorum aperiam, at tempora vel?
+                </p>
+              </div>
+            </div>
+          }
+        />
+        <Route path="*" element={<NotFoundPage />} />
+        <Route
+          element={
+            <ProtectedRoute
+              schema={z.object({
+                movieId: z.uuid(),
               })}
-              element={<MoviePage />}
             />
-          </Route>
+          }
+        >
+          <Route
+            path={getUrl("client-movie", {
+              movieId: ":movieId",
+            })}
+            element={<MoviePage />}
+          />
         </Route>
-      </Routes>
-    </div>
+      </Route>
+    </Routes>
   );
 };
 

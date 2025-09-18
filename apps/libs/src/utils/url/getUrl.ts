@@ -15,6 +15,10 @@ export type TClientRouteDataRequirements = {
 };
 
 export type TApiRouteDataRequirements = {
+  "api-swagger": {
+    mode?: "doc" | "ui";
+  };
+
   "api-health": undefined;
   "api-auth": undefined;
 
@@ -87,6 +91,7 @@ const routes: {
   "client-movie": ({ movieId }) => `/movie/${movieId}`,
 
   // API routes
+  "api-swagger": ({ mode }) => (mode ? `/api/swagger/${mode}` : "/api/swagger"),
   "api-health": () => "/api/health",
   "api-auth": () => "/api/auth",
 

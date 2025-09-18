@@ -1,16 +1,18 @@
 import { Navbar } from "@/components/Navbar";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="flex flex-col h-dvh">
-      <header className="h-[65px]">
+    <div className="flex flex-col h-dvh w-dvw bg-background overflow-hidden">
+      <header className="h-[65px] w-full">
         <Navbar />
       </header>
-      <ScrollArea>
-        <main className="min-h-[calc(100dvh-65px)]">{children}</main>
+      <ScrollArea className="h-[calc(100dvh-65px)] w-full">
+        <div className="p-4">
+          <main>{children}</main>
+          <footer className="text-center">footer</footer>
+        </div>
       </ScrollArea>
-      <footer className="text-center">footer</footer>
     </div>
   );
 };
