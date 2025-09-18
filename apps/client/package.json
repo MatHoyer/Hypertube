@@ -6,7 +6,7 @@
   "scripts": {
     "clear": "rm -rf node_modules dist",
     "dev": "vite",
-    "build": "tsc -b && vite build && cp -r dist ../server/public",
+    "build": "tsc -b && vite build && mkdir -p ../server/dist/public && cp -r dist/* ../server/dist/public/",
     "preview": "vite preview"
   },
   "dependencies": {
