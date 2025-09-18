@@ -1,7 +1,8 @@
 import { Navbar } from "@/components/Navbar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Outlet } from "react-router-dom";
 
-export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
+const BaseLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex flex-col h-dvh w-dvw bg-background overflow-hidden">
       <header className="h-[65px] w-full">
@@ -14,5 +15,13 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </ScrollArea>
     </div>
+  );
+};
+
+export const BaseLayoutRoute = () => {
+  return (
+    <BaseLayout>
+      <Outlet />
+    </BaseLayout>
   );
 };
