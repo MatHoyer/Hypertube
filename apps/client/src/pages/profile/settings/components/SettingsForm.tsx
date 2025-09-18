@@ -1,4 +1,3 @@
-import { LoadingPage } from "@/components/LoadingPage";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRequiredUser } from "@/hooks/use-required-user";
@@ -10,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
-  const { user, isLoading, isError } = useRequiredUser();
+  const user = useRequiredUser();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -29,7 +28,9 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({
+        queryKey: ["session", { id: user?.id }],
+      });
     },
   });
 
@@ -37,8 +38,8 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
     mutationFn: (names: { firstName?: string; lastName?: string }) => {
       return authClient.updateUser(
         {
-          ...(names.firstName && { firstName: names.firstName }),
-          ...(names.lastName && { lastName: names.lastName }),
+          firstName: names.firstName,
+          lastName: names.lastName,
         },
         {
           onSuccess: () => {
@@ -51,12 +52,13 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({
+        queryKey: ["session", { id: user?.id }],
+      });
     },
   });
 
-  if (isLoading) return <LoadingPage resource="global" />;
-  if (isError || !user) return <></>;
+  if (!user) return;
 
   return (
     <div {...props}>

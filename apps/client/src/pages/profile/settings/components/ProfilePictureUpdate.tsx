@@ -1,5 +1,4 @@
 import { ImageAvatar } from "@/components/images/Avatar";
-import { LoadingPage } from "@/components/LoadingPage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRequiredUser } from "@/hooks/use-required-user";
@@ -13,7 +12,7 @@ import { toast } from "sonner";
 import z from "zod";
 
 export const ProfilePictureUpdate = () => {
-  const { user, isLoading, isError } = useRequiredUser();
+  const user = useRequiredUser();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -56,7 +55,9 @@ export const ProfilePictureUpdate = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({
+        queryKey: ["session", { id: user?.id }],
+      });
     },
   });
 
@@ -75,12 +76,13 @@ export const ProfilePictureUpdate = () => {
         },
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({
+        queryKey: ["session", { id: user?.id }],
+      });
     },
   });
 
-  if (isLoading) return <LoadingPage resource="global" />;
-  if (isError || !user) return <></>;
+  if (!user) return;
 
   return (
     <>

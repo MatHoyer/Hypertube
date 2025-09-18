@@ -1,15 +1,22 @@
 import { LoadingPage } from "@/components/LoadingPage";
 import { authClient } from "@/lib/auth-client";
 import { getUrl } from "@hypertube/libs";
+import { useQuery } from "@tanstack/react-query";
 import { Navigate, Outlet } from "react-router-dom";
 
 export const PrivateOnlyRoute = () => {
-  const session = authClient.useSession();
-  const user = session?.data?.user;
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["session"],
+    queryFn: async () => {
+      const res = await authClient.getSession();
+      return res.data;
+    },
+  });
 
-  if (session.isPending) return <LoadingPage resource="global" />;
+  if (isLoading) return <LoadingPage resource="global" />;
 
-  if (!user) return <Navigate to={getUrl("client-signin")} replace />;
+  if (isError || !data)
+    return <Navigate to={getUrl("client-signin")} replace />;
 
   return <Outlet />;
 };
