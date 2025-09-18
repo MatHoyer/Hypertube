@@ -1,5 +1,5 @@
 import { serve } from "@hono/node-server";
-import { getUrl } from "@hypertube/libs";
+import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { languageDetector } from "hono/language";
@@ -35,22 +35,24 @@ app.use(
   }
 );
 
-// Routes
-app.get("/", async (c) => {
-  return c.json({
-    message: i18next.t("global.hello"),
-  });
-});
+const apiRouter = new Hono();
 
-app.route("/api/swagger", swaggerRouter);
+apiRouter.route("/auth", authRouter);
+apiRouter.route("/scrappers/yts", ytsRouter);
+apiRouter.route("/streaming", streamingRouter);
+apiRouter.route("/swagger", swaggerRouter);
+apiRouter.get("/health", (c) => c.text("OK"));
 
-app.get(getUrl("api-health"), (c) => c.text("OK"));
+app.route("/api", apiRouter);
 
-app.route(getUrl("api-auth"), authRouter);
-
-app.route("/api/scrappers/yts", ytsRouter);
-
-app.route("/api/streaming", streamingRouter);
+if (env.NODE_ENV === "PROD") {
+  app.use(
+    "*",
+    serveStatic({
+      root: "./dist/public",
+    })
+  );
+}
 
 serve(
   {

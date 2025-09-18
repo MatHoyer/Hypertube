@@ -2,80 +2,37 @@ import { SignInPage } from "@/pages/auth/signIn/SignIn.page";
 import { SignUpPage } from "@/pages/auth/signUp/SignUp.page";
 import { NotFoundPage } from "@/pages/notFound/NotFound.page";
 import { getUrl } from "@hypertube/libs";
-import {
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
-import type { ZodType } from "zod";
-import { z } from "zod";
-import { LoadingPage } from "./components/LoadingPage";
-import { Button } from "./components/ui/button";
-import { PrivateLayout } from "./layouts/PrivateLayout";
-import { PublicLayout } from "./layouts/PublicLayout";
-import { authClient } from "./lib/auth-client";
+import { Route, Routes } from "react-router-dom";
 import { ForgetPasswordPage } from "./pages/auth/forgetPassword/ForgetPasswordPage";
 import { ResetPasswordPage } from "./pages/auth/resetPassword/ResetPasswordPage";
-import MoviePage from "./pages/movie/movie.page";
-
-const PublicRoute = () => {
-  const session = authClient.useSession();
-  const user = session?.data?.user;
-
-  if (session.isPending) return <LoadingPage resource="global" />;
-
-  if (user) return <Navigate to="/dashboard" replace />;
-
-  return (
-    <PublicLayout>
-      <Outlet />
-    </PublicLayout>
-  );
-};
-
-const PrivateRoute = () => {
-  const session = authClient.useSession();
-  const user = session?.data?.user;
-
-  if (session.isPending) return <LoadingPage resource="global" />;
-
-  if (!user) return <Navigate to={getUrl("client-signin")} replace />;
-
-  return (
-    <PrivateLayout>
-      <Outlet />
-    </PrivateLayout>
-  );
-};
-
-const ProtectedRoute = <T extends Record<string, unknown>>({
-  schema,
-}: {
-  schema: ZodType<T>;
-}) => {
-  const params = useParams();
-  const result = schema.safeParse(params);
-
-  if (!result.success) {
-    return <NotFoundPage />;
-  }
-
-  return <Outlet />;
-};
+import { HomePage } from "./pages/home/home.page";
+import MoviePage, { MoviePageParamsSchema } from "./pages/movie/movie.page";
+import { PlaygroundPage } from "./pages/playground/playground.page";
+import { BaseLayoutRoute } from "./routes/BaseLayoutRoute";
+import { PrivateOnlyRoute } from "./routes/PrivateOnlyRoute";
+import { ProtectedUrlRoute } from "./routes/ProtectedUrlRoute";
+import { PublicOnlyRoute } from "./routes/PublicOnlyRoute";
 
 const App = () => {
-  const session = authClient.useSession();
-  const navigate = useNavigate();
-  console.log(session?.data?.user);
-
   return (
-    <div className="h-dvh w-dvw bg-background">
-      <Routes>
-        {/* Public routes */}
-        <Route element={<PublicRoute />}>
+    <Routes>
+      <Route element={<BaseLayoutRoute />}>
+        {/* Default routes */}
+        <Route index path="/" element={<HomePage />} />
+        <Route path="/demo" element={<PlaygroundPage />} />
+
+        {/* Protected url routes */}
+        <Route element={<ProtectedUrlRoute schema={MoviePageParamsSchema} />}>
+          <Route
+            path={getUrl("client-movie", {
+              movieId: ":movieId",
+            })}
+            element={<MoviePage />}
+          />
+        </Route>
+
+        {/* Public only routes */}
+        <Route element={<PublicOnlyRoute />}>
           <Route path={getUrl("client-signin")} element={<SignInPage />} />
           <Route path={getUrl("client-signup")} element={<SignUpPage />} />
           <Route
@@ -86,70 +43,15 @@ const App = () => {
             path={getUrl("client-reset-password")}
             element={<ResetPasswordPage />}
           />
-          <Route
-            path="/demo"
-            element={
-              <div className="p-4">
-                <Button
-                  onClick={() => {
-                    navigate(
-                      getUrl("client-movie", {
-                        movieId: "00000000-0000-0000-0000-000000000000",
-                      })
-                    );
-                  }}
-                >
-                  Demo movie
-                </Button>
-              </div>
-            }
-          />
         </Route>
 
-        {/* Private routes */}
-        <Route element={<PrivateRoute />}>
-          <Route
-            path="/dashboard"
-            element={
-              <div className="min-h-[50vh]">
-                <h1 className="text-2xl p-4">Dashboard</h1>
-                <div className="min-h-screen">
-                  <p>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Quaerat quos dignissimos doloremque enim necessitatibus
-                    accusamus dolorum aperiam, at tempora vel?
-                  </p>
-                </div>
-                <div className="min-h-screen">
-                  <p>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                    Quaerat quos dignissimos doloremque enim necessitatibus
-                    accusamus dolorum aperiam, at tempora vel?
-                  </p>
-                </div>
-              </div>
-            }
-          />
-          <Route path="*" element={<NotFoundPage />} />
-          <Route
-            element={
-              <ProtectedRoute
-                schema={z.object({
-                  movieId: z.uuid(),
-                })}
-              />
-            }
-          >
-            <Route
-              path={getUrl("client-movie", {
-                movieId: ":movieId",
-              })}
-              element={<MoviePage />}
-            />
-          </Route>
-        </Route>
-      </Routes>
-    </div>
+        {/* Private only routes */}
+        <Route element={<PrivateOnlyRoute />}></Route>
+
+        {/* Not found route */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 };
 
