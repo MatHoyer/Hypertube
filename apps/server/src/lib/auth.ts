@@ -112,7 +112,6 @@ export const auth = betterAuth({
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
-      console.log(ctx.path);
       switch (ctx.path) {
         case "/sign-up/email":
           return updatePassword(ctx.body.password);
