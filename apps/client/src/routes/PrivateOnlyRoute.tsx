@@ -1,10 +1,10 @@
 import { LoadingPage } from "@/components/LoadingPage";
-import { useRequiredAuth } from "@/hooks/use-required-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { getUrl } from "@hypertube/libs";
 import { Navigate, Outlet } from "react-router-dom";
 
 export const PrivateOnlyRoute = () => {
-  const { data, isLoading, isError } = useRequiredAuth();
+  const { data, isLoading, isError } = useAuth();
 
   if (isLoading) return <LoadingPage resource="global" />;
 

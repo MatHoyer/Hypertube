@@ -12,8 +12,8 @@ import { toast } from "sonner";
 import z from "zod";
 
 export const ProfilePictureUpdate = () => {
-  const { data } = useRequiredAuth();
-  const user = data!.user;
+  const authData = useRequiredAuth();
+  const user = authData.user;
 
   const queryClient = useQueryClient();
   const { t } = useTranslation();
@@ -83,8 +83,6 @@ export const ProfilePictureUpdate = () => {
       });
     },
   });
-
-  if (!user) return;
 
   return (
     <>

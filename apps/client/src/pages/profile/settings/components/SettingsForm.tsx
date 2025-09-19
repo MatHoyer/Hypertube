@@ -9,8 +9,8 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
-  const { data } = useRequiredAuth();
-  const user = data!.user;
+  const authData = useRequiredAuth();
+  const user = authData.user;
 
   const queryClient = useQueryClient();
   const { t } = useTranslation();
@@ -59,8 +59,6 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
       });
     },
   });
-
-  if (!user) return;
 
   return (
     <div {...props}>
