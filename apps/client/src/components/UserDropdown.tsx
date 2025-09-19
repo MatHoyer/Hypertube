@@ -15,7 +15,7 @@ import { getUrl } from "@hypertube/libs";
 import { ChevronsUpDown, File, LogOut, Settings, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { ImageAvatar } from "./images/Avatar";
+import { UserImageAvatar } from "./images/Avatar";
 import { Typography } from "./ui/typography";
 
 export const UserDropdown = () => {
@@ -29,17 +29,17 @@ export const UserDropdown = () => {
       <DropdownMenuTrigger asChild>
         {isMobile ? (
           <Button variant="ghost" className="rounded-full size-fit p-0">
-            <ImageAvatar
+            <UserImageAvatar
               name={user?.name ?? ""}
-              imageSrc={user?.image ?? ""}
+              image={user?.image ?? ""}
               size="sm"
             />
           </Button>
         ) : (
           <Button variant="outline" className="p-6" size="lg">
-            <ImageAvatar
+            <UserImageAvatar
               name={user?.name ?? ""}
-              imageSrc={user?.image ?? ""}
+              image={user?.image ?? ""}
               size="sm"
             />
             <div className="grid flex-1 text-left">

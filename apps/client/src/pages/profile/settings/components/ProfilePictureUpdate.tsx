@@ -1,4 +1,4 @@
-import { ImageAvatar } from "@/components/images/Avatar";
+import { UserImageAvatar } from "@/components/images/Avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRequiredUser } from "@/hooks/use-required-user";
@@ -90,12 +90,7 @@ export const ProfilePictureUpdate = () => {
           updateMutation.mutate(event.currentTarget.files?.[0]);
         }}
       />
-      <ImageAvatar
-        imageSrc={getUrl("api-image", {
-          imageId: user.image ?? "",
-        })}
-        name={user.name}
-      />
+      <UserImageAvatar image={user.image ?? ""} name={user.name} />
       <Button
         disabled={!user.image}
         type="button"

@@ -1,5 +1,22 @@
 import { cn } from "@/lib/utils";
+import { getUrl } from "@hypertube/libs";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+
+export const UserImageAvatar: React.FC<{
+  image: string;
+  name: string;
+  size?: "sm" | "md" | "lg";
+}> = ({ image, name, size = "sm" }) => {
+  return (
+    <ImageAvatar
+      imageSrc={getUrl("api-image", {
+        imageId: image ?? "",
+      })}
+      name={name}
+      size={size}
+    />
+  );
+};
 
 export const ImageAvatar: React.FC<{
   imageSrc: string | undefined;
