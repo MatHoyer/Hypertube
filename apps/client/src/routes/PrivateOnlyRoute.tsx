@@ -4,11 +4,11 @@ import { getUrl } from "@hypertube/libs";
 import { Navigate, Outlet } from "react-router-dom";
 
 export const PrivateOnlyRoute = () => {
-  const { data, isLoading, isError } = useAuth();
+  const { user, isLoading, isError } = useAuth();
 
   if (isLoading) return <LoadingPage resource="global" />;
 
-  if (isError || !data)
+  if (isError || !user)
     return <Navigate to={getUrl("client-signin")} replace />;
 
   return <Outlet />;

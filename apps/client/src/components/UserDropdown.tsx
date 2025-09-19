@@ -19,8 +19,7 @@ import { ImageAvatar } from "./images/Avatar";
 import { Typography } from "./ui/typography";
 
 export const UserDropdown = () => {
-  const { data } = useAuth();
-  const user = data?.user;
+  const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();

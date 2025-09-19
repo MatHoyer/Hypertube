@@ -1,7 +1,7 @@
 import { ImageAvatar } from "@/components/images/Avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRequiredAuth } from "@/hooks/use-required-auth";
+import { useRequiredUser } from "@/hooks/use-required-user";
 import { authClient } from "@/lib/auth-client";
 import { betterAuthTranslation } from "@/lib/better-auth/constants";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -12,9 +12,7 @@ import { toast } from "sonner";
 import z from "zod";
 
 export const ProfilePictureUpdate = () => {
-  const authData = useRequiredAuth();
-  const user = authData.user;
-
+  const user = useRequiredUser();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 

@@ -9,8 +9,7 @@ import { Input } from "../ui/input";
 import { UserDropdown } from "../UserDropdown";
 
 export const NavbarDesktop = () => {
-  const { data } = useAuth();
-  const user = data?.user;
+  const { user } = useAuth();
   const { t } = useTranslation();
 
   return (

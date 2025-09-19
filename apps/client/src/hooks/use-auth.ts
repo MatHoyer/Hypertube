@@ -17,5 +17,9 @@ export const useAuth = () => {
     retry: false,
   });
 
-  return query;
+  return {
+    user: query.data?.user,
+    isLoading: query.isLoading,
+    isError: query.isError,
+  };
 };

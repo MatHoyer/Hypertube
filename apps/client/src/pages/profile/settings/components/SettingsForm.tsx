@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRequiredAuth } from "@/hooks/use-required-auth";
+import { useRequiredUser } from "@/hooks/use-required-user";
 import { authClient } from "@/lib/auth-client";
 import { betterAuthTranslation } from "@/lib/better-auth/constants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,9 +9,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
-  const authData = useRequiredAuth();
-  const user = authData.user;
-
+  const user = useRequiredUser();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
