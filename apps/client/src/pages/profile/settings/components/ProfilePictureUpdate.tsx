@@ -90,7 +90,7 @@ export const ProfilePictureUpdate = () => {
           updateMutation.mutate(event.currentTarget.files?.[0]);
         }}
       />
-      <UserImageAvatar image={user.image ?? ""} name={user.name} />
+      <UserImageAvatar />
       <Button
         disabled={!user.image}
         type="button"

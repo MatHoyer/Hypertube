@@ -40,19 +40,11 @@ export const UserDropdown = () => {
       <DropdownMenuTrigger asChild>
         {isMobile ? (
           <Button variant="ghost" className="rounded-full size-fit p-0">
-            <UserImageAvatar
-              name={user.name}
-              image={user.image ?? ""}
-              size="sm"
-            />
+            <UserImageAvatar />
           </Button>
         ) : (
           <Button variant="outline" className="p-6" size="lg">
-            <UserImageAvatar
-              name={user.name}
-              image={user.image ?? ""}
-              size="sm"
-            />
+            <UserImageAvatar />
             <div className="grid flex-1 text-left">
               <Typography>{user.name}</Typography>
               <Typography>{user.email}</Typography>

@@ -1,18 +1,22 @@
+import { useRequiredUser } from "@/hooks/use-required-user";
 import { cn } from "@/lib/utils";
 import { getUrl } from "@hypertube/libs";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
+type TImageSize = "sm" | "md" | "lg";
+
+// TODO : get UserImage with userId when GET user/:id done
+
 export const UserImageAvatar: React.FC<{
-  image: string;
-  name: string;
-  size?: "sm" | "md" | "lg";
-}> = ({ image, name, size = "sm" }) => {
+  size?: TImageSize;
+}> = ({ size = "sm" }) => {
+  const user = useRequiredUser();
   return (
     <ImageAvatar
       imageSrc={getUrl("api-image", {
-        imageId: image ?? "",
+        imageId: user.image ?? "",
       })}
-      name={name}
+      name={user.name}
       size={size}
     />
   );
@@ -21,7 +25,7 @@ export const UserImageAvatar: React.FC<{
 export const ImageAvatar: React.FC<{
   imageSrc: string | undefined;
   name: string;
-  size?: "sm" | "md" | "lg";
+  size?: TImageSize;
 }> = ({ imageSrc, name, size = "sm" }) => {
   return (
     <Avatar
