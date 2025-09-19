@@ -8,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/hooks/use-auth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
 import { getUrl } from "@hypertube/libs";
@@ -18,7 +19,8 @@ import { ImageAvatar } from "./images/Avatar";
 import { Typography } from "./ui/typography";
 
 export const UserDropdown = () => {
-  const session = authClient.useSession();
+  const { data } = useAuth();
+  const user = data?.user;
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -29,21 +31,21 @@ export const UserDropdown = () => {
         {isMobile ? (
           <Button variant="ghost" className="rounded-full size-fit p-0">
             <ImageAvatar
-              name={session.data?.user.name ?? ""}
-              imageSrc={session.data?.user.image ?? ""}
+              name={user?.name ?? ""}
+              imageSrc={user?.image ?? ""}
               size="sm"
             />
           </Button>
         ) : (
           <Button variant="outline" className="p-6" size="lg">
             <ImageAvatar
-              name={session.data?.user.name ?? ""}
-              imageSrc={session.data?.user.image ?? ""}
+              name={user?.name ?? ""}
+              imageSrc={user?.image ?? ""}
               size="sm"
             />
             <div className="grid flex-1 text-left">
-              <Typography>{session.data?.user.name}</Typography>
-              <Typography>{session.data?.user.email}</Typography>
+              <Typography>{user?.name}</Typography>
+              <Typography>{user?.email}</Typography>
             </div>
             <ChevronsUpDown className="ml-auto size-4" />
           </Button>

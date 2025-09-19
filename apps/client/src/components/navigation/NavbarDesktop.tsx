@@ -1,4 +1,4 @@
-import { authClient } from "@/lib/auth-client";
+import { useAuth } from "@/hooks/use-auth";
 import { getUrl } from "@hypertube/libs";
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -9,7 +9,8 @@ import { Input } from "../ui/input";
 import { UserDropdown } from "../UserDropdown";
 
 export const NavbarDesktop = () => {
-  const session = authClient.useSession();
+  const { data } = useAuth();
+  const user = data?.user;
   const { t } = useTranslation();
 
   return (
@@ -24,7 +25,7 @@ export const NavbarDesktop = () => {
         <Input placeholder={t("navbar.placeholder")} />
       </div>
       <div className="flex flex-1 justify-end">
-        {session.data?.user ? (
+        {user ? (
           <UserDropdown />
         ) : (
           <Button asChild>
