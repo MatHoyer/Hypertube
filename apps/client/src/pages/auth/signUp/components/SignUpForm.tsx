@@ -13,6 +13,7 @@ import InputPassword from "@/components/ui/input-password";
 import { authClient } from "@/lib/auth-client";
 import type { errorCodes } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState, type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -28,6 +29,7 @@ const formSchema = z.object({
 
 export const SignUpForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
   const [authMessageError, setAuthMessageError] = useState("");
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -54,6 +56,7 @@ export const SignUpForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
       {
         onSuccess: () => {
           setAuthMessageError("");
+          queryClient.invalidateQueries({ queryKey: ["session"] });
         },
         onError: (ctx) => {
           setAuthMessageError(ctx.error.code);
