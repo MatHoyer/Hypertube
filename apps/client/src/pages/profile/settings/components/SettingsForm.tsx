@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRequiredUser } from "@/hooks/use-required-user";
+import { useRequiredAuth } from "@/hooks/use-required-auth";
 import { authClient } from "@/lib/auth-client";
 import { betterAuthTranslation } from "@/lib/better-auth/constants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,7 +9,9 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
-  const user = useRequiredUser();
+  const { data } = useRequiredAuth();
+  const user = data!.user;
+
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -29,7 +31,7 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["session", { id: user?.id }],
+        queryKey: ["session"],
       });
     },
   });
@@ -53,7 +55,7 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["session", { id: user?.id }],
+        queryKey: ["session"],
       });
     },
   });

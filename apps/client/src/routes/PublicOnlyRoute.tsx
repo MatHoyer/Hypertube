@@ -1,15 +1,14 @@
 import { LoadingPage } from "@/components/LoadingPage";
-import { authClient } from "@/lib/auth-client";
+import { useRequiredAuth } from "@/hooks/use-required-auth";
 import { getUrl } from "@hypertube/libs";
 import { Navigate, Outlet } from "react-router-dom";
 
 export const PublicOnlyRoute = () => {
-  const session = authClient.useSession();
-  const user = session?.data?.user;
+  const { data, isLoading, isError } = useRequiredAuth();
 
-  if (session.isPending) return <LoadingPage resource="global" />;
+  if (isLoading) return <LoadingPage resource="global" />;
 
-  if (user) return <Navigate to={getUrl("client-home")} replace />;
+  if (!isError && data) return <Navigate to={getUrl("client-home")} replace />;
 
   return <Outlet />;
 };

@@ -1,7 +1,7 @@
 import { ImageAvatar } from "@/components/images/Avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRequiredUser } from "@/hooks/use-required-user";
+import { useRequiredAuth } from "@/hooks/use-required-auth";
 import { authClient } from "@/lib/auth-client";
 import { betterAuthTranslation } from "@/lib/better-auth/constants";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -12,7 +12,9 @@ import { toast } from "sonner";
 import z from "zod";
 
 export const ProfilePictureUpdate = () => {
-  const user = useRequiredUser();
+  const { data } = useRequiredAuth();
+  const user = data!.user;
+
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -56,7 +58,7 @@ export const ProfilePictureUpdate = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["session", { id: user?.id }],
+        queryKey: ["session"],
       });
     },
   });
@@ -77,7 +79,7 @@ export const ProfilePictureUpdate = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["session", { id: user?.id }],
+        queryKey: ["session"],
       });
     },
   });
