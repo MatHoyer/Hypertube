@@ -47,9 +47,15 @@ app.route("/api", apiRouter);
 
 if (env.NODE_ENV === "PROD") {
   app.use(
+    serveStatic({
+      root: "./dist/public",
+    })
+  );
+  app.use(
     "*",
     serveStatic({
       root: "./dist/public",
+      path: "index.html",
     })
   );
 }
