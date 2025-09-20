@@ -3,9 +3,12 @@ import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Typography } from "@/components/ui/typography";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+  const { t } = useTranslation();
+
   return (
     <footer className="w-full flex flex-col md:flex-row items-center bg-sidebar rounded-lg p-2">
       <div className="flex flex-col items-center justify-center">
@@ -15,11 +18,11 @@ const Footer = () => {
       <div className="flex flex-col md:flex-row items-center justify-around w-full gap-2">
         <Button variant="link" asChild>
           <Link to="https://github.com/MatHoyer/Hypertube" target="_blank">
-            Source code
+            {t("footer.sourceCode")}
           </Link>
         </Button>
         <div className="flex flex-col">
-          <Typography variant="h3">Providers</Typography>
+          <Typography variant="h3">{t("footer.providers")}</Typography>
           <Button variant="link" asChild>
             <Link to="#" target="_blank">
               YTS
