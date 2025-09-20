@@ -3,12 +3,12 @@ import { getUrl } from "@hypertube/libs";
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Logo } from "./images/Logo";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { UserDropdown } from "./UserDropdown";
+import { Logo } from "../images/Logo";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { UserDropdown } from "../UserDropdown";
 
-export const Navbar = () => {
+export const NavbarDesktop = () => {
   const session = authClient.useSession();
   const { t } = useTranslation();
 
@@ -19,7 +19,7 @@ export const Navbar = () => {
           <Logo />
         </Link>
       </div>
-      <div className="flex flex-[2] md:flex-1 items-center gap-2">
+      <div className="flex flex-1 items-center gap-2">
         <Search />
         <Input placeholder={t("navbar.placeholder")} />
       </div>

@@ -1,8 +1,10 @@
 import { Logo } from "@/components/images/Logo";
-import { Navbar } from "@/components/Navbar";
+import { NavbarDesktop } from "@/components/navigation/NavbarDesktop";
+import { NavbarMobile } from "@/components/navigation/NavbarMobile";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Typography } from "@/components/ui/typography";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
@@ -35,10 +37,12 @@ const Footer = () => {
 };
 
 export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="flex flex-col h-dvh w-dvw bg-background overflow-hidden">
       <header className="h-[65px] w-full">
-        <Navbar />
+        {isMobile ? <NavbarMobile /> : <NavbarDesktop />}
       </header>
       <ScrollArea className="h-[calc(100dvh-65px)] w-full">
         <div className="p-4">
