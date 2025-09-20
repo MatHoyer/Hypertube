@@ -6,6 +6,10 @@
     "loadingMessage": "Chargement {{resource}}",
     "loadingRessource": "..."
   },
+  "footer": {
+    "sourceCode": "Code source",
+    "providers": "Fournisseurs"
+  },
   "combobox": {
     "language": {
       "search": "Rechercher une langue",

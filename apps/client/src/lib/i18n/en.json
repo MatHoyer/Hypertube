@@ -6,6 +6,10 @@
     "loadingMessage": "Loading {{resource}}",
     "loadingRessource": "..."
   },
+  "footer": {
+    "sourceCode": "Source code",
+    "providers": "Providers"
+  },
   "combobox": {
     "language": {
       "search": "Search language...",
