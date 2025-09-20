@@ -8,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { authClient } from "@/lib/auth-client";
 import { getUrl } from "@hypertube/libs";
 import { ChevronsUpDown, File, LogOut, Settings, User } from "lucide-react";
@@ -20,22 +21,33 @@ export const UserDropdown = () => {
   const session = authClient.useSession();
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="p-6" size="lg">
-          <ImageAvatar
-            name={session.data?.user.name ?? ""}
-            imageSrc={session.data?.user.image ?? ""}
-            size="sm"
-          />
-          <div className="grid flex-1 text-left">
-            <Typography>{session.data?.user.name}</Typography>
-            <Typography>{session.data?.user.email}</Typography>
-          </div>
-          <ChevronsUpDown className="ml-auto size-4" />
-        </Button>
+        {isMobile ? (
+          <Button variant="ghost" className="rounded-full size-fit p-0">
+            <ImageAvatar
+              name={session.data?.user.name ?? ""}
+              imageSrc={session.data?.user.image ?? ""}
+              size="sm"
+            />
+          </Button>
+        ) : (
+          <Button variant="outline" className="p-6" size="lg">
+            <ImageAvatar
+              name={session.data?.user.name ?? ""}
+              imageSrc={session.data?.user.image ?? ""}
+              size="sm"
+            />
+            <div className="grid flex-1 text-left">
+              <Typography>{session.data?.user.name}</Typography>
+              <Typography>{session.data?.user.email}</Typography>
+            </div>
+            <ChevronsUpDown className="ml-auto size-4" />
+          </Button>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>{t("navbar.account")}</DropdownMenuLabel>
