@@ -558,7 +558,9 @@ const ControlsBar = () => {
       <AnimateApparition
         ref={controlsRef}
         isAnimating={
-          mouseMoving || mouseClicked || mouseIn || !playing || settingsOpen
+          isMobile
+            ? mouseClicked || !playing || settingsOpen
+            : mouseMoving || mouseClicked || mouseIn || !playing || settingsOpen
         }
         animation="slideToTop"
         onClick={(e) => {
