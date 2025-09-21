@@ -25,12 +25,7 @@ export const axiosFetch = async <
   DD
 >({
   method,
-  config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    withCredentials: true,
-  },
+  config,
   url,
   schemas,
   data,
@@ -45,6 +40,10 @@ export const axiosFetch = async <
       method,
       url,
       data,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
       ...config,
     });
 

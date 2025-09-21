@@ -47,6 +47,8 @@ export const SignUpForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
       {
         email: userData.email,
         username: userData.username,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
         name: userData.firstName + " " + userData.lastName,
         password: userData.password,
       },

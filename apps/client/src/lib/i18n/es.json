@@ -84,6 +84,15 @@
     "gotAccount": "¿Ya tienes cuenta?",
     "connexion": ""
   },
+  "settings": {
+    "updateInfo": "",
+    "updateInfoMessage": "",
+    "updateEmailMessage": "",
+    "newPassword": "",
+    "updatePasswordMessage": "",
+    "deletePicture": "",
+    "updatePictureFailed": ""
+  },
   "movie": {
     "loadingRessource": "de la película",
     "tabs": {

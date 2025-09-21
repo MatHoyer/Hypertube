@@ -1,14 +1,84 @@
-import { betterAuth } from "better-auth";
+import {
+  AuthContext,
+  betterAuth,
+  MiddlewareContext,
+  MiddlewareOptions,
+} from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { APIError, createAuthMiddleware } from "better-auth/api";
+import {
+  APIError,
+  createAuthMiddleware,
+  getSessionFromCtx,
+} from "better-auth/api";
 import { genericOAuth, username } from "better-auth/plugins";
 import { v4 } from "uuid";
+import z from "zod";
 import { mailTemplate } from "../emails/import-template";
 import { env } from "../env";
 import prisma from "./prisma";
 import { sendEmail } from "./resend";
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
+
+const updatePassword = (newPassword: string) => {
+  if (!newPassword)
+    throw new APIError("BAD_REQUEST", {
+      code: "FAILED_TO_UPDATE_PASSWORD",
+    });
+  if (!passwordRegex.test(newPassword)) {
+    throw new APIError("BAD_REQUEST", {
+      code: "PASSWORD_POLICY",
+    });
+  }
+};
+
+const updateUser = async (
+  ctx: MiddlewareContext<
+    MiddlewareOptions,
+    AuthContext & {
+      returned?: unknown;
+      responseHeaders?: Headers;
+    }
+  >
+) => {
+  if (ctx.body.image) return;
+  else if (ctx.body.firstName || ctx.body.lastName) {
+    const session = await getSessionFromCtx(ctx);
+    if (!session)
+      throw new APIError("BAD_REQUEST", {
+        code: "FAILED_TO_UPDATE_USER",
+      });
+    const user = session.user;
+    const fullName = `${ctx.body.firstName || user.firstName} ${
+      ctx.body.lastName || user.lastName
+    }`;
+    return {
+      context: {
+        ...ctx,
+        body: {
+          ...ctx.body,
+          name: fullName,
+        },
+      },
+    };
+  } else {
+    throw new APIError("BAD_REQUEST", {
+      code: "FAILED_TO_UPDATE_USER",
+    });
+  }
+};
+
+const updateEmail = (newEmail: string) => {
+  if (!newEmail)
+    throw new APIError("BAD_REQUEST", {
+      code: "COULDNT_UPDATE_YOUR_EMAIL",
+    });
+  const res = z.email().safeParse(newEmail);
+  if (!res.success)
+    throw new APIError("BAD_REQUEST", {
+      code: "COULDNT_UPDATE_YOUR_EMAIL",
+    });
+};
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -22,32 +92,35 @@ export const auth = betterAuth({
       await sendEmail({
         to: user.email,
         subject: "Reset your password",
-        html: mailTemplate(
-          {
-            title: "Reset your password",
-            content: "",
-            link: url,
-            linkText: "Reset",
-          },
-          { language: "en" }
-        ),
+        html: mailTemplate({
+          title: "Reset your password",
+          content: "",
+          link: url,
+          linkText: "Reset",
+        }),
       });
+    },
+  },
+  user: {
+    changeEmail: {
+      enabled: true,
+    },
+    additionalFields: {
+      firstName: { type: "string" },
+      lastName: { type: "string" },
     },
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
-      if (ctx.path === "/sign-up/email" && ctx.body?.password) {
-        if (!passwordRegex.test(ctx.body.password)) {
-          throw new APIError("BAD_REQUEST", {
-            code: "PASSWORD_POLICY",
-          });
-        }
-      } else if (ctx.path === "/reset-password" && ctx.body?.newPassword) {
-        if (!passwordRegex.test(ctx.body.newPassword)) {
-          throw new APIError("BAD_REQUEST", {
-            code: "PASSWORD_POLICY",
-          });
-        }
+      switch (ctx.path) {
+        case "/sign-up/email":
+          return updatePassword(ctx.body.password);
+        case "/reset-password":
+          return updatePassword(ctx.body.newPassword);
+        case "/update-user":
+          return updateUser(ctx);
+        case "/change-email":
+          return updateEmail(ctx.body.newEmail);
       }
     }),
   },
