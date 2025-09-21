@@ -1,4 +1,3 @@
-import { ErrorCard } from "@/components/ErrorCard";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,12 +10,13 @@ import {
 import { Input } from "@/components/ui/input";
 import InputPassword from "@/components/ui/input-password";
 import { authClient } from "@/lib/auth-client";
-import type { errorCodes } from "@/lib/better-auth/constants";
+import { betterAuthTranslation } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState, type ComponentProps } from "react";
+import { type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({
@@ -28,7 +28,6 @@ const formSchema = z.object({
 });
 
 export const SignUpForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
-  const [authMessageError, setAuthMessageError] = useState("");
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -53,11 +52,11 @@ export const SignUpForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
       },
       {
         onSuccess: () => {
-          setAuthMessageError("");
+          toast.success(t("sign.connexion"));
           queryClient.invalidateQueries({ queryKey: ["session"] });
         },
         onError: (ctx) => {
-          setAuthMessageError(ctx.error.code);
+          toast.error(betterAuthTranslation(t, ctx.error.code));
         },
       }
     );
@@ -151,14 +150,6 @@ export const SignUpForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
               </FormItem>
             )}
           />
-          {!!authMessageError && (
-            <ErrorCard
-              title={t("global.error")}
-              message={t(
-                `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
-              )}
-            />
-          )}
           <Button type="submit" className="w-full">
             {t("sign.up")}
           </Button>

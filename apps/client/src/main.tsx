@@ -23,7 +23,7 @@ createRoot(document.getElementById("root")!).render(
             <App />
             <GlobalDialog />
             <GlobalAlertDialog />
-            <Toaster />
+            <Toaster richColors />
             <TailwindIndicator />
           </ThemeProvider>
         </NuqsAdapter>

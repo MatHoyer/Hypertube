@@ -4,7 +4,8 @@
     "error": "Erreur",
     "or": "Ou",
     "loadingMessage": "Chargement {{resource}}",
-    "loadingRessource": "..."
+    "loadingRessource": "...",
+    "unexpected-error": "Erreur inattendue"
   },
   "footer": {
     "sourceCode": "Code source",
@@ -56,7 +57,10 @@
     "YOU_CANT_UNLINK_YOUR_LAST_ACCOUNT": "Vous ne pouvez pas dissocier votre dernier compte",
     "ACCOUNT_NOT_FOUND": "Compte introuvable",
     "USER_ALREADY_HAS_A_PASSWORD_PROVIDE_THAT_TO_DELETE_THE_ACCOUNT": "L'utilisateur a déjà un mot de passe. Fournissez-le pour supprimer le compte.",
-    "PASSWORD_POLICY": "Le mot de passe doit contenir au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 caractère spécial."
+    "PASSWORD_POLICY": "Le mot de passe doit contenir au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 caractère spécial.",
+    "EMAIL_IS_THE_SAME": "L'email est actuellement la même.",
+    "COULDNT_UPDATE_YOUR_EMAIL": "Impossible de mettre à jour l'adresse e-mail. Veuillez essayer avec une autre adresse e-mail.",
+    "FAILED_TO_UPDATE_PASSWORD": "Échec de la mise à jour du mot de passe"
   },
   "sign": {
     "username": "Nom d'utilisateur",
@@ -77,7 +81,8 @@
     "rememberPassword": "Vous vous souvenez de votre mot de passe ?",
     "backToSignin": "Retour à la connexion",
     "missAccount": "Vous n'avez pas de compte ?",
-    "gotAccount": "Vous avez déjà un compte ?"
+    "gotAccount": "Vous avez déjà un compte ?",
+    "connexion": "Vous êtes maintenant connecté !"
   },
   "movie": {
     "loadingRessource": "du film",

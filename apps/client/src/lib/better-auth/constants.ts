@@ -1,34 +1,58 @@
-export const errorCodes = [
-  "better-auth-error.INVALID_USERNAME_OR_PASSWORD",
-  "better-auth-error.EMAIL_NOT_VERIFIED",
-  "better-auth-error.UNEXPECTED_ERROR",
-  "better-auth-error.USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER",
-  "better-auth-error.USERNAME_IS_TOO_SHORT",
-  "better-auth-error.USERNAME_IS_TOO_LONG",
-  "better-auth-error.USERNAME_IS_INVALID",
-  "better-auth-error.DISPLAY_USERNAME_IS_INVALID",
-  "better-auth-error.USER_NOT_FOUND",
-  "better-auth-error.FAILED_TO_CREATE_USER",
-  "better-auth-error.FAILED_TO_CREATE_SESSION",
-  "better-auth-error.FAILED_TO_UPDATE_USER",
-  "better-auth-error.FAILED_TO_GET_SESSION",
-  "better-auth-error.INVALID_PASSWORD",
-  "better-auth-error.INVALID_EMAIL",
-  "better-auth-error.INVALID_EMAIL_OR_PASSWORD",
-  "better-auth-error.SOCIAL_ACCOUNT_ALREADY_LINKED",
-  "better-auth-error.PROVIDER_NOT_FOUND",
-  "better-auth-error.INVALID_TOKEN",
-  "better-auth-error.ID_TOKEN_NOT_SUPPORTED",
-  "better-auth-error.FAILED_TO_GET_USER_INFO",
-  "better-auth-error.USER_EMAIL_NOT_FOUND",
-  "better-auth-error.PASSWORD_TOO_SHORT",
-  "better-auth-error.PASSWORD_TOO_LONG",
-  "better-auth-error.USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL",
-  "better-auth-error.EMAIL_CAN_NOT_BE_UPDATED",
-  "better-auth-error.CREDENTIAL_ACCOUNT_NOT_FOUND",
-  "better-auth-error.SESSION_EXPIRED_REAUTHENTICATE_TO_PERFORM_THIS_ACTION",
-  "better-auth-error.YOU_CANT_UNLINK_YOUR_LAST_ACCOUNT",
-  "better-auth-error.ACCOUNT_NOT_FOUND",
-  "better-auth-error.USER_ALREADY_HAS_A_PASSWORD_PROVIDE_THAT_TO_DELETE_THE_ACCOUNT",
-  "better-auth-error.PASSWORD_POLICY",
+import type { TFunction } from "i18next";
+
+const keyErrorCodes = [
+  "INVALID_USERNAME_OR_PASSWORD",
+  "EMAIL_NOT_VERIFIED",
+  "UNEXPECTED_ERROR",
+  "USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER",
+  "USERNAME_IS_TOO_SHORT",
+  "USERNAME_IS_TOO_LONG",
+  "USERNAME_IS_INVALID",
+  "DISPLAY_USERNAME_IS_INVALID",
+  "USER_NOT_FOUND",
+  "FAILED_TO_CREATE_USER",
+  "FAILED_TO_CREATE_SESSION",
+  "FAILED_TO_UPDATE_USER",
+  "FAILED_TO_GET_SESSION",
+  "INVALID_PASSWORD",
+  "INVALID_EMAIL",
+  "INVALID_EMAIL_OR_PASSWORD",
+  "SOCIAL_ACCOUNT_ALREADY_LINKED",
+  "PROVIDER_NOT_FOUND",
+  "INVALID_TOKEN",
+  "ID_TOKEN_NOT_SUPPORTED",
+  "FAILED_TO_GET_USER_INFO",
+  "USER_EMAIL_NOT_FOUND",
+  "PASSWORD_TOO_SHORT",
+  "PASSWORD_TOO_LONG",
+  "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL",
+  "EMAIL_CAN_NOT_BE_UPDATED",
+  "CREDENTIAL_ACCOUNT_NOT_FOUND",
+  "SESSION_EXPIRED_REAUTHENTICATE_TO_PERFORM_THIS_ACTION",
+  "YOU_CANT_UNLINK_YOUR_LAST_ACCOUNT",
+  "ACCOUNT_NOT_FOUND",
+  "USER_ALREADY_HAS_A_PASSWORD_PROVIDE_THAT_TO_DELETE_THE_ACCOUNT",
+  "PASSWORD_POLICY",
+  "EMAIL_IS_THE_SAME",
+  "COULDNT_UPDATE_YOUR_EMAIL",
+  "FAILED_TO_UPDATE_PASSWORD",
 ] as const;
+
+export const errorCodes = keyErrorCodes.map(
+  (code) => `better-auth-error.${code}` as const
+);
+
+export const betterAuthTranslation = (
+  t: TFunction,
+  code: (typeof keyErrorCodes)[number]
+): string => {
+  try {
+    if (!errorCodes.includes(`better-auth-error.${code}`)) {
+      console.log("better-auth error code : ", code);
+      return t("global.unexpected-error");
+    }
+    return t(`better-auth-error.${code}` as (typeof errorCodes)[number]);
+  } catch {
+    return t("global.unexpected-error");
+  }
+};
