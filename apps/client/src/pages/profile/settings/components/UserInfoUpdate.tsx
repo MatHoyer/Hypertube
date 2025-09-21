@@ -4,11 +4,10 @@ import { useRequiredUser } from "@/hooks/use-required-user";
 import { authClient } from "@/lib/auth-client";
 import { betterAuthTranslation } from "@/lib/better-auth/constants";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
+export const UserInfoUpdate = () => {
   const user = useRequiredUser();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
@@ -59,7 +58,7 @@ export const UpdateInfo: React.FC<ComponentProps<"div">> = ({ ...props }) => {
   });
 
   return (
-    <div {...props}>
+    <div className="flex flex-col w-full gap-2">
       <Label htmlFor="input-email">{t("sign.email")}</Label>
       <Input
         onBlur={(e) => {
