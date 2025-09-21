@@ -107,36 +107,7 @@
       "noSubtitles": "",
       "noSelectedSubtitles": ""
     },
-    "cast": "Reparto",
-    "genres": {
-      "action": "Acción",
-      "adventure": "Aventura",
-      "animation": "Animación",
-      "biography": "Biografía",
-      "comedy": "Comedia",
-      "crime": "Crimen",
-      "documentary": "Documental",
-      "drama": "Drama",
-      "family": "Familiar",
-      "fantasy": "Fantasía",
-      "film-noir": "Cine negro",
-      "game-show": "Concurso",
-      "history": "Historia",
-      "horror": "Terror",
-      "music": "Música",
-      "musical": "Musical",
-      "mystery": "Misterio",
-      "news": "Noticias",
-      "reality-tv": "Reality show",
-      "romance": "Romance",
-      "sci-fi": "Ciencia ficción",
-      "short": "Cortometraje",
-      "sport": "Deporte",
-      "talk-show": "Programa de entrevistas",
-      "thriller": "Suspenso",
-      "war": "Guerra",
-      "western": "Western"
-    }
+    "cast": "Reparto"
   },
   "navbar": {
     "placeholder": "Buscar una película",

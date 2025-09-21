@@ -35,48 +35,27 @@ export type {
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
 } from "./schemas/api/movie.schema.js";
+
 export {
-  getYtsDownloadResolutionSchemas,
-  getYtsDownloadSubtitlesSchemas,
-  getYtsFiltersSchemas,
-  getYtsMovieDataSchemas,
-  getYtsMoviesSchemas,
-  getYtsPaginationSchemas,
-  getYtsStreamingResolutionSchemas,
-  getYtsStreamingSubtitlesSchemas,
-  ytsScrapperSearchParamsSchemas,
-} from "./schemas/api/yts.schema.js";
+  getStreamingResolutionSchemas,
+  getStreamingSubtitlesSchemas,
+} from "./schemas/api/streaming.schema.js";
 export type {
-  TGetYtsDownloadResolutionSchemas,
-  TGetYtsDownloadSubtitlesSchemas,
-  TGetYtsFiltersSchemas,
-  TGetYtsMovieDataSchemas,
-  TGetYtsMoviesSchemas,
-  TGetYtsPaginationSchemas,
-  TGetYtsStreamingResolutionSchemas,
-  TGetYtsStreamingSubtitlesSchemas,
-  TYtsScrapperSearchParamsSchemas,
-} from "./schemas/api/yts.schema.js";
+  TGetStreamingResolutionSchemas,
+  TGetStreamingSubtitlesSchemas,
+} from "./schemas/api/streaming.schema.js";
 
 // Database Schemas export
 export { imageSchema } from "./schemas/database/image.schema.js";
 export type { TImageSchema } from "./schemas/database/image.schema.js";
 
 export {
-  actorSchema,
   movieSchema,
-  movieWithResolutionsAndSubtitlesSchema,
-  movieWithResolutionsSchema,
-  movieWithSubtitlesSchema,
   resolutionSchema,
   subtitleSchema,
 } from "./schemas/database/movie.schema.js";
 export type {
-  TMovieActorSchema,
   TMovieSchema,
-  TMovieWithResolutionsAndSubtitlesSchema,
-  TMovieWithResolutionsSchema,
-  TMovieWithSubtitlesSchema,
   TResolutionSchema,
   TSubtitleSchema,
 } from "./schemas/database/movie.schema.js";

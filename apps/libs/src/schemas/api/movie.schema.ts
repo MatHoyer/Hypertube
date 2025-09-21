@@ -1,5 +1,4 @@
 import z from "zod";
-import { languageCodesArray } from "../../const/global.const.js";
 import {
   movieSchema,
   resolutionSchema,
@@ -37,7 +36,6 @@ export const getMoviesSchemas = {
   searchParams: z.object({
     page: z.coerce.number().int().positive().default(1),
     name: z.string().optional(),
-    language: z.enum(languageCodesArray).default("en"),
   }),
   response: z.object({
     movies: z.array(tmdbMovieSchema),
@@ -55,7 +53,29 @@ export const getMovieSchemas = {
   urlParams: z.object({
     movieId: tmdbMovieSchema.shape.id,
   }),
-  response: tmdbMovieSchema,
+  response: z.object({
+    ...tmdbMovieSchema.pick({
+      original_title: true,
+      original_language: true,
+      title: true,
+      overview: true,
+
+      genres: true,
+
+      vote_average: true,
+      vote_count: true,
+      popularity: true,
+
+      poster_path: true,
+      backdrop_path: true,
+
+      release_date: true,
+      adult: true,
+    }).shape,
+    ...movieSchema.shape,
+    resolutions: z.array(resolutionSchema),
+    subtitles: z.array(subtitleSchema),
+  }),
 };
 export type TGetMovieSchemas = {
   urlParams: z.infer<typeof getMovieSchemas.urlParams>;

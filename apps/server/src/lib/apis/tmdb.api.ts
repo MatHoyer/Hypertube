@@ -28,17 +28,31 @@ export class TmdbApi {
     return response.json() as Promise<T>;
   }
 
-  private async getMovieDetailsByTmdbId(tmdbId: number) {
+  private async getMovieDetailsByTmdbId(
+    tmdbId: number,
+    language: keyof typeof languageCodes
+  ) {
     const responseSchema = tmdbMovieSchema;
     const response = await this.fetch<z.infer<typeof responseSchema>>(
-      `/movie/${tmdbId}`
+      `/movie/${tmdbId}?language=${language}`
     );
+
+    response.poster_path = response.poster_path
+      ? `${this.imgUrl}${response.poster_path}`
+      : null;
+    response.backdrop_path = response.backdrop_path
+      ? `${this.imgUrl}${response.backdrop_path}`
+      : null;
+
     return responseSchema.parse(response);
   }
 
-  private async getAllMovieDetails(movieIds: number[]) {
+  private async getAllMovieDetails(
+    movieIds: number[],
+    language: keyof typeof languageCodes
+  ) {
     const moviePromises = movieIds.map(async (movieId) => {
-      return await this.getMovieDetailsByTmdbId(movieId);
+      return await this.getMovieDetailsByTmdbId(movieId, language);
     });
 
     return await Promise.all(moviePromises);
@@ -116,7 +130,8 @@ export class TmdbApi {
         });
 
     const movies = await this.getAllMovieDetails(
-      rawMovies.results.map((movie) => movie.id)
+      rawMovies.results.map((movie) => movie.id),
+      language
     );
 
     return {
@@ -127,7 +142,7 @@ export class TmdbApi {
     };
   }
 
-  public async getMovie(movieId: number) {
-    return await this.getMovieDetailsByTmdbId(movieId);
+  public async getMovie(movieId: number, language: keyof typeof languageCodes) {
+    return await this.getMovieDetailsByTmdbId(movieId, language);
   }
 }

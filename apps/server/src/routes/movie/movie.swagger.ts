@@ -18,12 +18,6 @@ export const moviesSwagger = {
           required: false,
           schema: getMoviesSchemas.searchParams.shape.name,
         },
-        {
-          in: "query",
-          name: "language",
-          required: false,
-          schema: getMoviesSchemas.searchParams.shape.language,
-        },
       ],
       responses: {
         "200": {

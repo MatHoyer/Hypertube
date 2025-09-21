@@ -4,10 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import {
+  getMovieSchemas,
   getUrl,
-  getYtsMovieDataSchemas,
   groupBy,
-  movieSchema,
+  tmdbMovieSchema,
 } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
@@ -21,7 +21,7 @@ import VideoPlayer from "./components/video-player";
 import { VideoPlayerProvider } from "./components/video-player.context";
 
 export const MoviePageParamsSchema = z.object({
-  movieId: movieSchema.shape.id,
+  movieId: tmdbMovieSchema.shape.id,
 });
 
 const MoviePage = () => {
@@ -33,11 +33,10 @@ const MoviePage = () => {
     queryFn: () =>
       axiosFetch({
         method: "GET",
-        url: getUrl("api-movie", {
-          scrapper: "yts",
+        url: getUrl("api-movies", {
           movieId,
         }),
-        schemas: getYtsMovieDataSchemas,
+        schemas: getMovieSchemas,
       }),
   });
 

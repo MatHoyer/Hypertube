@@ -1,6 +1,6 @@
 import {
-  TGetYtsStreamingResolutionSchemas,
-  TGetYtsStreamingSubtitlesSchemas,
+  TGetStreamingResolutionSchemas,
+  TGetStreamingSubtitlesSchemas,
 } from "@hypertube/libs";
 import * as fs from "fs";
 import { Context } from "hono";
@@ -8,8 +8,8 @@ import { getResolutionPath } from "../../lib/movie-folder-gestion/resolution";
 import { getSubtitlePath } from "../../lib/movie-folder-gestion/subtitle";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 
-export const getYtsStreamingResolution = async (
-  c: Context<TUrlParamsParser<TGetYtsStreamingResolutionSchemas["urlParams"]>>
+export const getStreamingResolution = async (
+  c: Context<TUrlParamsParser<TGetStreamingResolutionSchemas["urlParams"]>>
 ) => {
   const { movieId, resolution } = c.get("validatedUrlParams");
   const filePath = getResolutionPath(movieId, resolution, "movie.mp4");
@@ -39,8 +39,8 @@ export const getYtsStreamingResolution = async (
   }
 };
 
-export const getYtsStreamingSubtitles = async (
-  c: Context<TUrlParamsParser<TGetYtsStreamingSubtitlesSchemas["urlParams"]>>
+export const getStreamingSubtitles = async (
+  c: Context<TUrlParamsParser<TGetStreamingSubtitlesSchemas["urlParams"]>>
 ) => {
   const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
   const filePath = getSubtitlePath(movieId, subtitlesLanguage, true);

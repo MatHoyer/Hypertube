@@ -40,37 +40,13 @@ model Subtitle {
   updatedAt DateTime @updatedAt
 }
 
-model Actor {
-  id String @id @default(uuid())
-
-  imdbId String @unique
-  name   String
-
-  imageUrl String?
-
-  movies MovieActor[]
-}
-
 model Movie {
-  id String @id @default(uuid())
-
-  title         String
-  description   String?
-  imdbId        String   @unique
-  year          Int
-  rating        Float
-  genres        String[]
-  language      String
-  ytTrailerCode String?
-
-  backgroundImageUrl  String
-  smallCoverImageUrl  String
-  mediumCoverImageUrl String
-  largeCoverImageUrl  String
+  id     String @id @default(uuid())
+  tmdbId Int    @unique
+  imdbId String @unique
 
   resolutions Resolution[]
   subtitles   Subtitle[]
-  actors      MovieActor[]
 
   additionalInfoFetched Boolean @default(false)
   demoMovie             Boolean @default(false)
@@ -79,16 +55,4 @@ model Movie {
   updatedAt DateTime @updatedAt
 
   usedAt DateTime @default(now())
-}
-
-model MovieActor {
-  movie   Movie  @relation(fields: [movieId], references: [id])
-  movieId String
-
-  actor   Actor  @relation(fields: [actorId], references: [id])
-  actorId String
-
-  characterName String?
-
-  @@id([movieId, actorId])
 }
