@@ -1,4 +1,3 @@
-import { ErrorCard } from "@/components/ErrorCard";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,12 +10,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import type { errorCodes } from "@/lib/better-auth/constants";
+import { betterAuthTranslation } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getUrl } from "@hypertube/libs";
-import { useState, type ComponentProps } from "react";
+import { type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({ email: z.email() });
@@ -24,7 +24,6 @@ const formSchema = z.object({ email: z.email() });
 export const ForgetPasswordForm: React.FC<ComponentProps<"div">> = ({
   ...props
 }) => {
-  const [authMessageError, setAuthMessageError] = useState("");
   const { t } = useTranslation();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -41,11 +40,8 @@ export const ForgetPasswordForm: React.FC<ComponentProps<"div">> = ({
         redirectTo: getUrl("client-reset-password", { withServerUrl: true }),
       },
       {
-        onSuccess: () => {
-          setAuthMessageError("");
-        },
         onError: (ctx) => {
-          setAuthMessageError(ctx.error.code);
+          toast.error(betterAuthTranslation(t, ctx.error.code));
         },
       }
     );
@@ -71,14 +67,6 @@ export const ForgetPasswordForm: React.FC<ComponentProps<"div">> = ({
               </FormItem>
             )}
           />
-          {!!authMessageError && (
-            <ErrorCard
-              title={t("global.error")}
-              message={t(
-                `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
-              )}
-            />
-          )}
           <Button type="submit" className="w-full">
             {t("sign.sendEmail")}
           </Button>

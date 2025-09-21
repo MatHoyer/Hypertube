@@ -1,4 +1,3 @@
-import { ErrorCard } from "@/components/ErrorCard";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -11,11 +10,11 @@ import {
 } from "@/components/ui/form";
 import InputPassword from "@/components/ui/input-password";
 import { authClient } from "@/lib/auth-client";
-import type { errorCodes } from "@/lib/better-auth/constants";
+import { betterAuthTranslation } from "@/lib/better-auth/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getUrl } from "@hypertube/libs";
 import { useQueryState } from "nuqs";
-import { useState, type ComponentProps } from "react";
+import { type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -27,7 +26,6 @@ const formSchema = z.object({ password: z.string().min(8).max(50) });
 export const ResetPasswordForm: React.FC<ComponentProps<"div">> = ({
   ...props
 }) => {
-  const [authMessageError, setAuthMessageError] = useState("");
   const [token, _] = useQueryState("token", { defaultValue: "" });
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -47,12 +45,11 @@ export const ResetPasswordForm: React.FC<ComponentProps<"div">> = ({
       },
       {
         onSuccess: () => {
-          setAuthMessageError("");
           toast.success(t("sign.resetSuccessMessage"));
           navigate(getUrl("client-signin"));
         },
         onError: (ctx) => {
-          setAuthMessageError(ctx.error.code);
+          toast.error(betterAuthTranslation(t, ctx.error.code));
         },
       }
     );
@@ -76,14 +73,6 @@ export const ResetPasswordForm: React.FC<ComponentProps<"div">> = ({
               </FormItem>
             )}
           />
-          {!!authMessageError && (
-            <ErrorCard
-              title={t("global.error")}
-              message={t(
-                `better-auth-error.${authMessageError}` as (typeof errorCodes)[number]
-              )}
-            />
-          )}
           <Button type="submit" className="w-full">
             {t("sign.resetPassword")}
           </Button>
