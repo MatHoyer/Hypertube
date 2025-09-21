@@ -10,7 +10,7 @@ export type TClientRouteDataRequirements = {
   "client-forget-password": undefined;
   "client-reset-password": undefined;
   "client-movie": {
-    movieId: TMovieSchema["id"] | ":movieId";
+    movieId: TMovieSchema["tmdbId"] | ":movieId";
   };
 };
 
@@ -28,35 +28,24 @@ export type TApiRouteDataRequirements = {
     scrapper: "yts" | "{scrapper}" | ":scrapper";
   };
   "api-movies": {
-    scrapper: "yts" | "{scrapper}" | ":scrapper";
+    movieId: "{movieId}" | number | undefined;
   };
-  "api-pagination": {
-    scrapper: "yts" | "{scrapper}" | ":scrapper";
-  };
-  "api-movie": {
-    scrapper: "yts" | "{scrapper}" | ":scrapper";
-    movieId: TMovieSchema["id"];
-  };
-
-  // Downloads routes
   "api-movie-download-resolution": {
-    scrapper: "yts" | "{scrapper}" | ":scrapper";
-    movieId: TMovieSchema["id"];
+    movieId: TMovieSchema["tmdbId"];
     resolution: (typeof ytsQualities)[number] | "{resolution}";
   };
   "api-movie-download-subtitles": {
-    scrapper: "yts" | "{scrapper}" | ":scrapper";
-    movieId: TMovieSchema["id"];
+    movieId: TMovieSchema["tmdbId"];
     subtitlesLanguage: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
 
   // Streaming routes
   "api-streaming-movie-resolution": {
-    movieId: TMovieSchema["id"];
+    movieId: TMovieSchema["tmdbId"];
     resolution: (typeof ytsQualities)[number] | "{resolution}";
   };
   "api-streaming-movie-subtitles": {
-    movieId: TMovieSchema["id"];
+    movieId: TMovieSchema["tmdbId"];
     subtitlesLanguage: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
 };
@@ -99,16 +88,12 @@ const routes: {
 
   // API scrappers routes
   "api-filters": ({ scrapper }) => `/api/scrappers/${scrapper}/filters`,
-  "api-movies": ({ scrapper }) => `/api/scrappers/${scrapper}/movies`,
-  "api-pagination": ({ scrapper }) => `/api/scrappers/${scrapper}/pagination`,
-  "api-movie": ({ scrapper, movieId }) =>
-    `/api/scrappers/${scrapper}/movie/${movieId}`,
-
-  // API downloads routes
-  "api-movie-download-resolution": ({ scrapper, movieId, resolution }) =>
-    `/api/scrappers/${scrapper}/movie/${movieId}/resolution/${resolution}`,
-  "api-movie-download-subtitles": ({ scrapper, movieId, subtitlesLanguage }) =>
-    `/api/scrappers/${scrapper}/movie/${movieId}/subtitles/${subtitlesLanguage}`,
+  "api-movies": ({ movieId }) =>
+    movieId !== undefined ? `/api/movies/${movieId}` : "/api/movies",
+  "api-movie-download-resolution": ({ movieId, resolution }) =>
+    `/api/movie/${movieId}/resolution/${resolution}`,
+  "api-movie-download-subtitles": ({ movieId, subtitlesLanguage }) =>
+    `/api/movie/${movieId}/subtitles/${subtitlesLanguage}`,
 
   // API streaming routes
   "api-streaming-movie-resolution": ({ movieId, resolution }) =>

@@ -57,33 +57,18 @@ const createDefaultUser = async () => {
 const createDefaultMovie = async () => {
   const movieId = "00000000-0000-0000-0000-000000000000";
 
-  const movieData = {
-    id: movieId,
-    title: "viens, on recode Bitcoin de zéro pour le comprendre",
-    description: null,
-    imdbId: "some imdb id",
-    year: 2025,
-    rating: 10,
-    genres: [],
-    language: "fr",
-    ytTrailerCode: "U4S-RGNyTJA",
-    backgroundImageUrl:
-      "https://yts.mx/assets/images/movies/instintos_2025/background.jpg",
-    smallCoverImageUrl:
-      "https://yts.mx/assets/images/movies/instintos_2025/small-cover.jpg",
-    mediumCoverImageUrl:
-      "https://yts.mx/assets/images/movies/instintos_2025/medium-cover.jpg",
-    largeCoverImageUrl:
-      "https://yts.mx/assets/images/movies/instintos_2025/large-cover.jpg",
-    additionalInfoFetched: true,
-    demoMovie: true,
-  };
   const movie = await prisma.movie.upsert({
     where: {
       id: movieId,
     },
-    update: movieData,
-    create: movieData,
+    update: {
+      tmdbId: 1,
+      imdbId: "tt1",
+    },
+    create: {
+      tmdbId: 1,
+      imdbId: "tt1",
+    },
   });
 
   const resolutionData = {

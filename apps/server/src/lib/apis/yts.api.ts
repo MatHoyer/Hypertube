@@ -157,7 +157,7 @@ export const getResolutionForMovie = async (
 };
 
 export const downloadResolution = async (movie: {
-  id: string;
+  tmdbId: number;
   imdbId: string;
   resolution: string;
 }) => {
@@ -168,16 +168,16 @@ export const downloadResolution = async (movie: {
 
   const res = await fetch(resolutionData.url);
   if (!res.ok) {
-    throw new Error(`Failed to download resolution for movie ${movie.id}`);
+    throw new Error(`Failed to download resolution for movie ${movie.tmdbId}`);
   }
 
   const arrayBuffer = await res.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  await createResolution(movie.id, movie.resolution);
+  await createResolution(movie.tmdbId, movie.resolution);
 
   const outputPath = getResolutionPath(
-    movie.id,
+    movie.tmdbId,
     movie.resolution,
     "resolution.torrent"
   );

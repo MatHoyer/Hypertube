@@ -16,18 +16,18 @@ import { cn } from "@/lib/utils";
 import {
   DownloadStates,
   getUrl,
-  getYtsDownloadResolutionSchemas,
-  getYtsDownloadSubtitlesSchemas,
   languageCodes,
+  postMovieDownloadResolutionSchemas,
+  postMovieDownloadSubtitlesSchemas,
   ytsQualities,
-  type TGetYtsMovieDataSchemas,
+  type TGetMovieSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { VariantProps } from "class-variance-authority";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MoviePageParamsSchema } from "../movie.page";
+import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 
 const DownloadButton: React.FC<{
   label: string;
@@ -66,8 +66,8 @@ const DownloadButton: React.FC<{
 };
 
 export const DownloadsSelector: React.FC<{
-  resolutions: TGetYtsMovieDataSchemas["response"]["resolutions"];
-  subtitlesLanguages: TGetYtsMovieDataSchemas["response"]["subtitles"];
+  resolutions: TGetMovieSchemas["response"]["resolutions"];
+  subtitlesLanguages: TGetMovieSchemas["response"]["subtitles"];
 }> = ({ resolutions, subtitlesLanguages }) => {
   const { movieId } = useConvertParams(MoviePageParamsSchema);
   const queryClient = useQueryClient();
@@ -83,13 +83,12 @@ export const DownloadsSelector: React.FC<{
   const resolutionMutation = useMutation({
     mutationFn: (resolution: (typeof ytsQualities)[number]) => {
       return axiosFetch({
-        method: "GET",
+        method: "POST",
         url: getUrl("api-movie-download-resolution", {
-          scrapper: "yts",
           movieId,
           resolution,
         }),
-        schemas: getYtsDownloadResolutionSchemas,
+        schemas: postMovieDownloadResolutionSchemas,
         handleEnding: {
           cb: () => {
             queryClient.invalidateQueries({ queryKey: ["movie", movieId] });
@@ -103,13 +102,12 @@ export const DownloadsSelector: React.FC<{
   const subtitlesMutation = useMutation({
     mutationFn: (subtitlesLanguage: keyof typeof languageCodes) => {
       return axiosFetch({
-        method: "GET",
+        method: "POST",
         url: getUrl("api-movie-download-subtitles", {
-          scrapper: "yts",
           movieId,
           subtitlesLanguage,
         }),
-        schemas: getYtsDownloadSubtitlesSchemas,
+        schemas: postMovieDownloadSubtitlesSchemas,
         handleEnding: {
           cb: () => {
             queryClient.invalidateQueries({ queryKey: ["movie", movieId] });

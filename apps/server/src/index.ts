@@ -10,7 +10,7 @@ import { env } from "./env.js";
 import "./lib/i18n/i18n.js";
 import authRouter from "./routes/auth/auth.route.js";
 import imageRouter from "./routes/image/image.route.js";
-import ytsRouter from "./routes/scrappers/yts.route.js";
+import moviesRouter from "./routes/movie/movie.route.js";
 import streamingRouter from "./routes/streaming/streaming.route.js";
 import swaggerRouter from "./routes/swagger/swagger.route.js";
 
@@ -40,7 +40,7 @@ const apiRouter = new Hono();
 
 apiRouter.route("/auth", authRouter);
 apiRouter.route("/image", imageRouter);
-apiRouter.route("/scrappers/yts", ytsRouter);
+apiRouter.route("/movies", moviesRouter);
 apiRouter.route("/streaming", streamingRouter);
 apiRouter.route("/swagger", swaggerRouter);
 apiRouter.get("/health", (c) => c.text("OK"));

@@ -11,7 +11,7 @@ export const PlaygroundPage = () => {
         onClick={() => {
           navigate(
             getUrl("client-movie", {
-              movieId: "00000000-0000-0000-0000-000000000000",
+              movieId: 0,
             })
           );
         }}

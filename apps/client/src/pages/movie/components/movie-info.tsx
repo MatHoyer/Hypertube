@@ -1,93 +1,57 @@
-import { ImageAvatar } from "@/components/images/Avatar";
 import { ImageContainer } from "@/components/images/ImageContainer";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
-import {
-  getUrl,
-  ytsGenres,
-  type TMovieActorSchema,
-  type TMovieSchema,
-} from "@hypertube/libs";
-import { ArrowRightIcon, Star } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { getUrl, type TGetMovieSchemas } from "@hypertube/libs";
+import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const MovieInfo: React.FC<{
-  movie: TMovieSchema & { actors: TMovieActorSchema[] };
-}> = ({
-  movie: {
-    imdbId,
-    largeCoverImageUrl,
-    title,
-    year,
-    description,
-    rating,
-    language,
-    actors,
-    genres,
-    ytTrailerCode,
-  },
-}) => {
-  const { t } = useTranslation();
-
+  movie: Omit<TGetMovieSchemas["response"], "resolutions" | "subtitles">;
+}> = ({ movie }) => {
   return (
     <ScrollArea className="lg:h-[calc(100vh)]">
       <div className="flex flex-col gap-4 h-full p-4">
         <div className="flex justify-center">
           <ImageContainer
-            imageSrc={largeCoverImageUrl}
+            imageSrc={movie.poster_path}
             altImage="Movie Poster"
             size="lg"
           >
-            <Typography variant="h3">{title}</Typography>
+            <Typography variant="h3">{movie.title}</Typography>
           </ImageContainer>
         </div>
         <div className="flex flex-col gap-2">
           <Link
             to={getUrl("external-imdb-movie", {
-              imdbId,
+              imdbId: movie.imdbId,
             })}
             target="_blank"
           >
             <Typography variant="h1" className="text-center hover:underline">
-              {title}
+              {movie.title}
             </Typography>
           </Link>
           <div className="flex items-center justify-center gap-2">
-            <Badge>{language.toUpperCase()}</Badge>
-            <Badge>{year}</Badge>
+            <Badge>{movie.original_language.toUpperCase()}</Badge>
+            <Badge>{movie.release_date}</Badge>
           </div>
           <div className="flex items-center justify-center gap-2 flex-wrap">
-            {genres.map((genre, index) => (
+            {movie.genres.map((genre, index) => (
               <Badge variant="outline" key={index}>
-                {t(
-                  `movie.genres.${
-                    genre.toLowerCase() as (typeof ytsGenres)[number]
-                  }`
-                )}
+                {genre.name.toLowerCase()}
               </Badge>
             ))}
           </div>
           <div className="flex items-center justify-center gap-2">
             <Star className="text-primary fill-primary" />
-            <Typography variant="mono">{rating}/10</Typography>
+            <Typography variant="mono">{movie.vote_average}/10</Typography>
           </div>
           <Typography variant="muted" className="text-start">
-            {description}
+            {movie.overview}
           </Typography>
-          {ytTrailerCode && (
-            <iframe
-              width="100%"
-              height="315"
-              src={`https://www.youtube.com/embed/${ytTrailerCode}`}
-            />
-          )}
         </div>
-        {actors.length > 0 && (
+        {/* {actors.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle>{t("movie.cast")}</CardTitle>
@@ -127,7 +91,7 @@ const MovieInfo: React.FC<{
               ))}
             </CardContent>
           </Card>
-        )}
+        )} */}
       </div>
     </ScrollArea>
   );

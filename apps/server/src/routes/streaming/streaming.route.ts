@@ -1,26 +1,26 @@
 import {
-  getYtsStreamingResolutionSchemas,
-  getYtsStreamingSubtitlesSchemas,
+  getStreamingResolutionSchemas,
+  getStreamingSubtitlesSchemas,
 } from "@hypertube/libs";
 import { Hono } from "hono";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
-  getYtsStreamingResolution,
-  getYtsStreamingSubtitles,
+  getStreamingResolution,
+  getStreamingSubtitles,
 } from "./streaming.controller";
 
 const streamingRouter = new Hono();
 
 streamingRouter.get(
   "/movie/:movieId/resolution/:resolution",
-  urlParamsParser(getYtsStreamingResolutionSchemas.urlParams),
-  getYtsStreamingResolution
+  urlParamsParser(getStreamingResolutionSchemas.urlParams),
+  getStreamingResolution
 );
 
 streamingRouter.get(
   "/movie/:movieId/subtitles/:subtitlesLanguage",
-  urlParamsParser(getYtsStreamingSubtitlesSchemas.urlParams),
-  getYtsStreamingSubtitles
+  urlParamsParser(getStreamingSubtitlesSchemas.urlParams),
+  getStreamingSubtitles
 );
 
 export default streamingRouter;

@@ -43,7 +43,7 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
-import { MoviePageParamsSchema } from "../movie.page";
+import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 import { useVideoPlayer } from "./video-player.context";
 
 const MiddleScreenInfo: React.FC<{

@@ -6,7 +6,7 @@ const subtitleFolderName = "subtitles";
 const subtitleFilename = "subtitles.vtt";
 
 export const getSubtitlePath = (
-  movieId: TMovieSchema["id"],
+  movieId: TMovieSchema["tmdbId"],
   language: TSubtitleSchema["language"],
   withFilename: boolean = false
 ) => {
@@ -16,7 +16,7 @@ export const getSubtitlePath = (
 };
 
 export const createSubtitle = async (
-  movieId: TMovieSchema["id"],
+  movieId: TMovieSchema["tmdbId"],
   language: TSubtitleSchema["language"]
 ) => {
   const subtitleFolderPath = getSubtitlePath(movieId, language);
@@ -26,7 +26,7 @@ export const createSubtitle = async (
 };
 
 export const deleteSubtitle = async (
-  movieId: TMovieSchema["id"],
+  movieId: TMovieSchema["tmdbId"],
   language: TSubtitleSchema["language"]
 ) => {
   const subtitleFolderPath = getSubtitlePath(movieId, language);

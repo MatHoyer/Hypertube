@@ -53,7 +53,7 @@ export const getSubtitlesDownloadLinks = async ({
 };
 
 export const downloadSubtitles = async (
-  subtitles: TSubtitleSchema & { movieId: string }
+  subtitles: TSubtitleSchema & { tmdbId: number }
 ) => {
   const browser = await launchPuppeteer();
 
@@ -62,7 +62,7 @@ export const downloadSubtitles = async (
   const client = await page.createCDPSession();
   await client.send("Page.setDownloadBehavior", {
     behavior: "allow",
-    downloadPath: getSubtitlePath(subtitles.movieId, subtitles.language),
+    downloadPath: getSubtitlePath(subtitles.tmdbId, subtitles.language),
   });
 
   await page.goto(subtitles.downloadLink);
@@ -82,7 +82,7 @@ export const downloadSubtitles = async (
   // Download the file
   await page.click("a.btn-icon.download-subtitle");
 
-  const downloadDir = getSubtitlePath(subtitles.movieId, subtitles.language);
+  const downloadDir = getSubtitlePath(subtitles.tmdbId, subtitles.language);
   const originalPath = path.join(downloadDir, originalFilename);
 
   // Wait for original file to download

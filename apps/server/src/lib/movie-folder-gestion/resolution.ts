@@ -5,7 +5,7 @@ import { getMovieFolderPath } from "./movie";
 const resolutionFolderName = "resolutions";
 
 export const getResolutionPath = (
-  movieId: TMovieSchema["id"],
+  movieId: TMovieSchema["tmdbId"],
   resolution: TResolutionSchema["resolution"],
   type?: "resolution.torrent" | "movie.mp4"
 ) => {
@@ -15,7 +15,7 @@ export const getResolutionPath = (
 };
 
 export const createResolution = async (
-  movieId: TMovieSchema["id"],
+  movieId: TMovieSchema["tmdbId"],
   resolution: TResolutionSchema["resolution"]
 ) => {
   const resolutionFolderPath = getResolutionPath(movieId, resolution);
@@ -25,7 +25,7 @@ export const createResolution = async (
 };
 
 export const deleteResolution = async (
-  movieId: TMovieSchema["id"],
+  movieId: TMovieSchema["tmdbId"],
   resolution: TResolutionSchema["resolution"]
 ) => {
   const resolutionFolderPath = getResolutionPath(movieId, resolution);
