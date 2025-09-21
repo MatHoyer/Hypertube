@@ -15,7 +15,7 @@ export const bodyParser = <T>(
           body = await c.req.json();
           break;
         case "formData":
-          body = await c.req.formData();
+          body = { ...(await c.req.parseBody()) };
           break;
       }
       const validatedBody = schema.parse(body);

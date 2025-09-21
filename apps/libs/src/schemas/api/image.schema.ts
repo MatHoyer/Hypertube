@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { zfd } from "zod-form-data";
+import { sizeMaxFile } from "../../const/global.const.js";
 
 export const postImageSchemas = {
-  requirements: zfd.formData({ file: zfd.file() }),
+  requirements: z.object({ file: z.file().max(sizeMaxFile) }),
   response: z.object({
     data: z.string().optional(),
     error: z.string().optional(),
