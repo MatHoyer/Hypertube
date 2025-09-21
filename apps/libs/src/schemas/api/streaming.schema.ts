@@ -3,7 +3,7 @@ import { movieSchema } from "../database/movie.schema.js";
 
 export const getStreamingResolutionSchemas = {
   urlParams: z.object({
-    movieId: movieSchema.shape.id,
+    movieId: movieSchema.shape.tmdbId,
     resolution: z.string(),
   }),
 };
@@ -13,7 +13,7 @@ export type TGetStreamingResolutionSchemas = {
 
 export const getStreamingSubtitlesSchemas = {
   urlParams: z.object({
-    movieId: movieSchema.shape.id,
+    movieId: movieSchema.shape.tmdbId,
     subtitlesLanguage: z.string(),
   }),
 };
