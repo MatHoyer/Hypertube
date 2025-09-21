@@ -22,7 +22,7 @@ export type TApiRouteDataRequirements = {
 
   "api-health": undefined;
   "api-auth": undefined;
-  "api-image": { imageId?: string };
+  "api-image": { imageId?: string | null };
 
   // Scrappers routes
   "api-filters": {

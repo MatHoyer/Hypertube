@@ -63,9 +63,7 @@ export const ProfilePictureUpdate = () => {
     mutationFn: async () =>
       await axiosFetch({
         method: "DELETE",
-        url: getUrl("api-image", {
-          imageId: user.image ?? "",
-        }),
+        url: getUrl("api-image", { imageId: user.image }),
         schemas: deleteImageSchemas,
       }),
     onSuccess: () => {
