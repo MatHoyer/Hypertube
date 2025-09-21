@@ -12,6 +12,17 @@ export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 
 // API Schemas export
 export {
+  deleteImageSchemas,
+  getImageSchemas,
+  postImageSchemas,
+} from "./schemas/api/image.schema.js";
+export type {
+  TDeleteImageSchemas,
+  TGetImageSchemas,
+  TPostImageSchemas,
+} from "./schemas/api/image.schema.js";
+
+export {
   getYtsDownloadResolutionSchemas,
   getYtsDownloadSubtitlesSchemas,
   getYtsFiltersSchemas,
@@ -35,6 +46,9 @@ export type {
 } from "./schemas/api/yts.schema.js";
 
 // Database Schemas export
+export { imageSchema } from "./schemas/database/image.schema.js";
+export type { TImageSchema } from "./schemas/database/image.schema.js";
+
 export {
   actorSchema,
   movieSchema,
@@ -63,4 +77,8 @@ export {
 } from "./const/yts.const.js";
 
 // Global const export
-export { DownloadStates, languageCodes } from "./const/global.const.js";
+export {
+  DownloadStates,
+  languageCodes,
+  sizeMaxFile,
+} from "./const/global.const.js";

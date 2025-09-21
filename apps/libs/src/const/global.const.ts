@@ -9,3 +9,6 @@ export const languageCodes = {
   fr: "Français",
   es: "Español",
 } as const;
+
+// 1 Mo
+export const sizeMaxFile = 1024 * 1024;
