@@ -2,6 +2,11 @@
   "global": {
     "hello": "Hola"
   },
+  "images": {
+    "notFound": "",
+    "invalidFile": "",
+    "deleteFail": ""
+  },
   "email": {
     "ignoreEmail": "",
     "allRightsReserved": ""

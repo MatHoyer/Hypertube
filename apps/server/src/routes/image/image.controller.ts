@@ -1,6 +1,7 @@
 import { TGetImageSchemas } from "@hypertube/libs";
 import * as fs from "fs";
 import { Context } from "hono";
+import i18next from "i18next";
 import sharp from "sharp";
 import prisma from "../../lib/prisma";
 import { TIsLogged } from "../../middlewares/isLogged";
@@ -18,14 +19,14 @@ const deleteImageFile = async (
     where: { id: imageId },
   });
 
-  if (!image) return { error: "Profile picture not found" };
+  if (!image) return { error: i18next.t("images.notFound") };
 
   const path = getImagePath(image.id);
 
-  if (!fs.existsSync(path)) return { error: "Profile picture not found" };
+  if (!fs.existsSync(path)) return { error: i18next.t("images.notFound") };
 
   fs.rm(path, (e) => {
-    return { error: e?.message ?? "Failed to delete profile picture" };
+    return { error: e?.message ?? i18next.t("images.deleteFail") };
   });
 
   await prisma.image.delete({ where: { id: imageId } });
@@ -47,7 +48,7 @@ export const uploadImage = async (c: Context<TIsLogged>) => {
   const user = c.get("user");
 
   if (!file || !(file instanceof File))
-    return c.json({ error: "No file provided" }, 400);
+    return c.json({ error: i18next.t("images.invalidFile") }, 400);
 
   try {
     const arrayBuffer = await file.arrayBuffer();
@@ -64,7 +65,7 @@ export const uploadImage = async (c: Context<TIsLogged>) => {
 
     return c.json({ data: image.id }, 200);
   } catch {
-    return c.json({ error: "Invalid file" }, 400);
+    return c.json({ error: i18next.t("images.invalidFile") }, 400);
   }
 };
 
@@ -77,12 +78,12 @@ export const getImage = async (
     where: { id: imageId },
   });
 
-  if (!image) return c.json({ error: "Profile picture not found" }, 404);
+  if (!image) return c.json({ error: i18next.t("images.notFound") }, 404);
 
   const path = getImagePath(image.id);
 
   if (!fs.existsSync(path))
-    return c.json({ error: "Profile picture not found" }, 404);
+    return c.json({ error: i18next.t("images.notFound") }, 404);
 
   const profilePicture = fs.readFileSync(path);
 
