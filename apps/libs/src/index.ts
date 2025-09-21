@@ -10,7 +10,7 @@ export type {
 } from "./utils/url/getUrl.js";
 export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 
-// API image Schemas export
+// API Schemas export
 export {
   deleteImageSchemas,
   getImageSchemas,
@@ -22,7 +22,6 @@ export type {
   TPostImageSchemas,
 } from "./schemas/api/image.schema.js";
 
-// API Schemas export
 export {
   getYtsDownloadResolutionSchemas,
   getYtsDownloadSubtitlesSchemas,
@@ -47,6 +46,9 @@ export type {
 } from "./schemas/api/yts.schema.js";
 
 // Database Schemas export
+export { imageSchema } from "./schemas/database/image.schema.js";
+export type { TImageSchema } from "./schemas/database/image.schema.js";
+
 export {
   actorSchema,
   movieSchema,

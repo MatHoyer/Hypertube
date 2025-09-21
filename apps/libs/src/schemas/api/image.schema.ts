@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { sizeMaxFile } from "../../const/global.const.js";
+import { imageSchema } from "../database/image.schema.js";
 
 export const postImageSchemas = {
   requirements: z.object({ file: z.file().max(sizeMaxFile) }),
@@ -15,7 +16,7 @@ export type TPostImageSchemas = {
 };
 
 export const getImageSchemas = {
-  urlParams: z.object({ imageId: z.string() }),
+  urlParams: z.object({ imageId: imageSchema.shape.id }),
   response: z.object({
     data: z.string().optional(),
     error: z.string().optional(),
@@ -28,7 +29,7 @@ export type TGetImageSchemas = {
 };
 
 export const deleteImageSchemas = {
-  urlParams: z.object({ imageId: z.string() }),
+  urlParams: z.object({ imageId: imageSchema.shape.id }),
   response: z.object({
     data: z.string().optional(),
     error: z.string().optional(),
