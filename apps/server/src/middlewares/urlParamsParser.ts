@@ -5,9 +5,14 @@ export type TUrlParamsParser<T> = { Variables: { validatedUrlParams: T } };
 
 export const urlParamsParser = <T>(schema: ZodType<T>) => {
   return createMiddleware<TUrlParamsParser<T>>(async (c, next) => {
-    const urlParams = c.req.param();
-    const validatedUrlParams = schema.parse(urlParams);
-    c.set("validatedUrlParams", validatedUrlParams);
-    await next();
+    try {
+      const urlParams = c.req.param();
+      const validatedUrlParams = schema.parse(urlParams);
+      c.set("validatedUrlParams", validatedUrlParams);
+      await next();
+    } catch (error) {
+      console.log(error);
+      return c.json({ message: "Validation failed", cause: error }, 400);
+    }
   });
 };

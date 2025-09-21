@@ -18,8 +18,10 @@ export const bodyParser = <T>(
           body = { ...(await c.req.parseBody()) };
           break;
       }
+
       const validatedBody = schema.parse(body);
       c.set("validatedBody", validatedBody);
+
       await next();
     } catch (error) {
       console.log(error);
