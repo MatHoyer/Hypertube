@@ -20,12 +20,21 @@ const Status = {
 const defaultMovieName = "movie.mp4";
 
 export const downloadMovie = async (
-  movieId: TMovieSchema["id"],
+  movieId: TMovieSchema["tmdbId"],
   resolution: TResolutionSchema["resolution"]
 ) => {
   const resolutionPath = `/downloads/${movieId}/resolutions/${resolution}/resolution.torrent`;
 
   console.log("Downloading movie", resolutionPath);
+
+  const dbMovie = await prisma.movie.findUnique({
+    where: {
+      tmdbId: movieId,
+    },
+  });
+  if (!dbMovie) {
+    throw new Error("Movie not found");
+  }
 
   try {
     const result = await downloader.addFile(resolutionPath, {
@@ -97,7 +106,7 @@ export const downloadMovie = async (
           await prisma.resolution.update({
             where: {
               movieId_resolution: {
-                movieId: movieId,
+                movieId: dbMovie.id,
                 resolution: resolution,
               },
             },
@@ -110,7 +119,7 @@ export const downloadMovie = async (
           await prisma.resolution.update({
             where: {
               movieId_resolution: {
-                movieId: movieId,
+                movieId: dbMovie.id,
                 resolution: resolution,
               },
             },

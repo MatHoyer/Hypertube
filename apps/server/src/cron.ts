@@ -26,7 +26,7 @@ cron.schedule("0 0 * * *", async () => {
 
     for (const movie of moviesToDelete) {
       try {
-        await deleteMovieFolder(movie.id);
+        await deleteMovieFolder(movie.tmdbId);
       } catch (error) {
         console.error("Error deleting movie folder", error);
       }
