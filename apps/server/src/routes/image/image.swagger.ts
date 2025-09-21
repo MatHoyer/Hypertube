@@ -1,4 +1,9 @@
-import { getImageSchemas, getUrl } from "@hypertube/libs";
+import {
+  deleteImageSchemas,
+  getImageSchemas,
+  getUrl,
+  postImageSchemas,
+} from "@hypertube/libs";
 
 const imagePathParam = {
   in: "path",
@@ -35,7 +40,7 @@ export const imageSwagger = {
           description: "OK",
           content: {
             "application/json": {
-              schema: getImageSchemas.response,
+              schema: postImageSchemas.response,
             },
           },
         },
@@ -67,7 +72,7 @@ export const imageSwagger = {
           description: "OK",
           content: {
             "application/json": {
-              schema: getImageSchemas.response,
+              schema: deleteImageSchemas.response,
             },
           },
         },

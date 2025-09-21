@@ -1,9 +1,14 @@
-import { TGetImageSchemas } from "@hypertube/libs";
+import {
+  TDeleteImageSchemas,
+  TGetImageSchemas,
+  TPostImageSchemas,
+} from "@hypertube/libs";
 import * as fs from "fs";
 import { Context } from "hono";
 import i18next from "i18next";
 import sharp from "sharp";
 import prisma from "../../lib/prisma";
+import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 
@@ -42,12 +47,13 @@ const deleteImageFile = async (
   return;
 };
 
-export const uploadImage = async (c: Context<TIsLogged>) => {
-  const body = await c.req.parseBody();
-  const file = body["file"];
+export const uploadImage = async (
+  c: Context<TIsLogged & TBodyParser<TPostImageSchemas["requirements"]>>
+) => {
+  const { file } = c.get("validatedBody");
   const user = c.get("user");
 
-  if (!file || !(file instanceof File))
+  if (!file.type.startsWith("image/"))
     return c.json({ error: i18next.t("images.invalidFile") }, 400);
 
   try {
@@ -93,7 +99,7 @@ export const getImage = async (
 };
 
 export const deleteImage = async (
-  c: Context<TUrlParamsParser<TGetImageSchemas["urlParams"]> & TIsLogged>
+  c: Context<TUrlParamsParser<TDeleteImageSchemas["urlParams"]> & TIsLogged>
 ) => {
   const { imageId } = c.get("validatedUrlParams");
   const user = c.get("user");

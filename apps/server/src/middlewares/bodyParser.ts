@@ -3,10 +3,21 @@ import type { ZodType } from "zod";
 
 export type TBodyParser<T> = { Variables: { validatedBody: T } };
 
-export const bodyParser = <T>(schema: ZodType<T>) => {
+export const bodyParser = <T>(
+  schema: ZodType<T>,
+  bodyType: "json" | "formData" = "json"
+) => {
   return createMiddleware<TBodyParser<T>>(async (c, next) => {
     try {
-      const body = await c.req.json();
+      let body;
+      switch (bodyType) {
+        case "json":
+          body = await c.req.json();
+          break;
+        case "formData":
+          body = await c.req.formData();
+          break;
+      }
       const validatedBody = schema.parse(body);
       c.set("validatedBody", validatedBody);
       await next();

@@ -11,8 +11,16 @@ export type {
 export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 
 // API image Schemas export
-export { getImageSchemas } from "./schemas/api/image.schema.js";
-export type { TGetImageSchemas } from "./schemas/api/image.schema.js";
+export {
+  deleteImageSchemas,
+  getImageSchemas,
+  postImageSchemas,
+} from "./schemas/api/image.schema.js";
+export type {
+  TDeleteImageSchemas,
+  TGetImageSchemas,
+  TPostImageSchemas,
+} from "./schemas/api/image.schema.js";
 
 // API Schemas export
 export {
@@ -67,4 +75,8 @@ export {
 } from "./const/yts.const.js";
 
 // Global const export
-export { DownloadStates, languageCodes } from "./const/global.const.js";
+export {
+  DownloadStates,
+  languageCodes,
+  sizeMaxFile,
+} from "./const/global.const.js";

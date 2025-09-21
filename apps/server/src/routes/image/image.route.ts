@@ -1,6 +1,12 @@
-import { getImageSchemas } from "@hypertube/libs";
+import {
+  deleteImageSchemas,
+  getImageSchemas,
+  postImageSchemas,
+  sizeMaxFile,
+} from "@hypertube/libs";
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
+import { bodyParser } from "../../middlewares/bodyParser";
 import { isLogged } from "../../middlewares/isLogged";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import { deleteImage, getImage, uploadImage } from "./image.controller";
@@ -10,12 +16,13 @@ const imageRouter = new Hono();
 imageRouter.post(
   "/",
   bodyLimit({
-    maxSize: 1024 * 1024,
+    maxSize: sizeMaxFile,
     onError: (c) => {
       return c.json({ error: "File too large" }, 413);
     },
   }),
   isLogged(),
+  bodyParser(postImageSchemas.requirements, "formData"),
   uploadImage
 );
 
@@ -27,7 +34,7 @@ imageRouter.get(
 
 imageRouter.delete(
   "/:imageId",
-  urlParamsParser(getImageSchemas.urlParams),
+  urlParamsParser(deleteImageSchemas.urlParams),
   isLogged(),
   deleteImage
 );
