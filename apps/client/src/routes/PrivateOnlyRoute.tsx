@@ -1,15 +1,15 @@
 import { LoadingPage } from "@/components/LoadingPage";
-import { authClient } from "@/lib/auth-client";
+import { useAuth } from "@/hooks/use-auth";
 import { getUrl } from "@hypertube/libs";
 import { Navigate, Outlet } from "react-router-dom";
 
 export const PrivateOnlyRoute = () => {
-  const session = authClient.useSession();
-  const user = session?.data?.user;
+  const { user, isLoading, isError } = useAuth();
 
-  if (session.isPending) return <LoadingPage resource="global" />;
+  if (isLoading) return <LoadingPage resource="global" />;
 
-  if (!user) return <Navigate to={getUrl("client-signin")} replace />;
+  if (isError || !user)
+    return <Navigate to={getUrl("client-signin")} replace />;
 
   return <Outlet />;
 };
