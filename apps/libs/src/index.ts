@@ -23,6 +23,19 @@ export type {
 } from "./schemas/api/image.schema.js";
 
 export {
+  getMovieSchemas,
+  getMoviesSchemas,
+  postMovieDownloadResolutionSchemas,
+  postMovieDownloadSubtitlesSchemas,
+  tmdbMovieSchema,
+} from "./schemas/api/movie.schema.js";
+export type {
+  TGetMovieSchemas,
+  TGetMoviesSchemas,
+  TPostMovieDownloadResolutionSchemas,
+  TPostMovieDownloadSubtitlesSchemas,
+} from "./schemas/api/movie.schema.js";
+export {
   getYtsDownloadResolutionSchemas,
   getYtsDownloadSubtitlesSchemas,
   getYtsFiltersSchemas,
@@ -80,5 +93,6 @@ export {
 export {
   DownloadStates,
   languageCodes,
+  languageCodesArray,
   sizeMaxFile,
 } from "./const/global.const.js";

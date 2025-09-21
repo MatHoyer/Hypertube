@@ -4,12 +4,17 @@ enum DownloadState {
   DOWNLOADED
 }
 
+enum Provider {
+  YTS
+}
+
 model Resolution {
   id String @id @default(uuid())
 
   resolution    String
   size          String
   downloadState DownloadState @default(NOT_DOWNLOADED)
+  provider      Provider?
 
   Movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
   movieId String

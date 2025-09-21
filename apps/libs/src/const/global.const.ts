@@ -4,7 +4,12 @@ export const DownloadStates = {
   DOWNLOADED: "DOWNLOADED",
 } as const;
 
-export const languageCodes = {
+export const languageCodesArray = ["en", "fr", "es"] as const;
+
+export const languageCodes: Record<
+  (typeof languageCodesArray)[number],
+  string
+> = {
   en: "English",
   fr: "Français",
   es: "Español",

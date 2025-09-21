@@ -1,6 +1,6 @@
 import { getUrl } from "@hypertube/libs";
 import { imageSwagger } from "../image/image.swagger";
-import { scrapperSwagger } from "../scrappers/scrapper.swagger";
+import { moviesSwagger } from "../movie/movie.swagger";
 
 const openApiDoc = {
   openapi: "3.0.0",
@@ -20,8 +20,8 @@ const openApiDoc = {
       description: "Image endpoints",
     },
     {
-      name: "Scrappers",
-      description: "Movie scrapper endpoints",
+      name: "Movies",
+      description: "Movies endpoints",
     },
     {
       name: "Downloads",
@@ -42,7 +42,7 @@ const openApiDoc = {
     },
 
     ...imageSwagger,
-    ...scrapperSwagger,
+    ...moviesSwagger,
   },
 };
 

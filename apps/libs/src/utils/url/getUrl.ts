@@ -28,14 +28,7 @@ export type TApiRouteDataRequirements = {
     scrapper: "yts" | "{scrapper}" | ":scrapper";
   };
   "api-movies": {
-    scrapper: "yts" | "{scrapper}" | ":scrapper";
-  };
-  "api-pagination": {
-    scrapper: "yts" | "{scrapper}" | ":scrapper";
-  };
-  "api-movie": {
-    scrapper: "yts" | "{scrapper}" | ":scrapper";
-    movieId: TMovieSchema["id"];
+    movieId: "{movieId}" | number | undefined;
   };
 
   // Downloads routes
@@ -99,10 +92,8 @@ const routes: {
 
   // API scrappers routes
   "api-filters": ({ scrapper }) => `/api/scrappers/${scrapper}/filters`,
-  "api-movies": ({ scrapper }) => `/api/scrappers/${scrapper}/movies`,
-  "api-pagination": ({ scrapper }) => `/api/scrappers/${scrapper}/pagination`,
-  "api-movie": ({ scrapper, movieId }) =>
-    `/api/scrappers/${scrapper}/movie/${movieId}`,
+  "api-movies": ({ movieId }) =>
+    movieId ? `/api/movies/${movieId}` : "/api/movies",
 
   // API downloads routes
   "api-movie-download-resolution": ({ scrapper, movieId, resolution }) =>
