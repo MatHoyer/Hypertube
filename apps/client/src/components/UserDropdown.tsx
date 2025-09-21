@@ -9,8 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRequiredUser } from "@/hooks/use-required-user";
 import { authClient } from "@/lib/auth-client";
 import { getUrl } from "@hypertube/libs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChevronsUpDown, File, LogOut, Settings, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -18,10 +20,20 @@ import { ImageAvatar } from "./images/Avatar";
 import { Typography } from "./ui/typography";
 
 export const UserDropdown = () => {
-  const session = authClient.useSession();
+  const user = useRequiredUser();
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+
+  const signOutMutation = useMutation({
+    mutationFn: async () => {
+      await authClient.signOut();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["session"] });
+    },
+  });
 
   return (
     <DropdownMenu>
@@ -29,21 +41,21 @@ export const UserDropdown = () => {
         {isMobile ? (
           <Button variant="ghost" className="rounded-full size-fit p-0">
             <ImageAvatar
-              name={session.data?.user.name ?? ""}
-              imageSrc={session.data?.user.image ?? ""}
+              name={user.name}
+              imageSrc={user.image ?? ""}
               size="sm"
             />
           </Button>
         ) : (
           <Button variant="outline" className="p-6" size="lg">
             <ImageAvatar
-              name={session.data?.user.name ?? ""}
-              imageSrc={session.data?.user.image ?? ""}
+              name={user.name}
+              imageSrc={user.image ?? ""}
               size="sm"
             />
             <div className="grid flex-1 text-left">
-              <Typography>{session.data?.user.name}</Typography>
-              <Typography>{session.data?.user.email}</Typography>
+              <Typography>{user.name}</Typography>
+              <Typography>{user.email}</Typography>
             </div>
             <ChevronsUpDown className="ml-auto size-4" />
           </Button>
@@ -74,7 +86,7 @@ export const UserDropdown = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="bg-destructive"
-          onClick={() => authClient.signOut()}
+          onClick={() => signOutMutation.mutate()}
         >
           <LogOut />
           {t("sign.out")}
