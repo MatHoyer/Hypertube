@@ -10,6 +10,10 @@ export type {
 } from "./utils/url/getUrl.js";
 export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 
+// API image Schemas export
+export { getImageSchemas } from "./schemas/api/image.schema.js";
+export type { TGetImageSchemas } from "./schemas/api/image.schema.js";
+
 // API Schemas export
 export {
   getYtsDownloadResolutionSchemas,
