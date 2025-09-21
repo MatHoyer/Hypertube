@@ -10,7 +10,7 @@ export type TClientRouteDataRequirements = {
   "client-forget-password": undefined;
   "client-reset-password": undefined;
   "client-movie": {
-    movieId: TMovieSchema["id"] | ":movieId";
+    movieId: TMovieSchema["tmdbId"] | ":movieId";
   };
 };
 
@@ -89,7 +89,7 @@ const routes: {
   // API scrappers routes
   "api-filters": ({ scrapper }) => `/api/scrappers/${scrapper}/filters`,
   "api-movies": ({ movieId }) =>
-    movieId ? `/api/movies/${movieId}` : "/api/movies",
+    movieId !== undefined ? `/api/movies/${movieId}` : "/api/movies",
   "api-movie-download-resolution": ({ movieId, resolution }) =>
     `/api/movie/${movieId}/resolution/${resolution}`,
   "api-movie-download-subtitles": ({ movieId, subtitlesLanguage }) =>

@@ -27,7 +27,7 @@ import type { VariantProps } from "class-variance-authority";
 import { CheckIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MoviePageParamsSchema } from "../movie.page";
+import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 
 const DownloadButton: React.FC<{
   label: string;

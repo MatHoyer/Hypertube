@@ -3,26 +3,17 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
-import {
-  getMovieSchemas,
-  getUrl,
-  groupBy,
-  tmdbMovieSchema,
-} from "@hypertube/libs";
+import { getMovieSchemas, getUrl, groupBy } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import z from "zod";
 import { NotFoundPage } from "../notFound/NotFound.page";
 import MovieInfo from "./components/movie-info";
 import MovieInteraction from "./components/movie-interaction";
 import { DownloadsSelector } from "./components/settings-selector";
 import VideoPlayer from "./components/video-player";
 import { VideoPlayerProvider } from "./components/video-player.context";
-
-export const MoviePageParamsSchema = z.object({
-  movieId: tmdbMovieSchema.shape.id,
-});
+import { MoviePageParamsSchema } from "./schemas/urlParams.schema";
 
 const MoviePage = () => {
   const { t } = useTranslation();

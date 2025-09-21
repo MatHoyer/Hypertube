@@ -6,7 +6,7 @@ import {
 } from "../database/movie.schema.js";
 
 export const tmdbMovieSchema = z.object({
-  id: z.coerce.number(),
+  id: z.coerce.number().int().nonnegative(),
   imdb_id: z.string(),
 
   original_title: z.string(),

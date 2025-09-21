@@ -4,8 +4,11 @@ import {
   languageCodes,
   TGetMovieSchemas,
   TGetMoviesSchemas,
+  tmdbMovieSchema,
 } from "@hypertube/libs";
 import { Context } from "hono";
+import z from "zod";
+import { env } from "../../env";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
 import prisma from "../../lib/prisma";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
@@ -36,10 +39,25 @@ export const getMovie = async (
   const language = c.get("language");
 
   const tmdbApi = new TmdbApi();
-  const tmdbMovie = await tmdbApi.getMovie(
-    movieId,
-    language as keyof typeof languageCodes
-  );
+  const tmdbMovie =
+    movieId === 0
+      ? ({
+          id: 0,
+          imdb_id: "tt0",
+          original_title: "Demo Movie",
+          original_language: "fr",
+          title: "Demo Movie",
+          overview: "This is a demo movie",
+          genres: [{ id: 0, name: "Demo Genre" }],
+          vote_average: 0,
+          vote_count: 0,
+          popularity: 0,
+          poster_path: null,
+          backdrop_path: null,
+          release_date: "2025-01-01",
+          adult: false,
+        } as z.infer<typeof tmdbMovieSchema>)
+      : await tmdbApi.getMovie(movieId, language as keyof typeof languageCodes);
 
   let dbMovie = await prisma.movie.findUnique({
     where: {
@@ -56,6 +74,8 @@ export const getMovie = async (
   }
 
   try {
+    if (!env.VPN_IS_ACTIVE) throw new Error("VPN is not active");
+
     if (!dbMovie.additionalInfoFetched) {
       await scrapMovieData(dbMovie.id);
     } else {
