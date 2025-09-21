@@ -17,10 +17,7 @@ export type TPostImageSchemas = {
 
 export const getImageSchemas = {
   urlParams: z.object({ imageId: imageSchema.shape.id }),
-  response: z.object({
-    data: z.string().optional(),
-    error: z.string().optional(),
-  }),
+  response: z.any().refine((e) => e instanceof ArrayBuffer),
 };
 
 export type TGetImageSchemas = {

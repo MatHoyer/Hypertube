@@ -12,7 +12,9 @@ const createDefaultUser = async () => {
     username: "test",
     email: "test@test.com",
     name: "Test User",
-    emailVerified: true,
+    firstName: "Test",
+    lastName: "User",
+    emailVerified: false,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

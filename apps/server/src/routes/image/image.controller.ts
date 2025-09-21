@@ -93,9 +93,7 @@ export const getImage = async (
 
   const profilePicture = fs.readFileSync(path);
 
-  return c.body(profilePicture, 200, {
-    "Content-Type": "image/webp",
-  });
+  return c.body(profilePicture, 200, { "Content-Type": "image/webp" });
 };
 
 export const deleteImage = async (

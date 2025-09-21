@@ -9,6 +9,7 @@ export type TClientRouteDataRequirements = {
   "client-signup": undefined;
   "client-forget-password": undefined;
   "client-reset-password": undefined;
+  "client-settings": undefined;
   "client-movie": {
     movieId: TMovieSchema["tmdbId"] | ":movieId";
   };
@@ -21,7 +22,7 @@ export type TApiRouteDataRequirements = {
 
   "api-health": undefined;
   "api-auth": undefined;
-  "api-image": { imageId?: string };
+  "api-image": { imageId?: string | null };
 
   // Scrappers routes
   "api-filters": {
@@ -78,6 +79,7 @@ const routes: {
   "client-signup": () => "/sign-up",
   "client-forget-password": () => "/forget-password",
   "client-reset-password": () => "/reset-password",
+  "client-settings": () => "/settings",
   "client-movie": ({ movieId }) => `/movie/${movieId}`,
 
   // API routes

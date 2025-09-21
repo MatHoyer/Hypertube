@@ -9,6 +9,7 @@ import { HomePage } from "./pages/home/home.page";
 import MoviePage from "./pages/movie/movie.page";
 import { MoviePageParamsSchema } from "./pages/movie/schemas/urlParams.schema";
 import { PlaygroundPage } from "./pages/playground/playground.page";
+import { SettingsPage } from "./pages/profile/settings/SettingsPage";
 import { BaseLayoutRoute } from "./routes/BaseLayoutRoute";
 import { PrivateOnlyRoute } from "./routes/PrivateOnlyRoute";
 import { ProtectedUrlRoute } from "./routes/ProtectedUrlRoute";
@@ -47,7 +48,9 @@ const App = () => {
         </Route>
 
         {/* Private only routes */}
-        <Route element={<PrivateOnlyRoute />}></Route>
+        <Route element={<PrivateOnlyRoute />}>
+          <Route path={getUrl("client-settings")} element={<SettingsPage />} />
+        </Route>
 
         {/* Not found route */}
         <Route path="*" element={<NotFoundPage />} />

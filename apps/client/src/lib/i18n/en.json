@@ -84,6 +84,15 @@
     "gotAccount": "Already have an account?",
     "connexion": "You are now connected !"
   },
+  "settings": {
+    "updateInfo": "Update",
+    "updateInfoMessage": "Information successfully updated.",
+    "updateEmailMessage": "Email successfully updated.",
+    "newPassword": "New Password",
+    "updatePasswordMessage": "Password successfully updated.",
+    "deletePicture": "Delete your profile picture",
+    "updatePictureFailed": "Failed to update your profile picture"
+  },
   "movie": {
     "loadingRessource": "movie",
     "tabs": {

@@ -16,7 +16,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChevronsUpDown, File, LogOut, Settings, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { ImageAvatar } from "./images/Avatar";
+import { UserImageAvatar } from "./images/Avatar";
 import { Typography } from "./ui/typography";
 
 export const UserDropdown = () => {
@@ -40,19 +40,11 @@ export const UserDropdown = () => {
       <DropdownMenuTrigger asChild>
         {isMobile ? (
           <Button variant="ghost" className="rounded-full size-fit p-0">
-            <ImageAvatar
-              name={user.name}
-              imageSrc={user.image ?? ""}
-              size="sm"
-            />
+            <UserImageAvatar />
           </Button>
         ) : (
           <Button variant="outline" className="p-6" size="lg">
-            <ImageAvatar
-              name={user.name}
-              imageSrc={user.image ?? ""}
-              size="sm"
-            />
+            <UserImageAvatar />
             <div className="grid flex-1 text-left">
               <Typography>{user.name}</Typography>
               <Typography>{user.email}</Typography>
@@ -67,7 +59,7 @@ export const UserDropdown = () => {
           <DropdownMenuItem onClick={() => navigate("#")}>
             <User /> {t("navbar.profile")}
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("#")}>
+          <DropdownMenuItem onClick={() => navigate(getUrl("client-settings"))}>
             <Settings /> {t("navbar.settings")}
           </DropdownMenuItem>
         </DropdownMenuGroup>
