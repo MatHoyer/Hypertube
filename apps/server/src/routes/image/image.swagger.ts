@@ -41,6 +41,8 @@ export const imageSwagger = {
         },
       },
     },
+  },
+  [`${getUrl("api-image")}/{imageId}`]: {
     get: {
       summary: "Get image",
       tags: ["Image"],
