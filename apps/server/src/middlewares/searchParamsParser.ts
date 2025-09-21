@@ -7,9 +7,14 @@ export type TSearchParamsParser<T> = {
 
 export const searchParamsParser = <T>(schema: ZodType<T>) => {
   return createMiddleware<TSearchParamsParser<T>>(async (c, next) => {
-    const searchParams = c.req.query();
-    const validatedSearchParams = schema.parse(searchParams);
-    c.set("validatedSearchParams", validatedSearchParams);
-    await next();
+    try {
+      const searchParams = c.req.query();
+      const validatedSearchParams = schema.parse(searchParams);
+      c.set("validatedSearchParams", validatedSearchParams);
+      await next();
+    } catch (error) {
+      console.log(error);
+      return c.json({ message: "Validation failed", cause: error }, 400);
+    }
   });
 };
