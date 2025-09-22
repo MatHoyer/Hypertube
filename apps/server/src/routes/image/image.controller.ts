@@ -7,6 +7,7 @@ import * as fs from "fs";
 import { Context } from "hono";
 import i18next from "i18next";
 import sharp from "sharp";
+import z from "zod";
 import prisma from "../../lib/prisma";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
@@ -20,6 +21,25 @@ const deleteImageFile = async (
   imageId: string,
   user?: { id: string; image: string | null }
 ) => {
+  const isUrl = (() => {
+    const schema = z.url();
+    try {
+      return schema.parse(imageId);
+    } catch {
+      return;
+    }
+  })();
+
+  if (isUrl) {
+    if (!user) return;
+    if (imageId === user.image)
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { image: null },
+      });
+    return;
+  }
+
   const image = await prisma.image.findUnique({
     where: { id: imageId },
   });

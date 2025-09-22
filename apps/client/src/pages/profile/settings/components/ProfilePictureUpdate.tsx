@@ -63,7 +63,9 @@ export const ProfilePictureUpdate = () => {
     mutationFn: async () =>
       await axiosFetch({
         method: "DELETE",
-        url: getUrl("api-image", { imageId: user.image }),
+        url: getUrl("api-image", {
+          imageId: encodeURIComponent(user.image ?? ""),
+        }),
         schemas: deleteImageSchemas,
       }),
     onSuccess: () => {
@@ -82,6 +84,7 @@ export const ProfilePictureUpdate = () => {
           className="w-full"
           onChange={(event) => {
             updateMutation.mutate(event.currentTarget.files?.[0]);
+            event.target.value = "";
           }}
         />
         <Button

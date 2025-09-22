@@ -26,7 +26,7 @@ export type TGetImageSchemas = {
 };
 
 export const deleteImageSchemas = {
-  urlParams: z.object({ imageId: imageSchema.shape.id }),
+  urlParams: z.object({ imageId: z.union([imageSchema.shape.id, z.url()]) }),
   response: z.object({
     data: z.string().optional(),
     error: z.string().optional(),

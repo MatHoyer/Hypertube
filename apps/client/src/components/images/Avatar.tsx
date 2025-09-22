@@ -3,6 +3,7 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { cn } from "@/lib/utils";
 import { getImageSchemas, getUrl } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
+import z from "zod";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 type TImageSize = "sm" | "md" | "lg";
@@ -13,6 +14,16 @@ export const UserImageAvatar: React.FC<{
   size?: TImageSize;
 }> = ({ size = "sm" }) => {
   const user = useRequiredUser();
+
+  const isUrl = (() => {
+    if (!user.image) return;
+    const schema = z.url();
+    try {
+      return schema.parse(user.image);
+    } catch {
+      return;
+    }
+  })();
 
   const { data } = useQuery({
     queryKey: ["userImage", user.image],
@@ -27,10 +38,12 @@ export const UserImageAvatar: React.FC<{
       return URL.createObjectURL(blob);
     },
     retry: false,
-    enabled: !!user.image,
+    enabled: !!user.image && !isUrl,
   });
 
-  return <ImageAvatar imageSrc={data} name={user.name} size={size} />;
+  return (
+    <ImageAvatar imageSrc={isUrl ? isUrl : data} name={user.name} size={size} />
+  );
 };
 
 export const ImageAvatar: React.FC<{
