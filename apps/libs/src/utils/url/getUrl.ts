@@ -19,16 +19,13 @@ export type TApiRouteDataRequirements = {
   "api-swagger": {
     mode?: "doc" | "ui";
   };
-
   "api-health": undefined;
+
   "api-auth": undefined;
-  "api-images": { imageId?: string | null };
   "api-users": { userId?: string };
 
-  // Scrappers routes
-  "api-filters": {
-    scrapper: "yts" | "{scrapper}" | ":scrapper";
-  };
+  "api-images": { imageId?: string | null };
+
   "api-movies": {
     movieId: "{movieId}" | number | undefined;
   };
@@ -90,8 +87,6 @@ const routes: {
   "api-images": ({ imageId }) => "/api/images" + (imageId ? `/${imageId}` : ""),
   "api-users": ({ userId }) => "/api/users" + (userId ? `/${userId}` : ""),
 
-  // API scrappers routes
-  "api-filters": ({ scrapper }) => `/api/scrappers/${scrapper}/filters`,
   "api-movies": ({ movieId }) =>
     movieId !== undefined ? `/api/movies/${movieId}` : "/api/movies",
   "api-movie-download-resolution": ({ movieId, resolution }) =>
@@ -99,7 +94,6 @@ const routes: {
   "api-movie-download-subtitles": ({ movieId, subtitlesLanguage }) =>
     `/api/movie/${movieId}/subtitles/${subtitlesLanguage}`,
 
-  // API streaming routes
   "api-streaming-movie-resolution": ({ movieId, resolution }) =>
     `/api/streaming/movie/${movieId}/resolution/${resolution}`,
   "api-streaming-movie-subtitles": ({ movieId, subtitlesLanguage }) =>
