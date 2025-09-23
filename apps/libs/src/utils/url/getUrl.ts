@@ -19,15 +19,12 @@ export type TApiRouteDataRequirements = {
   "api-swagger": {
     mode?: "doc" | "ui";
   };
-
   "api-health": undefined;
+
   "api-auth": undefined;
+
   "api-image": { imageId?: string | null };
 
-  // Scrappers routes
-  "api-filters": {
-    scrapper: "yts" | "{scrapper}" | ":scrapper";
-  };
   "api-movies": {
     movieId: "{movieId}" | number | undefined;
   };
@@ -88,8 +85,6 @@ const routes: {
   "api-auth": () => "/api/auth",
   "api-image": ({ imageId }) => "/api/image" + (imageId ? `/${imageId}` : ""),
 
-  // API scrappers routes
-  "api-filters": ({ scrapper }) => `/api/scrappers/${scrapper}/filters`,
   "api-movies": ({ movieId }) =>
     movieId !== undefined ? `/api/movies/${movieId}` : "/api/movies",
   "api-movie-download-resolution": ({ movieId, resolution }) =>
@@ -97,7 +92,6 @@ const routes: {
   "api-movie-download-subtitles": ({ movieId, subtitlesLanguage }) =>
     `/api/movie/${movieId}/subtitles/${subtitlesLanguage}`,
 
-  // API streaming routes
   "api-streaming-movie-resolution": ({ movieId, resolution }) =>
     `/api/streaming/movie/${movieId}/resolution/${resolution}`,
   "api-streaming-movie-subtitles": ({ movieId, subtitlesLanguage }) =>
