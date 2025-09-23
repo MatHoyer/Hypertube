@@ -39,7 +39,7 @@ export const ProfilePictureUpdate = () => {
       if (res.error || !res.data)
         throw new Error(t("settings.updatePictureFailed"));
 
-      if (user.image)
+      if (user.image && !z.url().safeParse(user.image).success)
         await axiosFetch({
           method: "DELETE",
           url: getUrl("api-image", { imageId: user.image }),
@@ -69,7 +69,7 @@ export const ProfilePictureUpdate = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      if (user.image)
+      if (user.image && !z.url().safeParse(user.image).success)
         await axiosFetch({
           method: "DELETE",
           url: getUrl("api-image", { imageId: user.image }),

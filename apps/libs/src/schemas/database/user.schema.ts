@@ -2,7 +2,7 @@ import z from "zod";
 import { imageSchema } from "./image.schema.js";
 
 export const userSchema = z.object({
-  id: z.uuid(),
+  id: z.string(),
   name: z.string(),
   email: z.email(),
   emailVerified: z.boolean(),
