@@ -23,6 +23,7 @@ export type TApiRouteDataRequirements = {
   "api-health": undefined;
   "api-auth": undefined;
   "api-image": { imageId?: string | null };
+  "api-users": { userId?: string };
 
   // Scrappers routes
   "api-filters": {
@@ -87,6 +88,7 @@ const routes: {
   "api-health": () => "/api/health",
   "api-auth": () => "/api/auth",
   "api-image": ({ imageId }) => "/api/image" + (imageId ? `/${imageId}` : ""),
+  "api-users": ({ userId }) => "/api/users" + (userId ? `/${userId}` : ""),
 
   // API scrappers routes
   "api-filters": ({ scrapper }) => `/api/scrappers/${scrapper}/filters`,

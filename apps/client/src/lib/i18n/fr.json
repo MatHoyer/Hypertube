@@ -85,13 +85,13 @@
     "connexion": "Vous êtes maintenant connecté !"
   },
   "settings": {
-    "updateInfo": "Mettre à jour",
-    "updateInfoMessage": "Vos informations ont été mis à jour.",
-    "updateEmailMessage": "Votre email a été mis à jour.",
-    "newPassword": "Nouveau mot de passe",
-    "updatePasswordMessage": "Votre mot de passe a été mis à jour.",
+    "displayName": "Nom d'affichage",
+    "update": "Mettre à jour",
+    "updateInfo": "Vos informations ont été mis à jour.",
+    "updateInfoFailed": "Échec de la mise à jour de vos informations.",
     "deletePicture": "Supprimer votre photo de profil",
-    "updatePictureFailed": "Échec de la mise à jour de votre photo de profil"
+    "updatePicture": "Votre photo de profil a été mis à jour.",
+    "updatePictureFailed": "Échec de la mise à jour de votre photo de profil."
   },
   "movie": {
     "loadingRessource": "du film",

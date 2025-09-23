@@ -13,6 +13,7 @@ import imageRouter from "./routes/image/image.route.js";
 import moviesRouter from "./routes/movie/movie.route.js";
 import streamingRouter from "./routes/streaming/streaming.route.js";
 import swaggerRouter from "./routes/swagger/swagger.route.js";
+import usersRouter from "./routes/users/users.route.js";
 
 const app = new Hono();
 
@@ -40,6 +41,7 @@ const apiRouter = new Hono();
 
 apiRouter.route("/auth", authRouter);
 apiRouter.route("/image", imageRouter);
+apiRouter.route("/users", usersRouter);
 apiRouter.route("/movies", moviesRouter);
 apiRouter.route("/streaming", streamingRouter);
 apiRouter.route("/swagger", swaggerRouter);

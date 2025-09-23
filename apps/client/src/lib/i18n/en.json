@@ -85,13 +85,13 @@
     "connexion": "You are now connected !"
   },
   "settings": {
-    "updateInfo": "Update",
-    "updateInfoMessage": "Information successfully updated.",
-    "updateEmailMessage": "Email successfully updated.",
-    "newPassword": "New Password",
-    "updatePasswordMessage": "Password successfully updated.",
+    "displayName": "Display name",
+    "update": "Update",
+    "updateInfo": "Information successfully updated.",
+    "updateInfoFailed": "Failed to update your information.",
     "deletePicture": "Delete your profile picture",
-    "updatePictureFailed": "Failed to update your profile picture"
+    "updatePicture": "Profile picture successfully updated.",
+    "updatePictureFailed": "Failed to update your profile picture."
   },
   "movie": {
     "loadingRessource": "movie",

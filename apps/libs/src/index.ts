@@ -22,6 +22,9 @@ export type {
   TPostImageSchemas,
 } from "./schemas/api/image.schema.js";
 
+export { patchUsersSchemas } from "./schemas/api/users.schema.js";
+export type { TPatchUsersSchemas } from "./schemas/api/users.schema.js";
+
 export {
   getMovieSchemas,
   getMoviesSchemas,
@@ -48,6 +51,9 @@ export type {
 // Database Schemas export
 export { imageSchema } from "./schemas/database/image.schema.js";
 export type { TImageSchema } from "./schemas/database/image.schema.js";
+
+export { userSchema } from "./schemas/database/user.schema.js";
+export type { TUserSchema } from "./schemas/database/user.schema.js";
 
 export {
   movieSchema,
