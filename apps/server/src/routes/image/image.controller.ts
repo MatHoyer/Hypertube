@@ -23,7 +23,7 @@ const deleteImageFile = async (imageId: string) => {
   if (!image) return { error: i18next.t("images.notFound") };
 
   const path = getImagePath(image.id);
-  if (fs.existsSync(path)) fs.rm(path, () => {});
+  if (fs.existsSync(path)) await fs.promises.rm(path);
   await prisma.image.delete({ where: { id: imageId } });
 };
 

@@ -30,7 +30,7 @@ export const ProfilePictureUpdate = () => {
         method: "POST",
         url: getUrl("api-image"),
         schemas: {
-          requirements: z.any().refine((e) => e instanceof FormData),
+          requirements: z.instanceof(FormData),
           response: postImageSchemas.response,
         },
         data: formData,
