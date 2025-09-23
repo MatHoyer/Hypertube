@@ -1,7 +1,7 @@
 // Utils export
 export { newUTCDate } from "./utils/date.utils.js";
 export { groupBy } from "./utils/object.utils.js";
-export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
+export { capitalize, capitalizeAllWords, isUrl } from "./utils/string.utils.js";
 export { getServerUrl } from "./utils/url/getServerUrl.js";
 export { getUrl } from "./utils/url/getUrl.js";
 export type {

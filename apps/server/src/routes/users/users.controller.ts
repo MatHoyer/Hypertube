@@ -14,21 +14,20 @@ export const patchUser = async (
 ) => {
   const body = c.get("validatedBody");
   const { id } = c.get("validatedUrlParams");
+  const user = c.get("user");
 
-  try {
-    await prisma.user.update({
-      where: { id: id },
-      data: {
-        ...(body.name && { name: body.name }),
-        ...(body.email && { email: body.email }),
-        ...(body.image !== undefined && { image: body.image }),
-        ...(body.firstName && { firstName: body.firstName }),
-        ...(body.lastName && { lastName: body.lastName }),
-        updatedAt: new Date(),
-      },
-    });
-  } catch {
-    return c.json({ error: "Profile update failed" }, 400);
-  }
+  if (user.id !== id) return c.json({ error: "Unauthorized" }, 401);
+
+  await prisma.user.update({
+    where: { id },
+    data: {
+      name: body.name,
+      email: body.email,
+      image: body.image,
+      firstName: body.firstName,
+      lastName: body.lastName,
+      updatedAt: new Date(),
+    },
+  });
   return c.json({ data: "OK" }, 200);
 };

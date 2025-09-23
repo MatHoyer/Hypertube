@@ -6,6 +6,7 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import {
   deleteImageSchemas,
   getUrl,
+  isUrl,
   patchUsersSchemas,
   postImageSchemas,
 } from "@hypertube/libs";
@@ -39,7 +40,7 @@ export const ProfilePictureUpdate = () => {
       if (res.error || !res.data)
         throw new Error(t("settings.updatePictureFailed"));
 
-      if (user.image && !z.url().safeParse(user.image).success)
+      if (user.image && !isUrl(user.image))
         await axiosFetch({
           method: "DELETE",
           url: getUrl("api-image", { imageId: user.image }),
@@ -69,7 +70,7 @@ export const ProfilePictureUpdate = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      if (user.image && !z.url().safeParse(user.image).success)
+      if (user.image && !isUrl(user.image))
         await axiosFetch({
           method: "DELETE",
           url: getUrl("api-image", { imageId: user.image }),

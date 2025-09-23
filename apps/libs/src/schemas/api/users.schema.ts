@@ -2,7 +2,7 @@ import z from "zod";
 import { userSchema } from "../database/user.schema.js";
 
 export const patchUsersSchemas = {
-  urlParams: z.object({ id: z.string() }),
+  urlParams: z.object({ id: userSchema.shape.id }),
   requirements: z.object({
     name: userSchema.shape.name.optional(),
     email: userSchema.shape.email.optional(),
