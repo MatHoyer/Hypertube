@@ -1,10 +1,4 @@
-import {
-  capitalizeAllWords,
-  convertObjectToSearchParams,
-  ytsApiSortBy,
-  ytsGenres,
-  ytsQualities,
-} from "@hypertube/libs";
+import { capitalizeAllWords, ytsGenres, ytsQualities } from "@hypertube/libs";
 import { writeFile } from "fs/promises";
 import z from "zod";
 
@@ -12,10 +6,9 @@ import {
   createResolution,
   getResolutionPath,
 } from "../movie-folder-gestion/resolution";
+import prisma from "../prisma";
 
 // https://yts.mx/api for documentation
-
-const ytsApiUrl = "https://yts.mx/api/v2/";
 
 const responseSchema = <T>(dataSchema: z.ZodSchema<T>) =>
   z.object({
@@ -23,20 +16,6 @@ const responseSchema = <T>(dataSchema: z.ZodSchema<T>) =>
     status_message: z.string(),
     data: dataSchema,
   });
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ytsMoviesSearchParamsSchema = z.object({
-  limit: z.number().optional(),
-  page: z.number().int().positive().optional(),
-  quality: z.enum(ytsQualities).optional(),
-  minimum_rating: z.number().int().positive().min(0).max(9).optional(),
-  query_term: z.string().optional(),
-  genre: z.enum(ytsGenres).optional(),
-  sort_by: z.enum(ytsApiSortBy).optional(),
-  order_by: z.enum(["desc", "asc"]).optional(),
-  with_rt_ratings: z.boolean().optional(),
-});
-type TYtsMoviesSearchParams = z.infer<typeof ytsMoviesSearchParamsSchema>;
 
 const ytsMovieTorrentSchema = z.object({
   url: z.string(),
@@ -78,108 +57,86 @@ const ytsMovieSchema = z.object({
   cast: z.array(ytsMovieActorSchema).optional().default([]),
 });
 
-const ytsGetMoviesResponseSchema = z.object({
-  movie_count: z.number(),
-  limit: z.number(),
-  page_number: z.number(),
-  movies: z.array(ytsMovieSchema.omit({ cast: true })),
-});
+export class YtsApi {
+  private readonly ytsApiUrl: string;
+  private readonly fetchOptions: RequestInit;
 
-export const getMovies = async (params: TYtsMoviesSearchParams = {}) => {
-  const searchParams = convertObjectToSearchParams(params);
-  const url = `${ytsApiUrl}/list_movies.json${
-    searchParams ? `?${searchParams}` : ""
-  }`;
-
-  const response = await fetch(url);
-  const data = await response.json();
-
-  const parsedData = responseSchema(ytsGetMoviesResponseSchema).safeParse(data);
-  if (!parsedData.success) {
-    return [];
+  constructor() {
+    this.ytsApiUrl = "https://yts.mx/api/v2/";
+    this.fetchOptions = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
   }
 
-  return parsedData.data.data.movies;
-};
-
-export const getMovieByLongTitle = async (title: string, year: number) => {
-  const movies = await getMovies({
-    query_term: `${title} (${year})`,
-    limit: 1,
-  });
-
-  if (movies.length === 0) {
-    return null;
+  private async fetch<T>(url: string, options: RequestInit = {}): Promise<T> {
+    const response = await fetch(this.ytsApiUrl + url, {
+      ...this.fetchOptions,
+      ...options,
+    });
+    return response.json() as Promise<T>;
   }
 
-  return movies[0];
-};
-
-const ytsMovieDetailsResponseSchema = z.object({
-  movie: ytsMovieSchema,
-});
-
-export const getMovieByImdbId = async (imdbId: string) => {
-  const params = {
-    imdb_id: imdbId,
-    with_cast: true,
-  };
-  const searchParams = convertObjectToSearchParams(params);
-  const url = `${ytsApiUrl}/movie_details.json?${searchParams}`;
-
-  const response = await fetch(url);
-  const data = await response.json();
-
-  return responseSchema(ytsMovieDetailsResponseSchema).parse(data).data.movie;
-};
-
-export const getResolutionsForMovie = async (imdbId: string) => {
-  const movie = await getMovieByImdbId(imdbId);
-
-  return movie.torrents;
-};
-
-export const getResolutionForMovie = async (
-  imdbId: string,
-  resolution: string
-) => {
-  const movie = await getMovieByImdbId(imdbId);
-
-  const torrent = movie.torrents.find(
-    (torrent) => torrent.quality === resolution
-  );
-
-  if (!torrent) {
-    throw new Error(`Resolution ${resolution} not found for movie ${imdbId}`);
+  private async getMovieByImdbId(imdbId: string) {
+    const localResponseSchema = responseSchema(
+      z.object({
+        movie: ytsMovieSchema,
+      })
+    );
+    const response = await this.fetch<z.infer<typeof localResponseSchema>>(
+      `/movie_details.json?imdb_id=${imdbId}`
+    );
+    return localResponseSchema.parse(response).data.movie;
   }
 
-  return torrent;
-};
-
-export const downloadResolution = async (movie: {
-  tmdbId: number;
-  imdbId: string;
-  resolution: string;
-}) => {
-  const resolutionData = await getResolutionForMovie(
-    movie.imdbId,
-    movie.resolution
-  );
-
-  const res = await fetch(resolutionData.url);
-  if (!res.ok) {
-    throw new Error(`Failed to download resolution for movie ${movie.tmdbId}`);
+  public async getResolutions(imdbId: string) {
+    const movie = await this.getMovieByImdbId(imdbId);
+    return movie.torrents;
   }
 
-  const arrayBuffer = await res.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  private async getResolution(imdbId: string, targetResolution: string) {
+    const movie = await this.getMovieByImdbId(imdbId);
 
-  await createResolution(movie.tmdbId, movie.resolution);
+    const resolution = movie.torrents.find(
+      (resolution) => resolution.quality === targetResolution
+    );
+    if (!resolution) {
+      throw new Error(
+        `Resolution (${targetResolution}) not found for movie ${imdbId}`
+      );
+    }
 
-  const outputPath = getResolutionPath(
-    movie.tmdbId,
-    movie.resolution,
-    "resolution.torrent"
-  );
-  await writeFile(outputPath, buffer);
-};
+    return resolution;
+  }
+
+  public async downloadTorrent(imdbId: string, targetResolution: string) {
+    const dbMovie = await prisma.movie.findUnique({
+      where: {
+        imdbId,
+      },
+    });
+    if (!dbMovie) {
+      throw new Error(`Movie (${imdbId}) not found`);
+    }
+
+    const resolution = await this.getResolution(imdbId, targetResolution);
+
+    const res = await fetch(resolution.url);
+    if (!res.ok) {
+      throw new Error(`Failed to download resolution for movie ${imdbId}`);
+    }
+
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    await createResolution(dbMovie.tmdbId, resolution.quality);
+
+    const outputPath = getResolutionPath(
+      dbMovie.tmdbId,
+      resolution.quality,
+      "resolution.torrent"
+    );
+    await writeFile(outputPath, buffer);
+  }
+}

@@ -52,7 +52,7 @@ export const getSubtitlesDownloadLinks = async ({
   );
 };
 
-export const downloadSubtitles = async (
+export const downloadYifysubtitles = async (
   subtitles: TSubtitleSchema & { tmdbId: number }
 ) => {
   const browser = await launchPuppeteer();
