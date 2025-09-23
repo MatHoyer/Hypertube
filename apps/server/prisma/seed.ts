@@ -64,12 +64,14 @@ const createDefaultMovie = async () => {
       id: movieId,
     },
     update: {
-      tmdbId: 1,
-      imdbId: "tt1",
+      tmdbId: 0,
+      imdbId: "tt0",
+      demoMovie: true,
     },
     create: {
-      tmdbId: 1,
-      imdbId: "tt1",
+      tmdbId: 0,
+      imdbId: "tt0",
+      demoMovie: true,
     },
   });
 

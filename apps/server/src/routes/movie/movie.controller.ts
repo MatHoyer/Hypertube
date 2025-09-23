@@ -2,15 +2,20 @@ import {
   getMovieSchemas,
   getMoviesSchemas,
   languageCodes,
+  Providers,
   TGetMovieSchemas,
   TGetMoviesSchemas,
   tmdbMovieSchema,
+  TPostMovieDownloadResolutionSchemas,
+  TPostMovieDownloadSubtitlesSchemas,
 } from "@hypertube/libs";
 import { Context } from "hono";
 import z from "zod";
 import { env } from "../../env";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
+import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
 import prisma from "../../lib/prisma";
+import { downloadYifysubtitles } from "../../lib/scrappers/yifysubtitles.scrapper";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import { scrapMovieData } from "./movie.helper";
@@ -74,6 +79,7 @@ export const getMovie = async (
   }
 
   try {
+    if (dbMovie.demoMovie) throw new Error("Demo movie");
     if (!env.VPN_IS_ACTIVE) throw new Error("VPN is not active");
 
     if (!dbMovie.additionalInfoFetched) {
@@ -104,4 +110,56 @@ export const getMovie = async (
       subtitles,
     })
   );
+};
+
+export const downloadMovie = async (
+  c: Context<TUrlParamsParser<TPostMovieDownloadResolutionSchemas["urlParams"]>>
+) => {
+  const { movieId, resolution } = c.get("validatedUrlParams");
+
+  const dbMovie = await prisma.movie.findUnique({
+    where: {
+      tmdbId: movieId,
+    },
+  });
+  if (!dbMovie) {
+    return c.json({ error: "Movie not found" }, 404);
+  }
+
+  await downloadTorrent({
+    provider: Providers.YTS,
+    imdbId: dbMovie.imdbId,
+    resolution,
+  });
+
+  return c.json({ message: "Movie downloaded started" });
+};
+
+export const downloadSubtitles = async (
+  c: Context<TUrlParamsParser<TPostMovieDownloadSubtitlesSchemas["urlParams"]>>
+) => {
+  const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
+
+  const dbMovie = await prisma.movie.findUnique({
+    where: {
+      tmdbId: movieId,
+    },
+    include: {
+      subtitles: {
+        where: {
+          language: subtitlesLanguage,
+        },
+      },
+    },
+  });
+  if (!dbMovie) {
+    return c.json({ error: "Movie not found" }, 404);
+  }
+
+  await downloadYifysubtitles({
+    ...dbMovie.subtitles[0],
+    tmdbId: dbMovie.tmdbId,
+  });
+
+  return c.json({ message: "Subtitles downloaded started" });
 };

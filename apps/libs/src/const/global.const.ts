@@ -4,6 +4,10 @@ export const DownloadStates = {
   DOWNLOADED: "DOWNLOADED",
 } as const;
 
+export const Providers = {
+  YTS: "YTS",
+} as const;
+
 export const languageCodesArray = ["en", "fr", "es"] as const;
 
 export const languageCodes: Record<
