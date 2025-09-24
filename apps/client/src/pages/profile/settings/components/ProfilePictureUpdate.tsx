@@ -6,7 +6,6 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import {
   deleteImageSchemas,
   getUrl,
-  isUrl,
   patchUsersSchemas,
   postImageSchemas,
 } from "@hypertube/libs";
@@ -40,10 +39,10 @@ export const ProfilePictureUpdate = () => {
       if (res.error || !res.data)
         throw new Error(t("settings.updatePictureFailed"));
 
-      if (user.image && !isUrl(user.image))
+      if (user.imageId)
         await axiosFetch({
           method: "DELETE",
-          url: getUrl("api-image", { imageId: user.image }),
+          url: getUrl("api-image", { imageId: user.imageId }),
           schemas: deleteImageSchemas,
         });
 
@@ -51,7 +50,7 @@ export const ProfilePictureUpdate = () => {
         method: "PATCH",
         url: getUrl("api-users", { userId: user.id }),
         schemas: patchUsersSchemas,
-        data: { image: res.data },
+        data: { image: res.data.path, imageId: res.data.id },
       });
     },
     onSuccess: () => {
@@ -70,10 +69,10 @@ export const ProfilePictureUpdate = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      if (user.image && !isUrl(user.image))
+      if (user.imageId)
         await axiosFetch({
           method: "DELETE",
-          url: getUrl("api-image", { imageId: user.image }),
+          url: getUrl("api-image", { imageId: user.imageId }),
           schemas: deleteImageSchemas,
         });
 
@@ -81,7 +80,7 @@ export const ProfilePictureUpdate = () => {
         method: "PATCH",
         url: getUrl("api-users", { userId: user.id }),
         schemas: patchUsersSchemas,
-        data: { image: null },
+        data: { image: null, imageId: null },
       });
     },
     onSuccess: () => {

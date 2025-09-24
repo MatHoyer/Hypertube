@@ -26,7 +26,7 @@ export const patchUser = async (
       image: body.image,
       firstName: body.firstName,
       lastName: body.lastName,
-      updatedAt: new Date(),
+      imageId: body.imageId,
     },
   });
   return c.json({ data: "OK" }, 200);

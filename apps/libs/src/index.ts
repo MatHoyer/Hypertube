@@ -1,7 +1,7 @@
 // Utils export
 export { newUTCDate } from "./utils/date.utils.js";
 export { groupBy } from "./utils/object.utils.js";
-export { capitalize, capitalizeAllWords, isUrl } from "./utils/string.utils.js";
+export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
 export { getServerUrl } from "./utils/url/getServerUrl.js";
 export { getUrl } from "./utils/url/getUrl.js";
 export type {
@@ -13,14 +13,12 @@ export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 // API Schemas export
 export {
   deleteImageSchemas,
-  getImageSchemas,
   postImageSchemas,
-} from "./schemas/api/image.schema.js";
+} from "./schemas/api/images.schema.js";
 export type {
   TDeleteImageSchemas,
-  TGetImageSchemas,
   TPostImageSchemas,
-} from "./schemas/api/image.schema.js";
+} from "./schemas/api/images.schema.js";
 
 export { patchUsersSchemas } from "./schemas/api/users.schema.js";
 export type { TPatchUsersSchemas } from "./schemas/api/users.schema.js";

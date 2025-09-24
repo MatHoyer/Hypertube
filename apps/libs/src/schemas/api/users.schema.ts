@@ -9,6 +9,7 @@ export const patchUsersSchemas = {
     image: userSchema.shape.image,
     firstName: userSchema.shape.firstName,
     lastName: userSchema.shape.lastName,
+    imageId: userSchema.shape.imageId,
   }),
   response: z.object({
     data: z.string().optional(),

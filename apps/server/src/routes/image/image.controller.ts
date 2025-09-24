@@ -1,8 +1,4 @@
-import {
-  TDeleteImageSchemas,
-  TGetImageSchemas,
-  TPostImageSchemas,
-} from "@hypertube/libs";
+import { TDeleteImageSchemas, TPostImageSchemas } from "@hypertube/libs";
 import * as fs from "fs";
 import { Context } from "hono";
 import i18next from "i18next";
@@ -13,7 +9,7 @@ import { TIsLogged } from "../../middlewares/isLogged";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 
 const getImagePath = (imageId: string) => {
-  return `./images/${imageId}.webp`;
+  return `./static/images/${imageId}.webp`;
 };
 
 const deleteImageFile = async (imageId: string) => {
@@ -45,28 +41,13 @@ export const uploadImage = async (
     const path = getImagePath(image.id);
     await fs.promises.writeFile(path, webpBuffer);
 
-    return c.json({ data: image.id }, 200);
+    return c.json(
+      { data: { path: getImagePath(image.id), id: image.id } },
+      200
+    );
   } catch {
     return c.json({ error: i18next.t("images.invalidFile") }, 400);
   }
-};
-
-export const getImage = async (
-  c: Context<TUrlParamsParser<TGetImageSchemas["urlParams"]>>
-) => {
-  const { imageId } = c.get("validatedUrlParams");
-
-  const image = await prisma.image.findUnique({
-    where: { id: imageId },
-  });
-  if (!image) return c.json({ error: i18next.t("images.notFound") }, 404);
-
-  const path = getImagePath(image.id);
-  if (!fs.existsSync(path))
-    return c.json({ error: i18next.t("images.notFound") }, 404);
-
-  const profilePicture = fs.readFileSync(path);
-  return c.body(profilePicture, 200, { "Content-Type": "image/webp" });
 };
 
 export const deleteImage = async (
