@@ -1,5 +1,5 @@
 import { getUrl } from "@hypertube/libs";
-import { imagesSwagger } from "../image/images.swagger";
+import { imagesSwagger } from "../images/images.swagger";
 import { moviesSwagger } from "../movies/movies.swagger";
 import { usersSwagger } from "../users/users.swagger";
 
