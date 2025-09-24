@@ -1,8 +1,5 @@
 import { useRequiredUser } from "@/hooks/use-required-user";
-import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { cn } from "@/lib/utils";
-import { getImageSchemas, getUrl } from "@hypertube/libs";
-import { useQuery } from "@tanstack/react-query";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 type TImageSize = "sm" | "md" | "lg";
@@ -13,24 +10,13 @@ export const UserImageAvatar: React.FC<{
   size?: TImageSize;
 }> = ({ size = "sm" }) => {
   const user = useRequiredUser();
-
-  const { data } = useQuery({
-    queryKey: ["userImage", user.image],
-    queryFn: async () => {
-      const res = await axiosFetch({
-        method: "GET",
-        url: getUrl("api-image", { imageId: user.image! }),
-        schemas: getImageSchemas,
-        config: { responseType: "arraybuffer" },
-      });
-      const blob = new Blob([res], { type: "image/webp" });
-      return URL.createObjectURL(blob);
-    },
-    retry: false,
-    enabled: !!user.image,
-  });
-
-  return <ImageAvatar imageSrc={data} name={user.name} size={size} />;
+  return (
+    <ImageAvatar
+      imageSrc={user.image ?? undefined}
+      name={user.name}
+      size={size}
+    />
+  );
 };
 
 export const ImageAvatar: React.FC<{

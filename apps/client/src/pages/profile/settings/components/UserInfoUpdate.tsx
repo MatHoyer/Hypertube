@@ -1,8 +1,8 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRequiredUser } from "@/hooks/use-required-user";
-import { authClient } from "@/lib/auth-client";
-import { betterAuthTranslation } from "@/lib/better-auth/constants";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getUrl, patchUsersSchemas } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -12,48 +12,28 @@ export const UserInfoUpdate = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  const emailMutation = useMutation({
-    mutationFn: (newEmail: string) => {
-      return authClient.changeEmail(
-        { newEmail: newEmail },
-        {
-          onSuccess: () => {
-            toast.success(t("settings.updateEmailMessage"));
-          },
-          onError: (ctx) => {
-            toast.error(betterAuthTranslation(t, ctx.error.code));
-          },
-        }
-      );
+  const patchMutation = useMutation({
+    mutationFn: async (data: {
+      name?: string;
+      email?: string;
+      firstName?: string;
+      lastName?: string;
+    }) => {
+      await axiosFetch({
+        method: "PATCH",
+        url: getUrl("api-users", { userId: user.id }),
+        schemas: patchUsersSchemas,
+        data,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["session"],
       });
+      toast.success(t("settings.updateInfo"));
     },
-  });
-
-  const namesMutation = useMutation({
-    mutationFn: (names: { firstName?: string; lastName?: string }) => {
-      return authClient.updateUser(
-        {
-          firstName: names.firstName,
-          lastName: names.lastName,
-        },
-        {
-          onSuccess: () => {
-            toast.success(t("settings.updateInfoMessage"));
-          },
-          onError: (ctx) => {
-            toast.error(betterAuthTranslation(t, ctx.error.code));
-          },
-        }
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["session"],
-      });
+    onError: () => {
+      toast.error(t("settings.updateInfoFailed"));
     },
   });
 
@@ -62,26 +42,34 @@ export const UserInfoUpdate = () => {
       <Label htmlFor="input-email">{t("sign.email")}</Label>
       <Input
         onBlur={(e) => {
-          if (e.target.value !== user.email)
-            emailMutation.mutate(e.target.value);
+          if (e.target.value && e.target.value !== user.email)
+            patchMutation.mutate({ email: e.target.value });
         }}
         defaultValue={user.email}
         type="email"
         id="input-email"
       />
+      <Label htmlFor="input-full-name">{t("settings.displayName")}</Label>
+      <Input
+        onBlur={(e) => {
+          if (e.target.value && e.target.value !== user.name)
+            patchMutation.mutate({ name: e.target.value });
+        }}
+        defaultValue={user.name}
+      />
       <Label htmlFor="input-first-name">{t("sign.firstName")}</Label>
       <Input
         onBlur={(e) => {
-          if (e.target.value !== user.firstName)
-            namesMutation.mutate({ firstName: e.target.value });
+          if (e.target.value && e.target.value !== user.firstName)
+            patchMutation.mutate({ firstName: e.target.value });
         }}
         defaultValue={user.firstName}
       />
       <Label htmlFor="input-last-name">{t("sign.lastName")}</Label>
       <Input
         onBlur={(e) => {
-          if (e.target.value !== user.lastName)
-            namesMutation.mutate({ lastName: e.target.value });
+          if (e.target.value && e.target.value !== user.lastName)
+            patchMutation.mutate({ lastName: e.target.value });
         }}
         defaultValue={user.lastName}
       />

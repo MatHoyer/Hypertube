@@ -13,14 +13,15 @@ export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 // API Schemas export
 export {
   deleteImageSchemas,
-  getImageSchemas,
   postImageSchemas,
-} from "./schemas/api/image.schema.js";
+} from "./schemas/api/images.schema.js";
 export type {
   TDeleteImageSchemas,
-  TGetImageSchemas,
   TPostImageSchemas,
-} from "./schemas/api/image.schema.js";
+} from "./schemas/api/images.schema.js";
+
+export { patchUsersSchemas } from "./schemas/api/users.schema.js";
+export type { TPatchUsersSchemas } from "./schemas/api/users.schema.js";
 
 export {
   getMovieSchemas,
@@ -48,6 +49,9 @@ export type {
 // Database Schemas export
 export { imageSchema } from "./schemas/database/image.schema.js";
 export type { TImageSchema } from "./schemas/database/image.schema.js";
+
+export { userSchema } from "./schemas/database/user.schema.js";
+export type { TUserSchema } from "./schemas/database/user.schema.js";
 
 export {
   movieSchema,

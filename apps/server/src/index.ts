@@ -9,10 +9,11 @@ import "./cron.js";
 import { env } from "./env.js";
 import "./lib/i18n/i18n.js";
 import authRouter from "./routes/auth/auth.route.js";
-import imageRouter from "./routes/image/image.route.js";
+import imagesRouter from "./routes/image/images.route.js";
 import moviesRouter from "./routes/movie/movie.route.js";
 import streamingRouter from "./routes/streaming/streaming.route.js";
 import swaggerRouter from "./routes/swagger/swagger.route.js";
+import usersRouter from "./routes/users/users.route.js";
 
 const app = new Hono();
 
@@ -39,13 +40,16 @@ app.use(
 const apiRouter = new Hono();
 
 apiRouter.route("/auth", authRouter);
-apiRouter.route("/image", imageRouter);
+apiRouter.route("/images", imagesRouter);
+apiRouter.route("/users", usersRouter);
 apiRouter.route("/movies", moviesRouter);
 apiRouter.route("/streaming", streamingRouter);
 apiRouter.route("/swagger", swaggerRouter);
 apiRouter.get("/health", (c) => c.text("OK"));
 
 app.route("/api", apiRouter);
+
+app.use("/static/*", serveStatic({ root: "./" }));
 
 if (env.NODE_ENV === "PROD") {
   app.use(

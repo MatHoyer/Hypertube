@@ -17,6 +17,7 @@ export const authClient = createAuthClient({
       user: {
         firstName: { type: "string" },
         lastName: { type: "string" },
+        imageId: { type: "string", input: false },
       },
     }),
   ],

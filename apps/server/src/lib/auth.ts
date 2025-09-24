@@ -108,6 +108,7 @@ export const auth = betterAuth({
     additionalFields: {
       firstName: { type: "string" },
       lastName: { type: "string" },
+      imageId: { type: "string", input: false },
     },
   },
   hooks: {

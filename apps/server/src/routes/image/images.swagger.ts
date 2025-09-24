@@ -1,9 +1,4 @@
-import {
-  deleteImageSchemas,
-  getImageSchemas,
-  getUrl,
-  postImageSchemas,
-} from "@hypertube/libs";
+import { deleteImageSchemas, getUrl, postImageSchemas } from "@hypertube/libs";
 
 const imagePathParam = {
   in: "path",
@@ -11,8 +6,8 @@ const imagePathParam = {
   required: true,
 };
 
-export const imageSwagger = {
-  [getUrl("api-image")]: {
+export const imagesSwagger = {
+  [getUrl("api-images")]: {
     post: {
       summary: "Upload image",
       tags: ["Image"],
@@ -47,22 +42,7 @@ export const imageSwagger = {
       },
     },
   },
-  [`${getUrl("api-image")}/{imageId}`]: {
-    get: {
-      summary: "Get image",
-      tags: ["Image"],
-      parameters: [imagePathParam],
-      responses: {
-        "200": {
-          description: "OK",
-          content: {
-            "application/json": {
-              schema: getImageSchemas.response,
-            },
-          },
-        },
-      },
-    },
+  [getUrl("api-images", { imageId: "{imageId}" })]: {
     delete: {
       summary: "Delete image",
       tags: ["Image"],

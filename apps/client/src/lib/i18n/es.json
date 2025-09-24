@@ -85,12 +85,12 @@
     "connexion": ""
   },
   "settings": {
+    "displayName": "",
+    "update": "",
     "updateInfo": "",
-    "updateInfoMessage": "",
-    "updateEmailMessage": "",
-    "newPassword": "",
-    "updatePasswordMessage": "",
+    "updateInfoFailed": "",
     "deletePicture": "",
+    "updatePicture": "",
     "updatePictureFailed": ""
   },
   "movie": {

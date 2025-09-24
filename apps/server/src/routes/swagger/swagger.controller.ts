@@ -1,6 +1,7 @@
 import { getUrl } from "@hypertube/libs";
-import { imageSwagger } from "../image/image.swagger";
+import { imagesSwagger } from "../image/images.swagger";
 import { moviesSwagger } from "../movie/movie.swagger";
+import { usersSwagger } from "../users/users.swagger";
 
 const openApiDoc = {
   openapi: "3.0.0",
@@ -16,8 +17,12 @@ const openApiDoc = {
       description: "Health check endpoints",
     },
     {
-      name: "Image",
-      description: "Image endpoints",
+      name: "Images",
+      description: "Images endpoints",
+    },
+    {
+      name: "Users",
+      description: "Users endpoints",
     },
     {
       name: "Movies",
@@ -41,7 +46,8 @@ const openApiDoc = {
       },
     },
 
-    ...imageSwagger,
+    ...imagesSwagger,
+    ...usersSwagger,
     ...moviesSwagger,
   },
 };

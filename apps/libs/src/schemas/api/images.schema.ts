@@ -5,7 +5,7 @@ import { imageSchema } from "../database/image.schema.js";
 export const postImageSchemas = {
   requirements: z.object({ file: z.file().max(sizeMaxFile) }),
   response: z.object({
-    data: z.string().optional(),
+    data: z.object({ path: z.string(), id: z.uuid() }).optional(),
     error: z.string().optional(),
   }),
 };
@@ -13,16 +13,6 @@ export const postImageSchemas = {
 export type TPostImageSchemas = {
   requirements: z.infer<typeof postImageSchemas.requirements>;
   response: z.infer<typeof postImageSchemas.response>;
-};
-
-export const getImageSchemas = {
-  urlParams: z.object({ imageId: imageSchema.shape.id }),
-  response: z.any().refine((e) => e instanceof ArrayBuffer),
-};
-
-export type TGetImageSchemas = {
-  urlParams: z.infer<typeof getImageSchemas.urlParams>;
-  response: z.infer<typeof getImageSchemas.response>;
 };
 
 export const deleteImageSchemas = {
