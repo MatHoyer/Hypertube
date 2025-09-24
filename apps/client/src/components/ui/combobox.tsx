@@ -26,6 +26,9 @@ interface ComboboxProps {
   value: string;
   setValue: (value: string) => void;
   placeholderType: TPlaceholder;
+  popoverContentAlign?: "start" | "end";
+  renderTrigger?: (value: string, label: string) => React.ReactNode;
+  renderValue?: (value: string, label: string) => React.ReactNode;
   modal?: boolean;
 }
 
@@ -34,27 +37,40 @@ export const Combobox: React.FC<ComboboxProps> = ({
   value,
   setValue,
   placeholderType,
+  popoverContentAlign,
+  renderTrigger,
+  renderValue,
   modal = false,
 }) => {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
 
+  const selectedElement = elements.find((element) => element.value === value);
+
   return (
     <Popover open={open} onOpenChange={setOpen} modal={modal}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          {value
-            ? elements.find((element) => element.value === value)?.label
-            : t(`combobox.${placeholderType}.noElementFound`)}
-          <ChevronsUpDown className="opacity-50" />
-        </Button>
+        {renderTrigger ? (
+          renderTrigger(
+            value,
+            selectedElement?.label ??
+              t(`combobox.${placeholderType}.noElementFound`)
+          )
+        ) : (
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-[200px] justify-between"
+          >
+            {value
+              ? selectedElement?.label
+              : t(`combobox.${placeholderType}.noElementFound`)}
+            <ChevronsUpDown className="opacity-50" />
+          </Button>
+        )}
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[200px] p-0" align={popoverContentAlign}>
         <Command>
           <CommandInput
             placeholder={t(`combobox.${placeholderType}.search`)}
@@ -74,13 +90,19 @@ export const Combobox: React.FC<ComboboxProps> = ({
                     setOpen(false);
                   }}
                 >
-                  {element.label}
-                  <Check
-                    className={cn(
-                      "ml-auto",
-                      value === element.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
+                  {renderValue ? (
+                    renderValue(element.value, element.label)
+                  ) : (
+                    <>
+                      {element.label}
+                      <Check
+                        className={cn(
+                          "ml-auto",
+                          value === element.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    </>
+                  )}
                 </CommandItem>
               ))}
             </CommandGroup>
