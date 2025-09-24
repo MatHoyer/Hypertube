@@ -20,14 +20,7 @@ export const patchUser = async (
 
   await prisma.user.update({
     where: { id },
-    data: {
-      name: body.name,
-      email: body.email,
-      image: body.image,
-      firstName: body.firstName,
-      lastName: body.lastName,
-      imageId: body.imageId,
-    },
+    data: body,
   });
   return c.json({ data: "OK" }, 200);
 };

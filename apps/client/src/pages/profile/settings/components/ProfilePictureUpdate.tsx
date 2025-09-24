@@ -57,9 +57,6 @@ export const ProfilePictureUpdate = () => {
       queryClient.invalidateQueries({
         queryKey: ["session"],
       });
-      queryClient.invalidateQueries({
-        queryKey: ["user", { id: user.id }],
-      });
       toast.success(t("settings.updatePicture"));
     },
     onError: () => {
@@ -86,9 +83,6 @@ export const ProfilePictureUpdate = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["session"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["user", { id: user.id }],
       });
       toast.success(t("settings.updatePicture"));
     },
