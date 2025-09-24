@@ -24,6 +24,7 @@ export const usersSwagger = {
               image: "",
               firstName: "",
               lastName: "",
+              imageId: "",
             },
           },
         },
