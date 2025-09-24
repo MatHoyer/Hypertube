@@ -28,7 +28,11 @@ interface ComboboxProps {
   placeholderType: TPlaceholder;
   popoverContentAlign?: "start" | "end";
   renderTrigger?: (value: string, label: string) => React.ReactNode;
-  renderValue?: (value: string, label: string) => React.ReactNode;
+  renderValue?: (
+    value: string,
+    label: string,
+    isSelected: boolean
+  ) => React.ReactNode;
   modal?: boolean;
 }
 
@@ -91,7 +95,11 @@ export const Combobox: React.FC<ComboboxProps> = ({
                   }}
                 >
                   {renderValue ? (
-                    renderValue(element.value, element.label)
+                    renderValue(
+                      element.value,
+                      element.label,
+                      value === element.value
+                    )
                   ) : (
                     <>
                       {element.label}

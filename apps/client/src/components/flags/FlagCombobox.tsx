@@ -1,4 +1,5 @@
 import { languageCodes, languageCodesArray } from "@hypertube/libs";
+import { Check } from "lucide-react";
 import { type JSX } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../ui/button";
@@ -31,9 +32,10 @@ export const FlagCombobox = () => {
           {flags[value as (typeof languageCodesArray)[number]]()}
         </Button>
       )}
-      renderValue={(value, label) => (
+      renderValue={(value, label, isSelected) => (
         <>
           {flags[value as (typeof languageCodesArray)[number]]()} {label}
+          {isSelected && <Check className="ml-auto" />}
         </>
       )}
     />
