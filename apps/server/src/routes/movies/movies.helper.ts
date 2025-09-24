@@ -1,18 +1,9 @@
-import { DownloadStates, Providers } from "@hypertube/libs";
+import { DownloadStates, Providers, TMovieSchema } from "@hypertube/libs";
 import { YtsApi } from "../../lib/apis/yts.api";
 import prisma from "../../lib/prisma";
 import { getSubtitlesDownloadLinks } from "../../lib/scrappers/yifysubtitles.scrapper";
 
-export const getMovieData = async (movieId: string) => {
-  const movie = await prisma.movie.findUnique({
-    where: {
-      id: movieId,
-    },
-  });
-  if (!movie) {
-    return null;
-  }
-
+export const getMovieData = async (movie: TMovieSchema) => {
   const ytsApi = new YtsApi();
 
   const resolutions = await ytsApi.getResolutions(movie.imdbId);
@@ -22,7 +13,7 @@ export const getMovieData = async (movieId: string) => {
       return await prisma.resolution.upsert({
         where: {
           movieId_resolution: {
-            movieId: movieId,
+            movieId: movie.id,
             resolution: resolution.quality,
           },
         },
@@ -33,7 +24,7 @@ export const getMovieData = async (movieId: string) => {
           provider: Providers.YTS,
         },
         create: {
-          movieId: movieId,
+          movieId: movie.id,
           resolution: resolution.quality,
           size: resolution.size,
           downloadState: DownloadStates.NOT_DOWNLOADED,

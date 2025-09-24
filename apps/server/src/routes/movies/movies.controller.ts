@@ -2,7 +2,6 @@ import {
   getMovieSchemas,
   getMoviesSchemas,
   languageCodes,
-  Providers,
   TGetMovieSchemas,
   TGetMoviesSchemas,
   tmdbMovieSchema,
@@ -83,9 +82,9 @@ export const getMovie = async (
     if (!env.VPN_IS_ACTIVE) throw new Error("VPN is not active");
 
     if (!dbMovie.additionalInfoFetched) {
-      await getMovieData(dbMovie.id);
+      await getMovieData(dbMovie);
     } else {
-      getMovieData(dbMovie.id);
+      getMovieData(dbMovie);
     }
   } catch (error) {
     console.error("Error getting movie data", error);
@@ -121,15 +120,25 @@ export const downloadMovie = async (
     where: {
       tmdbId,
     },
+    include: {
+      resolutions: {
+        where: {
+          resolution,
+        },
+      },
+    },
   });
   if (!dbMovie) {
     return c.json({ error: "Movie not found" }, 404);
   }
+  const dbResolution = dbMovie.resolutions[0];
+  if (!dbResolution) {
+    return c.json({ error: "Resolution not found" }, 404);
+  }
 
   await downloadTorrent({
-    provider: Providers.YTS,
-    imdbId: dbMovie.imdbId,
-    resolution,
+    movie: dbMovie,
+    resolution: dbResolution,
   });
 
   return c.json({ message: "Movie downloaded started" });

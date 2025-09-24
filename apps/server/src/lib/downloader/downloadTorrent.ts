@@ -1,20 +1,18 @@
-import { Providers } from "@hypertube/libs";
+import { Providers, TMovieSchema, TResolutionSchema } from "@hypertube/libs";
 import { YtsApi } from "../apis/yts.api";
 
 export const downloadTorrent = async ({
-  provider,
-  imdbId,
+  movie,
   resolution,
 }: {
-  provider: (typeof Providers)[keyof typeof Providers];
-  imdbId: string;
-  resolution: string;
+  movie: TMovieSchema;
+  resolution: TResolutionSchema;
 }) => {
-  switch (provider) {
+  switch (resolution.provider) {
     case Providers.YTS:
-      await new YtsApi().downloadTorrent(imdbId, resolution);
+      await new YtsApi().downloadTorrent(movie, resolution.resolution);
       break;
     default:
-      throw new Error(`Provider (${provider}) not supported`);
+      throw new Error(`Provider (${resolution.provider}) not supported`);
   }
 };

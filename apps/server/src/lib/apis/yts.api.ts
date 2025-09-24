@@ -2,11 +2,11 @@ import { capitalizeAllWords, ytsGenres, ytsQualities } from "@hypertube/libs";
 import { writeFile } from "fs/promises";
 import z from "zod";
 
+import { TMovieSchema } from "@hypertube/libs";
 import {
   createResolution,
   getResolutionPath,
 } from "../movie-folder-gestion/resolution";
-import prisma from "../prisma";
 
 // https://yts.mx/api for documentation
 
@@ -110,30 +110,23 @@ export class YtsApi {
     return resolution;
   }
 
-  public async downloadTorrent(imdbId: string, targetResolution: string) {
-    const dbMovie = await prisma.movie.findUnique({
-      where: {
-        imdbId,
-      },
-    });
-    if (!dbMovie) {
-      throw new Error(`Movie (${imdbId}) not found`);
-    }
-
-    const resolution = await this.getResolution(imdbId, targetResolution);
+  public async downloadTorrent(movie: TMovieSchema, targetResolution: string) {
+    const resolution = await this.getResolution(movie.imdbId, targetResolution);
 
     const res = await fetch(resolution.url);
     if (!res.ok) {
-      throw new Error(`Failed to download resolution for movie ${imdbId}`);
+      throw new Error(
+        `Failed to download resolution for movie ${movie.imdbId}`
+      );
     }
 
     const arrayBuffer = await res.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    await createResolution(dbMovie.tmdbId, resolution.quality);
+    await createResolution(movie.tmdbId, resolution.quality);
 
     const outputPath = getResolutionPath(
-      dbMovie.tmdbId,
+      movie.tmdbId,
       resolution.quality,
       "resolution.torrent"
     );
