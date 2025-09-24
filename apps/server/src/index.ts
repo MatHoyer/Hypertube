@@ -10,7 +10,7 @@ import { env } from "./env.js";
 import "./lib/i18n/i18n.js";
 import authRouter from "./routes/auth/auth.route.js";
 import imagesRouter from "./routes/image/images.route.js";
-import moviesRouter from "./routes/movie/movie.route.js";
+import moviesRouter from "./routes/movies/movies.route.js";
 import streamingRouter from "./routes/streaming/streaming.route.js";
 import swaggerRouter from "./routes/swagger/swagger.route.js";
 import usersRouter from "./routes/users/users.route.js";

@@ -31,16 +31,16 @@ export const moviesSwagger = {
       },
     },
   },
-  [getUrl("api-movies", { movieId: "{movieId}" })]: {
+  [getUrl("api-movies", { tmdbId: "{tmdbId}" })]: {
     get: {
       summary: "Get movie",
       tags: ["Movies"],
       parameters: [
         {
           in: "path",
-          name: "movieId",
+          name: "tmdbId",
           required: true,
-          schema: getMovieSchemas.urlParams.shape.movieId,
+          schema: getMovieSchemas.urlParams.shape.tmdbId,
         },
       ],
       responses: {

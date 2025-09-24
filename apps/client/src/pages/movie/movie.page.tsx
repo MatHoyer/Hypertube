@@ -17,15 +17,15 @@ import { MoviePageParamsSchema } from "./schemas/urlParams.schema";
 
 const MoviePage = () => {
   const { t } = useTranslation();
-  const { movieId } = useConvertParams(MoviePageParamsSchema);
+  const { tmdbId } = useConvertParams(MoviePageParamsSchema);
 
   const { data: movie, isLoading } = useQuery({
-    queryKey: ["movie", movieId],
+    queryKey: ["movie", tmdbId],
     queryFn: () =>
       axiosFetch({
         method: "GET",
         url: getUrl("api-movies", {
-          movieId,
+          tmdbId,
         }),
         schemas: getMovieSchemas,
       }),

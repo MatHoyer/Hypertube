@@ -7,7 +7,13 @@ import {
 import { Hono } from "hono";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
-import { getMovie, getMovies } from "./movie.controller";
+import { vpnChecker } from "../../middlewares/vpnChecker";
+import {
+  downloadMovie,
+  downloadSubtitles,
+  getMovie,
+  getMovies,
+} from "./movies.controller";
 
 const moviesRouter = new Hono();
 
@@ -18,19 +24,23 @@ moviesRouter.get(
 );
 
 moviesRouter.get(
-  "/:movieId",
+  "/:tmdbId",
   urlParamsParser(getMovieSchemas.urlParams),
   getMovie
 );
 
 moviesRouter.post(
-  "/:movieId/download/resolutions/:resolution",
-  urlParamsParser(postMovieDownloadResolutionSchemas.urlParams)
+  "/:tmdbId/download/resolutions/:resolution",
+  vpnChecker(),
+  urlParamsParser(postMovieDownloadResolutionSchemas.urlParams),
+  downloadMovie
 );
 
 moviesRouter.post(
-  "/:movieId/download/subtitles/:subtitlesLanguage",
-  urlParamsParser(postMovieDownloadSubtitlesSchemas.urlParams)
+  "/:tmdbId/download/subtitles/:subtitlesLanguage",
+  vpnChecker(),
+  urlParamsParser(postMovieDownloadSubtitlesSchemas.urlParams),
+  downloadSubtitles
 );
 
 export default moviesRouter;

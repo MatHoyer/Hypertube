@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DownloadStates } from "../../const/global.const.js";
+import { DownloadStates, Providers } from "../../const/global.const.js";
 
 export const resolutionSchema = z.object({
   id: z.uuid(),
@@ -7,6 +7,7 @@ export const resolutionSchema = z.object({
   resolution: z.string(),
   size: z.string(),
   downloadState: z.enum([...Object.values(DownloadStates)] as const),
+  provider: z.enum([...Object.values(Providers)] as const).nullable(),
 });
 export type TResolutionSchema = z.infer<typeof resolutionSchema>;
 

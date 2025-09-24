@@ -77,5 +77,6 @@ export {
   DownloadStates,
   languageCodes,
   languageCodesArray,
+  Providers,
   sizeMaxFile,
 } from "./const/global.const.js";
