@@ -13,7 +13,7 @@ import {
   downloadSubtitles,
   getMovie,
   getMovies,
-} from "./movie.controller";
+} from "./movies.controller";
 
 const moviesRouter = new Hono();
 

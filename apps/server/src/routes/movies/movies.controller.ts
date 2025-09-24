@@ -18,7 +18,7 @@ import prisma from "../../lib/prisma";
 import { downloadYifysubtitles } from "../../lib/scrappers/yifysubtitles.scrapper";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
-import { scrapMovieData } from "./movie.helper";
+import { scrapMovieData } from "./movies.helper";
 
 export const getMovies = async (
   c: Context<TSearchParamsParser<TGetMoviesSchemas["searchParams"]>>

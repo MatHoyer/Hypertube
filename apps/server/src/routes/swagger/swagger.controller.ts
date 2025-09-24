@@ -1,6 +1,6 @@
 import { getUrl } from "@hypertube/libs";
 import { imagesSwagger } from "../image/images.swagger";
-import { moviesSwagger } from "../movie/movie.swagger";
+import { moviesSwagger } from "../movies/movies.swagger";
 import { usersSwagger } from "../users/users.swagger";
 
 const openApiDoc = {
