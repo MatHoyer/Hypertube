@@ -6,8 +6,8 @@ const imagePathParam = {
   required: true,
 };
 
-export const imageSwagger = {
-  [getUrl("api-image")]: {
+export const imagesSwagger = {
+  [getUrl("api-images")]: {
     post: {
       summary: "Upload image",
       tags: ["Image"],
@@ -42,7 +42,7 @@ export const imageSwagger = {
       },
     },
   },
-  [getUrl("api-image", { imageId: "{imageId}" })]: {
+  [getUrl("api-images", { imageId: "{imageId}" })]: {
     delete: {
       summary: "Delete image",
       tags: ["Image"],

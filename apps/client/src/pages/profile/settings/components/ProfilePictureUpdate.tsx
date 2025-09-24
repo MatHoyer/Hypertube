@@ -27,7 +27,7 @@ export const ProfilePictureUpdate = () => {
 
       const res = await axiosFetch({
         method: "POST",
-        url: getUrl("api-image"),
+        url: getUrl("api-images"),
         schemas: {
           requirements: z.instanceof(FormData),
           response: postImageSchemas.response,
@@ -42,7 +42,7 @@ export const ProfilePictureUpdate = () => {
       if (user.imageId)
         await axiosFetch({
           method: "DELETE",
-          url: getUrl("api-image", { imageId: user.imageId }),
+          url: getUrl("api-images", { imageId: user.imageId }),
           schemas: deleteImageSchemas,
         });
 
@@ -69,7 +69,7 @@ export const ProfilePictureUpdate = () => {
       if (user.imageId)
         await axiosFetch({
           method: "DELETE",
-          url: getUrl("api-image", { imageId: user.imageId }),
+          url: getUrl("api-images", { imageId: user.imageId }),
           schemas: deleteImageSchemas,
         });
 
