@@ -69,7 +69,7 @@ export const DownloadsSelector: React.FC<{
   resolutions: TGetMovieSchemas["response"]["resolutions"];
   subtitlesLanguages: TGetMovieSchemas["response"]["subtitles"];
 }> = ({ resolutions, subtitlesLanguages }) => {
-  const { movieId } = useConvertParams(MoviePageParamsSchema);
+  const { tmdbId } = useConvertParams(MoviePageParamsSchema);
   const queryClient = useQueryClient();
 
   const { t } = useTranslation();
@@ -85,13 +85,13 @@ export const DownloadsSelector: React.FC<{
       return axiosFetch({
         method: "POST",
         url: getUrl("api-movie-download-resolution", {
-          movieId,
+          tmdbId,
           resolution,
         }),
         schemas: postMovieDownloadResolutionSchemas,
         handleEnding: {
           cb: () => {
-            queryClient.invalidateQueries({ queryKey: ["movie", movieId] });
+            queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
             setSelectedResolution(null);
           },
         },
@@ -104,13 +104,13 @@ export const DownloadsSelector: React.FC<{
       return axiosFetch({
         method: "POST",
         url: getUrl("api-movie-download-subtitles", {
-          movieId,
+          tmdbId,
           subtitlesLanguage,
         }),
         schemas: postMovieDownloadSubtitlesSchemas,
         handleEnding: {
           cb: () => {
-            queryClient.invalidateQueries({ queryKey: ["movie", movieId] });
+            queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
             setSelectedSubtitlesLanguage(null);
           },
         },

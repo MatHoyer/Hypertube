@@ -11,7 +11,7 @@ export type TClientRouteDataRequirements = {
   "client-reset-password": undefined;
   "client-settings": undefined;
   "client-movie": {
-    movieId: TMovieSchema["tmdbId"] | ":movieId";
+    tmdbId: TMovieSchema["tmdbId"] | ":tmdbId";
   };
 };
 
@@ -27,24 +27,24 @@ export type TApiRouteDataRequirements = {
   "api-images": { imageId?: string | null };
 
   "api-movies": {
-    movieId: "{movieId}" | number | undefined;
+    tmdbId: "{tmdbId}" | number | undefined;
   };
   "api-movie-download-resolution": {
-    movieId: TMovieSchema["tmdbId"];
+    tmdbId: TMovieSchema["tmdbId"];
     resolution: (typeof ytsQualities)[number] | "{resolution}";
   };
   "api-movie-download-subtitles": {
-    movieId: TMovieSchema["tmdbId"];
+    tmdbId: TMovieSchema["tmdbId"];
     subtitlesLanguage: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
 
   // Streaming routes
   "api-streaming-movie-resolution": {
-    movieId: TMovieSchema["tmdbId"];
+    tmdbId: TMovieSchema["tmdbId"];
     resolution: (typeof ytsQualities)[number] | "{resolution}";
   };
   "api-streaming-movie-subtitles": {
-    movieId: TMovieSchema["tmdbId"];
+    tmdbId: TMovieSchema["tmdbId"];
     subtitlesLanguage: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
 };
@@ -78,7 +78,7 @@ const routes: {
   "client-forget-password": () => "/forget-password",
   "client-reset-password": () => "/reset-password",
   "client-settings": () => "/settings",
-  "client-movie": ({ movieId }) => `/movie/${movieId}`,
+  "client-movie": ({ tmdbId }) => `/movie/${tmdbId}`,
 
   // API routes
   "api-swagger": ({ mode }) => (mode ? `/api/swagger/${mode}` : "/api/swagger"),
@@ -87,17 +87,17 @@ const routes: {
   "api-images": ({ imageId }) => "/api/images" + (imageId ? `/${imageId}` : ""),
   "api-users": ({ userId }) => "/api/users" + (userId ? `/${userId}` : ""),
 
-  "api-movies": ({ movieId }) =>
-    movieId !== undefined ? `/api/movies/${movieId}` : "/api/movies",
-  "api-movie-download-resolution": ({ movieId, resolution }) =>
-    `/api/movie/${movieId}/resolution/${resolution}`,
-  "api-movie-download-subtitles": ({ movieId, subtitlesLanguage }) =>
-    `/api/movie/${movieId}/subtitles/${subtitlesLanguage}`,
+  "api-movies": ({ tmdbId }) =>
+    tmdbId !== undefined ? `/api/movies/${tmdbId}` : "/api/movies",
+  "api-movie-download-resolution": ({ tmdbId, resolution }) =>
+    `/api/movie/${tmdbId}/resolution/${resolution}`,
+  "api-movie-download-subtitles": ({ tmdbId, subtitlesLanguage }) =>
+    `/api/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
 
-  "api-streaming-movie-resolution": ({ movieId, resolution }) =>
-    `/api/streaming/movie/${movieId}/resolution/${resolution}`,
-  "api-streaming-movie-subtitles": ({ movieId, subtitlesLanguage }) =>
-    `/api/streaming/movie/${movieId}/subtitles/${subtitlesLanguage}`,
+  "api-streaming-movie-resolution": ({ tmdbId, resolution }) =>
+    `/api/streaming/movie/${tmdbId}/resolution/${resolution}`,
+  "api-streaming-movie-subtitles": ({ tmdbId, subtitlesLanguage }) =>
+    `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
 
   // External routes
   "external-imdb-movie": ({ imdbId }) => `https://www.imdb.com/title/${imdbId}`,

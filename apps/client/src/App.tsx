@@ -27,7 +27,7 @@ const App = () => {
         <Route element={<ProtectedUrlRoute schema={MoviePageParamsSchema} />}>
           <Route
             path={getUrl("client-movie", {
-              movieId: ":movieId",
+              tmdbId: ":tmdbId",
             })}
             element={<MoviePage />}
           />

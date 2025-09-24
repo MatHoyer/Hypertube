@@ -51,7 +51,7 @@ export type TGetMoviesSchemas = {
 
 export const getMovieSchemas = {
   urlParams: z.object({
-    movieId: movieSchema.shape.tmdbId,
+    tmdbId: movieSchema.shape.tmdbId,
   }),
   response: z.object({
     ...tmdbMovieSchema.pick({
@@ -84,7 +84,7 @@ export type TGetMovieSchemas = {
 
 export const postMovieDownloadResolutionSchemas = {
   urlParams: z.object({
-    movieId: movieSchema.shape.tmdbId,
+    tmdbId: movieSchema.shape.tmdbId,
     resolution: resolutionSchema.shape.resolution,
   }),
   response: z.object({
@@ -98,7 +98,7 @@ export type TPostMovieDownloadResolutionSchemas = {
 
 export const postMovieDownloadSubtitlesSchemas = {
   urlParams: z.object({
-    movieId: movieSchema.shape.tmdbId,
+    tmdbId: movieSchema.shape.tmdbId,
     subtitlesLanguage: subtitleSchema.shape.language,
   }),
   response: z.object({

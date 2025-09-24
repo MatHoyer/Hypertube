@@ -586,7 +586,7 @@ const ControlsBar = () => {
 };
 
 const VideoPlayer = () => {
-  const { movieId } = useConvertParams(MoviePageParamsSchema);
+  const { tmdbId } = useConvertParams(MoviePageParamsSchema);
 
   const {
     videoRef,
@@ -644,7 +644,7 @@ const VideoPlayer = () => {
       >
         <source
           src={getUrl("api-streaming-movie-resolution", {
-            movieId,
+            tmdbId,
             resolution: selectedResolution as (typeof ytsQualities)[number],
           })}
           type="video/mp4"
@@ -652,7 +652,7 @@ const VideoPlayer = () => {
         {selectedSubtitlesLanguage && (
           <track
             src={getUrl("api-streaming-movie-subtitles", {
-              movieId,
+              tmdbId,
               subtitlesLanguage:
                 selectedSubtitlesLanguage as keyof typeof languageCodes,
             })}

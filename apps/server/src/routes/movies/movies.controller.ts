@@ -18,7 +18,7 @@ import prisma from "../../lib/prisma";
 import { downloadYifysubtitles } from "../../lib/scrappers/yifysubtitles.scrapper";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
-import { scrapMovieData } from "./movies.helper";
+import { getMovieData } from "./movies.helper";
 
 export const getMovies = async (
   c: Context<TSearchParamsParser<TGetMoviesSchemas["searchParams"]>>
@@ -40,12 +40,12 @@ export const getMovies = async (
 export const getMovie = async (
   c: Context<TUrlParamsParser<TGetMovieSchemas["urlParams"]>>
 ) => {
-  const { movieId } = c.get("validatedUrlParams");
+  const { tmdbId } = c.get("validatedUrlParams");
   const language = c.get("language");
 
   const tmdbApi = new TmdbApi();
   const tmdbMovie =
-    movieId === 0
+    tmdbId === 0
       ? ({
           id: 0,
           imdb_id: "tt0",
@@ -62,17 +62,17 @@ export const getMovie = async (
           release_date: "2025-01-01",
           adult: false,
         } as z.infer<typeof tmdbMovieSchema>)
-      : await tmdbApi.getMovie(movieId, language as keyof typeof languageCodes);
+      : await tmdbApi.getMovie(tmdbId, language as keyof typeof languageCodes);
 
   let dbMovie = await prisma.movie.findUnique({
     where: {
-      tmdbId: movieId,
+      tmdbId,
     },
   });
   if (!dbMovie) {
     dbMovie = await prisma.movie.create({
       data: {
-        tmdbId: movieId,
+        tmdbId,
         imdbId: tmdbMovie.imdb_id,
       },
     });
@@ -83,12 +83,12 @@ export const getMovie = async (
     if (!env.VPN_IS_ACTIVE) throw new Error("VPN is not active");
 
     if (!dbMovie.additionalInfoFetched) {
-      await scrapMovieData(dbMovie.id);
+      await getMovieData(dbMovie.id);
     } else {
-      scrapMovieData(dbMovie.id);
+      getMovieData(dbMovie.id);
     }
   } catch (error) {
-    console.error("Error scraping movie data", error);
+    console.error("Error getting movie data", error);
   }
 
   const resolutions = await prisma.resolution.findMany({
@@ -115,11 +115,11 @@ export const getMovie = async (
 export const downloadMovie = async (
   c: Context<TUrlParamsParser<TPostMovieDownloadResolutionSchemas["urlParams"]>>
 ) => {
-  const { movieId, resolution } = c.get("validatedUrlParams");
+  const { tmdbId, resolution } = c.get("validatedUrlParams");
 
   const dbMovie = await prisma.movie.findUnique({
     where: {
-      tmdbId: movieId,
+      tmdbId,
     },
   });
   if (!dbMovie) {
@@ -138,11 +138,11 @@ export const downloadMovie = async (
 export const downloadSubtitles = async (
   c: Context<TUrlParamsParser<TPostMovieDownloadSubtitlesSchemas["urlParams"]>>
 ) => {
-  const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
+  const { tmdbId, subtitlesLanguage } = c.get("validatedUrlParams");
 
   const dbMovie = await prisma.movie.findUnique({
     where: {
-      tmdbId: movieId,
+      tmdbId,
     },
     include: {
       subtitles: {

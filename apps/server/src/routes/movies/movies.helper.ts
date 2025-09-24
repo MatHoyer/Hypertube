@@ -3,7 +3,7 @@ import { YtsApi } from "../../lib/apis/yts.api";
 import prisma from "../../lib/prisma";
 import { getSubtitlesDownloadLinks } from "../../lib/scrappers/yifysubtitles.scrapper";
 
-export const scrapMovieData = async (movieId: string) => {
+export const getMovieData = async (movieId: string) => {
   const movie = await prisma.movie.findUnique({
     where: {
       id: movieId,
