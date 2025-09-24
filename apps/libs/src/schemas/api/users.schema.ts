@@ -3,14 +3,18 @@ import { userSchema } from "../database/user.schema.js";
 
 export const patchUsersSchemas = {
   urlParams: z.object({ id: userSchema.shape.id }),
-  requirements: z.object({
-    name: userSchema.shape.name.optional(),
-    email: userSchema.shape.email.optional(),
-    image: userSchema.shape.image,
-    firstName: userSchema.shape.firstName,
-    lastName: userSchema.shape.lastName,
-    imageId: userSchema.shape.imageId,
-  }),
+  requirements: {
+    ...userSchema
+      .pick({
+        name: true,
+        email: true,
+        image: true,
+        firstName: true,
+        lastName: true,
+        imageId: true,
+      })
+      .partial(),
+  },
   response: z.object({
     data: z.string().optional(),
     error: z.string().optional(),

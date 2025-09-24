@@ -23,7 +23,7 @@ export const UserInfoUpdate = () => {
         method: "PATCH",
         url: getUrl("api-users", { userId: user.id }),
         schemas: patchUsersSchemas,
-        data: data,
+        data,
       });
     },
     onSuccess: () => {

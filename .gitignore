@@ -19,3 +19,4 @@ dist/
 
 # Static
 **/static/images/**
+!**/static/images/.gitkeep
