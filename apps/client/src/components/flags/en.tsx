@@ -1,11 +1,6 @@
 export const FlagEn = () => {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 60 30"
-      role="img"
-      aria-label="Drapeau du Royaume-Uni"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" role="img">
       <rect width="60" height="30" fill="#012169" />
       <line
         x1="0"
