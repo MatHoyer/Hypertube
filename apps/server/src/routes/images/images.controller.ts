@@ -9,7 +9,7 @@ import { TIsLogged } from "../../middlewares/isLogged";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 
 const getImagePath = (imageId: string) => {
-  return `./static/images/${imageId}.webp`;
+  return `./public/images/${imageId}.webp`;
 };
 
 const deleteImageFile = async (imageId: string) => {

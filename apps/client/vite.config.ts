@@ -17,7 +17,7 @@ export default defineConfig({
     host: true,
     origin: "http://0.0.0.0:3001",
     proxy: {
-      "/static": {
+      "/public": {
         target: "http://localhost:3000",
         changeOrigin: true,
         secure: false,

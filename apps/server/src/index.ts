@@ -49,7 +49,7 @@ apiRouter.get("/health", (c) => c.text("OK"));
 
 app.route("/api", apiRouter);
 
-app.use("/static/*", serveStatic({ root: "./" }));
+app.use("/public/*", serveStatic({ root: "./" }));
 
 if (env.NODE_ENV === "PROD") {
   app.use(
