@@ -8,8 +8,8 @@ export const FlagEn = () => {
         x2="60"
         y2="30"
         stroke="#ffffff"
-        stroke-width="6"
-        stroke-linecap="square"
+        strokeWidth="6"
+        strokeLinecap="square"
       />
       <line
         x1="60"
@@ -17,8 +17,8 @@ export const FlagEn = () => {
         x2="0"
         y2="30"
         stroke="#ffffff"
-        stroke-width="6"
-        stroke-linecap="square"
+        strokeWidth="6"
+        strokeLinecap="square"
       />
       <line
         x1="0"
@@ -26,8 +26,8 @@ export const FlagEn = () => {
         x2="60"
         y2="30"
         stroke="#C8102E"
-        stroke-width="3"
-        stroke-linecap="square"
+        strokeWidth="3"
+        strokeLinecap="square"
       />
       <line
         x1="60"
@@ -35,8 +35,8 @@ export const FlagEn = () => {
         x2="0"
         y2="30"
         stroke="#C8102E"
-        stroke-width="3"
-        stroke-linecap="square"
+        strokeWidth="3"
+        strokeLinecap="square"
       />
       <rect x="24" y="0" width="12" height="30" fill="#ffffff" />
       <rect x="0" y="10" width="60" height="10" fill="#ffffff" />
