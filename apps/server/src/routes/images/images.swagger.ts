@@ -10,7 +10,7 @@ export const imagesSwagger = {
   [getUrl("api-images")]: {
     post: {
       summary: "Upload image",
-      tags: ["Image"],
+      tags: ["Images"],
       consumes: ["multipart/form-data"],
       requestBody: {
         required: true,
@@ -45,7 +45,7 @@ export const imagesSwagger = {
   [getUrl("api-images", { imageId: "{imageId}" })]: {
     delete: {
       summary: "Delete image",
-      tags: ["Image"],
+      tags: ["Images"],
       parameters: [imagePathParam],
       responses: {
         "200": {
