@@ -13,13 +13,13 @@ export const patchUser = async (
   >
 ) => {
   const body = c.get("validatedBody");
-  const { id } = c.get("validatedUrlParams");
+  const { userId } = c.get("validatedUrlParams");
   const user = c.get("user");
 
-  if (user.id !== id) return c.json({ error: "Unauthorized" }, 401);
+  if (user.id !== userId) return c.json({ error: "Unauthorized" }, 401);
 
   await prisma.user.update({
-    where: { id },
+    where: { id: userId },
     data: body,
   });
   return c.json({ data: "OK" }, 200);

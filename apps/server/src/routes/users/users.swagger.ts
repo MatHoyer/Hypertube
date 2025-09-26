@@ -2,13 +2,13 @@ import { getUrl, patchUsersSchemas } from "@hypertube/libs";
 
 const usersPathParam = {
   in: "path",
-  name: "id",
+  name: "userId",
   required: true,
-  schema: patchUsersSchemas.urlParams.shape.id,
+  schema: patchUsersSchemas.urlParams.shape.userId,
 };
 
 export const usersSwagger = {
-  [getUrl("api-users", { userId: "{id}" })]: {
+  [getUrl("api-users", { userId: "{userId}" })]: {
     patch: {
       summary: "Update user information",
       tags: ["Users"],
