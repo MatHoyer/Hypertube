@@ -1,5 +1,4 @@
 import { LoadingPage } from "@/components/LoadingPage";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -60,47 +59,43 @@ const MoviePage = () => {
         ...(filteredSubtitles?.DOWNLOADING ?? []),
       ]}
     >
-      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3">
-        <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-0">
+      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 relative">
+        <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-4 h-fit">
           <MovieInfo movie={movie} />
         </div>
 
-        <ScrollArea className="lg:col-start-1 lg:row-start-1 lg:col-span-2 lg:h-[calc(100vh)] p-4">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <Tabs
-                defaultValue={
-                  !!filteredResolutions &&
-                  ((filteredResolutions.DOWNLOADED &&
-                    filteredResolutions.DOWNLOADED.length > 0) ||
-                    (filteredResolutions.DOWNLOADING &&
-                      filteredResolutions.DOWNLOADING.length > 0))
-                    ? "video"
-                    : "downloads"
-                }
-              >
-                <TabsList>
-                  <TabsTrigger value="video">
-                    {t("movie.tabs.video")}
-                  </TabsTrigger>
-                  <TabsTrigger value="downloads">
-                    {t("movie.tabs.downloads")}
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="video">
-                  <VideoPlayer />
-                </TabsContent>
-                <TabsContent value="downloads">
-                  <DownloadsSelector
-                    resolutions={movie.resolutions ?? []}
-                    subtitlesLanguages={movie.subtitles ?? []}
-                  />
-                </TabsContent>
-              </Tabs>
-            </div>
-            <MovieInteraction />
+        <div className="flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:col-span-2 p-4">
+          <div className="flex flex-col gap-1">
+            <Tabs
+              defaultValue={
+                !!filteredResolutions &&
+                ((filteredResolutions.DOWNLOADED &&
+                  filteredResolutions.DOWNLOADED.length > 0) ||
+                  (filteredResolutions.DOWNLOADING &&
+                    filteredResolutions.DOWNLOADING.length > 0))
+                  ? "video"
+                  : "downloads"
+              }
+            >
+              <TabsList>
+                <TabsTrigger value="video">{t("movie.tabs.video")}</TabsTrigger>
+                <TabsTrigger value="downloads">
+                  {t("movie.tabs.downloads")}
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="video">
+                <VideoPlayer />
+              </TabsContent>
+              <TabsContent value="downloads">
+                <DownloadsSelector
+                  resolutions={movie.resolutions ?? []}
+                  subtitlesLanguages={movie.subtitles ?? []}
+                />
+              </TabsContent>
+            </Tabs>
           </div>
-        </ScrollArea>
+          <MovieInteraction />
+        </div>
       </div>
     </VideoPlayerProvider>
   );

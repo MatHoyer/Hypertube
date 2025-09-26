@@ -1,6 +1,5 @@
 import { ImageContainer } from "@/components/images/ImageContainer";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Typography } from "@/components/ui/typography";
 import { getUrl, type TGetMovieSchemas } from "@hypertube/libs";
 import { Star } from "lucide-react";
@@ -10,48 +9,49 @@ const MovieInfo: React.FC<{
   movie: Omit<TGetMovieSchemas["response"], "resolutions" | "subtitles">;
 }> = ({ movie }) => {
   return (
-    <ScrollArea className="lg:h-[calc(100vh)]">
-      <div className="flex flex-col gap-4 h-full p-4">
-        <div className="flex justify-center">
-          <ImageContainer
-            imageSrc={movie.poster_path}
-            altImage="Movie Poster"
-            size="lg"
-          >
-            <Typography variant="h3">{movie.title}</Typography>
-          </ImageContainer>
+    <div className="flex flex-col gap-4 h-full">
+      <div className="flex justify-center">
+        <ImageContainer
+          imageSrc={movie.poster_path}
+          altImage="Movie Poster"
+          size="lg"
+        >
+          <Typography variant="h3">{movie.title}</Typography>
+        </ImageContainer>
+      </div>
+      <div className="flex flex-col gap-2">
+        <Link
+          to={getUrl("external-imdb-movie", {
+            imdbId: movie.imdbId,
+          })}
+          target="_blank"
+        >
+          <Typography variant="h1" className="text-center hover:underline">
+            {movie.title}
+          </Typography>
+        </Link>
+        <div className="flex items-center justify-center gap-2">
+          <Badge>{movie.original_language.toUpperCase()}</Badge>
+          <Badge>{movie.release_date}</Badge>
         </div>
-        <div className="flex flex-col gap-2">
-          <Link
-            to={getUrl("external-imdb-movie", {
-              imdbId: movie.imdbId,
-            })}
-            target="_blank"
-          >
-            <Typography variant="h1" className="text-center hover:underline">
-              {movie.title}
-            </Typography>
-          </Link>
-          <div className="flex items-center justify-center gap-2">
-            <Badge>{movie.original_language.toUpperCase()}</Badge>
-            <Badge>{movie.release_date}</Badge>
-          </div>
-          <div className="flex items-center justify-center gap-2 flex-wrap">
-            {movie.genres.map((genre, index) => (
-              <Badge variant="outline" key={index}>
-                {genre.name.toLowerCase()}
-              </Badge>
-            ))}
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            <Star className="text-primary fill-primary" />
-            <Typography variant="mono">{movie.vote_average}/10</Typography>
-          </div>
-          <Typography variant="muted" className="text-start">
-            {movie.overview}
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          {movie.genres.map((genre, index) => (
+            <Badge variant="outline" key={index}>
+              {genre.name.toLowerCase()}
+            </Badge>
+          ))}
+        </div>
+        <div className="flex items-center justify-center gap-2">
+          <Star className="text-primary fill-primary" />
+          <Typography variant="mono">
+            {movie.vote_average.toFixed(1)}/10
           </Typography>
         </div>
-        {/* {actors.length > 0 && (
+        <Typography variant="muted" className="text-start">
+          {movie.overview}
+        </Typography>
+      </div>
+      {/* {actors.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle>{t("movie.cast")}</CardTitle>
@@ -92,8 +92,7 @@ const MovieInfo: React.FC<{
             </CardContent>
           </Card>
         )} */}
-      </div>
-    </ScrollArea>
+    </div>
   );
 };
 
