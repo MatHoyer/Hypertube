@@ -56,3 +56,11 @@ export const betterAuthTranslation = (
     return t("global.unexpected-error");
   }
 };
+
+export const supportedOAuth = {
+  google: { name: "Google", img: "/images/oauth_logo/google_logo.png" },
+  github: { name: "Github", img: "/images/oauth_logo/github_logo.svg" },
+  discord: { name: "Discord", img: "/images/oauth_logo/discord_logo.webp" },
+  school42: { name: "42 School", img: "/images/oauth_logo/42_logo.png" },
+} as const;
+export type TSupportedOAuth = keyof typeof supportedOAuth;

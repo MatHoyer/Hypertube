@@ -6,13 +6,21 @@ export const useAuth = () => {
     queryKey: ["session"],
     queryFn: async () => {
       const res = await authClient.getSession();
-      return res.data;
+      if (!res.data) return res.data;
+      const accounts = await authClient.listAccounts();
+      return {
+        user: res.data.user,
+        session: res.data.session,
+        accounts: accounts.data,
+      };
     },
     retry: false,
   });
 
   return {
     user: query.data?.user,
+    session: query.data?.session,
+    accounts: query.data?.accounts ?? [],
     isLoading: query.isLoading,
     isError: query.isError,
   };
