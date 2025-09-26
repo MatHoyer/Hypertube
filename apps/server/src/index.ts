@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
+import { languageCodesArray } from "@hypertube/libs";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { languageDetector } from "hono/language";
@@ -27,7 +28,7 @@ app.use(
   cors(),
   languageDetector({
     convertDetectedLanguage: (lang) => lang.split("-")[0],
-    supportedLanguages: ["en", "fr", "es"],
+    supportedLanguages: [...languageCodesArray],
     fallbackLanguage: "en",
     caches: [],
   }),

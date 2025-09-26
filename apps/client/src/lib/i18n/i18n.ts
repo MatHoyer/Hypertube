@@ -1,3 +1,4 @@
+import { languageCodesArray } from "@hypertube/libs";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
@@ -27,7 +28,9 @@ i18n
       lookupCookie: "language",
       cookieMinutes: 365 * 24 * 60,
       caches: ["cookie"],
+      convertDetectedLanguage: (lang) => lang.split("-")[0],
     },
+    supportedLngs: languageCodesArray,
     fallbackLng: "en",
     resources,
   });
