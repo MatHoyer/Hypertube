@@ -5,7 +5,8 @@
     "or": "o",
     "loadingMessage": "Cargando {{resource}}",
     "loadingRessource": "...",
-    "unexpected-error": ""
+    "unexpected-error": "",
+    "homepage": ""
   },
   "footer": {
     "sourceCode": "",
