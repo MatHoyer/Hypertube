@@ -1,4 +1,5 @@
 import { languageCodes, languageCodesArray } from "@hypertube/libs";
+import { useQueryClient } from "@tanstack/react-query";
 import { Check } from "lucide-react";
 import { type JSX } from "react";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,7 @@ const flags: Record<(typeof languageCodesArray)[number], () => JSX.Element> = {
 
 export const FlagCombobox = () => {
   const { i18n } = useTranslation();
+  const queryClient = useQueryClient();
 
   return (
     <Combobox
@@ -24,7 +26,10 @@ export const FlagCombobox = () => {
         label,
       }))}
       value={i18n.language}
-      setValue={(value) => i18n.changeLanguage(value)}
+      setValue={(value) => {
+        i18n.changeLanguage(value);
+        queryClient.invalidateQueries();
+      }}
       placeholderType="language"
       popoverContentAlign="end"
       renderTrigger={(value) => (
