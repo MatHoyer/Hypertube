@@ -8,7 +8,7 @@ import { patchUser } from "./users.controller";
 const usersRouter = new Hono();
 
 usersRouter.patch(
-  "/:id",
+  "/:userId",
   isLogged(),
   urlParamsParser(patchUsersSchemas.urlParams),
   bodyParser(patchUsersSchemas.requirements),
