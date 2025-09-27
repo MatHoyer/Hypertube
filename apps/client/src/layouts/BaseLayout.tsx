@@ -41,10 +41,8 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
         <Navbar />
       </header>
       <ScrollArea className="h-[calc(100dvh-65px)] w-full">
-        <div className="p-4">
-          <main className="min-h-[calc(100dvh-65px)]">{children}</main>
-          <Footer />
-        </div>
+        <main className="min-h-[calc(100dvh-65px)]">{children}</main>
+        <Footer />
       </ScrollArea>
     </div>
   );
