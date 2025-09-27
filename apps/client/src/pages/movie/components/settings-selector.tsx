@@ -119,7 +119,7 @@ export const DownloadsSelector: React.FC<{
   });
 
   return (
-    <Card className="size-full">
+    <Card className="w-full h-[72dvh]">
       <CardHeader>
         <CardTitle>{t("movie.downloadPage.title")}</CardTitle>
         <CardDescription>{t("movie.downloadPage.description")}</CardDescription>

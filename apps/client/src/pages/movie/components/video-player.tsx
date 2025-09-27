@@ -587,6 +587,7 @@ const ControlsBar = () => {
 
 const VideoPlayer = () => {
   const { tmdbId } = useConvertParams(MoviePageParamsSchema);
+  const { t } = useTranslation();
 
   const {
     videoRef,
@@ -626,7 +627,7 @@ const VideoPlayer = () => {
   return (
     <div
       ref={containerRef}
-      className="size-full bg-black rounded-2xl shadow-lg overflow-hidden relative"
+      className="w-full h-[72dvh] bg-black rounded-2xl shadow-lg overflow-hidden relative"
       onClick={
         !isMobile
           ? togglePlay
@@ -636,42 +637,52 @@ const VideoPlayer = () => {
             }
       }
     >
-      <video
-        ref={videoRef}
-        className="size-full relative"
-        onTimeUpdate={handleProgress}
-        controls={false}
-      >
-        <source
-          src={getUrl("api-streaming-movie-resolution", {
-            tmdbId,
-            resolution: selectedResolution as (typeof ytsQualities)[number],
-          })}
-          type="video/mp4"
-        />
-        {selectedSubtitlesLanguage && (
-          <track
-            src={getUrl("api-streaming-movie-subtitles", {
-              tmdbId,
-              subtitlesLanguage:
-                selectedSubtitlesLanguage as keyof typeof languageCodes,
-            })}
-            kind="subtitles"
-            srcLang={selectedSubtitlesLanguage}
-            default
-          />
-        )}
-      </video>
+      {selectedResolution ? (
+        <>
+          <video
+            ref={videoRef}
+            className="size-full relative"
+            onTimeUpdate={handleProgress}
+            controls={false}
+          >
+            <source
+              src={getUrl("api-streaming-movie-resolution", {
+                tmdbId,
+                resolution: selectedResolution as (typeof ytsQualities)[number],
+              })}
+              type="video/mp4"
+            />
+            {selectedSubtitlesLanguage && (
+              <track
+                src={getUrl("api-streaming-movie-subtitles", {
+                  tmdbId,
+                  subtitlesLanguage:
+                    selectedSubtitlesLanguage as keyof typeof languageCodes,
+                })}
+                kind="subtitles"
+                srcLang={selectedSubtitlesLanguage}
+                default
+              />
+            )}
+          </video>
 
-      <AnimateApparition
-        className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
-        animation="fade"
-        isAnimating={middleScreenInfo !== null}
-      >
-        <MiddleScreenInfo type={middleScreenInfo} />
-      </AnimateApparition>
+          <AnimateApparition
+            className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
+            animation="fade"
+            isAnimating={middleScreenInfo !== null}
+          >
+            <MiddleScreenInfo type={middleScreenInfo} />
+          </AnimateApparition>
 
-      <ControlsBar />
+          <ControlsBar />
+        </>
+      ) : (
+        <div className="flex items-center justify-center size-full">
+          <Typography variant="muted">
+            {t("movie.player.noResolutionSelected")}
+          </Typography>
+        </div>
+      )}
     </div>
   );
 };

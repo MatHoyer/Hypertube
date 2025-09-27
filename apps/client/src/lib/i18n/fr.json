@@ -116,6 +116,9 @@
       "noSubtitles": "Aucun sous-titre téléchargé ou en cours de téléchargement",
       "noSelectedSubtitles": "Aucun sous-titre"
     },
+    "player": {
+      "noResolutionSelected": "Aucune résolution sélectionnée"
+    },
     "cast": "Casting"
   },
   "navbar": {

@@ -116,6 +116,9 @@
       "noSubtitles": "No subtitles downloaded or downloading",
       "noSelectedSubtitles": "No subtitles"
     },
+    "player": {
+      "noResolutionSelected": "No resolution selected"
+    },
     "cast": "Cast"
   },
   "navbar": {
