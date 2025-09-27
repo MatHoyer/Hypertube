@@ -1,4 +1,5 @@
 import {
+  DownloadStates,
   getMovieSchemas,
   getMoviesSchemas,
   languageCodes,
@@ -80,6 +81,7 @@ export const getMovie = async (
   try {
     if (dbMovie.demoMovie) throw new Error("Demo movie");
     if (!env.VPN_IS_ACTIVE) throw new Error("VPN is not active");
+    console.log(env.VPN_IS_ACTIVE);
 
     if (!dbMovie.additionalInfoFetched) {
       await getMovieData(dbMovie);
@@ -135,11 +137,39 @@ export const downloadMovie = async (
   if (!dbResolution) {
     return c.json({ error: "Resolution not found" }, 404);
   }
+  if (
+    dbResolution.downloadState === DownloadStates.DOWNLOADING ||
+    dbResolution.downloadState === DownloadStates.DOWNLOADED
+  ) {
+    return c.json(
+      { error: "Resolution already downloading or downloaded" },
+      400
+    );
+  }
 
-  await downloadTorrent({
-    movie: dbMovie,
-    resolution: dbResolution,
+  await prisma.resolution.update({
+    where: {
+      id: dbResolution.id,
+    },
+    data: {
+      downloadState: DownloadStates.DOWNLOADING,
+    },
   });
+  try {
+    await downloadTorrent({
+      movie: dbMovie,
+      resolution: dbResolution,
+    });
+  } catch {
+    await prisma.resolution.update({
+      where: {
+        id: dbResolution.id,
+      },
+      data: {
+        downloadState: DownloadStates.NOT_DOWNLOADED,
+      },
+    });
+  }
 
   return c.json({ message: "Movie downloaded started" });
 };

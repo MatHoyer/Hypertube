@@ -84,7 +84,7 @@ export const DownloadsSelector: React.FC<{
     mutationFn: (resolution: (typeof ytsQualities)[number]) => {
       return axiosFetch({
         method: "POST",
-        url: getUrl("api-movie-download-resolution", {
+        url: getUrl("api-movies", {
           tmdbId,
           resolution,
         }),
@@ -103,7 +103,7 @@ export const DownloadsSelector: React.FC<{
     mutationFn: (subtitlesLanguage: keyof typeof languageCodes) => {
       return axiosFetch({
         method: "POST",
-        url: getUrl("api-movie-download-subtitles", {
+        url: getUrl("api-movies", {
           tmdbId,
           subtitlesLanguage,
         }),
