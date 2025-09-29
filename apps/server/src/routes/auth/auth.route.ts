@@ -8,7 +8,7 @@ const authRouter = new Hono();
 authRouter.use(
   "/*",
   cors({
-    origin: env.HOSTNAME,
+    origin: [env.HOSTNAME, `${env.HOSTNAME}:${env.CLIENT_PORT}`],
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
