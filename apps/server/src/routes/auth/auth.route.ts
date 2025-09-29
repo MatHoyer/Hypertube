@@ -1,14 +1,14 @@
 import { Hono } from "hono";
-import { auth } from "../../lib/auth";
 import { cors } from "hono/cors";
 import { env } from "../../env";
+import { auth } from "../../lib/auth";
 
 const authRouter = new Hono();
 
 authRouter.use(
   "/*",
   cors({
-    origin: env.HOSTNAME + ":" + env.CLIENT_PORT,
+    origin: env.HOSTNAME,
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
