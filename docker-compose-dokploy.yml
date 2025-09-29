@@ -14,14 +14,8 @@ services:
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     command: bash -c "pnpm lint && pnpm --filter server prisma:migrate:reset && pnpm --filter server prisma:migrate && pnpm --filter server prisma:seed && pnpm build && pnpm start"
-    networks:
-      - hypertube-network
     healthcheck:
       test: ["CMD", "curl", "-f", "${HOSTNAME}:${SERVER_PORT}/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-
-networks:
-  hypertube-network:
-    external: true
