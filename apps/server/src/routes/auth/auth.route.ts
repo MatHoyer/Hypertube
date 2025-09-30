@@ -11,6 +11,7 @@ authRouter.use(
     origin: [
       env.HOSTNAME,
       `${env.HOSTNAME}:${env.CLIENT_PORT}`,
+      `${env.HOSTNAME}:${env.SERVER_PORT}`,
       `${env.HOSTNAME}:${env.DEPLOY_PORT}`,
     ],
     allowHeaders: ["Content-Type", "Authorization"],
