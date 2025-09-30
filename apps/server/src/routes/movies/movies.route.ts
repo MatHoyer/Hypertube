@@ -1,10 +1,14 @@
 import {
+  deleteMovieLikeSchemas,
   deleteMovieSubscribeSchemas,
+  getMovieCommentSchemas,
   getMovieSchemas,
   getMoviesSchemas,
   getMovieSSESchemas,
+  postMovieCommentSchemas,
   postMovieDownloadResolutionSchemas,
   postMovieDownloadSubtitlesSchemas,
+  postMovieLikeSchemas,
   postMovieSubscribeSchemas,
 } from "@hypertube/libs";
 import { Hono } from "hono";
@@ -13,11 +17,15 @@ import { isVPNActive } from "../../middlewares/isVPNActive";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
+  commentMovie,
+  deleteMovieLike,
   downloadMovie,
   downloadSubtitles,
   getMovie,
+  getMovieComments,
   getMovies,
   getMovieSSE,
+  likeMovie,
   subscribeToMovie,
   unsubscribeFromMovie,
 } from "./movies.controller";
@@ -41,6 +49,13 @@ moviesRouter.get(
   "/:tmdbId/sse",
   urlParamsParser(getMovieSSESchemas.urlParams),
   getMovieSSE
+);
+
+moviesRouter.get(
+  "/:tmdbId/comments",
+  urlParamsParser(getMovieCommentSchemas.urlParams),
+  searchParamsParser(getMovieCommentSchemas.searchParams),
+  getMovieComments
 );
 
 moviesRouter.post(
@@ -70,5 +85,34 @@ moviesRouter.delete(
   urlParamsParser(deleteMovieSubscribeSchemas.urlParams),
   unsubscribeFromMovie
 );
+
+moviesRouter.post(
+  "/:tmdbId/like",
+  isLogged,
+  urlParamsParser(postMovieLikeSchemas.urlParams),
+  likeMovie
+);
+
+moviesRouter.post(
+  "/:tmdbId/comments",
+  isLogged,
+  urlParamsParser(postMovieCommentSchemas.urlParams),
+  commentMovie
+);
+
+moviesRouter.delete(
+  "/:tmdbId/like",
+  isLogged,
+  urlParamsParser(deleteMovieLikeSchemas.urlParams),
+  deleteMovieLike
+);
+
+// moviesRouter.delete(
+//   "/:tmdbId/comments/:commentId", //pas besoin du parent (movie)
+//   isLogged,
+//   urlParamsParser(deleteMovieCommentSchemas.urlParams),
+//   deleteMovieComment
+// ); //fonction récursive pour tout delete
+//ou garder les réponses associées
 
 export default moviesRouter;

@@ -1,5 +1,6 @@
 import { getUrl, ROUTES } from "@hypertube/libs";
 import { authentificationSwagger } from "../authentification/authentification.swagger";
+import { commentsSwagger } from "../comments/comments.swagger";
 import { imagesSwagger } from "../images/images.swagger";
 import { moviesSwagger } from "../movies/movies.swagger";
 import { notificationsSwagger } from "../notifications/notifications.swagger";
@@ -59,6 +60,7 @@ const openApiDoc = {
     ...imagesSwagger,
     ...usersSwagger,
     ...moviesSwagger,
+    ...commentsSwagger,
     ...authentificationSwagger,
     ...notificationsSwagger,
   },

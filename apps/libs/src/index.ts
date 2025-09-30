@@ -28,7 +28,6 @@ export type {
 export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 
 // API Schemas export
-
 export {
   emailVerificationAuthentificationSchemas,
   linkProviderAuthentificationSchemas,
@@ -73,22 +72,33 @@ export type {
 } from "./schemas/api/images.schema.js";
 
 export {
+  deleteMovieCommentSchemas,
+  deleteMovieLikeSchemas,
   deleteMovieSubscribeSchemas,
+  getMovieCommentSchemas,
   getMovieSchemas,
   getMoviesSchemas,
   getMovieSSESchemas,
+  postMovieCommentSchemas,
   postMovieDownloadResolutionSchemas,
   postMovieDownloadSubtitlesSchemas,
+  postMovieLikeSchemas,
   postMovieSubscribeSchemas,
   tmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
+
 export type {
+  TDeleteMovieCommentSchemas,
+  TDeleteMovieLikeSchemas,
   TDeleteMovieSubscribeSchemas,
+  TGetMovieCommentsSchemas,
   TGetMovieSchemas,
   TGetMoviesSchemas,
   TGetMovieSSESchemas,
+  TPostMovieCommentSchemas,
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
+  TPostMovieLikeSchemas,
   TPostMovieSubscribeSchemas,
   TTmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
@@ -132,6 +142,23 @@ export type {
   TPostTokenSchemas,
 } from "./schemas/api/oauth.schema.js";
 
+export {
+  deleteCommentLikeSchemas,
+  deleteCommentSchemas,
+  getCommentRepliesSchemas,
+  patchCommentSchemas,
+  postCommentLikeSchemas,
+  postCommentReplySchemas,
+} from "./schemas/api/comments.schema.js";
+export type {
+  TDeleteCommentLike,
+  TDeleteCommentSchemas,
+  TGetCommentRepliesSchemas,
+  TPatchCommentSchemas,
+  TPostCommentLikeSchemas,
+  TPostCommentReplySchemas,
+} from "./schemas/api/comments.schema.js";
+
 // Database Schemas export
 export { imageSchema } from "./schemas/database/image.schema.js";
 export type { TImageSchema } from "./schemas/database/image.schema.js";
@@ -147,6 +174,9 @@ export type { TSessionSchema } from "./schemas/database/session.schema.js";
 
 export { accountsSchema } from "./schemas/database/accounts.schema.js";
 export type { TAccountsSchema } from "./schemas/database/accounts.schema.js";
+
+export { likeSchema } from "./schemas/database/likes.schema.js";
+export type { TLikeSchema } from "./schemas/database/likes.schema.js";
 
 export {
   movieSchema,
@@ -192,6 +222,7 @@ export {
   languageCodesArray,
   notificationReadStatusArray,
   notificationReadStatuses,
+  ParentTypes,
   Providers,
   sizeMaxFile,
 } from "./const/global.const.js";

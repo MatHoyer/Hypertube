@@ -82,5 +82,16 @@
       "title": "Descarga en curso",
       "message": "Tu película se está descargando"
     }
+  },
+  "likes": {
+    "notFound": "Like no encontrado",
+    "fetchFailed": "No se pudieron obtener los likes",
+    "alreadyLiked": "El contenido ya ha sido marcado con like"
+  },
+  "comments": {
+    "notFound": "Commentario no encontrado"
+  },
+  "movies": {
+    "notFound": "Película no encontrada"
   }
 }
