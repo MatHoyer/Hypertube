@@ -11,6 +11,8 @@ services:
       - NODE_ENV=PROD
       - PUPPETEER_SKIP_DOWNLOAD=true
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+    ports:
+      - "${DEPLOY_PORT}:${SERVER_PORT}"
     command: bash -c "pnpm lint && pnpm --filter server prisma:migrate:reset && pnpm --filter server prisma:migrate && pnpm --filter server prisma:seed && pnpm build && pnpm start"
     networks:
       - dokploy-network
