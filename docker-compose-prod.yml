@@ -22,7 +22,7 @@ services:
       - traefik.http.routers.backend-app.entrypoints=web
       - traefik.http.services.backend-app.loadbalancer.server.port=${SERVER_PORT}
     healthcheck:
-      test: ["CMD", "curl", "-f", "${HOSTNAME}:${SERVER_PORT}/api/health"]
+      test: ["CMD", "curl", "-f", "${HOSTNAME}/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
