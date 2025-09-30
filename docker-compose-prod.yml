@@ -16,6 +16,11 @@ services:
     command: bash -c "pnpm lint && pnpm --filter server prisma:migrate:reset && pnpm --filter server prisma:migrate && pnpm --filter server prisma:seed && pnpm build && pnpm start"
     networks:
       - dokploy-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.backend-app.rule=Host(`${HOSTNAME}`)
+      - traefik.http.routers.backend-app.entrypoints=web
+      - traefik.http.services.backend-app.loadbalancer.server.port=${SERVER_PORT}
     healthcheck:
       test: ["CMD", "curl", "-f", "${HOSTNAME}:${SERVER_PORT}/api/health"]
       interval: 30s
