@@ -1,6 +1,5 @@
 services:
   app:
-    container_name: hypertube-prod
     build:
       context: .
       dockerfile: ./Dockerfile.prod
