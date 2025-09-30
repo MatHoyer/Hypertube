@@ -125,7 +125,11 @@ export const auth = betterAuth({
       }
     }),
   },
-  trustedOrigins: [env.HOSTNAME, `${env.HOSTNAME}:${env.CLIENT_PORT}`],
+  trustedOrigins: [
+    env.HOSTNAME,
+    `${env.HOSTNAME}:${env.CLIENT_PORT}`,
+    `${env.HOSTNAME}:${env.DEPLOY_PORT}`,
+  ],
   plugins: [
     username({ minUsernameLength: 1, maxUsernameLength: 50 }),
     genericOAuth({

@@ -13,6 +13,7 @@ const envSchema = z.object({
   HOSTNAME: z.string(),
   SERVER_PORT: z.coerce.number(),
   CLIENT_PORT: z.coerce.number(),
+  DEPLOY_PORT: z.coerce.number(),
   RESEND_API_KEY: z.string(),
   RESEND_API_EMAIL_FROM: z.string(),
   RESEND_API_EMAIL_TO: z.string(),
