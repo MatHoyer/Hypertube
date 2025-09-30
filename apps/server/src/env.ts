@@ -10,7 +10,7 @@ const envSchema = z.object({
   POSTGRES_DB: z.string(),
   POSTGRES_PORT: z.coerce.number(),
   DATABASE_URL: z.string(),
-  HOSTNAME: z.string(),
+  SERVER_URL: z.string(),
   SERVER_PORT: z.coerce.number(),
   CLIENT_PORT: z.coerce.number(),
   DEPLOY_PORT: z.coerce.number(),

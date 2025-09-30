@@ -42,7 +42,7 @@ jobs:
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
 
-          HOSTNAME=${{ secrets.HOSTNAME }}
+          SERVER_URL=${{ secrets.SERVER_URL }}
           SERVER_PORT=${{ secrets.SERVER_PORT }}
           CLIENT_PORT=${{ secrets.CLIENT_PORT }}
           DEPLOY_PORT=${{ secrets.DEPLOY_PORT }}

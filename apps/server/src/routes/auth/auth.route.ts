@@ -9,10 +9,9 @@ authRouter.use(
   "/*",
   cors({
     origin: [
-      env.HOSTNAME,
-      `${env.HOSTNAME}:${env.CLIENT_PORT}`,
-      `${env.HOSTNAME}:${env.SERVER_PORT}`,
-      `${env.HOSTNAME}:${env.DEPLOY_PORT}`,
+      env.SERVER_URL.includes(":")
+        ? env.SERVER_URL
+        : env.SERVER_URL.split(":")[0] + ":" + env.CLIENT_PORT,
     ],
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS"],

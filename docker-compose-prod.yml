@@ -18,11 +18,11 @@ services:
       - dokploy-network
     labels:
       - traefik.enable=true
-      - traefik.http.routers.backend-app.rule=Host(`${HOSTNAME}`)
+      - traefik.http.routers.backend-app.rule=Host(`${SERVER_URL}`)
       - traefik.http.routers.backend-app.entrypoints=web
       - traefik.http.services.backend-app.loadbalancer.server.port=${SERVER_PORT}
     healthcheck:
-      test: ["CMD", "curl", "-f", "${HOSTNAME}/api/health"]
+      test: ["CMD", "curl", "-f", "${SERVER_URL}/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
