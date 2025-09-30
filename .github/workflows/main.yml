@@ -69,7 +69,7 @@ jobs:
           EOF
 
       - name: Create Docker network
-        run: docker network create hypertube-network || echo "Network already exists"
+        run: docker network create dokploy-network || echo "Network already exists"
 
       - name: Start DB containers (docker-compose.yml)
         run: docker compose up -d

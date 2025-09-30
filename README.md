@@ -20,7 +20,7 @@ cp .env.example .env
 ### 2. Create the Docker network
 
 ```bash
-docker network create hypertube-network
+docker network create dokploy-network
 ```
 
 ### 3. Start the databases

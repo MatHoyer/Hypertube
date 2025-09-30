@@ -22,7 +22,7 @@ services:
       - ./apps/libs/node_modules:/hypertube/apps/libs/node_modules
     command: bash -c "umask 000 && pnpm i --frozen-lockfile && chmod 777 -R /hypertube/apps/server/node_modules && chmod 777 -R /hypertube/apps/client/node_modules && chmod 777 -R /hypertube/apps/libs/node_modules && chmod 777 -R /hypertube/node_modules && pnpm --filter server prisma:migrate:reset && pnpm --filter server prisma:migrate && pnpm --filter server prisma:seed && pnpm dev"
     networks:
-      - hypertube-network
+      - dokploy-network
     healthcheck:
       test: ["CMD", "curl", "-f", "${HOSTNAME}:${SERVER_PORT}/api/health"]
       interval: 30s
@@ -30,5 +30,5 @@ services:
       retries: 3
 
 networks:
-  hypertube-network:
+  dokploy-network:
     external: true
