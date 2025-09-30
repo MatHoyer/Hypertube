@@ -19,6 +19,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.backend-app.rule=Host(`${SERVER_URL}`)
       - traefik.http.routers.backend-app.entrypoints=websecure
+      - "traefik.http.routers.backend-app.tls.certResolver=letsencrypt"
       - traefik.http.services.backend-app.loadbalancer.server.port=${SERVER_PORT}
     healthcheck:
       test: ["CMD", "curl", "-f", "${SERVER_URL}/api/health"]
