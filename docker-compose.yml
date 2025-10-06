@@ -4,11 +4,9 @@ services:
     image: postgres:17-bookworm
     env_file: .env
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      - ${POSTGRES_PORT}
     volumes:
       - hypertube_data:/var/lib/postgresql/data
-    networks:
-      - hypertube-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
@@ -19,9 +17,7 @@ services:
     container_name: hypertube_adminer
     image: adminer
     ports:
-      - "8080:8080"
-    networks:
-      - hypertube-network
+      - 8080
     depends_on:
       db:
         condition: service_healthy
@@ -30,9 +26,9 @@ services:
     container_name: transmission
     image: linuxserver/transmission
     ports:
-      - "${TRANSMISSION_RCP_PORT}:${TRANSMISSION_RCP_PORT}"
-      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}"
-      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}/udp"
+      - ${TRANSMISSION_RCP_PORT}
+      - ${TRANSMISSION_TORRENT_PORT}
+      - ${TRANSMISSION_TORRENT_PORT}/udp
     env_file: .env
     environment:
       - PUID=1000
@@ -42,12 +38,6 @@ services:
       - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=false
     volumes:
       - ./apps/server/downloads:/downloads
-    networks:
-      - hypertube-network
 
 volumes:
   hypertube_data:
-
-networks:
-  hypertube-network:
-    external: true

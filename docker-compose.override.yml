@@ -1,0 +1,24 @@
+services:
+  db:
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    networks:
+      - hypertube-network
+
+  adminer:
+    ports:
+      - "8080:8080"
+    networks:
+      - hypertube-network
+
+  transmission:
+    ports:
+      - "${TRANSMISSION_RCP_PORT}:${TRANSMISSION_RCP_PORT}"
+      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}"
+      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}/udp"
+    networks:
+      - hypertube-network
+
+networks:
+  hypertube-network:
+    external: true
