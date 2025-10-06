@@ -92,7 +92,11 @@
     "updateInfoFailed": "Failed to update your information.",
     "deletePicture": "Delete your profile picture",
     "updatePicture": "Profile picture successfully updated.",
-    "updatePictureFailed": "Failed to update your profile picture."
+    "updatePictureFailed": "Failed to update your profile picture.",
+    "linkMessage": "Successful link.",
+    "unlinkMessage": "Successful unlink.",
+    "link": "Link",
+    "unlink": "Unlink"
   },
   "movie": {
     "loadingRessource": "movie",

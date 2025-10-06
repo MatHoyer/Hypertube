@@ -44,10 +44,14 @@ export const errorCodes = keyErrorCodes.map(
 
 export const betterAuthTranslation = (
   t: TFunction,
-  code: (typeof keyErrorCodes)[number]
+  code: string | undefined
 ): string => {
   try {
-    if (!errorCodes.includes(`better-auth-error.${code}`)) {
+    if (
+      !errorCodes.includes(
+        `better-auth-error.${code as (typeof keyErrorCodes)[number]}`
+      )
+    ) {
       console.log("better-auth error code : ", code);
       return t("global.unexpected-error");
     }

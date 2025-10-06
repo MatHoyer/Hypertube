@@ -1,11 +1,37 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { supportedOAuth } from "@/lib/better-auth/constants";
+import { authClient } from "@/lib/auth-client";
+import {
+  betterAuthTranslation,
+  supportedOAuth,
+} from "@/lib/better-auth/constants";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export const OAuthLinkButtons = () => {
   const { accounts } = useAuth();
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const linkedAccounts = accounts.map((account) => account.provider);
+
+  const unlinkMutation = useMutation({
+    mutationFn: async (providerId: string) => {
+      const res = await authClient.unlinkAccount({
+        providerId: providerId,
+      });
+      if (res.error) throw new Error(res.error.code);
+      return res;
+    },
+    onSuccess: () => {
+      toast.success(t("settings.unlinkMessage"));
+      queryClient.invalidateQueries({ queryKey: ["session"] });
+    },
+    onError: (error) => {
+      toast.error(betterAuthTranslation(t, error.message));
+    },
+  });
 
   return (
     <div className="flex flex-col w-full">
@@ -19,9 +45,14 @@ export const OAuthLinkButtons = () => {
               title={params.name}
             />
             {linkedAccounts.includes(oAuth) ? (
-              <Button variant={"destructive"}>Unlink</Button>
+              <Button
+                variant={"destructive"}
+                onClick={() => unlinkMutation.mutate(oAuth)}
+              >
+                {t("settings.unlink")}
+              </Button>
             ) : (
-              <Button>Link</Button>
+              <Button>{t("settings.link")}</Button>
             )}
           </Card>
         ))}

@@ -92,7 +92,11 @@
     "updateInfoFailed": "",
     "deletePicture": "",
     "updatePicture": "",
-    "updatePictureFailed": ""
+    "updatePictureFailed": "",
+    "linkMessage": "",
+    "unlinkMessage": "",
+    "link": "",
+    "unlink": ""
   },
   "movie": {
     "loadingRessource": "de la película",
