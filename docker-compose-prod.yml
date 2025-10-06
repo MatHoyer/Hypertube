@@ -15,7 +15,7 @@ services:
       - ${SERVER_PORT}
     command: bash -c "pnpm lint && pnpm --filter server prisma:migrate:reset && pnpm --filter server prisma:migrate && pnpm --filter server prisma:seed && pnpm build && pnpm start"
     networks:
-      - ${HYPER_NETWORK}
+      - dokploy-network
     healthcheck:
       test: ["CMD", "curl", "-f", "${SERVER_URL}/api/health"]
       interval: 30s
@@ -23,5 +23,5 @@ services:
       retries: 3
 
 networks:
-  ${HYPER_NETWORK}:
+  dokploy-network:
     external: true
