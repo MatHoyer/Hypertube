@@ -8,7 +8,7 @@ services:
     volumes:
       - hypertube_data:/var/lib/postgresql/data
     networks:
-      - dokploy-network
+      - hypertube-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
@@ -21,7 +21,7 @@ services:
     ports:
       - 8080
     networks:
-      - dokploy-network
+      - hypertube-network
     depends_on:
       db:
         condition: service_healthy
@@ -43,11 +43,11 @@ services:
     volumes:
       - ./apps/server/downloads:/downloads
     networks:
-      - dokploy-network
+      - hypertube-network
 
 volumes:
   hypertube_data:
 
 networks:
-  dokploy-network:
+  hypertube-network:
     external: true

@@ -2,9 +2,3 @@ services:
   app:
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
-    networks:
-      - hypertube-network
-
-networks:
-  hypertube-network:
-    external: true
