@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import z from "zod";
 
-dotenv.config({ path: "../../.env" });
+dotenv.config({ path: "../../.env", override: true });
 
 const envSchema = z.object({
   POSTGRES_HOST: z.string(),
