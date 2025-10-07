@@ -42,8 +42,9 @@ jobs:
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
 
-          HOSTNAME=${{ secrets.HOSTNAME }}
+          SERVER_URL=${{ secrets.SERVER_URL }}
           SERVER_PORT=${{ secrets.SERVER_PORT }}
+          CLIENT_URL=${{ secrets.CLIENT_URL }}
           CLIENT_PORT=${{ secrets.CLIENT_PORT }}
 
           RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
