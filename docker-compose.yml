@@ -4,7 +4,7 @@ services:
     image: postgres:17-bookworm
     env_file: .env
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      - ${POSTGRES_PORT}
     volumes:
       - hypertube_data:/var/lib/postgresql/data
     networks:
@@ -19,7 +19,7 @@ services:
     container_name: hypertube_adminer
     image: adminer
     ports:
-      - "8080:8080"
+      - 8080
     networks:
       - hypertube-network
     depends_on:
@@ -30,9 +30,9 @@ services:
     container_name: transmission
     image: linuxserver/transmission
     ports:
-      - "${TRANSMISSION_RCP_PORT}:${TRANSMISSION_RCP_PORT}"
-      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}"
-      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}/udp"
+      - ${TRANSMISSION_RCP_PORT}
+      - ${TRANSMISSION_TORRENT_PORT}
+      - ${TRANSMISSION_TORRENT_PORT}/udp
     env_file: .env
     environment:
       - PUID=1000

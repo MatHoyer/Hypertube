@@ -1,0 +1,4 @@
+services:
+  app:
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"

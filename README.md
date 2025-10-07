@@ -60,7 +60,7 @@ docker compose -f docker-compose-dev.yml up
 ### 🔹 Option 3 — Prod with Docker (no hot reload)
 
 ```bash
-docker compose -f docker-compose-prod.yml up
+docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml up
 ```
 
 ## 📜 Dependency Installation Rules
