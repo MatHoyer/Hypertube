@@ -61,7 +61,8 @@
     "PASSWORD_POLICY": "Le mot de passe doit contenir au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 caractère spécial.",
     "EMAIL_IS_THE_SAME": "L'email est actuellement la même.",
     "COULDNT_UPDATE_YOUR_EMAIL": "Impossible de mettre à jour l'adresse e-mail. Veuillez essayer avec une autre adresse e-mail.",
-    "FAILED_TO_UPDATE_PASSWORD": "Échec de la mise à jour du mot de passe"
+    "FAILED_TO_UPDATE_PASSWORD": "Échec de la mise à jour du mot de passe",
+    "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "Le compte est déjà associé à un utilisateur différent."
   },
   "sign": {
     "username": "Nom d'utilisateur",

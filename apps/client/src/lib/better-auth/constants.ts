@@ -36,6 +36,7 @@ const keyErrorCodes = [
   "EMAIL_IS_THE_SAME",
   "COULDNT_UPDATE_YOUR_EMAIL",
   "FAILED_TO_UPDATE_PASSWORD",
+  "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER",
 ] as const;
 
 export const errorCodes = keyErrorCodes.map(

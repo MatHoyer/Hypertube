@@ -61,7 +61,8 @@
     "PASSWORD_POLICY": "Password must contain at least 1 lowercase, 1 uppercase, 1 number, and 1 special character.",
     "EMAIL_IS_THE_SAME": "Email is the same as it is now.",
     "COULDNT_UPDATE_YOUR_EMAIL": "Email couldn't be updated. Try another email.",
-    "FAILED_TO_UPDATE_PASSWORD": "Failed to update password"
+    "FAILED_TO_UPDATE_PASSWORD": "Failed to update password",
+    "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "Account is already linked to different user."
   },
   "sign": {
     "username": "Username",

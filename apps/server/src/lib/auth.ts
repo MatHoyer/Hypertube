@@ -11,7 +11,7 @@ import {
   getSessionFromCtx,
 } from "better-auth/api";
 import { genericOAuth, username } from "better-auth/plugins";
-import { v4 } from "uuid";
+import { v5 } from "uuid";
 import z from "zod";
 import { mailTemplate } from "../emails/import-template";
 import { env } from "../env";
@@ -148,26 +148,14 @@ export const auth = betterAuth({
               headers: { Authorization: `Bearer ${tokens.accessToken}` },
             });
             const userInfo = await response.json();
-            const user = await prisma.user.findUnique({
-              where: { email42: userInfo.email },
-            });
-            if (user) {
-              const account = await prisma.account.findFirst({
-                where: { providerId: "school42", userId: user.id },
-                select: { accountId: true },
-              });
-              if (account) return { ...user, id: account.accountId };
-              return user;
-            }
             return {
-              id: v4(),
+              id: v5(String(userInfo.id), v5.DNS),
               email: userInfo.email,
               name: userInfo.usual_full_name,
               createdAt: new Date(),
               emailVerified: true,
               updatedAt: new Date(),
               image: userInfo.image.link,
-              email42: userInfo.email,
             };
           },
         },

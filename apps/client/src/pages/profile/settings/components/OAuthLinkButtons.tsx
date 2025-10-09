@@ -6,7 +6,10 @@ import {
   betterAuthTranslation,
   supportedOAuth,
 } from "@/lib/better-auth/constants";
+import { getUrl } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryState } from "nuqs";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -16,10 +19,32 @@ export const OAuthLinkButtons = () => {
   const queryClient = useQueryClient();
   const linkedAccounts = accounts.map((account) => account.provider);
 
+  const [error, setError] = useQueryState("error", { defaultValue: "" });
+
+  useEffect(() => {
+    if (error) {
+      toast.error(betterAuthTranslation(t, error.toUpperCase()));
+      setError(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
+
+  const linkMutation = useMutation({
+    mutationFn: async (provider: { id: string }) => {
+      const res = await authClient.linkSocial({
+        provider: provider.id,
+        callbackURL: getUrl("client-settings", { withServerUrl: true }),
+        errorCallbackURL: getUrl("client-settings", { withServerUrl: true }),
+      });
+      if (res.error) throw new Error(res.error.code);
+      return res;
+    },
+  });
+
   const unlinkMutation = useMutation({
-    mutationFn: async (providerId: string) => {
+    mutationFn: async (provider: { id: string }) => {
       const res = await authClient.unlinkAccount({
-        providerId: providerId,
+        providerId: provider.id,
       });
       if (res.error) throw new Error(res.error.code);
       return res;
@@ -36,7 +61,7 @@ export const OAuthLinkButtons = () => {
   return (
     <div className="flex flex-col w-full">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-5 md:m-2">
-        {Object.entries(supportedOAuth).map(([oAuth, params], i) => (
+        {Object.entries(supportedOAuth).map(([providerId, params], i) => (
           <Card className="p-5" key={i}>
             <img
               src={params.img}
@@ -44,15 +69,17 @@ export const OAuthLinkButtons = () => {
               alt={params.name}
               title={params.name}
             />
-            {linkedAccounts.includes(oAuth) ? (
+            {linkedAccounts.includes(providerId) ? (
               <Button
                 variant={"destructive"}
-                onClick={() => unlinkMutation.mutate(oAuth)}
+                onClick={() => unlinkMutation.mutate({ id: providerId })}
               >
                 {t("settings.unlink")}
               </Button>
             ) : (
-              <Button>{t("settings.link")}</Button>
+              <Button onClick={() => linkMutation.mutate({ id: providerId })}>
+                {t("settings.link")}
+              </Button>
             )}
           </Card>
         ))}
