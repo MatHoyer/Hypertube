@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { authClient } from "@/lib/auth-client";
 import {
@@ -59,28 +59,30 @@ export const OAuthLinkButtons = () => {
   });
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full m-1">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-5 md:m-2">
         {Object.entries(supportedOAuth).map(([providerId, params], i) => (
-          <Card className="p-5" key={i}>
-            <img
-              src={params.img}
-              draggable={false}
-              alt={params.name}
-              title={params.name}
-            />
-            {linkedAccounts.includes(providerId) ? (
-              <Button
-                variant={"destructive"}
-                onClick={() => unlinkMutation.mutate({ id: providerId })}
-              >
-                {t("settings.unlink")}
-              </Button>
-            ) : (
-              <Button onClick={() => linkMutation.mutate({ id: providerId })}>
-                {t("settings.link")}
-              </Button>
-            )}
+          <Card key={i}>
+            <CardContent className="flex flex-col gap-2">
+              <img
+                src={params.img}
+                draggable={false}
+                alt={params.name}
+                title={params.name}
+              />
+              {linkedAccounts.includes(providerId) ? (
+                <Button
+                  variant={"destructive"}
+                  onClick={() => unlinkMutation.mutate({ id: providerId })}
+                >
+                  {t("settings.unlink")}
+                </Button>
+              ) : (
+                <Button onClick={() => linkMutation.mutate({ id: providerId })}>
+                  {t("settings.link")}
+                </Button>
+              )}
+            </CardContent>
           </Card>
         ))}
       </div>

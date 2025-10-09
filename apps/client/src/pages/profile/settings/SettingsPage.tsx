@@ -9,9 +9,9 @@ export const SettingsPage = () => {
     <Layout>
       <LayoutContent className="flex flex-col items-center gap-2">
         <ProfilePictureUpdate />
-        <Separator className="m-1 md:hidden" />
+        <Separator className="md:hidden" />
         <UserInfoUpdate />
-        <Separator className="m-1 md:hidden" />
+        <Separator className="md:hidden" />
         <OAuthLinkButtons />
       </LayoutContent>
     </Layout>

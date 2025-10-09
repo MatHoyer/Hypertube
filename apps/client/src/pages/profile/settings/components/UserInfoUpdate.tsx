@@ -38,7 +38,7 @@ export const UserInfoUpdate = () => {
   });
 
   return (
-    <div className="flex flex-col w-full gap-2">
+    <div className="flex flex-col w-full gap-2 m-1">
       <Label htmlFor="input-email">{t("sign.email")}</Label>
       <Input
         onBlur={(e) => {

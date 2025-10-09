@@ -92,28 +92,26 @@ export const ProfilePictureUpdate = () => {
   });
 
   return (
-    <div className="flex">
-      <div className="flex flex-col items-center gap-2">
-        <UserImageAvatar size="lg" />
-        <Input
-          type="file"
-          className="w-full"
-          onChange={(event) => {
-            updateMutation.mutate(event.currentTarget.files?.[0]);
-            event.currentTarget.value = "";
-          }}
-        />
-        <Button
-          disabled={!user.image}
-          type="button"
-          className="w-full"
-          onClick={() => {
-            deleteMutation.mutate();
-          }}
-        >
-          {t("settings.deletePicture")}
-        </Button>
-      </div>
+    <div className="flex flex-col items-center gap-2">
+      <UserImageAvatar size="lg" />
+      <Input
+        type="file"
+        className="w-full"
+        onChange={(event) => {
+          updateMutation.mutate(event.currentTarget.files?.[0]);
+          event.currentTarget.value = "";
+        }}
+      />
+      <Button
+        disabled={!user.image}
+        type="button"
+        className="w-full"
+        onClick={() => {
+          deleteMutation.mutate();
+        }}
+      >
+        {t("settings.deletePicture")}
+      </Button>
     </div>
   );
 };
