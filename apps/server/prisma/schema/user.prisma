@@ -11,11 +11,13 @@ model User {
   firstName       String?
   lastName        String?
   imageId         String?
+  email42         String?
   sessions        Session[]
   accounts        Account[]
 
   @@unique([email])
   @@unique([username])
+  @@unique([email42])
   @@map("user")
 }
 

@@ -109,6 +109,12 @@ export const auth = betterAuth({
       firstName: { type: "string" },
       lastName: { type: "string" },
       imageId: { type: "string", input: false },
+      email42: { type: "string", input: false, unique: true },
+    },
+  },
+  account: {
+    accountLinking: {
+      allowDifferentEmails: true,
     },
   },
   hooks: {
@@ -142,6 +148,17 @@ export const auth = betterAuth({
               headers: { Authorization: `Bearer ${tokens.accessToken}` },
             });
             const userInfo = await response.json();
+            const user = await prisma.user.findUnique({
+              where: { email42: userInfo.email },
+            });
+            if (user) {
+              const account = await prisma.account.findFirst({
+                where: { providerId: "school42", userId: user.id },
+                select: { accountId: true },
+              });
+              if (account) return { ...user, id: account.accountId };
+              return user;
+            }
             return {
               id: v4(),
               email: userInfo.email,
@@ -150,6 +167,7 @@ export const auth = betterAuth({
               emailVerified: true,
               updatedAt: new Date(),
               image: userInfo.image.link,
+              email42: userInfo.email,
             };
           },
         },

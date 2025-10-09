@@ -7,11 +7,6 @@ export const OAuthButtons = () => {
       provider: provider,
     });
   };
-  const handle42OAuth = async () => {
-    await authClient.signIn.oauth2({
-      providerId: "school42",
-    });
-  };
 
   return (
     <div className="flex justify-evenly gap-4">
@@ -55,7 +50,7 @@ export const OAuthButtons = () => {
         />
       </Button>
       <Button
-        onClick={() => handle42OAuth()}
+        onClick={() => handleOAuth("school42")}
         type="button"
         className="light bg-background"
       >
