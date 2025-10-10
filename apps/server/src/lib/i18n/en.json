@@ -9,6 +9,63 @@
   },
   "email": {
     "ignoreEmail": "If you did not request this email, you can safely ignore it.",
-    "allRightsReserved": "All rights reserved."
+    "allRightsReserved": "All rights reserved.",
+    "verification": {
+      "confirmEmail": "Confirm your email",
+      "confirm": "Confirm"
+    },
+    "password": {
+      "resetPassword": "Reset your password",
+      "reset": "Reset"
+    },
+    "error": {
+      "invalidToken": "Invalid token",
+      "userNotFound": "User by email not found",
+      "expirationTime": "Timeout exceeded"
+    }
+  },
+  "httpCode": {
+    "400": "Bad Request",
+    "401": "Unauthorized"
+  },
+  "betterAuthError": {
+    "INVALID_USERNAME_OR_PASSWORD": "Invalid username or password",
+    "EMAIL_NOT_VERIFIED": "Email not verified. Sending email ...",
+    "UNEXPECTED_ERROR": "Unexpected error",
+    "USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER": "Username is already taken. Please try another.",
+    "USERNAME_IS_TOO_SHORT": "Username is too short",
+    "USERNAME_IS_TOO_LONG": "Username is too long",
+    "USERNAME_IS_INVALID": "Username is invalid",
+    "DISPLAY_USERNAME_IS_INVALID": "Display username is invalid",
+    "USER_NOT_FOUND": "User not found",
+    "FAILED_TO_CREATE_USER": "Failed to create user",
+    "FAILED_TO_CREATE_SESSION": "Failed to create session",
+    "FAILED_TO_UPDATE_USER": "Failed to update user",
+    "FAILED_TO_GET_SESSION": "Failed to get session",
+    "INVALID_PASSWORD": "Invalid password",
+    "INVALID_EMAIL": "Invalid email",
+    "INVALID_EMAIL_OR_PASSWORD": "Invalid email or password",
+    "SOCIAL_ACCOUNT_ALREADY_LINKED": "Social account already linked",
+    "PROVIDER_NOT_FOUND": "Provider not found",
+    "INVALID_TOKEN": "invalid token",
+    "ID_TOKEN_NOT_SUPPORTED": "id_token not supported",
+    "FAILED_TO_GET_USER_INFO": "Failed to get user info",
+    "USER_EMAIL_NOT_FOUND": "User email not found",
+    "PASSWORD_TOO_SHORT": "Password too short",
+    "PASSWORD_TOO_LONG": "Password too long",
+    "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL": "User already exists. Use another email.",
+    "EMAIL_CAN_NOT_BE_UPDATED": "Email can not be updated",
+    "CREDENTIAL_ACCOUNT_NOT_FOUND": "Credential account not found",
+    "SESSION_EXPIRED_REAUTHENTICATE_TO_PERFORM_THIS_ACTION": "Session expired. Re-authenticate to perform this action.",
+    "YOU_CANT_UNLINK_YOUR_LAST_ACCOUNT": "You can't unlink your last account",
+    "ACCOUNT_NOT_FOUND": "Account not found",
+    "USER_ALREADY_HAS_A_PASSWORD_PROVIDE_THAT_TO_DELETE_THE_ACCOUNT": "User already has a password. Provide that to delete the account.",
+    "PASSWORD_POLICY": "Password must contain at least 1 lowercase, 1 uppercase, 1 number, and 1 special character.",
+    "EMAIL_IS_THE_SAME": "Email is the same as it is now.",
+    "COULDNT_UPDATE_YOUR_EMAIL": "Email couldn't be updated. Try another email.",
+    "FAILED_TO_UPDATE_PASSWORD": "Failed to update password",
+    "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "Account is already linked to different user.",
+    "USER_ALREADY_HAS_A_PASSWORD": "User already has a password",
+    "TOO_MANY_EMAILS_SENT": "Too many emails sent. Retry later."
   }
 }

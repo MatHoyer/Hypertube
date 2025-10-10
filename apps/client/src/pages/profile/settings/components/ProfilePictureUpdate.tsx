@@ -1,5 +1,5 @@
 import { UserImageAvatar } from "@/components/images/Avatar";
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/LoadingButton";
 import { Input } from "@/components/ui/input";
 import { useRequiredUser } from "@/hooks/use-required-user";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -64,7 +64,11 @@ export const ProfilePictureUpdate = () => {
     },
   });
 
-  const deleteMutation = useMutation({
+  const {
+    mutate: delMutate,
+    isPending: isDelPending,
+    isSuccess: isDelSuccess,
+  } = useMutation({
     mutationFn: async () => {
       if (user.imageId)
         await axiosFetch({
@@ -102,16 +106,18 @@ export const ProfilePictureUpdate = () => {
           event.currentTarget.value = "";
         }}
       />
-      <Button
+      <LoadingButton
         disabled={!user.image}
         type="button"
         className="w-full"
+        loading={isDelPending}
+        success={isDelSuccess}
         onClick={() => {
-          deleteMutation.mutate();
+          delMutate();
         }}
       >
         {t("settings.deletePicture")}
-      </Button>
+      </LoadingButton>
     </div>
   );
 };

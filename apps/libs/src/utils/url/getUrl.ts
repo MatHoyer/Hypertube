@@ -1,6 +1,8 @@
+import type { TBetterAuthProviders } from "../../const/global.const.js";
 import { languageCodes } from "../../const/global.const.js";
 import { ytsQualities } from "../../const/yts.const.js";
 import type { TMovieSchema } from "../../schemas/database/movie.schema.js";
+import { getClientUrl } from "./getClientUrl.js";
 import { getServerUrl } from "./getServerUrl.js";
 
 export type TClientRouteDataRequirements = {
@@ -22,7 +24,21 @@ export type TApiRouteDataRequirements = {
   "api-health": undefined;
 
   "api-auth": undefined;
+  "api-authentification": undefined;
+  "api-authentification-signup": undefined;
+  "api-authentification-signin": undefined;
+  "api-authentification-signin-social": undefined;
+  "api-authentification-request-password-reset": undefined;
+  "api-authentification-reset-password": undefined;
+  "api-authentification-signout": undefined;
+  "api-authentification-email-verification": undefined;
+  "api-authentification-link": {
+    providerId?: TBetterAuthProviders | "{providerId}";
+  };
+
   "api-users": { userId?: string };
+  "api-users-accounts": undefined;
+  "api-users-session": undefined;
 
   "api-images": { imageId?: string | null };
 
@@ -82,9 +98,30 @@ const routes: {
   // API routes
   "api-swagger": ({ mode }) => (mode ? `/api/swagger/${mode}` : "/api/swagger"),
   "api-health": () => "/api/health",
+
   "api-auth": () => "/api/auth",
-  "api-images": ({ imageId }) => "/api/images" + (imageId ? `/${imageId}` : ""),
+  "api-authentification": () => "/api/authentification",
+  "api-authentification-signup": () => "/api/authentification/sign-up",
+  "api-authentification-signin": () => "/api/authentification/sign-in",
+  "api-authentification-signin-social": () =>
+    "/api/authentification/sign-in-social",
+  "api-authentification-request-password-reset": () =>
+    "/api/authentification/request-password-reset",
+  "api-authentification-reset-password": () =>
+    "/api/authentification/reset-password",
+  "api-authentification-signout": () => "/api/authentification/sign-out",
+  "api-authentification-email-verification": () =>
+    `/api/authentification/email-verification`,
+  "api-authentification-link": ({ providerId }) =>
+    providerId
+      ? `/api/authentification/link/${providerId}`
+      : "/api/authentification/link",
+
   "api-users": ({ userId }) => "/api/users" + (userId ? `/${userId}` : ""),
+  "api-users-accounts": () => "/api/users/accounts",
+  "api-users-session": () => "/api/users/session",
+
+  "api-images": ({ imageId }) => "/api/images" + (imageId ? `/${imageId}` : ""),
 
   "api-movies": ({ tmdbId, resolution, subtitlesLanguage }) => {
     if (resolution && subtitlesLanguage) {
@@ -126,12 +163,12 @@ type TSearchParams =
 
 type TGetUrlArgs<T extends TRoute> = TRouteDataMap<T> extends undefined
   ? {
-      withServerUrl?: boolean;
+      withUrl?: "server" | "client";
       searchParams?: TSearchParams;
       removeForwardSlash?: boolean;
     }
   : TRouteDataMap<T> & {
-      withServerUrl?: boolean;
+      withUrl?: "server" | "client";
       searchParams?: TSearchParams;
       removeForwardSlash?: boolean;
     };
@@ -140,19 +177,24 @@ export const getUrl = <T extends TRoute>(
   route: T,
   params?: TGetUrlArgs<T>
 ): string => {
-  const { withServerUrl = false, searchParams, ...rawParams } = params || {};
+  const { withUrl, searchParams, ...rawParams } = params || {};
 
   const routeParams = rawParams as TRouteDataMap<T>;
   const routeFn = routes[route];
 
   const computedUrl = routeFn(routeParams);
 
-  const serverUrl =
-    withServerUrl && !route.startsWith("external-") ? getServerUrl() : "";
+  const withUrlMapping = {
+    server: getServerUrl() ?? "",
+    client: getClientUrl() ?? "",
+  };
+
+  const url =
+    withUrl && !route.startsWith("external-") ? withUrlMapping[withUrl] : "";
 
   const parsedSearchParams = searchParams
     ? `?${new URLSearchParams(searchParams)}`
     : "";
 
-  return `${serverUrl}${computedUrl}${parsedSearchParams}`;
+  return `${url}${computedUrl}${parsedSearchParams}`;
 };

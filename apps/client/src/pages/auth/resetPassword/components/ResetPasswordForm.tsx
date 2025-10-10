@@ -1,20 +1,18 @@
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/LoadingButton";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
 import InputPassword from "@/components/ui/input-password";
-import { authClient } from "@/lib/auth-client";
-import { betterAuthTranslation } from "@/lib/better-auth/constants";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUrl } from "@hypertube/libs";
+import { getUrl, resetPasswordAuthentificationSchemas } from "@hypertube/libs";
+import { useMutation } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
-import { type ComponentProps } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -22,62 +20,66 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({ password: z.string().min(8).max(50) });
+type TFormSchema = z.infer<typeof formSchema>;
 
-export const ResetPasswordForm: React.FC<ComponentProps<"div">> = ({
-  ...props
-}) => {
+export const ResetPasswordForm = () => {
   const [token, _] = useQueryState("token", { defaultValue: "" });
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<TFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       password: "",
     },
   });
 
-  const onSubmit = async (userData: z.infer<typeof formSchema>) => {
-    await authClient.resetPassword(
-      {
-        newPassword: userData.password,
-        token,
-      },
-      {
-        onSuccess: () => {
-          toast.success(t("sign.resetSuccessMessage"));
-          navigate(getUrl("client-signin"));
+  const { mutate, isPending, isSuccess } = useMutation({
+    mutationFn: (resetPassword: TFormSchema) =>
+      axiosFetch({
+        method: "POST",
+        url: getUrl("api-authentification-reset-password"),
+        schemas: resetPasswordAuthentificationSchemas,
+        data: {
+          newPassword: resetPassword.password,
+          token,
         },
-        onError: (ctx) => {
-          toast.error(betterAuthTranslation(t, ctx.error.code));
-        },
-      }
-    );
-  };
+      }),
+    onSuccess: () => {
+      toast.success(t("sign.resetSuccessMessage"));
+      navigate(getUrl("client-signin"));
+    },
+    onError: (e) => {
+      toast.error(e.message);
+    },
+  });
 
   return (
-    <div {...props}>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("sign.password")}</FormLabel>
-                <FormControl>
-                  <InputPassword {...field} placeholder={t("sign.password")} />
-                </FormControl>
-                <FormDescription>{t("sign.resetPasswordDesc")}</FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full">
-            {t("sign.resetPassword")}
-          </Button>
-        </form>
-      </Form>
-    </div>
+    <form
+      className="size-full"
+      onSubmit={form.handleSubmit((data) => mutate(data))}
+    >
+      <FieldSet>
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="input-password">
+              {t("sign.password")}
+            </FieldLabel>
+            <InputPassword id="password" {...form.register("password")} />
+            <FieldDescription>{t("sign.resetPasswordDesc")}</FieldDescription>
+            <FieldError>{form.formState.errors.password?.message}</FieldError>
+          </Field>
+          <Field>
+            <LoadingButton
+              type="submit"
+              loading={isPending}
+              success={isSuccess}
+            >
+              {t("sign.resetPassword")}
+            </LoadingButton>
+          </Field>
+        </FieldGroup>
+      </FieldSet>
+    </form>
   );
 };

@@ -1,21 +1,20 @@
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/LoadingButton";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import InputPassword from "@/components/ui/input-password";
-import { authClient } from "@/lib/auth-client";
-import { betterAuthTranslation } from "@/lib/better-auth/constants";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { type ComponentProps } from "react";
+import { getUrl, signUpAuthentificationSchemas } from "@hypertube/libs";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -26,12 +25,13 @@ const formSchema = z.object({
   firstName: z.string().min(1).max(50),
   lastName: z.string().min(1).max(50),
 });
+type TFormSchema = z.infer<typeof formSchema>;
 
-export const SignUpForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
-  const queryClient = useQueryClient();
+export const SignUpForm = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<TFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
@@ -42,121 +42,101 @@ export const SignUpForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
     },
   });
 
-  const onSubmit = async (userData: z.infer<typeof formSchema>) => {
-    await authClient.signUp.email(
-      {
-        email: userData.email,
-        username: userData.username,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        name: userData.firstName + " " + userData.lastName,
-        password: userData.password,
-      },
-      {
-        onSuccess: () => {
-          toast.success(t("sign.connexion"));
-          queryClient.invalidateQueries({ queryKey: ["session"] });
+  const { mutate, isPending, isSuccess } = useMutation({
+    mutationFn: (signUpData: TFormSchema) =>
+      axiosFetch({
+        method: "POST",
+        url: getUrl("api-authentification-signup"),
+        schemas: signUpAuthentificationSchemas,
+        data: {
+          ...signUpData,
+          name: signUpData.firstName + " " + signUpData.lastName,
         },
-        onError: (ctx) => {
-          toast.error(betterAuthTranslation(t, ctx.error.code));
-        },
-      }
-    );
-  };
+      }),
+    onSuccess: () => {
+      toast.success(t("sign.emailVerification"));
+      navigate(getUrl("client-signin"));
+    },
+    onError: (e) => {
+      toast.error(e.message);
+    },
+  });
 
   return (
-    <div {...props}>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("sign.email")}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="email"
-                    placeholder={t("sign.emailExample")}
-                    autoComplete="email"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex gap-2 items-start w-full">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>{t("sign.firstName")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t("sign.firstName")}
-                      autoComplete="given-name"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+    <form
+      className="size-full"
+      onSubmit={form.handleSubmit((data) => mutate(data))}
+    >
+      <FieldSet>
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="input-email">{t("sign.email")}</FieldLabel>
+            <Input
+              id="email"
+              placeholder={t("sign.emailExample")}
+              {...form.register("email")}
             />
-            <FormField
-              control={form.control}
-              name="lastName"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>{t("sign.lastName")}</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder={t("sign.lastName")}
-                      autoComplete="family-name"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+            <FieldError>{form.formState.errors.email?.message}</FieldError>
+          </Field>
+          <FieldGroup className="flex flex-row">
+            <Field>
+              <FieldLabel htmlFor="input-first-name">
+                {t("sign.firstName")}
+              </FieldLabel>
+              <Input
+                id="firstName"
+                placeholder={t("sign.firstName")}
+                {...form.register("firstName")}
+              />
+              <FieldError>
+                {form.formState.errors.firstName?.message}
+              </FieldError>
+            </Field>
+            <Field>
+              <FieldLabel htmlFor="input-last-name">
+                {t("sign.lastName")}
+              </FieldLabel>
+              <Input
+                id="lastName"
+                placeholder={t("sign.lastName")}
+                {...form.register("lastName")}
+              />
+              <FieldError>{form.formState.errors.lastName?.message}</FieldError>
+            </Field>
+          </FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="input-username">
+              {t("sign.username")}
+            </FieldLabel>
+            <Input
+              id="username"
+              placeholder={t("sign.username")}
+              {...form.register("username")}
             />
-          </div>
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>{t("sign.username")}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder={t("sign.username")}
-                    autoComplete="username"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>{t("sign.password")}</FormLabel>
-                <FormControl>
-                  <InputPassword {...field} placeholder={t("sign.password")} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full">
-            {t("sign.up")}
-          </Button>
-        </form>
-      </Form>
-    </div>
+            <FieldError>{form.formState.errors.username?.message}</FieldError>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="input-password">
+              {t("sign.password")}
+            </FieldLabel>
+            <InputPassword
+              id="password"
+              placeholder={t("sign.password")}
+              {...form.register("password")}
+            />
+            <FieldError>{form.formState.errors.password?.message}</FieldError>
+          </Field>
+          <Field>
+            <LoadingButton
+              type="submit"
+              loading={isPending}
+              success={isSuccess}
+            >
+              {t("sign.up")}
+            </LoadingButton>
+          </Field>
+        </FieldGroup>
+      </FieldSet>
+    </form>
   );
 };

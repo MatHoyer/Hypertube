@@ -1,3 +1,4 @@
+import { getUrl, newUTCDate, TUserSchema } from "@hypertube/libs";
 import { env, prisma } from "@hypertube/server-core";
 import {
   AuthContext,
@@ -12,9 +13,11 @@ import {
   getSessionFromCtx,
 } from "better-auth/api";
 import { genericOAuth, username } from "better-auth/plugins";
+import i18next from "i18next";
 import { v5 } from "uuid";
 import z from "zod";
 import { mailTemplate } from "../emails/import-template";
+import { sendVerificationEmail } from "../emails/sendEmailVerification";
 import { sendEmail } from "./resend";
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
@@ -43,10 +46,11 @@ const updateUser = async (
   if (ctx.body.image) return;
   else if (ctx.body.firstName || ctx.body.lastName) {
     const session = await getSessionFromCtx(ctx);
-    if (!session)
-      throw new APIError("BAD_REQUEST", {
+    if (!session) {
+      throw new APIError("UNAUTHORIZED", {
         code: "FAILED_TO_UPDATE_USER",
       });
+    }
     const user = session.user;
     const fullName = `${ctx.body.firstName || user.firstName} ${
       ctx.body.lastName || user.lastName
@@ -68,15 +72,12 @@ const updateUser = async (
 };
 
 const updateEmail = (newEmail: string) => {
-  if (!newEmail)
-    throw new APIError("BAD_REQUEST", {
-      code: "COULDNT_UPDATE_YOUR_EMAIL",
-    });
   const res = z.email().safeParse(newEmail);
-  if (!res.success)
+  if (!newEmail || !res.success) {
     throw new APIError("BAD_REQUEST", {
       code: "COULDNT_UPDATE_YOUR_EMAIL",
     });
+  }
 };
 
 export const auth = betterAuth({
@@ -88,17 +89,42 @@ export const auth = betterAuth({
     minPasswordLength: 8,
     maxPasswordLength: 50,
     sendResetPassword: async ({ user, url }) => {
+      const tokenUrl = new URL(url);
+
+      const token = tokenUrl.pathname.split("/").pop();
+
+      if (!token) {
+        throw new APIError("BAD_REQUEST", {
+          code: "INVALID_TOKEN",
+        });
+      }
+
+      const newUrl = getUrl("client-reset-password", {
+        withUrl: "client",
+        searchParams: { token },
+      });
+
       await sendEmail({
         to: user.email,
-        subject: "Reset your password",
+        subject: i18next.t("email.password.resetPassword"),
         html: mailTemplate({
-          title: "Reset your password",
+          title: i18next.t("email.password.resetPassword"),
           content: "",
-          link: url,
-          linkText: "Reset",
+          link: newUrl,
+          linkText: i18next.t("email.password.reset"),
         }),
       });
     },
+    requireEmailVerification: true,
+  },
+  emailVerification: {
+    sendVerificationEmail: async (data) =>
+      await sendVerificationEmail({
+        user: data.user as TUserSchema,
+        url: data.url,
+        callbackURL: getUrl("client-signin", { withUrl: "client" }),
+      }),
+    autoSignInAfterVerification: true,
   },
   user: {
     changeEmail: {
@@ -108,6 +134,11 @@ export const auth = betterAuth({
       firstName: { type: "string" },
       lastName: { type: "string" },
       imageId: { type: "string", input: false },
+      emailCooldown: {
+        type: "date",
+        input: false,
+        defaultValue: newUTCDate(),
+      },
     },
   },
   account: {
@@ -121,6 +152,8 @@ export const auth = betterAuth({
         case "/sign-up/email":
           return updatePassword(ctx.body.password);
         case "/reset-password":
+        case "/set-password":
+        case "/change-password":
           return updatePassword(ctx.body.newPassword);
         case "/update-user":
           return updateUser(ctx);
@@ -150,11 +183,13 @@ export const auth = betterAuth({
             return {
               id: v5(String(userInfo.id), customNamespace),
               email: userInfo.email,
-              name: userInfo.usual_full_name,
+              name: userInfo.displayname,
               createdAt: new Date(),
               emailVerified: true,
               updatedAt: new Date(),
               image: userInfo.image.link,
+              firstName: userInfo.first_name,
+              lastName: userInfo.last_name,
             };
           },
         },
@@ -165,14 +200,23 @@ export const auth = betterAuth({
     google: {
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
+      mapProfileToUser: (e) => {
+        return { ...e, username: null };
+      },
     },
     github: {
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
+      mapProfileToUser: (e) => {
+        return { ...e, username: null };
+      },
     },
     discord: {
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
+      mapProfileToUser: (e) => {
+        return { ...e, username: null };
+      },
     },
   },
 });

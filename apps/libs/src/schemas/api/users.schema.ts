@@ -1,23 +1,33 @@
 import z from "zod";
+import { accountsSchema } from "../database/accounts.schema.js";
+import { sessionSchema } from "../database/session.schema.js";
 import { userSchema } from "../database/user.schema.js";
 
 export const patchUsersSchemas = {
   urlParams: z.object({ userId: userSchema.shape.id }),
-  requirements: {
-    ...userSchema
-      .pick({
-        name: true,
-        email: true,
-        image: true,
-        firstName: true,
-        lastName: true,
-        imageId: true,
-      })
-      .partial(),
-  },
+  requirements: z
+    .object({
+      ...userSchema.pick({ email: true, image: true, imageId: true }).shape,
+      name: userSchema.shape.name.min(1, { error: "min 1 character" }),
+      username: userSchema.shape.username
+        .unwrap()
+        .min(1, { error: "min 1 character" }),
+      firstName: userSchema.shape.firstName.unwrap().min(1, {
+        error: "min 1 character",
+      }),
+      lastName: userSchema.shape.lastName
+        .unwrap()
+        .min(1, { error: "min 1 character" }),
+      oldPassword: z.string(),
+      password: z.string(),
+    })
+    .partial()
+    .refine((data) => (data.oldPassword ? data.password : true), {
+      error: "old Password need password",
+    }),
   response: z.object({
     data: z.string().optional(),
-    error: z.string().optional(),
+    message: z.string().optional(),
   }),
 };
 
@@ -25,4 +35,31 @@ export type TPatchUsersSchemas = {
   urlParams: z.infer<typeof patchUsersSchemas.urlParams>;
   requirements: z.infer<typeof patchUsersSchemas.requirements>;
   response: z.infer<typeof patchUsersSchemas.response>;
+};
+
+export const getAccountsUsersSchemas = {
+  response: z.object({
+    data: accountsSchema.optional(),
+    message: z.string().optional(),
+  }),
+};
+
+export type TGetAccountsUsersSchemas = {
+  response: z.infer<typeof getAccountsUsersSchemas.response>;
+};
+
+export const getSessionUsersSchemas = {
+  response: z.object({
+    data: z
+      .object({
+        session: sessionSchema,
+        user: userSchema,
+      })
+      .optional(),
+    message: z.string().optional(),
+  }),
+};
+
+export type TGetSessionUsersSchemas = {
+  response: z.infer<typeof getSessionUsersSchemas.response>;
 };

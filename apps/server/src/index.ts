@@ -13,6 +13,7 @@ import { logger } from "hono/logger";
 import i18next from "i18next";
 import "./lib/i18n/i18n.js";
 import authRouter from "./routes/auth/auth.route.js";
+import authentificationRouter from "./routes/authentification/authentification.route.js";
 import imagesRouter from "./routes/images/images.route.js";
 import moviesRouter from "./routes/movies/movies.route.js";
 import streamingRouter from "./routes/streaming/streaming.route.js";
@@ -46,6 +47,7 @@ app.use(
 const apiRouter = new Hono();
 
 apiRouter.route("/auth", authRouter);
+apiRouter.route("/authentification", authentificationRouter);
 apiRouter.route("/images", imagesRouter);
 apiRouter.route("/users", usersRouter);
 apiRouter.route("/movies", moviesRouter);

@@ -1,19 +1,17 @@
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/LoadingButton";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import InputPassword from "@/components/ui/input-password";
-import { authClient } from "@/lib/auth-client";
-import { betterAuthTranslation } from "@/lib/better-auth/constants";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
-import { type ComponentProps } from "react";
+import { getUrl, signInAuthentificationSchemas } from "@hypertube/libs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -23,12 +21,13 @@ const formSchema = z.object({
   username: z.string().min(1),
   password: z.string().min(1),
 });
+type TFormSchema = z.infer<typeof formSchema>;
 
-export const SignInForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
+export const SignInForm = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<TFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
@@ -36,63 +35,58 @@ export const SignInForm: React.FC<ComponentProps<"div">> = ({ ...props }) => {
     },
   });
 
-  const onSubmit = async (userData: z.infer<typeof formSchema>) => {
-    await authClient.signIn.username(
-      {
-        username: userData.username,
-        password: userData.password,
-      },
-      {
-        onSuccess: () => {
-          toast.success(t("sign.connexion"));
-          queryClient.invalidateQueries({ queryKey: ["session"] });
+  const { mutate, isPending, isSuccess } = useMutation({
+    mutationFn: (signInData: TFormSchema) =>
+      axiosFetch({
+        method: "POST",
+        url: getUrl("api-authentification-signin"),
+        schemas: signInAuthentificationSchemas,
+        data: {
+          username: signInData.username,
+          password: signInData.password,
         },
-        onError: (ctx) => {
-          toast.error(betterAuthTranslation(t, ctx.error.code));
-        },
-      }
-    );
-  };
+      }),
+    onSuccess: () => {
+      toast.success(t("sign.connexion"));
+      queryClient.invalidateQueries({ queryKey: ["session"] });
+    },
+    onError: (e) => {
+      toast.error(e.message);
+    },
+  });
 
   return (
-    <div {...props}>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("sign.username")}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    placeholder={t("sign.username")}
-                    autoComplete="username"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("sign.password")}</FormLabel>
-                <FormControl>
-                  <InputPassword {...field} placeholder={t("sign.password")} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full">
-            {t("sign.in")}
-          </Button>
-        </form>
-      </Form>
-    </div>
+    <form
+      className="size-full"
+      onSubmit={form.handleSubmit((data) => mutate(data))}
+    >
+      <FieldSet>
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="input-username">
+              {t("sign.username")}
+            </FieldLabel>
+            <Input id="username" {...form.register("username")} />
+            <FieldError>{form.formState.errors.username?.message}</FieldError>
+          </Field>
+          <Field>
+            <FieldLabel htmlFor="input-password">
+              {t("sign.password")}
+            </FieldLabel>
+            <InputPassword id="password" {...form.register("password")} />
+            <FieldError>{form.formState.errors.password?.message}</FieldError>
+          </Field>
+          <Field>
+            <LoadingButton
+              type="submit"
+              loading={isPending}
+              success={isSuccess}
+            >
+              {t("sign.in")}
+            </LoadingButton>
+          </Field>
+        </FieldGroup>
+      </FieldSet>
+    </form>
   );
 };

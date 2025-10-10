@@ -9,9 +9,9 @@ export const AuthLayout: React.FC<
   }
 > = ({ title, children, className, ...props }) => {
   return (
-    <div className="flex flex-col size-full justify-center items-center">
+    <div className="flex size-full justify-center items-center">
       <Card
-        className={cn("flex flex-col items-center p-8", className)}
+        className={cn("flex items-center p-8 w-full md:w-[450px]", className)}
         {...props}
       >
         <Typography variant="h1" className="text-center">
