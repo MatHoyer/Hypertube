@@ -147,8 +147,9 @@ export const auth = betterAuth({
               headers: { Authorization: `Bearer ${tokens.accessToken}` },
             });
             const userInfo = await response.json();
+            const customNamespace = v5(env.BETTER_AUTH_URL, v5.URL);
             return {
-              id: v5(String(userInfo.id), v5.DNS),
+              id: v5(String(userInfo.id), customNamespace),
               email: userInfo.email,
               name: userInfo.usual_full_name,
               createdAt: new Date(),
