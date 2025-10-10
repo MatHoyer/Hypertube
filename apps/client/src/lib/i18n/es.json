@@ -84,7 +84,9 @@
     "backToSignin": "Volver a iniciar sesión",
     "missAccount": "¿No tienes cuenta?",
     "gotAccount": "¿Ya tienes cuenta?",
-    "connexion": ""
+    "connexion": "",
+    "usernamePolicy": "",
+    "passwordPolicy": ""
   },
   "settings": {
     "displayName": "",
@@ -97,7 +99,9 @@
     "linkMessage": "",
     "unlinkMessage": "",
     "link": "",
-    "unlink": ""
+    "unlink": "",
+    "credential": "",
+    "credentialDesc": ""
   },
   "movie": {
     "loadingRessource": "de la película",

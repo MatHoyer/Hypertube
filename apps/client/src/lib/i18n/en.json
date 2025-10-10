@@ -84,7 +84,9 @@
     "backToSignin": "Go back to sign in",
     "missAccount": "Don't have an account?",
     "gotAccount": "Already have an account?",
-    "connexion": "You are now connected !"
+    "connexion": "You are now connected !",
+    "usernamePolicy": "Username must contain at least 1 character and a maximum of 50 characters.",
+    "passwordPolicy": "Password must contain at least 1 character and a maximum of 50 characters."
   },
   "settings": {
     "displayName": "Display name",
@@ -97,7 +99,9 @@
     "linkMessage": "Successful link.",
     "unlinkMessage": "Successful unlink.",
     "link": "Link",
-    "unlink": "Unlink"
+    "unlink": "Unlink",
+    "credential": "Creating your account",
+    "credentialDesc": "You can choose your username and password to log in with."
   },
   "movie": {
     "loadingRessource": "movie",

@@ -84,7 +84,9 @@
     "backToSignin": "Retour à la connexion",
     "missAccount": "Vous n'avez pas de compte ?",
     "gotAccount": "Vous avez déjà un compte ?",
-    "connexion": "Vous êtes maintenant connecté !"
+    "connexion": "Vous êtes maintenant connecté !",
+    "usernamePolicy": "Le nom d'utilisateur doit contenir au moins 1 caractère et un maximum de 50 caractères.",
+    "passwordPolicy": "Le mot de passe doit contenir au moins 1 caractère et un maximum de 50 caractères."
   },
   "settings": {
     "displayName": "Nom d'affichage",
@@ -97,7 +99,9 @@
     "linkMessage": "Association réussi.",
     "unlinkMessage": "Dissociation réussie.",
     "link": "Associer",
-    "unlink": "Dissocier"
+    "unlink": "Dissocier",
+    "credential": "Création de votre compte",
+    "credentialDesc": "Vous pouvez choisir votre nom d'utilisateur et votre mot de passe pour pouvoir vous connectez avec."
   },
   "movie": {
     "loadingRessource": "du film",
