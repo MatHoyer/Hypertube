@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuthAccounts } from "@/hooks/use-auth-accounts";
 import { authClient } from "@/lib/auth-client";
 import {
   betterAuthTranslation,
@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const OAuthLinkButtons = () => {
-  const { accounts } = useAuth();
+  const { accounts } = useAuthAccounts();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const linkedAccounts = accounts.map((account) => account.provider);
@@ -26,7 +26,6 @@ export const OAuthLinkButtons = () => {
       toast.error(betterAuthTranslation(t, error.toUpperCase()));
       setError(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error]);
 
   const linkMutation = useMutation({
@@ -38,6 +37,9 @@ export const OAuthLinkButtons = () => {
       });
       if (res.error) throw new Error(res.error.code);
       return res;
+    },
+    onError: (error) => {
+      toast.error(betterAuthTranslation(t, error.message));
     },
   });
 
@@ -51,7 +53,7 @@ export const OAuthLinkButtons = () => {
     },
     onSuccess: () => {
       toast.success(t("settings.unlinkMessage"));
-      queryClient.invalidateQueries({ queryKey: ["session"] });
+      queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
     onError: (error) => {
       toast.error(betterAuthTranslation(t, error.message));
