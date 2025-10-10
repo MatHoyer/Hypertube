@@ -3,5 +3,5 @@ export const getServerUrl = () => {
     return window.location.origin;
   }
 
-  return process.env.SERVER_URL;
+  return process.env.BETTER_AUTH_URL;
 };
