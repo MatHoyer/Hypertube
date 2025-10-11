@@ -14,7 +14,7 @@ const imagesRouter = new Hono();
 
 imagesRouter.post(
   "/",
-  isLogged(),
+  isLogged,
   bodyLimit({
     maxSize: sizeMaxFile,
     onError: (c) => {
@@ -27,7 +27,7 @@ imagesRouter.post(
 
 imagesRouter.delete(
   "/:imageId",
-  isLogged(),
+  isLogged,
   urlParamsParser(deleteImageSchemas.urlParams),
   deleteImage
 );

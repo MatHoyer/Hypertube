@@ -9,7 +9,7 @@ const usersRouter = new Hono();
 
 usersRouter.patch(
   "/:userId",
-  isLogged(),
+  isLogged,
   urlParamsParser(patchUsersSchemas.urlParams),
   bodyParser(patchUsersSchemas.requirements),
   patchUser
