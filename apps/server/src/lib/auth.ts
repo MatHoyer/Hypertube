@@ -11,7 +11,7 @@ import {
   getSessionFromCtx,
 } from "better-auth/api";
 import { genericOAuth, username } from "better-auth/plugins";
-import { v4 } from "uuid";
+import { v5 } from "uuid";
 import z from "zod";
 import { mailTemplate } from "../emails/import-template";
 import { env } from "../env";
@@ -111,6 +111,11 @@ export const auth = betterAuth({
       imageId: { type: "string", input: false },
     },
   },
+  account: {
+    accountLinking: {
+      allowDifferentEmails: true,
+    },
+  },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       switch (ctx.path) {
@@ -142,8 +147,9 @@ export const auth = betterAuth({
               headers: { Authorization: `Bearer ${tokens.accessToken}` },
             });
             const userInfo = await response.json();
+            const customNamespace = v5(env.BETTER_AUTH_URL, v5.URL);
             return {
-              id: v4(),
+              id: v5(String(userInfo.id), customNamespace),
               email: userInfo.email,
               name: userInfo.usual_full_name,
               createdAt: new Date(),

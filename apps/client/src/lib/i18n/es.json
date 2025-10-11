@@ -61,7 +61,8 @@
     "PASSWORD_POLICY": "La contraseña debe contener al menos 1 letra minúscula, 1 letra mayúscula, 1 número y 1 carácter especial.",
     "EMAIL_IS_THE_SAME": "",
     "COULDNT_UPDATE_YOUR_EMAIL": "",
-    "FAILED_TO_UPDATE_PASSWORD": ""
+    "FAILED_TO_UPDATE_PASSWORD": "",
+    "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": ""
   },
   "sign": {
     "username": "Nombre de usuario",
@@ -83,7 +84,9 @@
     "backToSignin": "Volver a iniciar sesión",
     "missAccount": "¿No tienes cuenta?",
     "gotAccount": "¿Ya tienes cuenta?",
-    "connexion": ""
+    "connexion": "",
+    "usernamePolicy": "",
+    "passwordPolicy": ""
   },
   "settings": {
     "displayName": "",
@@ -92,7 +95,12 @@
     "updateInfoFailed": "",
     "deletePicture": "",
     "updatePicture": "",
-    "updatePictureFailed": ""
+    "updatePictureFailed": "",
+    "unlinkMessage": "",
+    "link": "",
+    "unlink": "",
+    "credential": "",
+    "credentialDesc": ""
   },
   "movie": {
     "loadingRessource": "de la película",

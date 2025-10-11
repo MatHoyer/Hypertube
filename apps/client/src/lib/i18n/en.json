@@ -61,7 +61,8 @@
     "PASSWORD_POLICY": "Password must contain at least 1 lowercase, 1 uppercase, 1 number, and 1 special character.",
     "EMAIL_IS_THE_SAME": "Email is the same as it is now.",
     "COULDNT_UPDATE_YOUR_EMAIL": "Email couldn't be updated. Try another email.",
-    "FAILED_TO_UPDATE_PASSWORD": "Failed to update password"
+    "FAILED_TO_UPDATE_PASSWORD": "Failed to update password",
+    "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "Account is already linked to different user."
   },
   "sign": {
     "username": "Username",
@@ -83,7 +84,9 @@
     "backToSignin": "Go back to sign in",
     "missAccount": "Don't have an account?",
     "gotAccount": "Already have an account?",
-    "connexion": "You are now connected !"
+    "connexion": "You are now connected !",
+    "usernamePolicy": "Username must contain at least 1 character and a maximum of 50 characters.",
+    "passwordPolicy": "Password must contain at least 1 character and a maximum of 50 characters."
   },
   "settings": {
     "displayName": "Display name",
@@ -92,7 +95,12 @@
     "updateInfoFailed": "Failed to update your information.",
     "deletePicture": "Delete your profile picture",
     "updatePicture": "Profile picture successfully updated.",
-    "updatePictureFailed": "Failed to update your profile picture."
+    "updatePictureFailed": "Failed to update your profile picture.",
+    "unlinkMessage": "Successful unlink.",
+    "link": "Link",
+    "unlink": "Unlink",
+    "credential": "Creating your account",
+    "credentialDesc": "You can choose your username and password to log in with."
   },
   "movie": {
     "loadingRessource": "movie",

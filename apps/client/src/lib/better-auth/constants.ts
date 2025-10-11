@@ -36,6 +36,7 @@ const keyErrorCodes = [
   "EMAIL_IS_THE_SAME",
   "COULDNT_UPDATE_YOUR_EMAIL",
   "FAILED_TO_UPDATE_PASSWORD",
+  "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER",
 ] as const;
 
 export const errorCodes = keyErrorCodes.map(
@@ -44,10 +45,14 @@ export const errorCodes = keyErrorCodes.map(
 
 export const betterAuthTranslation = (
   t: TFunction,
-  code: (typeof keyErrorCodes)[number]
+  code: string | undefined
 ): string => {
   try {
-    if (!errorCodes.includes(`better-auth-error.${code}`)) {
+    if (
+      !errorCodes.includes(
+        `better-auth-error.${code as (typeof keyErrorCodes)[number]}`
+      )
+    ) {
       console.log("better-auth error code : ", code);
       return t("global.unexpected-error");
     }
@@ -56,3 +61,11 @@ export const betterAuthTranslation = (
     return t("global.unexpected-error");
   }
 };
+
+export const supportedOAuth = {
+  google: { name: "Google", img: "/images/oauth_logo/google_logo.png" },
+  github: { name: "Github", img: "/images/oauth_logo/github_logo.svg" },
+  discord: { name: "Discord", img: "/images/oauth_logo/discord_logo.webp" },
+  school42: { name: "42 School", img: "/images/oauth_logo/42_logo.png" },
+} as const;
+export type TSupportedOAuth = keyof typeof supportedOAuth;
