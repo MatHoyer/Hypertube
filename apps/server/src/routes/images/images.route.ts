@@ -14,21 +14,21 @@ const imagesRouter = new Hono();
 
 imagesRouter.post(
   "/",
+  isLogged(),
   bodyLimit({
     maxSize: sizeMaxFile,
     onError: (c) => {
       return c.json({ error: "File too large" }, 413);
     },
   }),
-  isLogged(),
   bodyParser(postImageSchemas.requirements, "formData"),
   uploadImage
 );
 
 imagesRouter.delete(
   "/:imageId",
-  urlParamsParser(deleteImageSchemas.urlParams),
   isLogged(),
+  urlParamsParser(deleteImageSchemas.urlParams),
   deleteImage
 );
 
