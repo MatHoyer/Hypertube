@@ -5,9 +5,9 @@ import {
   postMovieDownloadSubtitlesSchemas,
 } from "@hypertube/libs";
 import { Hono } from "hono";
+import { isVPNActive } from "../../middlewares/isVPNActive";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
-import { vpnChecker } from "../../middlewares/vpnChecker";
 import {
   downloadMovie,
   downloadSubtitles,
@@ -31,14 +31,14 @@ moviesRouter.get(
 
 moviesRouter.post(
   "/:tmdbId/download/resolutions/:resolution",
-  vpnChecker(),
+  isVPNActive,
   urlParamsParser(postMovieDownloadResolutionSchemas.urlParams),
   downloadMovie
 );
 
 moviesRouter.post(
   "/:tmdbId/download/subtitles/:subtitlesLanguage",
-  vpnChecker(),
+  isVPNActive,
   urlParamsParser(postMovieDownloadSubtitlesSchemas.urlParams),
   downloadSubtitles
 );
