@@ -55,8 +55,10 @@ export const axiosFetch = async <
 
     return response;
   } catch (error) {
+    let errorStr = "unknown error";
     if (axios.isAxiosError(error) && error.response) {
       console.log(error.response.data.message);
+      errorStr = error.response.data.message;
     } else if (error instanceof ZodError) {
       const zerrjson = JSON.parse(error.message) as {
         message: string;
@@ -69,9 +71,10 @@ export const axiosFetch = async <
       };
 
       console.log("Zod validation error:", zerr.message, "at", zerr.path);
+      errorStr = zerr.message;
     } else {
       console.log(error);
     }
-    throw error;
+    throw new Error(errorStr);
   }
 };
