@@ -1,18 +1,25 @@
-import { getUrl } from "@hypertube/libs";
+import { getUrl, hypertubeLogger } from "@hypertube/libs";
 
-export const notifyServer = async ({
+const notifyServer = async ({
+  type,
   movieId,
   resolution,
   success,
 }: {
+  type: "started" | "ended";
   movieId: string;
   resolution: string;
   success: boolean;
 }) => {
   const response = await fetch(
-    getUrl("internal-movie-download-job-end", {
-      withServerUrl: true,
-    }),
+    getUrl(
+      type === "started"
+        ? "internal-movie-download-job-started"
+        : "internal-movie-download-job-end",
+      {
+        withServerUrl: true,
+      }
+    ),
     {
       method: "POST",
       body: JSON.stringify({ movieId, resolution, success }),
@@ -26,3 +33,41 @@ export const notifyServer = async ({
     throw new Error(response.statusText);
   }
 };
+
+const successNotifyServer = async ({
+  type,
+  movieId,
+  resolution,
+}: {
+  type: "started" | "ended";
+  movieId: string;
+  resolution: string;
+}) => {
+  try {
+    await notifyServer({ type, movieId, resolution, success: true });
+  } catch (error) {
+    hypertubeLogger.error(
+      `[${movieId}] Failed to notify server : ${JSON.stringify(error)}`
+    );
+  }
+};
+
+const failedNotifyServer = async ({
+  type,
+  movieId,
+  resolution,
+}: {
+  type: "started" | "ended";
+  movieId: string;
+  resolution: string;
+}) => {
+  try {
+    await notifyServer({ type, movieId, resolution, success: false });
+  } catch (error) {
+    hypertubeLogger.error(
+      `[${movieId}] Failed to notify server : ${JSON.stringify(error)}`
+    );
+  }
+};
+
+export { failedNotifyServer, notifyServer, successNotifyServer };

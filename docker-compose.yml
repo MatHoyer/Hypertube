@@ -41,7 +41,7 @@ services:
       - TRANSMISSION_RPC_ENABLED=true
       - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=false
     volumes:
-      - ./apps/server/downloads:/downloads
+      - ./apps/downloader/downloads:/downloads
     networks:
       - hypertube-network
 

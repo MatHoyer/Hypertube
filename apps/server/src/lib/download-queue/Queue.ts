@@ -5,7 +5,7 @@ import { env } from "../../env";
 
 const connection = new IORedis({
   host: env.REDIS_HOST,
-  port: Number(env.REDIS_PORT),
+  port: env.REDIS_PORT,
 });
 
 export const downloadQueue = new Queue<TJobData>(DOWNLOAD_QUEUE, {

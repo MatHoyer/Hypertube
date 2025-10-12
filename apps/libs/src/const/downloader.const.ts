@@ -1,7 +1,8 @@
+import type { TMovieSchema } from "../schemas/database/movie.schema.js";
+
 export const DOWNLOAD_QUEUE = "downloader";
 
 export type TJobData = {
-  movieId: string;
+  movie: TMovieSchema;
   resolution: string;
-  torrentPath: string;
 };

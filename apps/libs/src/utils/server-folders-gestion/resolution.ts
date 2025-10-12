@@ -1,6 +1,9 @@
-import type { TMovieSchema, TResolutionSchema } from "@hypertube/libs";
 import * as fs from "fs";
-import { getMovieFolderPath } from "./movie";
+import type {
+  TMovieSchema,
+  TResolutionSchema,
+} from "../../schemas/database/movie.schema.js";
+import { getMovieFolderPath } from "./movie.js";
 
 const resolutionFolderName = "resolutions";
 

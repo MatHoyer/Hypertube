@@ -1,8 +1,7 @@
-import { newUTCDate } from "@hypertube/libs";
+import { deleteMovieFolder, newUTCDate } from "@hypertube/libs";
 import { subMonths } from "date-fns";
 import cron from "node-cron";
 import prisma from "../src/lib/prisma";
-import { deleteMovieFolder } from "./lib/movie-folder-gestion/movie";
 
 console.log("Cron jobs started");
 

@@ -1,11 +1,14 @@
 import type { TMovieSchema } from "@hypertube/libs";
-import { DownloadStates, TResolutionSchema } from "@hypertube/libs";
+import {
+  getResolutionPath,
+  renameFile,
+  TResolutionSchema,
+  waitFile,
+} from "@hypertube/libs";
 import * as fs from "fs";
 import path from "path";
-import { getResolutionPath } from "../movie-folder-gestion/resolution";
-import { renameFile, waitFile } from "../movie-folder-gestion/utils";
-import prisma from "../prisma";
-import { downloader } from "./downloader";
+import { notifyServer } from "../notifyServer.js";
+import { downloader } from "./downloader.js";
 
 const Status = {
   STOPPED: 0,
@@ -94,29 +97,18 @@ export const downloadMovie = async (
             }
           );
 
-          await prisma.resolution.update({
-            where: {
-              movieId_resolution: {
-                movieId: movie.id,
-                resolution: resolution,
-              },
-            },
-            data: {
-              downloadState: DownloadStates.DOWNLOADED,
-            },
+          await notifyServer({
+            type: "ended",
+            movieId: movie.id,
+            resolution: resolution,
+            success: true,
           });
         } catch (err) {
-          console.error("Error downloading movie", err);
-          await prisma.resolution.update({
-            where: {
-              movieId_resolution: {
-                movieId: movie.id,
-                resolution: resolution,
-              },
-            },
-            data: {
-              downloadState: DownloadStates.NOT_DOWNLOADED,
-            },
+          await notifyServer({
+            type: "ended",
+            movieId: movie.id,
+            resolution: resolution,
+            success: false,
           });
         }
       }
