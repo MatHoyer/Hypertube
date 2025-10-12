@@ -6,9 +6,12 @@
   "type": "module",
   "scripts": {
     "clear": "rm -rf node_modules && pnpm -r clear",
-    "dev": "pnpm -r --parallel dev",
-    "build": "pnpm -r build",
-    "start": "pnpm --filter server start",
+    "dev:app": "pnpm -r --parallel --filter !downloader dev",
+    "build:app": "pnpm -r --filter !downloader build",
+    "start:app": "pnpm --filter server start",
+    "dev:downloader": "pnpm -r --parallel --filter 'downloader...' dev",
+    "build:downloader": "pnpm -r --filter 'downloader...' build",
+    "start:downloader": "pnpm --filter downloader start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

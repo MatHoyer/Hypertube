@@ -9,11 +9,6 @@ export const notifyServer = async ({
   resolution: string;
   success: boolean;
 }) => {
-  console.log(
-    getUrl("internal-movie-download-job-end", {
-      withServerUrl: true,
-    })
-  );
   const response = await fetch(
     getUrl("internal-movie-download-job-end", {
       withServerUrl: true,
@@ -30,6 +25,4 @@ export const notifyServer = async ({
   if (!response.ok) {
     throw new Error(response.statusText);
   }
-
-  return response.json();
 };
