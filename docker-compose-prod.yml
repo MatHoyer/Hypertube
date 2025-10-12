@@ -7,13 +7,15 @@ services:
     env_file: .env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
-      - TRANSMISSION_HOST=transmission
       - NODE_ENV=PROD
       - PUPPETEER_SKIP_DOWNLOAD=true
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+      - REDIS_HOST=redis
     ports:
       - ${SERVER_PORT}
-    command: bash -c "pnpm lint && pnpm --filter server prisma:migrate:reset && pnpm --filter server prisma:migrate && pnpm --filter server prisma:seed && pnpm build && pnpm start"
+    volumes:
+      - movies_data:/hypertube/apps/server/downloads
+    command: bash -c "pnpm lint && pnpm --filter server prisma:migrate:reset && pnpm --filter server prisma:migrate && pnpm --filter server prisma:seed && pnpm build:app && pnpm start:app"
     networks:
       - hypertube-network
     healthcheck:
@@ -22,6 +24,28 @@ services:
       timeout: 10s
       retries: 3
 
+  downloader:
+    container_name: hypertube-downloader-prod
+    build:
+      context: .
+      dockerfile: ./Dockerfile.downloader.prod
+    env_file: .env
+    environment:
+      - REDIS_HOST=redis
+      - NODE_ENV=PROD
+      - TRANSMISSION_HOST=transmission
+      - SERVER_URL=http://app:3000
+    command: bash -c "pnpm lint && pnpm build:downloader && pnpm start:downloader"
+    volumes:
+      - movies_data:/hypertube/apps/downloader/downloads
+    networks:
+      - hypertube-network
+    depends_on:
+      - app
+
 networks:
   hypertube-network:
     external: true
+
+volumes:
+  movies_data:

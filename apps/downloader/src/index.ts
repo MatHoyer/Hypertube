@@ -1,7 +1,6 @@
-import { DOWNLOAD_QUEUE, TJobData } from "@hypertube/libs";
+import { DOWNLOAD_QUEUE, hypertubeLogger, TJobData } from "@hypertube/libs";
 import { Job, Worker } from "bullmq";
 import { Redis } from "ioredis";
-import "./env";
 import { env } from "./env.js";
 import { notifyServer } from "./notifyServer.js";
 
@@ -14,17 +13,15 @@ const connection = new Redis({
 const worker = new Worker<TJobData>(
   DOWNLOAD_QUEUE,
   async (job: Job<TJobData>) => {
-    console.log(`Download job started for movie ${job.data.movieId}`);
+    hypertubeLogger.info(`[${job.data.movieId}] Download job started`);
 
     await new Promise((r) => setTimeout(r, 2000));
-
-    console.log(`Job done for movie ${job.data.movieId}`);
   },
   { connection }
 );
 
 worker.on("completed", async (job) => {
-  console.log(`Job ${job.id} completed for movie ${job.data.movieId}`);
+  hypertubeLogger.info(`[${job.data.movieId}] Download job completed`);
   try {
     await notifyServer({
       movieId: job.data.movieId,
@@ -32,12 +29,16 @@ worker.on("completed", async (job) => {
       success: true,
     });
   } catch (err) {
-    console.error("Failed to notify server :", err);
+    hypertubeLogger.error(
+      `[${job.data.movieId}] Failed to notify server : ${JSON.stringify(err)}`
+    );
   }
 });
 
 worker.on("failed", async (job, err) => {
-  console.error(`Job ${job?.id} failed for movie ${job?.data.movieId}`, err);
+  hypertubeLogger.error(
+    `[${job?.data.movieId}] Download job failed : ${JSON.stringify(err)}`
+  );
   if (!job) return;
   try {
     await notifyServer({
@@ -46,6 +47,8 @@ worker.on("failed", async (job, err) => {
       success: false,
     });
   } catch (err) {
-    console.error("Failed to notify server :", err);
+    hypertubeLogger.error(
+      `[${job?.data.movieId}] Failed to notify server : ${JSON.stringify(err)}`
+    );
   }
 });
