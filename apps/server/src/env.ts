@@ -31,6 +31,8 @@ const envSchema = z.object({
   TRANSMISSION_RCP_PORT: z.coerce.number(),
   TRANSMISSION_TORRENT_PORT: z.coerce.number(),
   TMDB_TOKEN: z.string(),
+  REDIS_HOST: z.string(),
+  REDIS_PORT: z.coerce.number(),
   VPN_IS_ACTIVE: z.coerce.boolean().default(false),
   NODE_ENV: z.enum(["DEV", "PROD"]).default("DEV"),
 });

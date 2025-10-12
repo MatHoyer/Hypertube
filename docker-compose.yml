@@ -45,6 +45,14 @@ services:
     networks:
       - hypertube-network
 
+  redis:
+    container_name: hypertube_redis
+    image: redis:7-alpine
+    ports:
+      - ${REDIS_PORT}
+    networks:
+      - hypertube-network
+
 volumes:
   hypertube_data:
 

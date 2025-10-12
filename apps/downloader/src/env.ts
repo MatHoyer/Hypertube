@@ -1,0 +1,13 @@
+import * as dotenv from "dotenv";
+import z from "zod";
+
+dotenv.config({ path: "../../.env" });
+
+const envSchema = z.object({
+  REDIS_HOST: z.string(),
+  REDIS_PORT: z.coerce.number(),
+});
+
+export const env = envSchema.parse({
+  ...process.env,
+});

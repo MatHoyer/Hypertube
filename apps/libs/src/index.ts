@@ -75,7 +75,6 @@ export {
   ytsScrapperSortBy,
 } from "./const/yts.const.js";
 
-// Global const export
 export {
   DownloadStates,
   languageCodes,
@@ -83,3 +82,6 @@ export {
   Providers,
   sizeMaxFile,
 } from "./const/global.const.js";
+
+export { DOWNLOAD_QUEUE } from "./const/downloader.const.js";
+export type { TJobData } from "./const/downloader.const.js";
