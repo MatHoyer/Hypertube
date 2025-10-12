@@ -7,7 +7,7 @@ import {
 } from "@hypertube/libs";
 import * as fs from "fs";
 import path from "path";
-import { notifyServer } from "../notifyServer.js";
+import { failedNotifyServer, successNotifyServer } from "../notifyServer.js";
 import { downloader } from "./downloader.js";
 
 const Status = {
@@ -97,18 +97,16 @@ export const downloadMovie = async (
             }
           );
 
-          await notifyServer({
+          await successNotifyServer({
             type: "ended",
             movieId: movie.id,
             resolution: resolution,
-            success: true,
           });
         } catch (err) {
-          await notifyServer({
+          await failedNotifyServer({
             type: "ended",
             movieId: movie.id,
             resolution: resolution,
-            success: false,
           });
         }
       }
