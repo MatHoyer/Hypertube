@@ -8,9 +8,11 @@ import { logger } from "hono/logger";
 import i18next from "i18next";
 import "./cron.js";
 import { env } from "./env.js";
+import { produceDownload } from "./lib/download-queue/download.produce.js";
 import "./lib/i18n/i18n.js";
 import authRouter from "./routes/auth/auth.route.js";
 import imagesRouter from "./routes/images/images.route.js";
+import internalRouter from "./routes/internal/internal.route.js";
 import moviesRouter from "./routes/movies/movies.route.js";
 import streamingRouter from "./routes/streaming/streaming.route.js";
 import swaggerRouter from "./routes/swagger/swagger.route.js";
@@ -46,7 +48,16 @@ apiRouter.route("/users", usersRouter);
 apiRouter.route("/movies", moviesRouter);
 apiRouter.route("/streaming", streamingRouter);
 apiRouter.route("/swagger", swaggerRouter);
+apiRouter.route("/internal", internalRouter);
 apiRouter.get("/health", (c) => c.text("OK"));
+apiRouter.get("/test", (c) => {
+  produceDownload({
+    movieId: "00000000-0000-0000-0000-000000000000",
+    resolution: "1080p",
+    torrentPath: "test",
+  });
+  return c.text("OK");
+});
 
 app.route("/api", apiRouter);
 

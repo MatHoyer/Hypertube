@@ -2,3 +2,4 @@ packages:
   - "apps/client"
   - "apps/server"
   - "apps/libs"
+  - "apps/downloader"
