@@ -64,6 +64,9 @@ export type {
   TSubtitleSchema,
 } from "./schemas/database/movie.schema.js";
 
+// Logger export
+export { hypertubeLogger } from "./utils/logger.js";
+
 // Const export
 export {
   ytsApiSortBy,
