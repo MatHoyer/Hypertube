@@ -1,6 +1,7 @@
 import type { TMovieSchema } from "@hypertube/libs";
 import {
   getResolutionPath,
+  hypertubeLogger,
   renameFile,
   TResolutionSchema,
   waitFile,
@@ -28,14 +29,14 @@ export const downloadMovie = async (
 ) => {
   const resolutionPath = `/downloads/${movie.tmdbId}/resolutions/${resolution}/resolution.torrent`;
 
-  console.log("Downloading movie", resolutionPath);
+  hypertubeLogger.info(`Downloading movie ${resolutionPath}`);
 
   try {
     const result = await downloader.addFile(resolutionPath, {
       "download-dir": `/downloads/${movie.tmdbId}/resolutions/${resolution}`,
       paused: true,
     });
-    console.log("Torrent added with ID:", result.id);
+    hypertubeLogger.info(`Torrent added with ID: ${result.id}`);
 
     const info = await downloader.get(result.id, ["files"]);
     const files = info.torrents[0].files as { name: string }[];
@@ -44,7 +45,7 @@ export const downloadMovie = async (
     if (!mp4File) {
       throw new Error("MP4 file not found");
     }
-    console.log("MP4 file found", mp4File.name);
+    hypertubeLogger.info(`MP4 file found ${mp4File.name}`);
 
     await downloader.start(result.id);
 
@@ -53,7 +54,7 @@ export const downloadMovie = async (
       `./downloads/incomplete/${mp4File.name}.part`
     );
 
-    console.log("Waiting for file to be downloaded", target);
+    hypertubeLogger.info(`Waiting for file to be downloaded ${target}`);
     await waitFile(target, 60000);
 
     const linkPath = path.join(
@@ -64,7 +65,7 @@ export const downloadMovie = async (
       await fs.promises.rm(linkPath, { recursive: true, force: true });
       await fs.promises.symlink(target, linkPath, "file");
     } catch (error) {
-      console.error("Error symlinking movie", error);
+      hypertubeLogger.error(`Error symlinking movie ${error}`);
     }
 
     const interval = setInterval(async () => {
@@ -117,6 +118,6 @@ export const downloadMovie = async (
       console.log("Status", status);
     }, 1000);
   } catch (err) {
-    console.error("Error adding torrent:", err);
+    hypertubeLogger.error(`Error adding torrent: ${err}`);
   }
 };
