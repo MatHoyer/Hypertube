@@ -46,6 +46,15 @@ export type {
   TGetStreamingSubtitlesSchemas,
 } from "./schemas/api/streaming.schema.js";
 
+export {
+  postMovieDownloadJobEndedSchemas,
+  postMovieDownloadJobStartedSchemas,
+} from "./schemas/api/internal.schema.js";
+export type {
+  TPostMovieDownloadJobEndedSchemas,
+  TPostMovieDownloadJobStartedSchemas,
+} from "./schemas/api/internal.schema.js";
+
 // Database Schemas export
 export { imageSchema } from "./schemas/database/image.schema.js";
 export type { TImageSchema } from "./schemas/database/image.schema.js";

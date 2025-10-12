@@ -1,7 +1,10 @@
-import { movieSchema, resolutionSchema } from "@hypertube/libs";
+import {
+  postMovieDownloadJobEndedSchemas,
+  postMovieDownloadJobStartedSchemas,
+} from "@hypertube/libs";
 import { Hono } from "hono";
-import z from "zod";
 import { bodyParser } from "../../middlewares/bodyParser";
+import { internalTokenParser } from "../../middlewares/internalTokenParser";
 import {
   movieDownloadJobEnd,
   movieDownloadJobStarted,
@@ -9,35 +12,20 @@ import {
 
 const internalRouter = new Hono();
 
-// internalRouter.use(
-//   "/*",
-//   cors({
-//     origin: [env.SERVER_URL],
-//   })
-// );
+internalRouter.use("/*", internalTokenParser);
 
 internalRouter.post(
   "/movie-download-job-started",
-  bodyParser(
-    z.object({
-      movieId: movieSchema.shape.id,
-      resolution: resolutionSchema.shape.resolution,
-      success: z.coerce.boolean(),
-    })
-  ),
+  bodyParser(postMovieDownloadJobStartedSchemas.requirements),
   movieDownloadJobStarted
 );
 
 internalRouter.post(
   "/movie-download-job-end",
-  bodyParser(
-    z.object({
-      movieId: movieSchema.shape.id,
-      resolution: resolutionSchema.shape.resolution,
-      success: z.coerce.boolean(),
-    })
-  ),
+  bodyParser(postMovieDownloadJobEndedSchemas.requirements),
   movieDownloadJobEnd
 );
+
+internalRouter.get("/test", (c) => c.json({ message: "OK" }));
 
 export default internalRouter;

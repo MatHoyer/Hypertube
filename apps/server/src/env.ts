@@ -33,6 +33,7 @@ const envSchema = z.object({
   TMDB_TOKEN: z.string(),
   REDIS_HOST: z.string(),
   REDIS_PORT: z.coerce.number(),
+  INTERNAL_TOKEN: z.string(),
   VPN_IS_ACTIVE: z.coerce.boolean().default(false),
   NODE_ENV: z.enum(["DEV", "PROD"]).default("DEV"),
 });

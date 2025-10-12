@@ -96,9 +96,9 @@ const routes: {
     if (tmdbId === undefined) return `/api/movies`;
 
     if (resolution) {
-      return `/api/movies/${tmdbId}/resolutions/${resolution}`;
+      return `/api/movies/${tmdbId}/resolutions/${resolution}/download`;
     } else if (subtitlesLanguage) {
-      return `/api/movies/${tmdbId}/subtitles/${subtitlesLanguage}`;
+      return `/api/movies/${tmdbId}/subtitles/${subtitlesLanguage}/download`;
     } else {
       return `/api/movies/${tmdbId}`;
     }

@@ -8,6 +8,7 @@ const envSchema = z.object({
   REDIS_PORT: z.coerce.number(),
   TRANSMISSION_HOST: z.string(),
   TRANSMISSION_RCP_PORT: z.coerce.number(),
+  INTERNAL_TOKEN: z.string(),
 });
 
 export const env = envSchema.parse({

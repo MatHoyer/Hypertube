@@ -30,14 +30,14 @@ moviesRouter.get(
 );
 
 moviesRouter.post(
-  "/:tmdbId/download/resolutions/:resolution",
+  "/:tmdbId/resolutions/:resolution/download",
   isVPNActive,
   urlParamsParser(postMovieDownloadResolutionSchemas.urlParams),
   downloadMovie
 );
 
 moviesRouter.post(
-  "/:tmdbId/download/subtitles/:subtitlesLanguage",
+  "/:tmdbId/subtitles/:subtitlesLanguage/download",
   isVPNActive,
   urlParamsParser(postMovieDownloadSubtitlesSchemas.urlParams),
   downloadSubtitles

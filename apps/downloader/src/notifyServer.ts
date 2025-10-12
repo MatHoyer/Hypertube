@@ -1,4 +1,5 @@
 import { getUrl, hypertubeLogger } from "@hypertube/libs";
+import { env } from "./env.js";
 
 const notifyServer = async ({
   type,
@@ -25,6 +26,7 @@ const notifyServer = async ({
       body: JSON.stringify({ movieId, resolution, success }),
       headers: {
         "Content-Type": "application/json",
+        Authorization: env.INTERNAL_TOKEN,
       },
     }
   );

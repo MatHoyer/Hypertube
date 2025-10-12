@@ -131,18 +131,18 @@ export const downloadMovie = async (
     },
   });
   if (!dbMovie) {
-    return c.json({ error: "Movie not found" }, 404);
+    return c.json({ message: "Movie not found" }, 404);
   }
   const dbResolution = dbMovie.resolutions[0];
   if (!dbResolution) {
-    return c.json({ error: "Resolution not found" }, 404);
+    return c.json({ message: "Resolution not found" }, 404);
   }
   if (
     dbResolution.downloadState === DownloadStates.DOWNLOADING ||
     dbResolution.downloadState === DownloadStates.DOWNLOADED
   ) {
     return c.json(
-      { error: "Resolution already downloading or downloaded" },
+      { message: "Resolution already downloading or downloaded" },
       400
     );
   }
@@ -192,7 +192,7 @@ export const downloadSubtitles = async (
     },
   });
   if (!dbMovie) {
-    return c.json({ error: "Movie not found" }, 404);
+    return c.json({ message: "Movie not found" }, 404);
   }
 
   await downloadYifysubtitles({

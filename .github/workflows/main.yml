@@ -70,6 +70,8 @@ jobs:
 
           REDIS_HOST=${{ secrets.REDIS_HOST }}
           REDIS_PORT=${{ secrets.REDIS_PORT }}
+
+          INTERNAL_TOKEN=${{ secrets.INTERNAL_TOKEN }}
           EOF
 
       - name: Create Docker network
