@@ -12,6 +12,7 @@
     "dev:downloader": "pnpm -r --parallel --filter 'downloader...' dev",
     "build:downloader": "pnpm -r --filter 'downloader...' build",
     "start:downloader": "pnpm --filter downloader start",
+    "dev": "pnpm -r --parallel dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

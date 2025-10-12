@@ -92,7 +92,7 @@ const routes: {
         "Resolution and subtitles language cannot be provided together"
       );
     }
-    if (!tmdbId) return `/api/movies`;
+    if (tmdbId === undefined) return `/api/movies`;
 
     if (resolution) {
       return `/api/movies/${tmdbId}/resolutions/${resolution}`;

@@ -45,10 +45,22 @@ Initialize the database:
 pnpm --filter server prisma:migrate
 ```
 
+Create downloads symlink (simulate docker volume)
+
+```bash
+ln -s ../downloader/downloads ./apps/server/downloads
+```
+
 Run the app in dev mode (hot reload):
 
 ```bash
-pnpm dev
+pnpm dev:app
+```
+
+Run the downloader worker in dev mode (hot reload):
+
+```bash
+pnpm dev:downloader
 ```
 
 ### 🔹 Option 2 — Dev with Docker (only for 42)
