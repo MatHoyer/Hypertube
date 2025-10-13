@@ -67,6 +67,11 @@ jobs:
           TRANSMISSION_TORRENT_PORT=${{ secrets.TRANSMISSION_TORRENT_PORT }}
 
           TMDB_TOKEN=${{ secrets.TMDB_TOKEN }}
+
+          REDIS_HOST=${{ secrets.REDIS_HOST }}
+          REDIS_PORT=${{ secrets.REDIS_PORT }}
+
+          INTERNAL_TOKEN=${{ secrets.INTERNAL_TOKEN }}
           EOF
 
       - name: Create Docker network

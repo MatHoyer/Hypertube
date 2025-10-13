@@ -1,11 +1,11 @@
 import {
+  getResolutionPath,
+  getSubtitlePath,
   TGetStreamingResolutionSchemas,
   TGetStreamingSubtitlesSchemas,
 } from "@hypertube/libs";
 import * as fs from "fs";
 import { Context } from "hono";
-import { getResolutionPath } from "../../lib/movie-folder-gestion/resolution";
-import { getSubtitlePath } from "../../lib/movie-folder-gestion/subtitle";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 
 export const getStreamingResolution = async (

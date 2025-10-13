@@ -14,8 +14,10 @@ dist/
 
 # Downloads
 **/downloads/**
-!**/downloads/0/
-!**/downloads/0/**
+**/server/downloads
+!**/downloader/downloads/0/
+!**/downloader/downloads/0/**
+!**/downloader/downloads/.gitkeep
 
 # Server public
 **/server/public/images/**

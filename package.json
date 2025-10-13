@@ -6,9 +6,13 @@
   "type": "module",
   "scripts": {
     "clear": "rm -rf node_modules && pnpm -r clear",
+    "dev:app": "pnpm -r --parallel --filter !downloader dev",
+    "build:app": "pnpm -r --filter !downloader build",
+    "start:app": "pnpm --filter server start",
+    "dev:downloader": "pnpm -r --parallel --filter 'downloader...' dev",
+    "build:downloader": "pnpm -r --filter 'downloader...' build",
+    "start:downloader": "pnpm --filter downloader start",
     "dev": "pnpm -r --parallel dev",
-    "build": "pnpm -r build",
-    "start": "pnpm --filter server start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -28,6 +32,8 @@
   "dependencies": {
     "@date-fns/tz": "^1.4.1",
     "better-auth": "^1.3.7",
+    "bullmq": "^5.61.0",
+    "ioredis": "^5.8.1",
     "date-fns": "^4.1.0",
     "i18next": "^25.4.2",
     "zod": "^4.0.5"

@@ -1,7 +1,10 @@
-import { TSubtitleSchema } from "@hypertube/libs";
+import {
+  getSubtitlePath,
+  renameFile,
+  TSubtitleSchema,
+  waitFile,
+} from "@hypertube/libs";
 import * as path from "path";
-import { getSubtitlePath } from "../movie-folder-gestion/subtitle";
-import { renameFile, waitFile } from "../movie-folder-gestion/utils";
 import { launchPuppeteer } from "./scrappers.utils";
 
 const yifysubtitlesUrl = "https://yifysubtitles.ch/movie-imdb/";

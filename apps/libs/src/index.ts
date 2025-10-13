@@ -46,6 +46,15 @@ export type {
   TGetStreamingSubtitlesSchemas,
 } from "./schemas/api/streaming.schema.js";
 
+export {
+  postMovieDownloadJobEndedSchemas,
+  postMovieDownloadJobStartedSchemas,
+} from "./schemas/api/internal.schema.js";
+export type {
+  TPostMovieDownloadJobEndedSchemas,
+  TPostMovieDownloadJobStartedSchemas,
+} from "./schemas/api/internal.schema.js";
+
 // Database Schemas export
 export { imageSchema } from "./schemas/database/image.schema.js";
 export type { TImageSchema } from "./schemas/database/image.schema.js";
@@ -75,7 +84,6 @@ export {
   ytsScrapperSortBy,
 } from "./const/yts.const.js";
 
-// Global const export
 export {
   DownloadStates,
   languageCodes,
@@ -83,3 +91,26 @@ export {
   Providers,
   sizeMaxFile,
 } from "./const/global.const.js";
+
+export { renameFile, waitFile } from "./utils/file.utils.js";
+
+export {
+  createMovieFolder,
+  deleteMovieFolder,
+  getMovieFolderPath,
+} from "./utils/server-folders-gestion/movie.js";
+
+export {
+  createResolution,
+  deleteResolution,
+  getResolutionPath,
+} from "./utils/server-folders-gestion/resolution.js";
+
+export {
+  createSubtitle,
+  deleteSubtitle,
+  getSubtitlePath,
+} from "./utils/server-folders-gestion/subtitle.js";
+
+export { DOWNLOAD_QUEUE } from "./const/downloader.const.js";
+export type { TJobData } from "./const/downloader.const.js";

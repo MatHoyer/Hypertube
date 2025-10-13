@@ -28,14 +28,8 @@ export type TApiRouteDataRequirements = {
 
   "api-movies": {
     tmdbId: "{tmdbId}" | number | undefined;
-  };
-  "api-movie-download-resolution": {
-    tmdbId: TMovieSchema["tmdbId"];
-    resolution: (typeof ytsQualities)[number] | "{resolution}";
-  };
-  "api-movie-download-subtitles": {
-    tmdbId: TMovieSchema["tmdbId"];
-    subtitlesLanguage: keyof typeof languageCodes | "{subtitlesLanguage}";
+    resolution?: (typeof ytsQualities)[number] | "{resolution}";
+    subtitlesLanguage?: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
 
   // Streaming routes
@@ -49,6 +43,11 @@ export type TApiRouteDataRequirements = {
   };
 };
 
+export type TInternalRouteDataRequirements = {
+  "internal-movie-download-job-started": undefined;
+  "internal-movie-download-job-end": undefined;
+};
+
 export type TExternalRouteDataRequirements = {
   "external-imdb-movie": {
     imdbId: string;
@@ -60,6 +59,7 @@ export type TExternalRouteDataRequirements = {
 
 type TRouteDataRequirements = TClientRouteDataRequirements &
   TApiRouteDataRequirements &
+  TInternalRouteDataRequirements &
   TExternalRouteDataRequirements;
 
 type TRoute = keyof TRouteDataRequirements;
@@ -87,17 +87,33 @@ const routes: {
   "api-images": ({ imageId }) => "/api/images" + (imageId ? `/${imageId}` : ""),
   "api-users": ({ userId }) => "/api/users" + (userId ? `/${userId}` : ""),
 
-  "api-movies": ({ tmdbId }) =>
-    tmdbId !== undefined ? `/api/movies/${tmdbId}` : "/api/movies",
-  "api-movie-download-resolution": ({ tmdbId, resolution }) =>
-    `/api/movie/${tmdbId}/resolution/${resolution}`,
-  "api-movie-download-subtitles": ({ tmdbId, subtitlesLanguage }) =>
-    `/api/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
+  "api-movies": ({ tmdbId, resolution, subtitlesLanguage }) => {
+    if (resolution && subtitlesLanguage) {
+      throw new Error(
+        "Resolution and subtitles language cannot be provided together"
+      );
+    }
+    if (tmdbId === undefined) return `/api/movies`;
+
+    if (resolution) {
+      return `/api/movies/${tmdbId}/resolutions/${resolution}/download`;
+    } else if (subtitlesLanguage) {
+      return `/api/movies/${tmdbId}/subtitles/${subtitlesLanguage}/download`;
+    } else {
+      return `/api/movies/${tmdbId}`;
+    }
+  },
 
   "api-streaming-movie-resolution": ({ tmdbId, resolution }) =>
     `/api/streaming/movie/${tmdbId}/resolution/${resolution}`,
   "api-streaming-movie-subtitles": ({ tmdbId, subtitlesLanguage }) =>
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
+
+  // Internal routes
+  "internal-movie-download-job-started": () =>
+    "/api/internal/movie-download-job-started",
+  "internal-movie-download-job-end": () =>
+    "/api/internal/movie-download-job-end",
 
   // External routes
   "external-imdb-movie": ({ imdbId }) => `https://www.imdb.com/title/${imdbId}`,

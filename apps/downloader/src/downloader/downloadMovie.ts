@@ -1,11 +1,15 @@
 import type { TMovieSchema } from "@hypertube/libs";
-import { DownloadStates, TResolutionSchema } from "@hypertube/libs";
+import {
+  getResolutionPath,
+  hypertubeLogger,
+  renameFile,
+  TResolutionSchema,
+  waitFile,
+} from "@hypertube/libs";
 import * as fs from "fs";
 import path from "path";
-import { getResolutionPath } from "../movie-folder-gestion/resolution";
-import { renameFile, waitFile } from "../movie-folder-gestion/utils";
-import prisma from "../prisma";
-import { downloader } from "./downloader";
+import { failedNotifyServer, successNotifyServer } from "../notifyServer.js";
+import { downloader } from "./downloader.js";
 
 const Status = {
   STOPPED: 0,
@@ -20,28 +24,19 @@ const Status = {
 const defaultMovieName = "movie.mp4";
 
 export const downloadMovie = async (
-  movieId: TMovieSchema["tmdbId"],
+  movie: TMovieSchema,
   resolution: TResolutionSchema["resolution"]
 ) => {
-  const resolutionPath = `/downloads/${movieId}/resolutions/${resolution}/resolution.torrent`;
+  const resolutionPath = `/downloads/${movie.tmdbId}/resolutions/${resolution}/resolution.torrent`;
 
-  console.log("Downloading movie", resolutionPath);
-
-  const dbMovie = await prisma.movie.findUnique({
-    where: {
-      tmdbId: movieId,
-    },
-  });
-  if (!dbMovie) {
-    throw new Error("Movie not found");
-  }
+  hypertubeLogger.info(`Downloading movie ${resolutionPath}`);
 
   try {
     const result = await downloader.addFile(resolutionPath, {
-      "download-dir": `/downloads/${movieId}/resolutions/${resolution}`,
+      "download-dir": `/downloads/${movie.tmdbId}/resolutions/${resolution}`,
       paused: true,
     });
-    console.log("Torrent added with ID:", result.id);
+    hypertubeLogger.info(`Torrent added with ID: ${result.id}`);
 
     const info = await downloader.get(result.id, ["files"]);
     const files = info.torrents[0].files as { name: string }[];
@@ -50,7 +45,7 @@ export const downloadMovie = async (
     if (!mp4File) {
       throw new Error("MP4 file not found");
     }
-    console.log("MP4 file found", mp4File.name);
+    hypertubeLogger.info(`MP4 file found ${mp4File.name}`);
 
     await downloader.start(result.id);
 
@@ -59,18 +54,18 @@ export const downloadMovie = async (
       `./downloads/incomplete/${mp4File.name}.part`
     );
 
-    console.log("Waiting for file to be downloaded", target);
-    await waitFile(target, 30000);
+    hypertubeLogger.info(`Waiting for file to be downloaded ${target}`);
+    await waitFile(target, 60000);
 
     const linkPath = path.join(
-      getResolutionPath(movieId, resolution),
+      getResolutionPath(movie.tmdbId, resolution),
       `/${defaultMovieName}`
     );
     try {
       await fs.promises.rm(linkPath, { recursive: true, force: true });
       await fs.promises.symlink(target, linkPath, "file");
     } catch (error) {
-      console.error("Error symlinking movie", error);
+      hypertubeLogger.error(`Error symlinking movie ${error}`);
     }
 
     const interval = setInterval(async () => {
@@ -88,13 +83,13 @@ export const downloadMovie = async (
 
         try {
           const mp4Path = path.join(
-            getResolutionPath(movieId, resolution),
+            getResolutionPath(movie.tmdbId, resolution),
             mp4File.name
           );
           await waitFile(mp4Path);
           renameFile(mp4Path, `../${defaultMovieName}`);
           await fs.promises.rm(
-            getResolutionPath(movieId, resolution) +
+            getResolutionPath(movie.tmdbId, resolution) +
               "/" +
               mp4File.name.split("/")[0],
             {
@@ -103,29 +98,16 @@ export const downloadMovie = async (
             }
           );
 
-          await prisma.resolution.update({
-            where: {
-              movieId_resolution: {
-                movieId: dbMovie.id,
-                resolution: resolution,
-              },
-            },
-            data: {
-              downloadState: DownloadStates.DOWNLOADED,
-            },
+          await successNotifyServer({
+            type: "ended",
+            movieId: movie.id,
+            resolution: resolution,
           });
         } catch (err) {
-          console.error("Error downloading movie", err);
-          await prisma.resolution.update({
-            where: {
-              movieId_resolution: {
-                movieId: dbMovie.id,
-                resolution: resolution,
-              },
-            },
-            data: {
-              downloadState: DownloadStates.NOT_DOWNLOADED,
-            },
+          await failedNotifyServer({
+            type: "ended",
+            movieId: movie.id,
+            resolution: resolution,
           });
         }
       }
@@ -136,6 +118,6 @@ export const downloadMovie = async (
       console.log("Status", status);
     }, 1000);
   } catch (err) {
-    console.error("Error adding torrent:", err);
+    hypertubeLogger.error(`Error adding torrent: ${err}`);
   }
 };

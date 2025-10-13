@@ -41,7 +41,15 @@ services:
       - TRANSMISSION_RPC_ENABLED=true
       - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=false
     volumes:
-      - ./apps/server/downloads:/downloads
+      - ./apps/downloader/downloads:/downloads
+    networks:
+      - hypertube-network
+
+  redis:
+    container_name: hypertube_redis
+    image: redis:7-alpine
+    ports:
+      - ${REDIS_PORT}
     networks:
       - hypertube-network
 

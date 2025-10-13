@@ -1,0 +1,26 @@
+{
+  "name": "@hypertube/downloader",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "clear": "rm -rf node_modules dist",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc --build",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.13.1",
+  "dependencies": {
+    "@hypertube/libs": "workspace:*",
+    "dotenv": "^17.2.0",
+    "transmission-promise": "^1.1.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.15",
+    "tsx": "^4.7.1"
+  }
+}
