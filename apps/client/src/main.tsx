@@ -1,4 +1,6 @@
+import { zodTranslate } from "@hypertube/libs";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import i18next from "i18next";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -11,6 +13,8 @@ import { ThemeProvider } from "./components/theme/ThemeProvider.tsx";
 import { Toaster } from "./components/ui/sonner.tsx";
 import "./index.css";
 import "./lib/i18n/i18n.ts";
+
+zodTranslate(i18next.t);
 
 const queryClient = new QueryClient();
 

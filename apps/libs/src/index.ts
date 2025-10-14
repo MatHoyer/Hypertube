@@ -114,3 +114,5 @@ export {
 
 export { DOWNLOAD_QUEUE } from "./const/downloader.const.js";
 export type { TDownloadJobData } from "./const/downloader.const.js";
+
+export { zodTranslate } from "./utils/zodTranslate.js";

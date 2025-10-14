@@ -1,4 +1,17 @@
 {
+  "zod": {
+    "invalid_type": "Type invalide",
+    "custom": "Custom",
+    "too_big": "Trop grand",
+    "too_small": "Trop petit",
+    "invalid_format": "Format invalide",
+    "not_multiple_of": "Non multiple de",
+    "unrecognized_keys": "Clés non reconnues",
+    "invalid_union": "Union invalide",
+    "invalid_key": "Clé invalide",
+    "invalid_element": "Élément invalide",
+    "invalid_value": "Valeur invalide"
+  },
   "global": {
     "hello": "Bonjour"
   },
