@@ -1,3 +1,4 @@
+import { enZod, esZod, frZod } from "@hypertube/libs";
 import i18n from "i18next";
 import z from "zod";
 import en from "./en.json";
@@ -6,13 +7,13 @@ import fr from "./fr.json";
 
 export const resources = {
   en: {
-    translation: en,
+    translation: { ...en, ...enZod },
   },
   fr: {
-    translation: fr,
+    translation: { ...fr, ...frZod },
   },
   es: {
-    translation: es,
+    translation: { ...es, ...esZod },
   },
 };
 

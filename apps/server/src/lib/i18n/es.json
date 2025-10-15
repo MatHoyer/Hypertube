@@ -1,17 +1,4 @@
 {
-  "zod": {
-    "invalid_type": "",
-    "custom": "",
-    "too_big": "",
-    "too_small": "",
-    "invalid_format": "",
-    "not_multiple_of": "",
-    "unrecognized_keys": "",
-    "invalid_union": "",
-    "invalid_key": "",
-    "invalid_element": "",
-    "invalid_value": ""
-  },
   "global": {
     "hello": "Hola"
   },
