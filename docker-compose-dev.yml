@@ -33,7 +33,7 @@ services:
     container_name: hypertube-downloader-dev
     build:
       context: .
-      dockerfile: ./Dockerfile.downloader.dev
+      dockerfile: ./apps/downloader/Dockerfile.dev
     env_file: .env
     environment:
       - REDIS_HOST=redis

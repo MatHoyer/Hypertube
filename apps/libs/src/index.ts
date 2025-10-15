@@ -113,4 +113,4 @@ export {
 } from "./utils/server-folders-gestion/subtitle.js";
 
 export { DOWNLOAD_QUEUE } from "./const/downloader.const.js";
-export type { TJobData } from "./const/downloader.const.js";
+export type { TDownloadJobData } from "./const/downloader.const.js";

@@ -1,4 +1,8 @@
-import { DOWNLOAD_QUEUE, hypertubeLogger, TJobData } from "@hypertube/libs";
+import {
+  DOWNLOAD_QUEUE,
+  hypertubeLogger,
+  TDownloadJobData,
+} from "@hypertube/libs";
 import { Job, Worker } from "bullmq";
 import { Redis } from "ioredis";
 import { downloadMovie } from "./downloader/downloadMovie.js";
@@ -11,9 +15,9 @@ const connection = new Redis({
   maxRetriesPerRequest: null,
 });
 
-const worker = new Worker<TJobData>(
+const worker = new Worker<TDownloadJobData>(
   DOWNLOAD_QUEUE,
-  async (job: Job<TJobData>) => {
+  async (job: Job<TDownloadJobData>) => {
     hypertubeLogger.info(`[${job.data.movie.id}] Download torrent job started`);
 
     await downloadMovie(job.data.movie, job.data.resolution);
