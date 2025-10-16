@@ -28,7 +28,7 @@ services:
     container_name: hypertube-downloader-prod
     build:
       context: .
-      dockerfile: ./Dockerfile.downloader.prod
+      dockerfile: ./apps/downloader/Dockerfile.prod
     env_file: .env
     environment:
       - REDIS_HOST=redis

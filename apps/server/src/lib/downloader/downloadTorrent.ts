@@ -1,6 +1,6 @@
 import { Providers, TMovieSchema, TResolutionSchema } from "@hypertube/libs";
 import { YtsApi } from "../apis/yts.api";
-import { produceDownload } from "../download-queue/download.produce";
+import { produceDownload } from "../queues/downloader/produceDownload";
 
 export const downloadTorrent = async ({
   movie,
