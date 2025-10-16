@@ -2,6 +2,7 @@ export const esZod = {
   zod: {
     string: {
       invalid_type: "",
+      invalid_format: "",
       too_big: "",
       too_small: "",
     },
@@ -26,5 +27,7 @@ export const esZod = {
     object: {
       invalid_type: "",
     },
+    custom: {},
+    unknown: "",
   },
 };

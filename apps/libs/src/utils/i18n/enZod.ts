@@ -2,6 +2,7 @@ export const enZod = {
   zod: {
     string: {
       invalid_type: "expected string",
+      invalid_format: "expected {{format}}",
       too_big: "too big, maximum length is {{maximum}}",
       too_small: "too small, minimum length is {{minimum}}",
     },
@@ -26,5 +27,7 @@ export const enZod = {
     object: {
       invalid_type: "expected object",
     },
+    custom: {},
+    unknown: "Unknown error",
   },
 };

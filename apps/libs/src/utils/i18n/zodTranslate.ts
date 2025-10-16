@@ -5,6 +5,8 @@ import z from "zod";
 /**
  * Translate zod errors to the language of the user
  *
+ * For zod refine custom error: .refine(..., { path: ["example_error"] })
+ *
  * Keys per type (type: eg. "string", "number", "boolean", "date", "array", "object", ...):
  * "invalid_type"
  * "custom"
@@ -23,10 +25,19 @@ export const zodTranslate = (t: TFunction) => {
   z.config({
     customError: (issue) => {
       console.log(issue);
-      const errorKey = `zod.${issue.origin ?? issue.expected}.${issue.code}`;
+      let errorKey = `zod.${issue.origin ?? issue.expected}.${issue.code}`;
+
+      if (issue.code === "custom") {
+        const customCode = issue.path?.pop();
+        errorKey = `zod.${issue.code}.${customCode}`;
+      }
+
       switch (issue.code) {
         case "invalid_type":
+        case "custom":
           return t(errorKey);
+        case "invalid_format":
+          return t(errorKey, { format: issue.format });
         case "too_big":
           return t(errorKey, {
             maximum: issue.maximum,
@@ -36,7 +47,7 @@ export const zodTranslate = (t: TFunction) => {
             minimum: issue.minimum,
           });
         default:
-          return t(errorKey);
+          return t("zod.unknown");
       }
     },
   });

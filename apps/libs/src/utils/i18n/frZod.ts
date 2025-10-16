@@ -2,6 +2,7 @@ export const frZod = {
   zod: {
     string: {
       invalid_type: "type invalide",
+      invalid_format: "{{format}} invalide",
       too_big: "trop grand, longueur maximum est de {{maximum}}",
       too_small: "trop petit, longueur minimum est de {{minimum}}",
     },
@@ -26,5 +27,7 @@ export const frZod = {
     object: {
       invalid_type: "type invalide",
     },
+    custom: {},
+    unknown: "Erreur inconnue",
   },
 };
