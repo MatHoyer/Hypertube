@@ -32,4 +32,4 @@ COPY eslint.config.js ./
 
 COPY apps ./apps
 
-RUN pnpm i --filter !downloader --frozen-lockfile
+RUN pnpm i --filter server --filter client --filter libs --filter server-core --frozen-lockfile

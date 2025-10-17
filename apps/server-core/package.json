@@ -1,0 +1,37 @@
+{
+  "name": "@hypertube/server-core",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "prisma": {
+    "schema": "./prisma/schema",
+    "seed": "tsx prisma/seed.ts"
+  },
+  "scripts": {
+    "clear": "rm -rf node_modules dist prisma/schema/migrations",
+    "build": "tsc --build",
+    "dev": "tsc -w --preserveWatchOutput",
+    "prisma:generate": "npx dotenv -e ../../.env -- npx prisma generate",
+    "prisma:migrate": "npx dotenv -e ../../.env -- npx prisma migrate dev --name init",
+    "prisma:migrate:reset": "npx dotenv -e ../../.env -- npx prisma migrate reset --force --skip-seed",
+    "prisma:seed": "npx dotenv -e ../../.env -- npx prisma db seed",
+    "prisma:studio": "npx dotenv -e ../../.env -- npx prisma studio"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.13.1",
+  "dependencies": {
+    "@hypertube/libs": "workspace:*",
+    "dotenv": "^17.2.0",
+    "@prisma/client": "^6.12.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.15",
+    "dotenv-cli": "^8.0.0",
+    "prisma": "^6.12.0",
+    "tsx": "^4.7.1"
+  }
+}

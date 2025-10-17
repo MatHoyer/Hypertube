@@ -1,29 +1,18 @@
 {
   "name": "server",
-  "prisma": {
-    "schema": "./prisma/schema",
-    "seed": "tsx prisma/seed.ts"
-  },
   "scripts": {
-    "clear": "rm -rf node_modules dist prisma/schema/migrations",
+    "clear": "rm -rf node_modules dist",
     "dev": "tsx watch src/index.ts",
     "build": "tsc && cp -r src/emails/default-email.html dist/server/src/emails",
     "start": "node dist/server/src/index.js",
-    "prisma:generate": "npx prisma generate",
-    "prisma:migrate": "npx dotenv -e ../../.env -- npx prisma migrate dev --name init",
-    "prisma:migrate:reset": "npx dotenv -e ../../.env -- npx prisma migrate reset --force --skip-seed",
-    "prisma:seed": "npx dotenv -e ../../.env -- npx prisma db seed",
-    "prisma:studio": "npx dotenv -e ../../.env -- npx prisma studio",
     "download:puppeteer": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "@hono/node-server": "^1.16.0",
     "@hono/swagger-ui": "^0.5.2",
     "@hypertube/libs": "workspace:*",
-    "@prisma/client": "^6.12.0",
-    "dotenv": "^17.2.0",
+    "@hypertube/server-core": "workspace:*",
     "hono": "^4.8.5",
-    "node-cron": "^4.2.1",
     "puppeteer": "^24.16.0",
     "resend": "^4.7.0",
     "sharp": "^0.34.3",
@@ -31,8 +20,6 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
-    "dotenv-cli": "^8.0.0",
-    "prisma": "^6.12.0",
     "tsx": "^4.7.1"
   }
 }

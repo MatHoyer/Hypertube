@@ -1,6 +1,6 @@
 import { DownloadStates } from "@hypertube/libs";
+import { prisma } from "@hypertube/server-core";
 import { Context } from "hono";
-import prisma from "../../lib/prisma";
 import { TBodyParser } from "../../middlewares/bodyParser";
 
 export const movieDownloadJobStarted = async (

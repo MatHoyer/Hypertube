@@ -31,5 +31,6 @@ COPY .env ./
 
 # Copy individual package.json files
 COPY apps/libs/package.json ./apps/libs/package.json
+COPY apps/server-core/package.json ./apps/server-core/package.json
 COPY apps/client/package.json ./apps/client/package.json
 COPY apps/server/package.json ./apps/server/package.json

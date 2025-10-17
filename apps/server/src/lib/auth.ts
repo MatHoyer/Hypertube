@@ -1,3 +1,4 @@
+import { env, prisma } from "@hypertube/server-core";
 import {
   AuthContext,
   betterAuth,
@@ -14,8 +15,6 @@ import { genericOAuth, username } from "better-auth/plugins";
 import { v5 } from "uuid";
 import z from "zod";
 import { mailTemplate } from "../emails/import-template";
-import { env } from "../env";
-import prisma from "./prisma";
 import { sendEmail } from "./resend";
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;

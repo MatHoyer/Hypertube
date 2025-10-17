@@ -1,6 +1,6 @@
 import { TPatchUsersSchemas } from "@hypertube/libs";
+import { prisma } from "@hypertube/server-core";
 import { Context } from "hono";
-import prisma from "../../lib/prisma";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";

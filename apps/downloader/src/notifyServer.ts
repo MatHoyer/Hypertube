@@ -1,5 +1,5 @@
 import { getUrl, hypertubeLogger } from "@hypertube/libs";
-import { env } from "./env.js";
+import { env } from "@hypertube/server-core";
 
 const notifyServer = async ({
   type,

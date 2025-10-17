@@ -1,5 +1,5 @@
+import { env } from "@hypertube/server-core";
 import { createMiddleware } from "hono/factory";
-import { env } from "../env";
 
 export const internalTokenParser = createMiddleware(async (c, next) => {
   const token = c.req.header("Authorization");

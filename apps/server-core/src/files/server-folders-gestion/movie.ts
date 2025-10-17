@@ -1,6 +1,6 @@
+import type { TMovieSchema } from "@hypertube/libs";
 import * as fs from "fs";
 import path from "path";
-import type { TMovieSchema } from "../../schemas/database/movie.schema.js";
 
 export const getMovieFolderPath = (movieId: TMovieSchema["tmdbId"]) => {
   return path.resolve(process.cwd(), `./downloads/${movieId}`);

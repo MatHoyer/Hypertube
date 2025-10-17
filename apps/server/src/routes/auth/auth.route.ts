@@ -1,6 +1,6 @@
+import { env } from "@hypertube/server-core";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { env } from "../../env";
 import { auth } from "../../lib/auth";
 
 const authRouter = new Hono();

@@ -1,9 +1,8 @@
 import {
-  getResolutionPath,
-  getSubtitlePath,
   TGetStreamingResolutionSchemas,
   TGetStreamingSubtitlesSchemas,
 } from "@hypertube/libs";
+import { getResolutionPath, getSubtitlePath } from "@hypertube/server-core";
 import * as fs from "fs";
 import { Context } from "hono";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";

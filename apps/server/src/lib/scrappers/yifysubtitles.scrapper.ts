@@ -1,9 +1,5 @@
-import {
-  getSubtitlePath,
-  renameFile,
-  TSubtitleSchema,
-  waitFile,
-} from "@hypertube/libs";
+import { TSubtitleSchema } from "@hypertube/libs";
+import { getSubtitlePath, renameFile, waitFile } from "@hypertube/server-core";
 import * as path from "path";
 import { launchPuppeteer } from "./scrappers.utils";
 

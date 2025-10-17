@@ -1,14 +1,12 @@
 import {
   capitalizeAllWords,
-  createResolution,
-  getResolutionPath,
+  TMovieSchema,
   ytsGenres,
   ytsQualities,
 } from "@hypertube/libs";
+import { createResolution, getResolutionPath } from "@hypertube/server-core";
 import { writeFile } from "fs/promises";
 import z from "zod";
-
-import { TMovieSchema } from "@hypertube/libs";
 
 // https://yts.mx/api for documentation
 
