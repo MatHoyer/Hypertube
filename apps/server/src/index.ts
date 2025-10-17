@@ -1,6 +1,6 @@
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
-import { languageCodesArray } from "@hypertube/libs";
+import { languageCodesArray, zodTranslate } from "@hypertube/libs";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { languageDetector } from "hono/language";
@@ -16,6 +16,8 @@ import moviesRouter from "./routes/movies/movies.route.js";
 import streamingRouter from "./routes/streaming/streaming.route.js";
 import swaggerRouter from "./routes/swagger/swagger.route.js";
 import usersRouter from "./routes/users/users.route.js";
+
+zodTranslate(i18next.t);
 
 const app = new Hono();
 

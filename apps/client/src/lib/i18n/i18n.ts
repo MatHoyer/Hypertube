@@ -1,4 +1,4 @@
-import { languageCodesArray } from "@hypertube/libs";
+import { enZod, esZod, frZod, languageCodesArray } from "@hypertube/libs";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
@@ -9,13 +9,13 @@ import fr from "./fr.json";
 
 export const resources = {
   en: {
-    translation: en,
+    translation: { ...en, ...enZod },
   },
   fr: {
-    translation: fr,
+    translation: { ...fr, ...frZod },
   },
   es: {
-    translation: es,
+    translation: { ...es, ...esZod },
   },
 };
 
