@@ -1,11 +1,10 @@
 import type { TMovieSchema } from "@hypertube/libs";
+import { hypertubeLogger, TResolutionSchema } from "@hypertube/libs";
 import {
   getResolutionPath,
-  hypertubeLogger,
   renameFile,
-  TResolutionSchema,
   waitFile,
-} from "@hypertube/libs";
+} from "@hypertube/server-core";
 import * as fs from "fs";
 import path from "path";
 import { failedNotifyServer, successNotifyServer } from "../notifyServer.js";

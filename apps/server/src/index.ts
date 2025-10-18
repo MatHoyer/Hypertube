@@ -1,6 +1,10 @@
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
-import { languageCodesArray, zodTranslate } from "@hypertube/libs";
+import {
+  hypertubeLogger,
+  languageCodesArray,
+  zodTranslate,
+} from "@hypertube/libs";
 import { env } from "@hypertube/server-core";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -21,7 +25,7 @@ zodTranslate(i18next.t);
 const app = new Hono();
 
 app.onError((err: Error, c) => {
-  console.error(err);
+  hypertubeLogger.error(err.message);
   return c.json({ error: "internal server error" }, 500);
 });
 
@@ -76,6 +80,6 @@ serve(
     port: env.SERVER_PORT,
   },
   (info) => {
-    console.log(`Server is running on http://localhost:${info.port}`);
+    hypertubeLogger.info(`Server is running on http://localhost:${info.port}`);
   }
 );
