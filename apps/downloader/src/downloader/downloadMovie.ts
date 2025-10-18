@@ -102,7 +102,7 @@ export const downloadMovie = async (
           }
         }
 
-        hypertubeLogger.debug(
+        hypertubeLogger.info(
           `Name: ${name}, Percent done: ${percentDone}, Download speed: ${downloadSpeed}, Status: ${status}`
         );
       }, 30000);
