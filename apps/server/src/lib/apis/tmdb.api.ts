@@ -1,6 +1,6 @@
 import { languageCodes, tmdbMovieSchema } from "@hypertube/libs";
+import { env } from "@hypertube/server-core";
 import z from "zod";
-import { env } from "../../env";
 
 export class TmdbApi {
   private readonly apiKey: string;

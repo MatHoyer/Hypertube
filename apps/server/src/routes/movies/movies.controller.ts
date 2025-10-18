@@ -9,12 +9,11 @@ import {
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
 } from "@hypertube/libs";
+import { env, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import z from "zod";
-import { env } from "../../env";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
 import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
-import prisma from "../../lib/prisma";
 import { downloadYifysubtitles } from "../../lib/scrappers/yifysubtitles.scrapper";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";

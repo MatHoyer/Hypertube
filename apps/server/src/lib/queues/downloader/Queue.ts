@@ -1,7 +1,7 @@
 import { DOWNLOAD_QUEUE, TDownloadJobData } from "@hypertube/libs";
+import { env } from "@hypertube/server-core";
 import { Queue } from "bullmq";
 import IORedis from "ioredis";
-import { env } from "../../../env";
 
 const connection = new IORedis({
   host: env.REDIS_HOST,

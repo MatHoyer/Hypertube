@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { env } from "../env";
+import { env } from "./env.js";
 
-let prisma: PrismaClient;
+export let prisma: PrismaClient;
 
 if (env.NODE_ENV === "PROD") {
   prisma = new PrismaClient();
@@ -14,5 +14,3 @@ if (env.NODE_ENV === "PROD") {
   }
   prisma = globalWithPrisma.prisma;
 }
-
-export default prisma;

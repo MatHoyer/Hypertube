@@ -1,6 +1,6 @@
 import { Providers, TMovieSchema } from "@hypertube/libs";
+import { prisma } from "@hypertube/server-core";
 import { YtsApi } from "../../lib/apis/yts.api";
-import prisma from "../../lib/prisma";
 import { getSubtitlesDownloadLinks } from "../../lib/scrappers/yifysubtitles.scrapper";
 
 export const getMovieData = async (movie: TMovieSchema) => {

@@ -3,10 +3,10 @@ import {
   hypertubeLogger,
   TDownloadJobData,
 } from "@hypertube/libs";
+import { env } from "@hypertube/server-core";
 import { Job, Worker } from "bullmq";
 import { Redis } from "ioredis";
 import { downloadMovie } from "./downloader/downloadMovie.js";
-import { env } from "./env.js";
 import { failedNotifyServer, successNotifyServer } from "./notifyServer.js";
 
 const connection = new Redis({

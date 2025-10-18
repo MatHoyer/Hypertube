@@ -1,5 +1,5 @@
 {
-  "name": "@hypertube/downloader",
+  "name": "@hypertube/scheduler",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
   "dependencies": {
     "@hypertube/libs": "workspace:*",
     "@hypertube/server-core": "workspace:*",
-    "transmission-promise": "^1.1.7"
+    "node-cron": "^4.2.1"
   },
   "devDependencies": {
     "@types/node": "^24.0.15",

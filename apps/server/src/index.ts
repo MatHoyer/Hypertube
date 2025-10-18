@@ -1,13 +1,16 @@
 import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
-import { languageCodesArray, zodTranslate } from "@hypertube/libs";
+import {
+  hypertubeLogger,
+  languageCodesArray,
+  zodTranslate,
+} from "@hypertube/libs";
+import { env } from "@hypertube/server-core";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { languageDetector } from "hono/language";
 import { logger } from "hono/logger";
 import i18next from "i18next";
-import "./cron.js";
-import { env } from "./env.js";
 import "./lib/i18n/i18n.js";
 import authRouter from "./routes/auth/auth.route.js";
 import imagesRouter from "./routes/images/images.route.js";
@@ -22,7 +25,7 @@ zodTranslate(i18next.t);
 const app = new Hono();
 
 app.onError((err: Error, c) => {
-  console.error(err);
+  hypertubeLogger.error(err.message);
   return c.json({ error: "internal server error" }, 500);
 });
 
@@ -77,6 +80,6 @@ serve(
     port: env.SERVER_PORT,
   },
   (info) => {
-    console.log(`Server is running on http://localhost:${info.port}`);
+    hypertubeLogger.info(`Server is running on http://localhost:${info.port}`);
   }
 );

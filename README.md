@@ -42,7 +42,7 @@ pnpm install
 Initialize the database:
 
 ```bash
-pnpm --filter server prisma:migrate
+pnpm --filter server-core prisma:migrate
 ```
 
 Create downloads symlink (simulate docker volume)
@@ -51,16 +51,10 @@ Create downloads symlink (simulate docker volume)
 ln -s ../downloader/downloads ./apps/server/downloads
 ```
 
-Run the app in dev mode (hot reload):
+Run all workers in dev mode (hot reload):
 
 ```bash
-pnpm dev:app
-```
-
-Run the downloader worker in dev mode (hot reload):
-
-```bash
-pnpm dev:downloader
+pnpm dev
 ```
 
 ### 🔹 Option 2 — Dev with Docker (only for 42)
@@ -77,11 +71,14 @@ docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml up
 
 ## 📜 Dependency Installation Rules
 
-The project is split into **3 workspaces**:
+The project is split into **6 workspaces**:
 
 - **client** (`apps/client`)
-- **server** (`apps/server`)
 - **libs** (`apps/libs`)
+- **server** (`apps/server`)
+- **server-core** (`apps/server-core`)
+- **downloader** (`apps/downloader`)
+- **scheduler** (`apps/scheduler`)
 
 ### Install a dependency shared across multiple workspaces:
 
@@ -92,7 +89,7 @@ pnpm add <package-name> -w
 ### Install a dependency only for a specific workspace:
 
 ```bash
-cd apps/client   # or apps/server / libs
+cd apps/{workspace}
 pnpm add <package-name>
 ```
 
@@ -109,7 +106,6 @@ pnpm add <package-name>
 ### 📚 Libs (`apps/libs`)
 
 - Functions exported in `index.ts` can be used in other workspaces
-- Compiles automatically on save
 
 ---
 
@@ -117,3 +113,21 @@ pnpm add <package-name>
 
 - **Hono** server
 - Runs in dev on: [http://localhost:3000](http://localhost:3000)
+
+---
+
+### 📚 Server core (`apps/server-core`)
+
+- Functions exported in `index.ts` can be used in other server side workspaces
+
+---
+
+### ⚙️ Downloader (`apps/downloader`)
+
+- Worker that listen bullMQ to start and monitor movie downloads
+
+---
+
+### ⚙️ Scheduler (`apps/scheduler`)
+
+- Worker to run cron jobs

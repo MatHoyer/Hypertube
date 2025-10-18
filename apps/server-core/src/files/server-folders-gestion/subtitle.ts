@@ -1,8 +1,5 @@
+import type { TMovieSchema, TSubtitleSchema } from "@hypertube/libs";
 import * as fs from "fs";
-import type {
-  TMovieSchema,
-  TSubtitleSchema,
-} from "../../schemas/database/movie.schema.js";
 import { getMovieFolderPath } from "./movie.js";
 
 const subtitleFolderName = "subtitles";
