@@ -7,7 +7,6 @@ import {
 } from "@hypertube/server-core";
 import * as fs from "fs";
 import path from "path";
-import { failedNotifyServer, successNotifyServer } from "../notifyServer.js";
 import { downloader } from "./downloader.js";
 
 const Status = {
@@ -30,13 +29,13 @@ export const downloadMovie = async (
 
   hypertubeLogger.info(`Downloading movie ${resolutionPath}`);
 
-  try {
-    const result = await downloader.addFile(resolutionPath, {
-      "download-dir": `/downloads/${movie.tmdbId}/resolutions/${resolution}`,
-      paused: true,
-    });
-    hypertubeLogger.info(`Torrent added with ID: ${result.id}`);
+  const result = await downloader.addFile(resolutionPath, {
+    "download-dir": `/downloads/${movie.tmdbId}/resolutions/${resolution}`,
+    paused: true,
+  });
+  hypertubeLogger.info(`Torrent added with ID: ${result.id}`);
 
+  try {
     const info = await downloader.get(result.id, ["files"]);
     const files = info.torrents[0].files as { name: string }[];
 
@@ -54,7 +53,7 @@ export const downloadMovie = async (
     );
 
     hypertubeLogger.info(`Waiting for file to be downloaded ${target}`);
-    await waitFile(target, 60000);
+    await waitFile(target, 100000);
 
     const linkPath = path.join(
       getResolutionPath(movie.tmdbId, resolution),
@@ -67,56 +66,49 @@ export const downloadMovie = async (
       hypertubeLogger.error(`Error symlinking movie ${error}`);
     }
 
-    const interval = setInterval(async () => {
-      const res = await downloader.get(result.id);
-      const torrent = res.torrents[0];
-      if (!torrent) clearInterval(interval);
+    hypertubeLogger.info(`Movie downloaded started successfully`);
+    return new Promise<void>((resolve, reject) => {
+      setInterval(async () => {
+        const res = await downloader.get(result.id);
+        const torrent = res.torrents[0];
+        if (!torrent) reject(new Error("Torrent not found"));
 
-      const name = torrent.name;
-      const percentDone = (torrent.percentDone * 100).toFixed(2);
-      const downloadSpeed = (torrent.rateDownload / 1024).toFixed(2); // Ko/s
-      const status = torrent.status;
+        const name = torrent.name;
+        const percentDone = (torrent.percentDone * 100).toFixed(2);
+        const downloadSpeed = (torrent.rateDownload / 1024).toFixed(2); // Ko/s
+        const status = torrent.status;
 
-      if (status === Status.SEEDING || status === Status.STOPPED) {
-        clearInterval(interval);
+        if (status === Status.SEEDING || status === Status.STOPPED) {
+          try {
+            const mp4Path = path.join(
+              getResolutionPath(movie.tmdbId, resolution),
+              mp4File.name
+            );
+            await waitFile(mp4Path);
+            renameFile(mp4Path, `../${defaultMovieName}`);
+            await fs.promises.rm(
+              getResolutionPath(movie.tmdbId, resolution) +
+                "/" +
+                mp4File.name.split("/")[0],
+              {
+                recursive: true,
+                force: true,
+              }
+            );
 
-        try {
-          const mp4Path = path.join(
-            getResolutionPath(movie.tmdbId, resolution),
-            mp4File.name
-          );
-          await waitFile(mp4Path);
-          renameFile(mp4Path, `../${defaultMovieName}`);
-          await fs.promises.rm(
-            getResolutionPath(movie.tmdbId, resolution) +
-              "/" +
-              mp4File.name.split("/")[0],
-            {
-              recursive: true,
-              force: true,
-            }
-          );
-
-          await successNotifyServer({
-            type: "ended",
-            movieId: movie.id,
-            resolution: resolution,
-          });
-        } catch (err) {
-          await failedNotifyServer({
-            type: "ended",
-            movieId: movie.id,
-            resolution: resolution,
-          });
+            resolve();
+          } catch (error) {
+            reject(new Error(`Error in ending download: ${error}`));
+          }
         }
-      }
 
-      console.log("Name", name);
-      console.log("Percent done", percentDone);
-      console.log("Download speed", downloadSpeed);
-      console.log("Status", status);
-    }, 1000);
-  } catch (err) {
-    hypertubeLogger.error(`Error adding torrent: ${err}`);
+        hypertubeLogger.debug(
+          `Name: ${name}, Percent done: ${percentDone}, Download speed: ${downloadSpeed}, Status: ${status}`
+        );
+      }, 30000);
+    });
+  } catch (error) {
+    await downloader.remove(result.id);
+    throw error;
   }
 };

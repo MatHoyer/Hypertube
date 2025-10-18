@@ -1,5 +1,6 @@
 export const DownloadStates = {
   NOT_DOWNLOADED: "NOT_DOWNLOADED",
+  WAITING: "WAITING",
   DOWNLOADING: "DOWNLOADING",
   DOWNLOADED: "DOWNLOADED",
 } as const;

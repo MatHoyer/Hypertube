@@ -43,10 +43,7 @@ export type TApiRouteDataRequirements = {
   };
 };
 
-export type TInternalRouteDataRequirements = {
-  "internal-movie-download-job-started": undefined;
-  "internal-movie-download-job-end": undefined;
-};
+export type TInternalRouteDataRequirements = {};
 
 export type TExternalRouteDataRequirements = {
   "external-imdb-movie": {
@@ -110,10 +107,6 @@ const routes: {
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
 
   // Internal routes
-  "internal-movie-download-job-started": () =>
-    "/api/internal/movie-download-job-started",
-  "internal-movie-download-job-end": () =>
-    "/api/internal/movie-download-job-end",
 
   // External routes
   "external-imdb-movie": ({ imdbId }) => `https://www.imdb.com/title/${imdbId}`,

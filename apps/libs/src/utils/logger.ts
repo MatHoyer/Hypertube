@@ -19,4 +19,7 @@ export const hypertubeLogger = {
   warn: (message: string) => {
     pinoLogger.warn(message);
   },
+  debug: (message: string) => {
+    pinoLogger.debug(message);
+  },
 };
