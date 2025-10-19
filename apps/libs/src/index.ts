@@ -92,9 +92,6 @@ export {
   sizeMaxFile,
 } from "./const/global.const.js";
 
-export { DOWNLOAD_QUEUE } from "./const/downloader.const.js";
-export type { TDownloadJobData } from "./const/downloader.const.js";
-
 export { enZod } from "./utils/i18n/enZod.js";
 export { esZod } from "./utils/i18n/esZod.js";
 export { frZod } from "./utils/i18n/frZod.js";

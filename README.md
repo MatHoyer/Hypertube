@@ -131,3 +131,24 @@ pnpm add <package-name>
 ### ⚙️ Scheduler (`apps/scheduler`)
 
 - Worker to run cron jobs
+
+## 📦 Package Import Rules
+
+Understanding how packages can import each other is key to maintaining a clean and scalable monorepo structure:
+
+- **libs**
+  - Can be imported in **any package** (client, server, server-core, downloader, scheduler).
+- **server-core**
+  - Can be imported in any **server-side package** (**server**, **downloader**, **scheduler**).
+  - **Cannot** be imported in **libs** or **client**.
+
+| Importing Package | Can import libs | Can import server-core |
+| ----------------- | :-------------: | :--------------------: |
+| libs              |        —        |           ❌           |
+| server-core       |       ✅        |           —            |
+| server            |       ✅        |           ✅           |
+| downloader        |       ✅        |           ✅           |
+| scheduler         |       ✅        |           ✅           |
+| client            |       ✅        |           ❌           |
+
+_Note: This ensures shared logic and types flow in one direction (from base to specialized packages), and frontend code never accidentally pulls in backend/server-only code._

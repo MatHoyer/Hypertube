@@ -1,6 +1,6 @@
 import { Providers, TMovieSchema, TResolutionSchema } from "@hypertube/libs";
 import { YtsApi } from "../apis/yts.api";
-import { produceDownload } from "../queues/downloader/produceDownload";
+import { downloaderQueue } from "../queues/downloader";
 
 export const downloadTorrent = async ({
   movie,
@@ -17,7 +17,7 @@ export const downloadTorrent = async ({
       throw new Error(`Provider (${resolution.provider}) not supported`);
   }
 
-  await produceDownload({
+  await downloaderQueue.produce("download", {
     movie,
     resolution: resolution.resolution,
   });

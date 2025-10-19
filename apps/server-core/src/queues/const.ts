@@ -1,4 +1,4 @@
-import type { TMovieSchema } from "../schemas/database/movie.schema.js";
+import { TMovieSchema } from "@hypertube/libs";
 
 export const DOWNLOAD_QUEUE = "downloader";
 

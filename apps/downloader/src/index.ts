@@ -1,10 +1,10 @@
+import { DownloadStates, hypertubeLogger } from "@hypertube/libs";
 import {
   DOWNLOAD_QUEUE,
-  DownloadStates,
-  hypertubeLogger,
+  env,
+  prisma,
   TDownloadJobData,
-} from "@hypertube/libs";
-import { env, prisma } from "@hypertube/server-core";
+} from "@hypertube/server-core";
 import { Job, Worker } from "bullmq";
 import { Redis } from "ioredis";
 import { downloadMovie } from "./downloader/downloadMovie.js";
