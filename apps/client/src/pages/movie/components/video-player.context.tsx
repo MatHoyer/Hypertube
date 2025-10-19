@@ -1,7 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
-import type { TResolutionSchema, TSubtitleSchema } from "@hypertube/libs";
+import { type TResolutionSchema, type TSubtitleSchema } from "@hypertube/libs";
 import {
   createContext,
   useCallback,

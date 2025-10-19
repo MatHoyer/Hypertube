@@ -53,6 +53,7 @@ function TabsContent({
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Content>) {
   return (
+    // Do not change this code it is required to keep tabs working in background (e.g. movie player need this to work)
     <TabsPrimitive.Content
       data-slot="tabs-content"
       className={cn(

@@ -32,6 +32,11 @@ export type TApiRouteDataRequirements = {
     subtitlesLanguage?: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
 
+  // sse routes
+  "sse-movies": {
+    tmdbId: "{tmdbId}" | number;
+  };
+
   // Streaming routes
   "api-streaming-movie-resolution": {
     tmdbId: TMovieSchema["tmdbId"];
@@ -100,6 +105,8 @@ const routes: {
       return `/api/movies/${tmdbId}`;
     }
   },
+
+  "sse-movies": ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
 
   "api-streaming-movie-resolution": ({ tmdbId, resolution }) =>
     `/api/streaming/movie/${tmdbId}/resolution/${resolution}`,

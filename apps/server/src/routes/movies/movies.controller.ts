@@ -2,22 +2,31 @@ import {
   DownloadStates,
   getMovieSchemas,
   getMoviesSchemas,
+  hypertubeLogger,
   languageCodes,
   TGetMovieSchemas,
   TGetMoviesSchemas,
+  TGetMovieSSESchemas,
   tmdbMovieSchema,
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
 } from "@hypertube/libs";
 import { env, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
+import { streamSSE } from "hono/streaming";
 import z from "zod";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
 import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
+import { downloaderQueue } from "../../lib/queues/downloader";
 import { downloadYifysubtitles } from "../../lib/scrappers/yifysubtitles.scrapper";
+import { SSEClients } from "../../lib/SSEClients";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
-import { getMovieData } from "./movies.helper";
+import {
+  getMovieData,
+  sendSSEDownloadStateChange,
+  sendSSEProgress,
+} from "./movies.helper";
 
 export const getMovies = async (
   c: Context<TSearchParamsParser<TGetMoviesSchemas["searchParams"]>>
@@ -116,6 +125,49 @@ export const getMovie = async (
       subtitles,
     })
   );
+};
+
+const sseClients = new SSEClients();
+downloaderQueue.on("completed", (job) => {
+  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+    sendSSEDownloadStateChange(job.data, DownloadStates.DOWNLOADED, stream);
+  });
+});
+downloaderQueue.on("failed", (job) => {
+  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+    sendSSEDownloadStateChange(job.data, DownloadStates.NOT_DOWNLOADED, stream);
+  });
+});
+downloaderQueue.on("waiting", (job) => {
+  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+    sendSSEDownloadStateChange(job.data, DownloadStates.WAITING, stream);
+  });
+});
+downloaderQueue.on("progress", (job) => {
+  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+    sendSSEProgress(job, stream);
+  });
+});
+
+export const getMovieSSE = async (
+  c: Context<TUrlParamsParser<TGetMovieSSESchemas["urlParams"]>>
+) => {
+  const { tmdbId } = c.get("validatedUrlParams");
+
+  hypertubeLogger.info(`[${tmdbId}] SSE started`);
+
+  return streamSSE(c, async (stream) => {
+    sseClients.addClient(tmdbId.toString(), stream);
+
+    stream.onAbort(() => {
+      hypertubeLogger.info(`[${tmdbId}] SSE aborted`);
+      sseClients.removeClient(tmdbId.toString(), stream);
+    });
+
+    while (true) {
+      await stream.sleep(60000);
+    }
+  });
 };
 
 export const downloadMovie = async (

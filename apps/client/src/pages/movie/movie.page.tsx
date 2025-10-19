@@ -2,9 +2,15 @@ import { LoadingPage } from "@/components/LoadingPage";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
-import { getMovieSchemas, getUrl, groupBy } from "@hypertube/libs";
-import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import {
+  getMovieSchemas,
+  getUrl,
+  groupBy,
+  SSEEvents,
+  type TGetMovieSSESchemas,
+} from "@hypertube/libs";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { NotFoundPage } from "../notFound/NotFound.page";
 import MovieInfo from "./components/movie-info";
@@ -17,6 +23,7 @@ import { MoviePageParamsSchema } from "./schemas/urlParams.schema";
 const MoviePage = () => {
   const { t } = useTranslation();
   const { tmdbId } = useConvertParams(MoviePageParamsSchema);
+  const queryClient = useQueryClient();
 
   const { data: movie, isLoading } = useQuery({
     queryKey: ["movie", tmdbId],
@@ -39,6 +46,58 @@ const MoviePage = () => {
     if (!movie) return null;
     return groupBy(movie.subtitles, "downloadState");
   }, [movie]);
+
+  useEffect(() => {
+    const eventSource = new EventSource(
+      getUrl("sse-movies", {
+        tmdbId,
+      })
+    );
+    eventSource.onopen = () => {
+      console.log("SSE opened");
+    };
+    eventSource.onerror = (event: Event) => {
+      console.error("SSE error", event);
+    };
+
+    const handleDownloadStateChange = (
+      event: MessageEvent<
+        TGetMovieSSESchemas["response"]["downloadStateChange"]
+      >
+    ) => {
+      console.log("downloadStateChange", event.data);
+      queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
+    };
+    const handleDownloadProgress = (
+      event: MessageEvent<TGetMovieSSESchemas["response"]["downloadProgress"]>
+    ) => {
+      console.log(SSEEvents.DOWNLOAD_PROGRESS, event.data);
+      if (+event.data.progress === 0) {
+        console.log("movie download started");
+        queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
+      }
+    };
+    eventSource.addEventListener(
+      SSEEvents.DOWNLOAD_STATE_CHANGE,
+      handleDownloadStateChange
+    );
+    eventSource.addEventListener(
+      SSEEvents.DOWNLOAD_PROGRESS,
+      handleDownloadProgress
+    );
+
+    return () => {
+      eventSource.close();
+      eventSource.removeEventListener(
+        SSEEvents.DOWNLOAD_STATE_CHANGE,
+        handleDownloadStateChange
+      );
+      eventSource.removeEventListener(
+        SSEEvents.DOWNLOAD_PROGRESS,
+        handleDownloadProgress
+      );
+    };
+  }, [tmdbId]);
 
   if (isLoading) {
     return <LoadingPage resource="movie" />;

@@ -1,4 +1,5 @@
 import z from "zod";
+import { DownloadStates } from "../../const/global.const.js";
 import {
   movieSchema,
   resolutionSchema,
@@ -80,6 +81,33 @@ export const getMovieSchemas = {
 export type TGetMovieSchemas = {
   urlParams: z.infer<typeof getMovieSchemas.urlParams>;
   response: z.infer<typeof getMovieSchemas.response>;
+};
+
+export const getMovieSSESchemas = {
+  urlParams: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  response: {
+    downloadStateChange: z.object({
+      resolution: resolutionSchema.shape.resolution,
+      downloadState: z.enum(DownloadStates),
+    }),
+    downloadProgress: z.object({
+      resolution: resolutionSchema.shape.resolution,
+      progress: z.coerce.number(),
+    }),
+  },
+};
+export type TGetMovieSSESchemas = {
+  urlParams: z.infer<typeof getMovieSSESchemas.urlParams>;
+  response: {
+    downloadStateChange: z.infer<
+      typeof getMovieSSESchemas.response.downloadStateChange
+    >;
+    downloadProgress: z.infer<
+      typeof getMovieSSESchemas.response.downloadProgress
+    >;
+  };
 };
 
 export const postMovieDownloadResolutionSchemas = {

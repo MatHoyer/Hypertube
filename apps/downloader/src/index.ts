@@ -21,7 +21,7 @@ const worker = new Worker<TDownloadJobData>(
   async (job: Job<TDownloadJobData>) => {
     hypertubeLogger.info(`[${job.data.movie.id}] Download torrent job started`);
 
-    return downloadMovie(job.data.movie, job.data.resolution);
+    return downloadMovie(job);
   },
   { connection, concurrency: 5, lockDuration: 120000 }
 );

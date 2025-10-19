@@ -1,15 +1,12 @@
-import type { TMovieSchema } from "@hypertube/libs";
-import {
-  DownloadStates,
-  hypertubeLogger,
-  TResolutionSchema,
-} from "@hypertube/libs";
+import { DownloadStates, hypertubeLogger } from "@hypertube/libs";
 import {
   getResolutionPath,
   prisma,
   renameFile,
+  TDownloadJobData,
   waitFile,
 } from "@hypertube/server-core";
+import { Job } from "bullmq";
 import * as fs from "fs";
 import path from "path";
 import { downloader } from "./downloader.js";
@@ -26,10 +23,8 @@ const Status = {
 
 const defaultMovieName = "movie.mp4";
 
-export const downloadMovie = async (
-  movie: TMovieSchema,
-  resolution: TResolutionSchema["resolution"]
-) => {
+export const downloadMovie = async (job: Job<TDownloadJobData>) => {
+  const { movie, resolution } = job.data;
   const resolutionPath = `/downloads/${movie.tmdbId}/resolutions/${resolution}/resolution.torrent`;
 
   hypertubeLogger.info(`Downloading movie ${resolutionPath}`);
@@ -82,21 +77,22 @@ export const downloadMovie = async (
         downloadState: DownloadStates.DOWNLOADING,
       },
     });
+    job.updateProgress(0);
 
     hypertubeLogger.info(`Movie downloaded started successfully`);
     return new Promise<void>((resolve, reject) => {
       setInterval(async () => {
-        const res = await downloader.get(result.id);
-        const torrent = res.torrents[0];
-        if (!torrent) reject(new Error("Torrent not found"));
+        try {
+          const res = await downloader.get(result.id);
+          const torrent = res.torrents[0];
+          if (!torrent) reject(new Error("Torrent not found"));
 
-        const name = torrent.name;
-        const percentDone = (torrent.percentDone * 100).toFixed(2);
-        const downloadSpeed = (torrent.rateDownload / 1024).toFixed(2); // Ko/s
-        const status = torrent.status;
+          const name = torrent.name;
+          const percentDone = torrent.percentDone * 100;
+          const downloadSpeed = torrent.rateDownload / 1024; // Ko/s
+          const status = torrent.status;
 
-        if (status === Status.SEEDING || status === Status.STOPPED) {
-          try {
+          if (status === Status.SEEDING || status === Status.STOPPED) {
             const mp4Path = path.join(
               getResolutionPath(movie.tmdbId, resolution),
               mp4File.name
@@ -114,18 +110,20 @@ export const downloadMovie = async (
             );
 
             resolve();
-          } catch (error) {
-            reject(new Error(`Error in ending download: ${error}`));
           }
-        }
 
-        hypertubeLogger.info(
-          `Name: ${name}, Percent done: ${percentDone}, Download speed: ${downloadSpeed}, Status: ${status}`
-        );
+          hypertubeLogger.info(
+            `Name: ${name}, Percent done: ${percentDone.toFixed(
+              2
+            )}, Download speed: ${downloadSpeed.toFixed(2)}, Status: ${status}`
+          );
+          job.updateProgress(percentDone);
+        } catch (error) {
+          reject(new Error(`Error in ending download: ${error}`));
+        }
       }, 30000);
     });
   } catch (error) {
     await downloader.remove(result.id);
-    throw error;
   }
 };
