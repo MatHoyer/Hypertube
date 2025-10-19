@@ -95,10 +95,16 @@ export const getMovie = async (
     where: {
       movieId: dbMovie.id,
     },
+    orderBy: {
+      resolution: "asc",
+    },
   });
   const subtitles = await prisma.subtitle.findMany({
     where: {
       movieId: dbMovie.id,
+    },
+    orderBy: {
+      language: "asc",
     },
   });
 
@@ -195,10 +201,40 @@ export const downloadSubtitles = async (
     return c.json({ message: "Movie not found" }, 404);
   }
 
-  await downloadYifysubtitles({
-    ...dbMovie.subtitles[0],
-    tmdbId: dbMovie.tmdbId,
+  await prisma.subtitle.update({
+    where: {
+      id: dbMovie.subtitles[0].id,
+    },
+    data: {
+      downloadState: DownloadStates.DOWNLOADING,
+    },
   });
 
-  return c.json({ message: "Subtitles downloaded started" });
+  try {
+    await downloadYifysubtitles({
+      ...dbMovie.subtitles[0],
+      tmdbId: dbMovie.tmdbId,
+    });
+  } catch {
+    await prisma.subtitle.update({
+      where: {
+        id: dbMovie.subtitles[0].id,
+      },
+      data: {
+        downloadState: DownloadStates.NOT_DOWNLOADED,
+      },
+    });
+    throw new Error("Error downloading subtitles");
+  }
+
+  await prisma.subtitle.update({
+    where: {
+      id: dbMovie.subtitles[0].id,
+    },
+    data: {
+      downloadState: DownloadStates.DOWNLOADED,
+    },
+  });
+
+  return c.json({ message: "Subtitles downloaded" });
 };

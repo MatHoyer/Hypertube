@@ -163,15 +163,7 @@ const formatTime = (seconds: number) => {
 };
 
 const ProgressBar = () => {
-  const {
-    videoRef,
-    progress,
-    bufferedProgress,
-    handleSeek,
-    selectedResolution,
-  } = useVideoPlayer();
-
-  const { t } = useTranslation();
+  const { videoRef, progress, bufferedProgress, handleSeek } = useVideoPlayer();
 
   const currentTime = formatTime(
     (progress * (videoRef.current?.duration ?? 0)) / 100
@@ -215,15 +207,6 @@ const ProgressBar = () => {
           onChange={(e) => handleSeek(e.target.valueAsNumber)}
           className="absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10 cursor-pointer"
         />
-
-        {selectedResolution?.downloadState !== DownloadStates.DOWNLOADED && (
-          <div className="absolute z-10 inset-0 flex items-center justify-center gap-2 bg-black/70">
-            <AppLoader color="orange" />
-            <Typography variant="muted">
-              {t("movie.player.resolutionDownloading")}
-            </Typography>
-          </div>
-        )}
       </div>
       <div className="flex items-center">
         {currentTime === null || duration === null ? (

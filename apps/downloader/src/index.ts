@@ -33,9 +33,7 @@ process
 
 // Handle completed jobs
 worker.on("completed", async (job) => {
-  hypertubeLogger.info(
-    `[${job.data.movie.id}] Launch transmission download success`
-  );
+  hypertubeLogger.info(`[${job.data.movie.id}] Moviedownload success`);
 
   await prisma.resolution.update({
     where: {
@@ -52,9 +50,7 @@ worker.on("completed", async (job) => {
 
 worker.on("failed", async (job, err) => {
   hypertubeLogger.error(
-    `[${
-      job?.data.movie.id
-    }] Launch transmission download failed : ${JSON.stringify(err)}`
+    `[${job?.data.movie.id}] Movie download failed : ${JSON.stringify(err)}`
   );
   if (!job?.data.movie.id || !job?.data.resolution) {
     hypertubeLogger.error(

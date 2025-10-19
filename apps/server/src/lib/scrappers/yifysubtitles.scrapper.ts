@@ -1,5 +1,7 @@
 import { TSubtitleSchema } from "@hypertube/libs";
 import { getSubtitlePath, renameFile, waitFile } from "@hypertube/server-core";
+import AdmZip from "adm-zip";
+import * as fs from "fs";
 import * as path from "path";
 import { launchPuppeteer } from "./scrappers.utils";
 
@@ -43,12 +45,43 @@ export const getSubtitlesDownloadLinks = async ({
 
   await browser.close();
 
-  return subtitlesDownloadLinks.filter(
-    (
-      subtitle
-    ): subtitle is { language: string; rating: number; link: string } =>
-      !!subtitle && !!subtitle.link && !!subtitle.language && !!subtitle.rating
-  );
+  // Keep only one of each language with the highest rating
+  const filtered = subtitlesDownloadLinks
+    .filter(
+      (
+        subtitle
+      ): subtitle is { language: string; rating: number; link: string } =>
+        !!subtitle &&
+        !!subtitle.link &&
+        !!subtitle.language &&
+        !!subtitle.rating
+    )
+    .reduce((acc, subtitle) => {
+      const existing = acc.find((s) => s.language === subtitle.language);
+      if (!existing || subtitle.rating > existing.rating) {
+        // Remove existing entry of this language
+        return [
+          ...acc.filter((s) => s.language !== subtitle.language),
+          subtitle,
+        ];
+      }
+      return acc;
+    }, [] as { language: string; rating: number; link: string }[]);
+  return filtered;
+};
+
+const convertSrtToVtt = (srtPath: string) => {
+  const srtData = fs.readFileSync(srtPath, "utf8");
+
+  // Replace the timecode format from 00:00:00,000 to 00:00:00.000
+  let vttData = "WEBVTT\n\n" + srtData.replace(/(\d+:\d+:\d+),(\d+)/g, "$1.$2");
+
+  // Remove number lines
+  vttData = vttData.replace(/^\d+\s*[\r\n]+/gm, "");
+
+  const vttPath = path.join(path.dirname(srtPath), "subtitles.vtt");
+  fs.writeFileSync(vttPath, vttData, "utf8");
+  fs.unlinkSync(srtPath);
 };
 
 export const downloadYifysubtitles = async (
@@ -87,7 +120,23 @@ export const downloadYifysubtitles = async (
   // Wait for original file to download
   await waitFile(originalPath, 3000);
 
-  renameFile(originalPath, "subtitles.zip");
-
   await browser.close();
+
+  renameFile(originalPath, "subtitles.zip");
+  const zipPath = path.join(downloadDir, "subtitles.zip");
+
+  const zipper = new AdmZip(zipPath);
+  const entries = zipper.getEntries();
+  const srtEntry = entries.find((e) =>
+    e.entryName.toLowerCase().endsWith(".srt")
+  );
+  if (!srtEntry) {
+    throw new Error("SRT file not found");
+  }
+  const srtFilename = path.basename(srtEntry.entryName);
+  const srtFilePath = path.join(downloadDir, srtFilename);
+  fs.writeFileSync(srtFilePath, srtEntry.getData());
+  fs.unlinkSync(zipPath);
+
+  convertSrtToVtt(srtFilePath);
 };
