@@ -178,7 +178,9 @@ const ProgressBar = () => {
   );
   const duration = useMemo(
     () => formatTime(videoRef.current?.duration ?? 0),
-    [videoRef]
+    // eslint doesn't understand that videoRef.current?.duration is a dependency of the function and not only videoRef
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [videoRef.current?.duration]
   );
 
   return (

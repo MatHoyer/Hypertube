@@ -9,6 +9,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Typography } from "@/components/ui/typography";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -20,48 +25,72 @@ import {
   postMovieDownloadResolutionSchemas,
   postMovieDownloadSubtitlesSchemas,
   ytsQualities,
+  type DownloadState,
   type TGetMovieSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { VariantProps } from "class-variance-authority";
-import { CheckIcon } from "lucide-react";
-import { useState } from "react";
+import { CheckIcon, Clock } from "lucide-react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 
+const DownloadButtonVariants: Record<
+  DownloadState,
+  VariantProps<typeof buttonVariants>["variant"]
+> = {
+  [DownloadStates.DOWNLOADED]: "success",
+  [DownloadStates.DOWNLOADING]: "default",
+  [DownloadStates.WAITING]: "outline",
+  [DownloadStates.NOT_DOWNLOADED]: "outline",
+};
 const DownloadButton: React.FC<{
   label: string;
-  downloadState: keyof typeof DownloadStates;
+  downloadState: DownloadState;
   selected: boolean;
   onClick: () => void;
 }> = ({ label, downloadState, selected, onClick }) => {
-  let variant: VariantProps<typeof buttonVariants>["variant"];
-  switch (downloadState) {
-    case DownloadStates.DOWNLOADED:
-      variant = "success";
-      break;
-    case DownloadStates.DOWNLOADING:
-      variant = "default";
-      break;
-    default:
-      variant = "outline";
-  }
+  const { t } = useTranslation();
+
+  const variant = useMemo(
+    () => DownloadButtonVariants[downloadState],
+    [downloadState]
+  );
+
+  const isButtonDisabled = useMemo(() => {
+    return (
+      downloadState === DownloadStates.DOWNLOADING ||
+      downloadState === DownloadStates.DOWNLOADED ||
+      downloadState === DownloadStates.WAITING
+    );
+  }, [downloadState]);
 
   return (
-    <Button
-      onClick={onClick}
-      variant={selected ? "default" : variant}
-      disabled={
-        downloadState === DownloadStates.DOWNLOADING ||
-        downloadState === DownloadStates.DOWNLOADED
-      }
-    >
-      {downloadState === DownloadStates.DOWNLOADED && (
-        <CheckIcon size={20} strokeWidth={3} />
-      )}
-      {downloadState === DownloadStates.DOWNLOADING && <AppLoader />}
-      {label}
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className="inline-block">
+          <Button
+            onClick={onClick}
+            variant={selected ? "default" : variant}
+            disabled={isButtonDisabled}
+          >
+            {downloadState === DownloadStates.DOWNLOADED && (
+              <CheckIcon size={20} strokeWidth={3} />
+            )}
+            {downloadState === DownloadStates.DOWNLOADING && <AppLoader />}
+            {downloadState === DownloadStates.WAITING && (
+              <Clock size={20} strokeWidth={3} />
+            )}
+            <Typography>{label}</Typography>
+          </Button>
+        </div>
+      </TooltipTrigger>
+      <TooltipContent>
+        <Typography>
+          {t(`movie.downloadPage.tooltip.${downloadState}`)}
+        </Typography>
+      </TooltipContent>
+    </Tooltip>
   );
 };
 

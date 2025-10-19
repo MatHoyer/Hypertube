@@ -147,7 +147,7 @@ export const VideoPlayerProvider: React.FC<{
 
       if (isFullscreen) {
         await containerRef.current.requestFullscreen();
-      } else {
+      } else if (document.fullscreenElement) {
         await document.exitFullscreen();
       }
     };

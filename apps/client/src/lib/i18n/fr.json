@@ -115,7 +115,13 @@
       "subtitles": "Sous-titres",
       "noResolutions": "Aucune résolution trouvée",
       "noSubtitles": "Aucun sous-titre trouvé",
-      "download": "Télécharger"
+      "download": "Télécharger",
+      "tooltip": {
+        "NOT_DOWNLOADED": "Pas encore téléchargé",
+        "WAITING": "Actuellement en attente de téléchargement",
+        "DOWNLOADING": "Actuellement en cours de téléchargement",
+        "DOWNLOADED": "Déjà téléchargé"
+      }
     },
     "playerSettings": {
       "readingSpeed": "Vitesse de lecture",

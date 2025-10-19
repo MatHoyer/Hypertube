@@ -91,6 +91,7 @@ export {
   Providers,
   sizeMaxFile,
 } from "./const/global.const.js";
+export type { DownloadState } from "./const/global.const.js";
 
 export { enZod } from "./utils/i18n/enZod.js";
 export { esZod } from "./utils/i18n/esZod.js";

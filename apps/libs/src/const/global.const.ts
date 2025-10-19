@@ -4,6 +4,8 @@ export const DownloadStates = {
   DOWNLOADING: "DOWNLOADING",
   DOWNLOADED: "DOWNLOADED",
 } as const;
+export type DownloadState =
+  (typeof DownloadStates)[keyof typeof DownloadStates];
 
 export const Providers = {
   YTS: "YTS",

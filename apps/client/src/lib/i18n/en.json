@@ -115,7 +115,13 @@
       "subtitles": "Subtitles",
       "noResolutions": "No resolutions found",
       "noSubtitles": "No subtitles found",
-      "download": "Download"
+      "download": "Download",
+      "tooltip": {
+        "NOT_DOWNLOADED": "Not downloaded",
+        "WAITING": "Currently in the queue for downloading",
+        "DOWNLOADING": "Currently downloading",
+        "DOWNLOADED": "Already downloaded"
+      }
     },
     "playerSettings": {
       "readingSpeed": "Reading speed",
