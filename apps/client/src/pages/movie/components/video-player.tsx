@@ -41,7 +41,13 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { useEffect, useRef, useState, type ComponentProps } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 import { useVideoPlayer } from "./video-player.context";
@@ -157,12 +163,23 @@ const formatTime = (seconds: number) => {
 };
 
 const ProgressBar = () => {
-  const { videoRef, progress, bufferedProgress, handleSeek } = useVideoPlayer();
+  const {
+    videoRef,
+    progress,
+    bufferedProgress,
+    handleSeek,
+    selectedResolution,
+  } = useVideoPlayer();
+
+  const { t } = useTranslation();
 
   const currentTime = formatTime(
     (progress * (videoRef.current?.duration ?? 0)) / 100
   );
-  const duration = formatTime(videoRef.current?.duration ?? 0);
+  const duration = useMemo(
+    () => formatTime(videoRef.current?.duration ?? 0),
+    [videoRef]
+  );
 
   return (
     <div className="flex items-center w-full">
@@ -175,16 +192,16 @@ const ProgressBar = () => {
 
         {/* Buffered progress */}
         <Progress
-          className="absolute inset-y-0 left-0 bg-transparent top-1/2 transform -translate-y-1/2"
+          className="absolute inset-y-0 left-0 right-0 bg-transparent top-1/2 transform -translate-y-1/2"
           progressClassName="bg-white/40 duration-500"
           value={bufferedProgress}
         />
 
         {/* Current progress */}
         <Progress
-          className="absolute inset-y-0 left-0 bg-transparent top-1/2 transform -translate-y-1/2"
+          className="absolute inset-y-0 left-0 right-0 bg-transparent top-1/2 transform -translate-y-1/2"
           progressClassName="transition-none"
-          value={progress}
+          value={progress > 50 ? progress - 1 : progress + 1}
         />
 
         <input
@@ -193,9 +210,18 @@ const ProgressBar = () => {
           max="100"
           step="0.1"
           value={progress}
-          onChange={(e) => handleSeek(Number(e.target.value))}
-          className="w-full accent-primary z-10 opacity-0 cursor-pointer"
+          onChange={(e) => handleSeek(e.target.valueAsNumber)}
+          className="absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10 cursor-pointer"
         />
+
+        {selectedResolution?.downloadState !== DownloadStates.DOWNLOADED && (
+          <div className="absolute z-10 inset-0 flex items-center justify-center gap-2 bg-black/70">
+            <AppLoader color="orange" />
+            <Typography variant="muted">
+              {t("movie.player.resolutionDownloading")}
+            </Typography>
+          </div>
+        )}
       </div>
       <div className="flex items-center">
         {currentTime === null || duration === null ? (
@@ -348,10 +374,12 @@ const ResolutionsSettings: React.FC<{
             <DropdownMenuSelectedItem
               key={index}
               onClick={() => {
-                setSelectedResolution(resolution.resolution);
+                setSelectedResolution(resolution);
                 closePopup();
               }}
-              selected={selectedResolution === resolution.resolution}
+              selected={
+                selectedResolution?.resolution === resolution.resolution
+              }
               icon={
                 resolution.downloadState === DownloadStates.DOWNLOADED ? (
                   <Check size={20} color="green" />
@@ -620,7 +648,7 @@ const VideoPlayer = () => {
 
   useEffect(() => {
     if (!selectedResolution && resolutions.length > 0) {
-      setSelectedResolution(resolutions[0].resolution);
+      setSelectedResolution(resolutions[0]);
     }
   }, []);
 
@@ -648,7 +676,8 @@ const VideoPlayer = () => {
             <source
               src={getUrl("api-streaming-movie-resolution", {
                 tmdbId,
-                resolution: selectedResolution as (typeof ytsQualities)[number],
+                resolution:
+                  selectedResolution.resolution as (typeof ytsQualities)[number],
               })}
               type="video/mp4"
             />

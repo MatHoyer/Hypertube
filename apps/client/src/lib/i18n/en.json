@@ -126,7 +126,8 @@
       "noSelectedSubtitles": "No subtitles"
     },
     "player": {
-      "noResolutionSelected": "No resolution selected"
+      "noResolutionSelected": "No resolution selected",
+      "resolutionDownloading": "Can't seek the video while the resolution is downloading"
     },
     "cast": "Cast"
   },

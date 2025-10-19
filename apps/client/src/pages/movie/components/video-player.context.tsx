@@ -46,8 +46,8 @@ type VideoPlayerContextType = {
   triggerMouseClick: () => void;
 
   resolutions: TResolutionSchema[];
-  selectedResolution: string | null;
-  setSelectedResolution: (resolution: string) => void;
+  selectedResolution: TResolutionSchema | null;
+  setSelectedResolution: (resolution: TResolutionSchema) => void;
 
   subtitles: TSubtitleSchema[];
   selectedSubtitlesLanguage: string | null;
@@ -97,9 +97,8 @@ export const VideoPlayerProvider: React.FC<{
   const { mouseMoving, mouseClicked, triggerMouseMove, triggerMouseClick } =
     useMouse(videoRef, isMobile ? 3000 : undefined);
 
-  const [selectedResolution, setSelectedResolution] = useState<string | null>(
-    null
-  );
+  const [selectedResolution, setSelectedResolution] =
+    useState<TResolutionSchema | null>(null);
   const [selectedSubtitlesLanguage, setSelectedSubtitlesLanguage] = useState<
     string | null
   >(null);

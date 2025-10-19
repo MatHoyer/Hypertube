@@ -21,18 +21,6 @@ const worker = new Worker<TDownloadJobData>(
   async (job: Job<TDownloadJobData>) => {
     hypertubeLogger.info(`[${job.data.movie.id}] Download torrent job started`);
 
-    await prisma.resolution.update({
-      where: {
-        movieId_resolution: {
-          movieId: job.data.movie.id,
-          resolution: job.data.resolution,
-        },
-      },
-      data: {
-        downloadState: DownloadStates.DOWNLOADING,
-      },
-    });
-
     return downloadMovie(job.data.movie, job.data.resolution);
   },
   { connection, concurrency: 5, lockDuration: 120000 }

@@ -1,7 +1,12 @@
 import type { TMovieSchema } from "@hypertube/libs";
-import { hypertubeLogger, TResolutionSchema } from "@hypertube/libs";
+import {
+  DownloadStates,
+  hypertubeLogger,
+  TResolutionSchema,
+} from "@hypertube/libs";
 import {
   getResolutionPath,
+  prisma,
   renameFile,
   waitFile,
 } from "@hypertube/server-core";
@@ -65,6 +70,18 @@ export const downloadMovie = async (
     } catch (error) {
       hypertubeLogger.error(`Error symlinking movie ${error}`);
     }
+
+    await prisma.resolution.update({
+      where: {
+        movieId_resolution: {
+          movieId: movie.id,
+          resolution: resolution,
+        },
+      },
+      data: {
+        downloadState: DownloadStates.DOWNLOADING,
+      },
+    });
 
     hypertubeLogger.info(`Movie downloaded started successfully`);
     return new Promise<void>((resolve, reject) => {

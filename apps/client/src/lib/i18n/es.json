@@ -126,7 +126,8 @@
       "noSelectedSubtitles": ""
     },
     "player": {
-      "noResolutionSelected": ""
+      "noResolutionSelected": "",
+      "resolutionDownloading": ""
     },
     "cast": "Reparto"
   },
