@@ -72,7 +72,7 @@ const MoviePage = () => {
       event: MessageEvent<TGetMovieSSESchemas["response"]["downloadProgress"]>
     ) => {
       console.log(SSEEvents.DOWNLOAD_PROGRESS, event.data);
-      if (+event.data.progress === 0) {
+      if (event.data.progress === 0) {
         console.log("movie download started");
         queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
       }

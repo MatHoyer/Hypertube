@@ -195,13 +195,13 @@ const ProgressBar = () => {
         <Progress
           className="absolute inset-y-0 left-0 right-0 bg-transparent top-1/2 transform -translate-y-1/2"
           progressClassName="transition-none"
-          value={progress > 50 ? progress - 1 : progress + 1}
+          value={progress}
         />
 
         <input
           type="range"
-          min="0"
-          max="100"
+          min="1"
+          max="99"
           step="0.1"
           value={progress}
           onChange={(e) => handleSeek(e.target.valueAsNumber)}

@@ -6,11 +6,9 @@ const createDefaultMovie = async () => {
 
   const movie = await prisma.movie.upsert({
     where: {
-      id: movieId,
+      tmdbId: 0,
     },
     update: {
-      tmdbId: 0,
-      imdbId: "tt0",
       demoMovie: true,
     },
     create: {
@@ -69,7 +67,15 @@ const createDefaultMovie = async () => {
 };
 
 const main = async () => {
-  await createDefaultMovie();
+  try {
+    console.log("Starting seed...");
+    await createDefaultMovie();
+    console.log("Seed completed successfully!");
+    process.exit(0);
+  } catch (error) {
+    console.error("Seed failed:", error);
+    process.exit(1);
+  }
 };
 
 main();
