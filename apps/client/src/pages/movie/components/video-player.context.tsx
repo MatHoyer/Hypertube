@@ -1,7 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
-import type { TResolutionSchema, TSubtitleSchema } from "@hypertube/libs";
+import { type TResolutionSchema, type TSubtitleSchema } from "@hypertube/libs";
 import {
   createContext,
   useCallback,
@@ -46,8 +46,8 @@ type VideoPlayerContextType = {
   triggerMouseClick: () => void;
 
   resolutions: TResolutionSchema[];
-  selectedResolution: string | null;
-  setSelectedResolution: (resolution: string) => void;
+  selectedResolution: TResolutionSchema | null;
+  setSelectedResolution: (resolution: TResolutionSchema) => void;
 
   subtitles: TSubtitleSchema[];
   selectedSubtitlesLanguage: string | null;
@@ -97,9 +97,8 @@ export const VideoPlayerProvider: React.FC<{
   const { mouseMoving, mouseClicked, triggerMouseMove, triggerMouseClick } =
     useMouse(videoRef, isMobile ? 3000 : undefined);
 
-  const [selectedResolution, setSelectedResolution] = useState<string | null>(
-    null
-  );
+  const [selectedResolution, setSelectedResolution] =
+    useState<TResolutionSchema | null>(null);
   const [selectedSubtitlesLanguage, setSelectedSubtitlesLanguage] = useState<
     string | null
   >(null);
@@ -148,7 +147,7 @@ export const VideoPlayerProvider: React.FC<{
 
       if (isFullscreen) {
         await containerRef.current.requestFullscreen();
-      } else {
+      } else if (document.fullscreenElement) {
         await document.exitFullscreen();
       }
     };

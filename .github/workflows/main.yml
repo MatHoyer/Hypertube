@@ -123,6 +123,16 @@ jobs:
           kill $LOGS_PID
           exit 1
 
+      - name: Check all containers status
+        run: |
+          for container in $(docker ps --format "{{.Names}}"); do
+            status=$(docker inspect --format='{{.State.Status}}' $container 2>/dev/null || echo "not found")
+            if [ "$status" != "running" ]; then
+              echo "❌ $container is not running"
+              exit 1
+            fi
+          done
+
       - name: Shutdown all containers
         if: always()
         run: |

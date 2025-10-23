@@ -41,7 +41,13 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react";
-import { useEffect, useRef, useState, type ComponentProps } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 import { useVideoPlayer } from "./video-player.context";
@@ -162,7 +168,12 @@ const ProgressBar = () => {
   const currentTime = formatTime(
     (progress * (videoRef.current?.duration ?? 0)) / 100
   );
-  const duration = formatTime(videoRef.current?.duration ?? 0);
+  const duration = useMemo(
+    () => formatTime(videoRef.current?.duration ?? 0),
+    // eslint doesn't understand that videoRef.current?.duration is a dependency of the function and not only videoRef
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [videoRef.current?.duration]
+  );
 
   return (
     <div className="flex items-center w-full">
@@ -175,26 +186,26 @@ const ProgressBar = () => {
 
         {/* Buffered progress */}
         <Progress
-          className="absolute inset-y-0 left-0 bg-transparent top-1/2 transform -translate-y-1/2"
+          className="absolute inset-y-0 left-0 right-0 bg-transparent top-1/2 transform -translate-y-1/2"
           progressClassName="bg-white/40 duration-500"
           value={bufferedProgress}
         />
 
         {/* Current progress */}
         <Progress
-          className="absolute inset-y-0 left-0 bg-transparent top-1/2 transform -translate-y-1/2"
+          className="absolute inset-y-0 left-0 right-0 bg-transparent top-1/2 transform -translate-y-1/2"
           progressClassName="transition-none"
           value={progress}
         />
 
         <input
           type="range"
-          min="0"
-          max="100"
+          min="1"
+          max="99"
           step="0.1"
           value={progress}
-          onChange={(e) => handleSeek(Number(e.target.value))}
-          className="w-full accent-primary z-10 opacity-0 cursor-pointer"
+          onChange={(e) => handleSeek(e.target.valueAsNumber)}
+          className="absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10 cursor-pointer"
         />
       </div>
       <div className="flex items-center">
@@ -348,10 +359,12 @@ const ResolutionsSettings: React.FC<{
             <DropdownMenuSelectedItem
               key={index}
               onClick={() => {
-                setSelectedResolution(resolution.resolution);
+                setSelectedResolution(resolution);
                 closePopup();
               }}
-              selected={selectedResolution === resolution.resolution}
+              selected={
+                selectedResolution?.resolution === resolution.resolution
+              }
               icon={
                 resolution.downloadState === DownloadStates.DOWNLOADED ? (
                   <Check size={20} color="green" />
@@ -620,7 +633,7 @@ const VideoPlayer = () => {
 
   useEffect(() => {
     if (!selectedResolution && resolutions.length > 0) {
-      setSelectedResolution(resolutions[0].resolution);
+      setSelectedResolution(resolutions[0]);
     }
   }, []);
 
@@ -648,7 +661,8 @@ const VideoPlayer = () => {
             <source
               src={getUrl("api-streaming-movie-resolution", {
                 tmdbId,
-                resolution: selectedResolution as (typeof ytsQualities)[number],
+                resolution:
+                  selectedResolution.resolution as (typeof ytsQualities)[number],
               })}
               type="video/mp4"
             />

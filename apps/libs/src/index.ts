@@ -26,6 +26,7 @@ export type { TPatchUsersSchemas } from "./schemas/api/users.schema.js";
 export {
   getMovieSchemas,
   getMoviesSchemas,
+  getMovieSSESchemas,
   postMovieDownloadResolutionSchemas,
   postMovieDownloadSubtitlesSchemas,
   tmdbMovieSchema,
@@ -33,6 +34,7 @@ export {
 export type {
   TGetMovieSchemas,
   TGetMoviesSchemas,
+  TGetMovieSSESchemas,
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
 } from "./schemas/api/movie.schema.js";
@@ -91,11 +93,12 @@ export {
   Providers,
   sizeMaxFile,
 } from "./const/global.const.js";
-
-export { DOWNLOAD_QUEUE } from "./const/downloader.const.js";
-export type { TDownloadJobData } from "./const/downloader.const.js";
+export type { DownloadState } from "./const/global.const.js";
 
 export { enZod } from "./utils/i18n/enZod.js";
 export { esZod } from "./utils/i18n/esZod.js";
 export { frZod } from "./utils/i18n/frZod.js";
 export { zodTranslate } from "./utils/i18n/zodTranslate.js";
+
+export { SSEEvents } from "./const/events.js";
+export type { SSEEvent } from "./const/events.js";

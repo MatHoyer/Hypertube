@@ -115,7 +115,13 @@
       "subtitles": "Subtítulos",
       "noResolutions": "No se encontraron resoluciones",
       "noSubtitles": "No se encontraron subtítulos",
-      "download": "Descargar"
+      "download": "Descargar",
+      "tooltip": {
+        "NOT_DOWNLOADED": "",
+        "WAITING": "",
+        "DOWNLOADING": "",
+        "DOWNLOADED": ""
+      }
     },
     "playerSettings": {
       "readingSpeed": "Velocidad de reproducción",
@@ -126,7 +132,8 @@
       "noSelectedSubtitles": ""
     },
     "player": {
-      "noResolutionSelected": ""
+      "noResolutionSelected": "",
+      "resolutionDownloading": ""
     },
     "cast": "Reparto"
   },

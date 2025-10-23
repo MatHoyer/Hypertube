@@ -32,6 +32,11 @@ export type TApiRouteDataRequirements = {
     subtitlesLanguage?: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
 
+  // sse routes
+  "sse-movies": {
+    tmdbId: "{tmdbId}" | number;
+  };
+
   // Streaming routes
   "api-streaming-movie-resolution": {
     tmdbId: TMovieSchema["tmdbId"];
@@ -41,11 +46,6 @@ export type TApiRouteDataRequirements = {
     tmdbId: TMovieSchema["tmdbId"];
     subtitlesLanguage: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
-};
-
-export type TInternalRouteDataRequirements = {
-  "internal-movie-download-job-started": undefined;
-  "internal-movie-download-job-end": undefined;
 };
 
 export type TExternalRouteDataRequirements = {
@@ -59,7 +59,6 @@ export type TExternalRouteDataRequirements = {
 
 type TRouteDataRequirements = TClientRouteDataRequirements &
   TApiRouteDataRequirements &
-  TInternalRouteDataRequirements &
   TExternalRouteDataRequirements;
 
 type TRoute = keyof TRouteDataRequirements;
@@ -104,16 +103,14 @@ const routes: {
     }
   },
 
+  "sse-movies": ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
+
   "api-streaming-movie-resolution": ({ tmdbId, resolution }) =>
     `/api/streaming/movie/${tmdbId}/resolution/${resolution}`,
   "api-streaming-movie-subtitles": ({ tmdbId, subtitlesLanguage }) =>
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
 
   // Internal routes
-  "internal-movie-download-job-started": () =>
-    "/api/internal/movie-download-job-started",
-  "internal-movie-download-job-end": () =>
-    "/api/internal/movie-download-job-end",
 
   // External routes
   "external-imdb-movie": ({ imdbId }) => `https://www.imdb.com/title/${imdbId}`,

@@ -7,6 +7,7 @@ const pinoLogger = pino({
       colorize: true,
     },
   },
+  level: "debug",
 });
 
 export const hypertubeLogger = {
@@ -18,5 +19,8 @@ export const hypertubeLogger = {
   },
   warn: (message: string) => {
     pinoLogger.warn(message);
+  },
+  debug: (message: string) => {
+    pinoLogger.debug(message);
   },
 };

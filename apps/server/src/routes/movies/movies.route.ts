@@ -1,6 +1,7 @@
 import {
   getMovieSchemas,
   getMoviesSchemas,
+  getMovieSSESchemas,
   postMovieDownloadResolutionSchemas,
   postMovieDownloadSubtitlesSchemas,
 } from "@hypertube/libs";
@@ -13,6 +14,7 @@ import {
   downloadSubtitles,
   getMovie,
   getMovies,
+  getMovieSSE,
 } from "./movies.controller";
 
 const moviesRouter = new Hono();
@@ -27,6 +29,12 @@ moviesRouter.get(
   "/:tmdbId",
   urlParamsParser(getMovieSchemas.urlParams),
   getMovie
+);
+
+moviesRouter.get(
+  "/:tmdbId/sse",
+  urlParamsParser(getMovieSSESchemas.urlParams),
+  getMovieSSE
 );
 
 moviesRouter.post(

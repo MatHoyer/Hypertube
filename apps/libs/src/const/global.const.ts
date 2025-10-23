@@ -1,8 +1,11 @@
 export const DownloadStates = {
   NOT_DOWNLOADED: "NOT_DOWNLOADED",
+  WAITING: "WAITING",
   DOWNLOADING: "DOWNLOADING",
   DOWNLOADED: "DOWNLOADED",
 } as const;
+export type DownloadState =
+  (typeof DownloadStates)[keyof typeof DownloadStates];
 
 export const Providers = {
   YTS: "YTS",

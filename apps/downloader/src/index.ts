@@ -1,13 +1,14 @@
+import { DownloadStates, hypertubeLogger } from "@hypertube/libs";
 import {
   DOWNLOAD_QUEUE,
-  hypertubeLogger,
+  env,
+  prisma,
   TDownloadJobData,
-} from "@hypertube/libs";
-import { env } from "@hypertube/server-core";
+} from "@hypertube/server-core";
 import { Job, Worker } from "bullmq";
 import { Redis } from "ioredis";
 import { downloadMovie } from "./downloader/downloadMovie.js";
-import { failedNotifyServer, successNotifyServer } from "./notifyServer.js";
+import { gracefulShutdown } from "./shutdown.js";
 
 const connection = new Redis({
   host: env.REDIS_HOST,
@@ -20,37 +21,53 @@ const worker = new Worker<TDownloadJobData>(
   async (job: Job<TDownloadJobData>) => {
     hypertubeLogger.info(`[${job.data.movie.id}] Download torrent job started`);
 
-    await downloadMovie(job.data.movie, job.data.resolution);
+    return downloadMovie(job);
   },
-  { connection }
+  { connection, concurrency: 5, lockDuration: 120000 }
 );
 
+// Handle graceful shutdown
+process
+  .on("SIGINT", () => gracefulShutdown("SIGINT", worker))
+  .on("SIGTERM", () => gracefulShutdown("SIGTERM", worker));
+
+// Handle completed jobs
 worker.on("completed", async (job) => {
-  hypertubeLogger.info(
-    `[${job.data.movie.id}] Launch transmission download success`
-  );
-  await successNotifyServer({
-    type: "started",
-    movieId: job.data.movie.id,
-    resolution: job.data.resolution,
+  hypertubeLogger.info(`[${job.data.movie.id}] Moviedownload success`);
+
+  await prisma.resolution.update({
+    where: {
+      movieId_resolution: {
+        movieId: job.data.movie.id,
+        resolution: job.data.resolution,
+      },
+    },
+    data: {
+      downloadState: DownloadStates.DOWNLOADED,
+    },
   });
 });
 
 worker.on("failed", async (job, err) => {
   hypertubeLogger.error(
-    `[${
-      job?.data.movie.id
-    }] Launch transmission download failed : ${JSON.stringify(err)}`
+    `[${job?.data.movie.id}] Movie download failed : ${JSON.stringify(err)}`
   );
   if (!job?.data.movie.id || !job?.data.resolution) {
     hypertubeLogger.error(
-      `[${job?.data.movie.id}] Can't notify server : No movieId or resolution`
+      `[${job?.data.movie.id}] Can't update movie resolution download state : No movieId or resolution`
     );
     return;
   }
-  await failedNotifyServer({
-    type: "started",
-    movieId: job?.data.movie.id,
-    resolution: job?.data.resolution,
+
+  await prisma.resolution.update({
+    where: {
+      movieId_resolution: {
+        movieId: job.data.movie.id,
+        resolution: job.data.resolution,
+      },
+    },
+    data: {
+      downloadState: DownloadStates.NOT_DOWNLOADED,
+    },
   });
 });

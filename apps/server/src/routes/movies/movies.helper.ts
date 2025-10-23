@@ -1,5 +1,12 @@
-import { Providers, TMovieSchema } from "@hypertube/libs";
-import { prisma } from "@hypertube/server-core";
+import {
+  DownloadState,
+  Providers,
+  SSEEvents,
+  TMovieSchema,
+} from "@hypertube/libs";
+import { prisma, TDownloadJobData } from "@hypertube/server-core";
+import { Job } from "bullmq";
+import { SSEStreamingApi } from "hono/streaming";
 import { YtsApi } from "../../lib/apis/yts.api";
 import { getSubtitlesDownloadLinks } from "../../lib/scrappers/yifysubtitles.scrapper";
 
@@ -37,5 +44,32 @@ export const getMovieData = async (movie: TMovieSchema) => {
     data: {
       additionalInfoFetched: true,
     },
+  });
+};
+
+export const sendSSEDownloadStateChange = (
+  jobData: TDownloadJobData,
+  downloadState: DownloadState,
+  stream: SSEStreamingApi
+) => {
+  stream.writeSSE({
+    event: SSEEvents.DOWNLOAD_STATE_CHANGE,
+    data: JSON.stringify({
+      resolution: jobData.resolution,
+      downloadState: downloadState,
+    }),
+  });
+};
+
+export const sendSSEProgress = (
+  job: Job<TDownloadJobData>,
+  stream: SSEStreamingApi
+) => {
+  stream.writeSSE({
+    event: SSEEvents.DOWNLOAD_PROGRESS,
+    data: JSON.stringify({
+      resolution: job.data.resolution,
+      progress: job.progress,
+    }),
   });
 };
