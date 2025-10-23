@@ -48,8 +48,6 @@ export type TApiRouteDataRequirements = {
   };
 };
 
-export type TInternalRouteDataRequirements = {};
-
 export type TExternalRouteDataRequirements = {
   "external-imdb-movie": {
     imdbId: string;
@@ -61,7 +59,6 @@ export type TExternalRouteDataRequirements = {
 
 type TRouteDataRequirements = TClientRouteDataRequirements &
   TApiRouteDataRequirements &
-  TInternalRouteDataRequirements &
   TExternalRouteDataRequirements;
 
 type TRoute = keyof TRouteDataRequirements;

@@ -1,4 +1,4 @@
-import { DownloadStates } from "@hypertube/libs";
+import { DownloadStates, hypertubeLogger } from "@hypertube/libs";
 import { prisma } from "../src/index.js";
 
 const createDefaultMovie = async () => {
@@ -68,12 +68,12 @@ const createDefaultMovie = async () => {
 
 const main = async () => {
   try {
-    console.log("Starting seed...");
+    hypertubeLogger.info("Starting seed...");
     await createDefaultMovie();
-    console.log("Seed completed successfully!");
+    hypertubeLogger.info("Seed completed successfully!");
     process.exit(0);
   } catch (error) {
-    console.error("Seed failed:", error);
+    hypertubeLogger.error(`Seed failed: ${error}`);
     process.exit(1);
   }
 };

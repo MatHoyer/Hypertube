@@ -194,13 +194,9 @@ export const downloadMovie = async (
   if (!dbResolution) {
     return c.json({ message: "Resolution not found" }, 404);
   }
-  if (
-    dbResolution.downloadState === DownloadStates.WAITING ||
-    dbResolution.downloadState === DownloadStates.DOWNLOADING ||
-    dbResolution.downloadState === DownloadStates.DOWNLOADED
-  ) {
+  if (dbResolution.downloadState !== DownloadStates.NOT_DOWNLOADED) {
     return c.json(
-      { message: "Resolution already downloading in downloading queue" },
+      { message: "Resolution already downloaded or in downloading queue" },
       400
     );
   }

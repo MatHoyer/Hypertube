@@ -57,14 +57,6 @@ const DownloadButton: React.FC<{
     [downloadState]
   );
 
-  const isButtonDisabled = useMemo(() => {
-    return (
-      downloadState === DownloadStates.DOWNLOADING ||
-      downloadState === DownloadStates.DOWNLOADED ||
-      downloadState === DownloadStates.WAITING
-    );
-  }, [downloadState]);
-
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -72,7 +64,7 @@ const DownloadButton: React.FC<{
           <Button
             onClick={onClick}
             variant={selected ? "default" : variant}
-            disabled={isButtonDisabled}
+            disabled={downloadState === DownloadStates.NOT_DOWNLOADED}
           >
             {downloadState === DownloadStates.DOWNLOADED && (
               <CheckIcon size={20} strokeWidth={3} />
