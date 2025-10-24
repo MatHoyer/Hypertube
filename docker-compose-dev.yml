@@ -11,16 +11,14 @@ services:
       - PUPPETEER_SKIP_DOWNLOAD=true
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
       - REDIS_HOST=redis
+      - TRANSMISSION_HOST=transmission
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
       - "${CLIENT_PORT}:${CLIENT_PORT}" # for development only
     volumes:
       - ./node_modules:/hypertube/node_modules
-      - ./apps/server:/hypertube/apps/server
-      - ./apps/client:/hypertube/apps/client
-      - ./apps/libs:/hypertube/apps/libs
-      - movies_data:/hypertube/apps/server/downloads
-    command: bash -c "umask 000 && pnpm i --filter server --filter client --filter libs --filter server-core --frozen-lockfile && chmod 777 -R /hypertube/apps/server/node_modules && chmod 777 -R /hypertube/apps/client/node_modules && chmod 777 -R /hypertube/apps/libs/node_modules && chmod 777 -R /hypertube/apps/server-core/node_modules && chmod 777 -R /hypertube/node_modules && pnpm --filter server-core prisma:migrate:reset && pnpm --filter server-core prisma:migrate && pnpm dev:app"
+      - ./apps:/hypertube/apps
+    command: bash -c "umask 000 && pnpm i --frozen-lockfile && chmod 777 -R /hypertube/apps/server/node_modules && chmod 777 -R /hypertube/apps/client/node_modules && chmod 777 -R /hypertube/apps/libs/node_modules && chmod 777 -R /hypertube/apps/server-core/node_modules && chmod 777 -R /hypertube/apps/downloader/node_modules && chmod 777 -R /hypertube/apps/scheduler/node_modules && chmod 777 -R /hypertube/node_modules && pnpm --filter server-core prisma:migrate:reset && pnpm --filter server-core prisma:migrate && pnpm dev"
     networks:
       - hypertube-network
     healthcheck:
@@ -29,47 +27,6 @@ services:
       timeout: 10s
       retries: 3
 
-  downloader:
-    container_name: hypertube-downloader-dev
-    build:
-      context: .
-      dockerfile: ./apps/downloader/Dockerfile.dev
-    env_file: .env
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
-      - REDIS_HOST=redis
-      - NODE_ENV=DEV
-      - TRANSMISSION_HOST=transmission
-      - SERVER_URL=http://app:3000
-    volumes:
-      - ./node_modules:/hypertube/node_modules
-      - ./apps/downloader:/hypertube/apps/downloader
-      - ./apps/libs:/hypertube/apps/libs
-      - movies_data:/hypertube/apps/downloader/downloads
-    command: bash -c "umask 000 && pnpm i --filter "downloader..." --frozen-lockfile && chmod 777 -R /hypertube/apps/downloader/node_modules && chmod 777 -R /hypertube/apps/libs/node_modules && chmod 777 -R /hypertube/node_modules && pnpm dev:downloader"
-    networks:
-      - hypertube-network
-    depends_on:
-      - app
-
-  scheduler:
-    container_name: hypertube-scheduler-dev
-    build:
-      context: .
-      dockerfile: ./apps/scheduler/Dockerfile.dev
-    env_file: .env
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
-      - NODE_ENV=DEV
-    command: bash -c "umask 000 && pnpm i --filter "scheduler..." --frozen-lockfile && chmod 777 -R /hypertube/apps/scheduler/node_modules && chmod 777 -R /hypertube/node_modules && pnpm dev:scheduler"
-    networks:
-      - hypertube-network
-    depends_on:
-      - app
-
 networks:
   hypertube-network:
     external: true
-
-volumes:
-  movies_data:

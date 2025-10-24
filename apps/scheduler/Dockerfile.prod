@@ -16,3 +16,6 @@ COPY apps/server-core ./apps/server-core
 COPY apps/scheduler ./apps/scheduler
 
 RUN pnpm i --filter "scheduler..." --frozen-lockfile
+RUN pnpm lint
+RUN pnpm --filter server-core prisma:generate
+RUN pnpm build:scheduler

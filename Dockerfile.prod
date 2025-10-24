@@ -33,3 +33,6 @@ COPY eslint.config.js ./
 COPY apps ./apps
 
 RUN pnpm i --filter server --filter client --filter libs --filter server-core --frozen-lockfile
+RUN pnpm lint
+RUN pnpm --filter server-core prisma:generate
+RUN pnpm build:app
