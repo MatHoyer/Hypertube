@@ -125,13 +125,17 @@ jobs:
 
       - name: Check all containers status
         run: |
-          for container in $(docker ps --format "{{.Names}}"); do
+          containers="hypertube-prod hypertube-downloader-prod hypertube-scheduler-prod"
+
+          for container in $containers; do
             status=$(docker inspect --format='{{.State.Status}}' $container 2>/dev/null || echo "not found")
             if [ "$status" != "running" ]; then
               echo "❌ $container is not running"
               exit 1
             fi
           done
+
+          echo "✅ All required containers are running"
 
       - name: Shutdown all containers
         if: always()
