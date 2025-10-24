@@ -35,8 +35,7 @@ services:
       - REDIS_HOST=redis
       - NODE_ENV=PROD
       - TRANSMISSION_HOST=transmission
-      - SERVER_URL=http://app:3000
-    command: bash -c "pnpm lint && pnpm build:downloader && pnpm start:downloader"
+    command: bash -c "pnpm lint && pnpm --filter server-core prisma:generate && pnpm build:downloader && pnpm start:downloader"
     volumes:
       - movies_data:/hypertube/apps/downloader/downloads
     networks:
@@ -52,8 +51,9 @@ services:
     env_file: .env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+      - REDIS_HOST=redis
       - NODE_ENV=PROD
-    command: bash -c "pnpm lint && pnpm build:scheduler && pnpm start:scheduler"
+    command: bash -c "pnpm lint && pnpm --filter server-core prisma:generate && pnpm build:scheduler && pnpm start:scheduler"
     networks:
       - hypertube-network
     depends_on:
