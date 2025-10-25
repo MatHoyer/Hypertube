@@ -64,7 +64,7 @@ const DownloadButton: React.FC<{
           <Button
             onClick={onClick}
             variant={selected ? "default" : variant}
-            disabled={downloadState === DownloadStates.NOT_DOWNLOADED}
+            disabled={downloadState !== DownloadStates.NOT_DOWNLOADED}
           >
             {downloadState === DownloadStates.DOWNLOADED && (
               <CheckIcon size={20} strokeWidth={3} />
