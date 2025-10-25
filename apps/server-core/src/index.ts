@@ -21,7 +21,9 @@ export {
 
 export { renameFile, waitFile } from "./files/file.utils.js";
 
-export { BullMQ } from "./queues/BullMQ.js";
+export { BullMQ } from "./redis/BullMQ.js";
 
-export { DOWNLOAD_QUEUE } from "./queues/const.js";
-export type { TDownloadJobData } from "./queues/const.js";
+export { DOWNLOAD_QUEUE } from "./redis/const.js";
+export type { TDownloadJobData } from "./redis/const.js";
+
+export { EventsPublisher, EventsSubscriber } from "./redis/EventsPubSub.js";
