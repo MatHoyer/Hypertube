@@ -20,15 +20,25 @@ export const betterAuthProviders = [
 export type TBetterAuthProviders = (typeof betterAuthProviders)[number];
 
 export const languageCodesArray = ["en", "fr", "es"] as const;
-
-export const languageCodes: Record<
-  (typeof languageCodesArray)[number],
-  string
-> = {
+export type LanguageCode = (typeof languageCodesArray)[number];
+export const languageCodes: Record<LanguageCode, string> = {
   en: "English",
   fr: "Français",
   es: "Español",
 } as const;
+
+export const notificationReadStatuses = {
+  ALL: "all",
+  READ: "read",
+  UNREAD: "unread",
+} as const;
+export const notificationReadStatusArray = [
+  notificationReadStatuses.ALL,
+  notificationReadStatuses.READ,
+  notificationReadStatuses.UNREAD,
+] as const;
+export type NotificationReadStatus =
+  (typeof notificationReadStatuses)[keyof typeof notificationReadStatuses];
 
 // 1 Mo
 export const sizeMaxFile = 1024 * 1024;

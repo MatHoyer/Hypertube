@@ -113,9 +113,15 @@
     },
     "cast": "Casting"
   },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Ici vous pouvez voir vos notifications",
+    "noNotifications": "Aucune notification trouvée"
+  },
   "navbar": {
     "placeholder": "Rechercher un film",
     "account": "Mon compte",
+    "notifications": "Notifications",
     "profile": "Profil",
     "settings": "Paramètres"
   },

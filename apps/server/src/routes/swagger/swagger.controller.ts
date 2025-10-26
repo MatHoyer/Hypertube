@@ -2,6 +2,7 @@ import { getUrl } from "@hypertube/libs";
 import { authentificationSwagger } from "../authentification/authentification.swagger";
 import { imagesSwagger } from "../images/images.swagger";
 import { moviesSwagger } from "../movies/movies.swagger";
+import { notificationsSwagger } from "../notifications/notifications.swagger";
 import { usersSwagger } from "../users/users.swagger";
 
 const openApiDoc = {
@@ -37,6 +38,10 @@ const openApiDoc = {
       name: "Downloads",
       description: "Downloads endpoints",
     },
+    {
+      name: "Notifications",
+      description: "Notifications endpoints",
+    },
   ],
   paths: {
     [getUrl("api-health")]: {
@@ -55,6 +60,7 @@ const openApiDoc = {
     ...usersSwagger,
     ...moviesSwagger,
     ...authentificationSwagger,
+    ...notificationsSwagger,
   },
 };
 

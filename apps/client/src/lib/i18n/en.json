@@ -113,9 +113,15 @@
     },
     "cast": "Cast"
   },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Here you can see your notifications",
+    "noNotifications": "No notifications found"
+  },
   "navbar": {
     "placeholder": "Search for a movie",
     "account": "My Account",
+    "notifications": "Notifications",
     "profile": "Profile",
     "settings": "Settings"
   },

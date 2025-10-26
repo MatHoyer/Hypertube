@@ -9,6 +9,7 @@ import { ErrorPage } from "./pages/error/ErrorPage";
 import { HomePage } from "./pages/home/home.page";
 import MoviePage from "./pages/movie/movie.page";
 import { MoviePageParamsSchema } from "./pages/movie/schemas/urlParams.schema";
+import { NotificationsPage } from "./pages/notifications/notifications.page";
 import { PlaygroundPage } from "./pages/playground/playground.page";
 import { SettingsPage } from "./pages/profile/settings/SettingsPage";
 import { BaseLayoutRoute } from "./routes/BaseLayoutRoute";
@@ -51,6 +52,10 @@ const App = () => {
 
         {/* Private only routes */}
         <Route element={<PrivateOnlyRoute />}>
+          <Route
+            path={getUrl("client-notifications")}
+            element={<NotificationsPage />}
+          />
           <Route path={getUrl("client-settings")} element={<SettingsPage />} />
         </Route>
 
