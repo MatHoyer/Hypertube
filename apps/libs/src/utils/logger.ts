@@ -10,7 +10,15 @@ const pinoLogger = pino({
   level: "debug",
 });
 
-export const hypertubeLogger = {
+export const LOG_LEVELS = {
+  INFO: "info",
+  ERROR: "error",
+  WARN: "warn",
+  DEBUG: "debug",
+} as const;
+export type TLogLevel = (typeof LOG_LEVELS)[keyof typeof LOG_LEVELS];
+
+export const hypertubeLogger: TLogger = {
   info: (message: string) => {
     pinoLogger.info(message);
   },
@@ -24,3 +32,22 @@ export const hypertubeLogger = {
     pinoLogger.debug(message);
   },
 };
+
+export const specificLogger = (name: string): TLogger => {
+  return {
+    info: (message: string) => {
+      pinoLogger.info(`[${name}] ${message}`);
+    },
+    error: (message: string) => {
+      pinoLogger.error(`[${name}] ${message}`);
+    },
+    warn: (message: string) => {
+      pinoLogger.warn(`[${name}] ${message}`);
+    },
+    debug: (message: string) => {
+      pinoLogger.debug(`[${name}] ${message}`);
+    },
+  };
+};
+
+export type TLogger = Record<TLogLevel, (message: string) => void>;
