@@ -18,6 +18,7 @@ export type TClientRouteDataRequirements = {
   };
   "client-oauth-credentials": undefined;
   "client-error": undefined;
+  "client-notifications": undefined;
 };
 
 export type TApiRouteDataRequirements = {
@@ -52,6 +53,10 @@ export type TApiRouteDataRequirements = {
     tmdbId: "{tmdbId}" | number | undefined;
     resolution?: (typeof ytsQualities)[number] | "{resolution}";
     subtitlesLanguage?: keyof typeof languageCodes | "{subtitlesLanguage}";
+  };
+
+  "api-notifications": {
+    notificationId?: string | "{notificationId}";
   };
 
   // sse routes
@@ -102,6 +107,7 @@ const routes: {
   "client-movie": ({ tmdbId }) => `/movie/${tmdbId}`,
   "client-oauth-credentials": () => "/credentials",
   "client-error": () => "/error",
+  "client-notifications": () => "/notifications",
 
   // API routes
   "api-swagger": ({ mode }) => (mode ? `/api/swagger/${mode}` : "/api/swagger"),
@@ -151,6 +157,9 @@ const routes: {
       return `/api/movies/${tmdbId}`;
     }
   },
+
+  "api-notifications": ({ notificationId }) =>
+    `/api/notifications` + (notificationId ? `/${notificationId}` : ""),
 
   "sse-movies": ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
 

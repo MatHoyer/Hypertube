@@ -11,7 +11,7 @@ import {
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getUrl, signOutAuthentificationSchemas } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { File, LogOut, Settings, User } from "lucide-react";
+import { Bell, File, LogOut, Settings, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -39,11 +39,9 @@ export const UserDropdown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="w-60">
-        {
-          <Button variant="ghost" className="rounded-full size-fit p-0">
-            <UserImageAvatar />
-          </Button>
-        }
+        <Button variant="ghost" className="rounded-full size-fit p-0">
+          <UserImageAvatar />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>{t("navbar.account")}</DropdownMenuLabel>
@@ -51,6 +49,11 @@ export const UserDropdown = () => {
           <DropdownMenuItem asChild>
             <Link to={"#"}>
               <User /> {t("navbar.profile")}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to={getUrl("client-notifications")}>
+              <Bell /> {t("navbar.notifications")}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

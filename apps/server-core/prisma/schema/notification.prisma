@@ -1,0 +1,14 @@
+model Notification {
+  id String @id @default(uuid())
+
+  title       String
+  message     String
+  read        Boolean @default(false)
+  resourceUrl String?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

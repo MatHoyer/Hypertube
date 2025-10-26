@@ -1,5 +1,6 @@
 import { DownloadStates, hypertubeLogger } from "@hypertube/libs";
 import { prisma } from "../src/index.js";
+import notificationsData from "./seed/notifications.json";
 
 const createDefaultMovie = async () => {
   const movieId = "00000000-0000-0000-0000-000000000000";
@@ -66,10 +67,23 @@ const createDefaultMovie = async () => {
   });
 };
 
+const createNotifications = async () => {
+  const alreadyExistingNotifications = await prisma.notification.findFirst();
+  if (alreadyExistingNotifications) {
+    hypertubeLogger.info("Notifications already exist, skipping creation");
+    return;
+  }
+
+  await prisma.notification.createMany({
+    data: notificationsData,
+  });
+};
+
 const main = async () => {
   try {
     hypertubeLogger.info("Starting seed...");
     await createDefaultMovie();
+    await createNotifications();
     hypertubeLogger.info("Seed completed successfully!");
     process.exit(0);
   } catch (error) {

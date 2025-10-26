@@ -142,9 +142,15 @@
     },
     "deleteCredentialSuccess": "Credencial eliminada exitosamente."
   },
+  "notifications": {
+    "title": "",
+    "description": "",
+    "noNotifications": ""
+  },
   "navbar": {
     "placeholder": "Buscar una película",
     "account": "Mi cuenta",
+    "notifications": "",
     "profile": "Perfil",
     "settings": "Configuración"
   },

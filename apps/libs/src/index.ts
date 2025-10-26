@@ -1,5 +1,9 @@
 // Utils export
-export { newUTCDate } from "./utils/date.utils.js";
+export { getDateAsString, newUTCDate } from "./utils/date.utils.js";
+export type {
+  TDateFormatsKeys,
+  TDateFormatsParams,
+} from "./utils/date.utils.js";
 export { groupBy, pick } from "./utils/object.utils.js";
 export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
 export { getClientUrl } from "./utils/url/getClientUrl.js";
@@ -130,6 +134,9 @@ export type {
   TSubtitleSchema,
 } from "./schemas/database/movie.schema.js";
 
+export { notificationSchema } from "./schemas/database/notifications.schema.js";
+export type { TNotificationSchema } from "./schemas/database/notifications.schema.js";
+
 // Logger export
 export { hypertubeLogger, LOG_LEVELS, specificLogger } from "./utils/logger.js";
 export type { TLogger, TLogLevel } from "./utils/logger.js";
@@ -147,10 +154,16 @@ export {
   DownloadStates,
   languageCodes,
   languageCodesArray,
+  notificationReadStatusArray,
+  notificationReadStatuses,
   Providers,
   sizeMaxFile,
 } from "./const/global.const.js";
-export type { DownloadState } from "./const/global.const.js";
+export type {
+  DownloadState,
+  LanguageCode,
+  NotificationReadStatus,
+} from "./const/global.const.js";
 
 export type { TBetterAuthProviders } from "./const/global.const.js";
 
