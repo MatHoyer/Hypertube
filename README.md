@@ -51,6 +51,12 @@ Create downloads symlink (simulate docker volume)
 ln -s ../downloader/downloads ./apps/server/downloads
 ```
 
+Build packages:
+
+```bash
+pnpm build
+```
+
 Run all workers in dev mode (hot reload):
 
 ```bash

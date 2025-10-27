@@ -125,13 +125,32 @@ jobs:
 
       - name: Check all containers status
         run: |
-          for container in $(docker ps --format "{{.Names}}"); do
-            status=$(docker inspect --format='{{.State.Status}}' $container 2>/dev/null || echo "not found")
-            if [ "$status" != "running" ]; then
-              echo "❌ $container is not running"
-              exit 1
-            fi
+          containers="hypertube-prod hypertube-downloader-prod hypertube-scheduler-prod"
+          max_attempts=2
+          wait_time=10
+
+          for container in $containers; do
+            echo "⏳ Waiting for $container to be ready..."
+            attempts=0
+            
+            while [ $attempts -lt $max_attempts ]; do
+              status=$(docker inspect --format='{{.State.Status}}' $container 2>/dev/null || echo "not found")
+              
+              if [ "$status" = "running" ]; then
+                echo "✅ $container is running"
+                break
+              elif [ $attempts -eq $((max_attempts - 1)) ]; then
+                echo "❌ $container failed to start after $((max_attempts * wait_time)) seconds"
+                exit 1
+              else
+                echo "⏳ $container status: $status (attempt $((attempts + 1))/$max_attempts)"
+                sleep $wait_time
+                attempts=$((attempts + 1))
+              fi
+            done
           done
+
+          echo "🎉 All required containers are running and ready!"
 
       - name: Shutdown all containers
         if: always()

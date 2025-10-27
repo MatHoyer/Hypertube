@@ -26,6 +26,8 @@ const worker = new Worker<TDownloadJobData>(
   { connection, concurrency: 5, lockDuration: 120000 }
 );
 
+hypertubeLogger.info(`Downloader worker started`);
+
 // Handle graceful shutdown
 process
   .on("SIGINT", () => gracefulShutdown("SIGINT", worker))
