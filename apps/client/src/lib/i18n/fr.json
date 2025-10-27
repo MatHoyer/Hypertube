@@ -116,7 +116,16 @@
   "notifications": {
     "title": "Notifications",
     "description": "Ici vous pouvez voir vos notifications",
-    "noNotifications": "Aucune notification trouvée"
+    "noNotifications": "Aucune notification trouvée",
+    "readStatus": {
+      "all": "Toutes",
+      "read": "Lues",
+      "unread": "Non lues"
+    },
+    "markAllAsRead": "Marquer toutes comme lues",
+    "markAllAsUnread": "Marquer toutes comme non lues",
+    "markAsUnread": "Marquer comme non lue",
+    "markAsRead": "Marquer comme lue"
   },
   "navbar": {
     "placeholder": "Rechercher un film",

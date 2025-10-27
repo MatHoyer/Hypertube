@@ -10,11 +10,14 @@ import {
 import { Typography } from "@/components/ui/typography";
 import { cn, getDateAsStringWithLocale } from "@/lib/utils";
 import type { TNotificationSchema } from "@hypertube/libs";
-import { Clock, Eye, EyeClosed } from "lucide-react";
+import { Clock } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
   notification,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Card className={cn(notification.read ? "bg-muted" : "")}>
       <CardHeader>
@@ -27,7 +30,9 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
               e.stopPropagation();
             }}
           >
-            {notification.read ? <Eye /> : <EyeClosed />}
+            {notification.read
+              ? t("notifications.markAsUnread")
+              : t("notifications.markAsRead")}
           </Button>
         </CardAction>
       </CardHeader>

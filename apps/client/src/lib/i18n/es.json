@@ -116,7 +116,16 @@
   "notifications": {
     "title": "",
     "description": "",
-    "noNotifications": ""
+    "noNotifications": "",
+    "readStatus": {
+      "all": "",
+      "read": "",
+      "unread": ""
+    },
+    "markAllAsRead": "",
+    "markAllAsUnread": "",
+    "markAsUnread": "",
+    "markAsRead": ""
   },
   "navbar": {
     "placeholder": "Buscar una película",
