@@ -1,23 +1,22 @@
+import { UniqueFilter } from "@/components/animated/uniqueFilter";
 import { AppLoader } from "@/components/ui/app-loader";
-import { Button } from "@/components/ui/button";
+import { FloatingBar } from "@/components/ui/FloatingBar";
 import { Typography } from "@/components/ui/typography";
 import {
   Layout,
-  LayoutActions,
   LayoutContent,
-  LayoutDescription,
   LayoutHeader,
   LayoutTitle,
 } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { cn } from "@/lib/utils";
 import {
   getNotificationsSchemas,
   getUrl,
   notificationReadStatuses,
-  type NotificationReadStatus,
 } from "@hypertube/libs";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { Eye, EyeClosed } from "lucide-react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { ChevronUpCircleIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -25,14 +24,17 @@ import { Notification } from "./components/notification";
 
 export const NotificationsPage = () => {
   const { t } = useTranslation();
+  const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const [readStatus, setReadStatus] =
-    useState<NotificationReadStatus>("unread");
-  const queryClient = useQueryClient();
+  const [showScrollToTopButton, setShowScrollToTopButton] =
+    useState<boolean>(false);
+  const [readStatus, setReadStatus] = useState<string>(
+    notificationReadStatuses.UNREAD
+  );
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["notifications"],
+      queryKey: ["notifications", readStatus],
       queryFn: ({ pageParam }) => {
         return axiosFetch({
           method: "GET",
@@ -57,7 +59,6 @@ export const NotificationsPage = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         const target = entries[0];
-        console.log(target.isIntersecting, hasNextPage, isFetchingNextPage);
         if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
           fetchNextPage();
         }
@@ -76,33 +77,53 @@ export const NotificationsPage = () => {
     };
   }, [bottomRef, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const headerEntry = entries[0];
+        setShowScrollToTopButton(!headerEntry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+
+    if (topRef.current) {
+      observer.observe(topRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [topRef]);
+
   return (
     <Layout>
+      <FloatingBar>
+        <UniqueFilter
+          value={readStatus}
+          onChange={(value) => {
+            topRef.current?.scrollIntoView({ behavior: "instant" });
+            setReadStatus(value);
+          }}
+          values={{
+            [notificationReadStatuses.UNREAD]: t(
+              "notifications.readStatus.unread"
+            ),
+            [notificationReadStatuses.READ]: t("notifications.readStatus.read"),
+            [notificationReadStatuses.ALL]: t("notifications.readStatus.all"),
+          }}
+        />
+      </FloatingBar>
+      <div
+        className={cn("fixed bottom-4 right-4 z-10 cursor-pointer", {
+          "opacity-0": !showScrollToTopButton,
+        })}
+        onClick={() => {
+          topRef.current?.scrollIntoView({ behavior: "smooth" });
+        }}
+      >
+        <ChevronUpCircleIcon size={50} />
+      </div>
       <LayoutHeader>
+        <div ref={topRef} />
         <LayoutTitle>{t("notifications.title")}</LayoutTitle>
-        <LayoutDescription>{t("notifications.description")}</LayoutDescription>
-        <LayoutActions>
-          <Button
-            onClick={async () => {
-              setReadStatus(notificationReadStatuses.UNREAD);
-              queryClient.refetchQueries({
-                queryKey: ["notifications"],
-              });
-            }}
-          >
-            <Eye />
-          </Button>
-          <Button
-            onClick={async () => {
-              setReadStatus(notificationReadStatuses.READ);
-              queryClient.refetchQueries({
-                queryKey: ["notifications"],
-              });
-            }}
-          >
-            <EyeClosed />
-          </Button>
-        </LayoutActions>
       </LayoutHeader>
       <LayoutContent>
         <div className="flex flex-col gap-4">
