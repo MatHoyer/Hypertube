@@ -76,7 +76,8 @@ export type {
 } from "./schemas/database/movie.schema.js";
 
 // Logger export
-export { hypertubeLogger } from "./utils/logger.js";
+export { hypertubeLogger, LOG_LEVELS, specificLogger } from "./utils/logger.js";
+export type { TLogger, TLogLevel } from "./utils/logger.js";
 
 // Const export
 export {
