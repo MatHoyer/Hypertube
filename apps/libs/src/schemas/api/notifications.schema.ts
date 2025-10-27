@@ -15,6 +15,7 @@ export const getNotificationsSchemas = {
   }),
   response: z.object({
     notifications: z.array(notificationSchema),
+    totalUnreadNotifications: z.number().int(),
     page: z.number(),
     totalPages: z.number(),
     totalResults: z.number(),
@@ -24,6 +25,18 @@ export const getNotificationsSchemas = {
 export type TGetNotificationsSchemas = {
   searchParams: z.infer<typeof getNotificationsSchemas.searchParams>;
   response: z.infer<typeof getNotificationsSchemas.response>;
+};
+
+export const getNotificationsSSESchemas = {
+  response: z.object({
+    title: z.string().optional(),
+    message: z.string().optional(),
+    totalUnreadNotifications: z.number().int(),
+  }),
+};
+
+export type TGetNotificationsSSESchemas = {
+  response: z.infer<typeof getNotificationsSSESchemas.response>;
 };
 
 export const patchNotificationsSchemas = {

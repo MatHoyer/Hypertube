@@ -1,5 +1,9 @@
 // Utils export
-export { getDateAsString, newUTCDate } from "./utils/date.utils.js";
+export {
+  getDateAsString,
+  getNearDate,
+  newUTCDate,
+} from "./utils/date.utils.js";
 export type {
   TDateFormatsKeys,
   TDateFormatsParams,
@@ -96,6 +100,7 @@ export type {
 
 export {
   getNotificationsSchemas,
+  getNotificationsSSESchemas,
   patchNotificationsSchemas,
 } from "./schemas/api/notifications.schema.js";
 export type {

@@ -123,9 +123,7 @@
       "unread": "Unread"
     },
     "markAllAsRead": "Mark all as read",
-    "markAllAsUnread": "Mark all as unread",
-    "markAsUnread": "Mark as unread",
-    "markAsRead": "Mark as read"
+    "markAllAsUnread": "Mark all as unread"
   },
   "navbar": {
     "placeholder": "Search for a movie",
