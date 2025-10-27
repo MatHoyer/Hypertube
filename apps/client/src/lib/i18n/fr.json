@@ -152,9 +152,7 @@
       "unread": "Non lues"
     },
     "markAllAsRead": "Marquer toutes comme lues",
-    "markAllAsUnread": "Marquer toutes comme non lues",
-    "markAsUnread": "Marquer comme non lue",
-    "markAsRead": "Marquer comme lue"
+    "markAllAsUnread": "Marquer toutes comme non lues"
   },
   "navbar": {
     "placeholder": "Rechercher un film",

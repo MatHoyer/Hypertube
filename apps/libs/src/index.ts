@@ -1,5 +1,9 @@
 // Utils export
-export { getDateAsString, newUTCDate } from "./utils/date.utils.js";
+export {
+  getDateAsString,
+  getNearDate,
+  newUTCDate,
+} from "./utils/date.utils.js";
 export type {
   TDateFormatsKeys,
   TDateFormatsParams,
@@ -93,6 +97,17 @@ export type {
   TPostMovieDownloadJobEndedSchemas,
   TPostMovieDownloadJobStartedSchemas,
 } from "./schemas/api/internal.schema.js";
+
+export {
+  getNotificationsSchemas,
+  getNotificationsSSESchemas,
+  patchNotificationsSchemas,
+} from "./schemas/api/notifications.schema.js";
+export type {
+  TGetNotificationsSchemas,
+  TGetNotificationsSSESchemas,
+  TPatchNotificationsSchemas,
+} from "./schemas/api/notifications.schema.js";
 
 export {
   deleteCredentialsSchemas,

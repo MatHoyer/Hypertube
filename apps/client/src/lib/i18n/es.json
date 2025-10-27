@@ -152,9 +152,7 @@
       "unread": ""
     },
     "markAllAsRead": "",
-    "markAllAsUnread": "",
-    "markAsUnread": "",
-    "markAsRead": ""
+    "markAllAsUnread": ""
   },
   "navbar": {
     "placeholder": "Buscar una película",

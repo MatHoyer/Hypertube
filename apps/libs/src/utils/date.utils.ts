@@ -1,6 +1,6 @@
 import { TZDate } from "@date-fns/tz";
 import type { Locale } from "date-fns";
-import { format } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { enUS, es, fr } from "date-fns/locale";
 import type { LanguageCode } from "../const/global.const.js";
 
@@ -66,4 +66,16 @@ export const getDateAsString = ({
       .join(separator || " ");
   }
   return format(date, DateFormats[type], { locale: dateFnsLocales[locale] });
+};
+
+export const getNearDate = (
+  date: Date,
+  locale: LanguageCode,
+  options?: { includeSeconds?: boolean; addSuffix?: boolean }
+) => {
+  return formatDistanceToNow(date, {
+    locale: dateFnsLocales[locale],
+    addSuffix: options?.addSuffix ?? true,
+    includeSeconds: options?.includeSeconds ?? true,
+  });
 };

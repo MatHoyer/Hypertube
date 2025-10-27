@@ -112,9 +112,12 @@ export const NotificationsPage = () => {
         />
       </FloatingBar>
       <div
-        className={cn("fixed bottom-4 right-4 z-10 cursor-pointer", {
-          "opacity-0": !showScrollToTopButton,
-        })}
+        className={cn(
+          "fixed bottom-4 right-4 z-10 cursor-pointer transition-all duration-150 ease-in-out bg-background rounded-full",
+          {
+            "opacity-0": !showScrollToTopButton,
+          }
+        )}
         onClick={() => {
           topRef.current?.scrollIntoView({ behavior: "smooth" });
         }}
