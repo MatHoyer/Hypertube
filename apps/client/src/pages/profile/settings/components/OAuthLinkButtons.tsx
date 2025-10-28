@@ -1,4 +1,4 @@
-import { LoadingButton } from "@/components/LoadingButton";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuthAccounts } from "@/hooks/use-auth-accounts";
 import { supportedOAuths } from "@/lib/better-auth/constants";
@@ -20,12 +20,7 @@ export const OAuthLinkButtons = () => {
   const queryClient = useQueryClient();
   const linkedAccounts = accounts.map((account) => account.provider);
 
-  const {
-    mutate: linkMutate,
-    isPending: isLinkPending,
-    isSuccess: isLinkSuccess,
-    variables: linkVariables,
-  } = useMutation({
+  const { mutate: linkMutate } = useMutation({
     mutationFn: (provider: { id: (typeof betterAuthProviders)[number] }) =>
       axiosFetch({
         method: "POST",
@@ -43,12 +38,7 @@ export const OAuthLinkButtons = () => {
     },
   });
 
-  const {
-    mutate: unlinkMutate,
-    isPending: isUnlinkPending,
-    isSuccess: isUnlinkSuccess,
-    variables: unlinkVariables,
-  } = useMutation({
+  const { mutate: unlinkMutate } = useMutation({
     mutationFn: async (provider: {
       id: (typeof betterAuthProviders)[number];
     }) =>
@@ -81,16 +71,8 @@ export const OAuthLinkButtons = () => {
               title={params.name}
             />
             {linkedAccounts.includes(providerId) ? (
-              <LoadingButton
+              <Button
                 variant={"destructive"}
-                loading={isLinkPending || isUnlinkPending}
-                success={
-                  [linkVariables?.id, unlinkVariables?.id].includes(
-                    providerId as TBetterAuthProviders
-                  )
-                    ? isLinkSuccess || isUnlinkSuccess
-                    : undefined
-                }
                 onClick={() =>
                   unlinkMutate({
                     id: providerId as TBetterAuthProviders,
@@ -98,23 +80,15 @@ export const OAuthLinkButtons = () => {
                 }
               >
                 {t("settings.unlink")}
-              </LoadingButton>
+              </Button>
             ) : (
-              <LoadingButton
-                loading={isLinkPending || isUnlinkPending}
-                success={
-                  [linkVariables?.id, unlinkVariables?.id].includes(
-                    providerId as TBetterAuthProviders
-                  )
-                    ? isLinkSuccess || isUnlinkSuccess
-                    : undefined
-                }
+              <Button
                 onClick={() =>
                   linkMutate({ id: providerId as TBetterAuthProviders })
                 }
               >
                 {t("settings.link")}
-              </LoadingButton>
+              </Button>
             )}
           </CardContent>
         </Card>
