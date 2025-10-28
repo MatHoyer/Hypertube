@@ -34,14 +34,12 @@ export const ForgetPasswordForm = () => {
   });
 
   const { mutate, isPending, isSuccess } = useMutation({
-    mutationFn: (requestPasswordResetData: TFormSchema) =>
+    mutationFn: (data: TFormSchema) =>
       axiosFetch({
         method: "POST",
         url: getUrl("api-authentification-request-password-reset"),
         schemas: requestPasswordResetAuthentificationSchemas,
-        data: {
-          email: requestPasswordResetData.email,
-        },
+        data,
       }),
     onError: (e) => {
       toast.error(e.message);

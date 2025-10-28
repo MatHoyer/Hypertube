@@ -21,13 +21,13 @@ export const OAuthLinkButtons = () => {
   const linkedAccounts = accounts.map((account) => account.provider);
 
   const { mutate: linkMutate } = useMutation({
-    mutationFn: (provider: { id: string }) =>
+    mutationFn: (provider: { id: (typeof betterAuthProviders)[number] }) =>
       axiosFetch({
         method: "POST",
         url: getUrl("api-authentification-link"),
         schemas: linkProviderAuthentificationSchemas,
         data: {
-          providerId: provider.id as TBetterAuthProviders,
+          providerId: provider.id,
         },
       }),
     onSuccess: (data) => {
@@ -82,7 +82,11 @@ export const OAuthLinkButtons = () => {
                 {t("settings.unlink")}
               </Button>
             ) : (
-              <Button onClick={() => linkMutate({ id: providerId })}>
+              <Button
+                onClick={() =>
+                  linkMutate({ id: providerId as TBetterAuthProviders })
+                }
+              >
                 {t("settings.link")}
               </Button>
             )}

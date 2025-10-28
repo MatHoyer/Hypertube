@@ -36,15 +36,12 @@ export const SignInForm = () => {
   });
 
   const { mutate, isPending, isSuccess } = useMutation({
-    mutationFn: (signInData: TFormSchema) =>
+    mutationFn: (data: TFormSchema) =>
       axiosFetch({
         method: "POST",
         url: getUrl("api-authentification-signin"),
         schemas: signInAuthentificationSchemas,
-        data: {
-          username: signInData.username,
-          password: signInData.password,
-        },
+        data,
       }),
     onSuccess: () => {
       toast.success(t("sign.connexion"));

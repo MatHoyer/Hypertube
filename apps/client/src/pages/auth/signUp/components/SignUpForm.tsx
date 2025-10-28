@@ -43,14 +43,14 @@ export const SignUpForm = () => {
   });
 
   const { mutate, isPending, isSuccess } = useMutation({
-    mutationFn: (signUpData: TFormSchema) =>
+    mutationFn: (data: TFormSchema) =>
       axiosFetch({
         method: "POST",
         url: getUrl("api-authentification-signup"),
         schemas: signUpAuthentificationSchemas,
         data: {
-          ...signUpData,
-          name: signUpData.firstName + " " + signUpData.lastName,
+          ...data,
+          name: data.firstName + " " + data.lastName,
         },
       }),
     onSuccess: () => {

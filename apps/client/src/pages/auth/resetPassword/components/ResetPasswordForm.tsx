@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const formSchema = z.object({ password: z.string().min(8).max(50) });
+const formSchema = z.object({ newPassword: z.string().min(8).max(50) });
 type TFormSchema = z.infer<typeof formSchema>;
 
 export const ResetPasswordForm = () => {
@@ -30,18 +30,18 @@ export const ResetPasswordForm = () => {
   const form = useForm<TFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      password: "",
+      newPassword: "",
     },
   });
 
   const { mutate, isPending, isSuccess } = useMutation({
-    mutationFn: (resetPassword: TFormSchema) =>
+    mutationFn: (data: TFormSchema) =>
       axiosFetch({
         method: "POST",
         url: getUrl("api-authentification-reset-password"),
         schemas: resetPasswordAuthentificationSchemas,
         data: {
-          newPassword: resetPassword.password,
+          ...data,
           token,
         },
       }),
@@ -65,9 +65,11 @@ export const ResetPasswordForm = () => {
             <FieldLabel htmlFor="input-password">
               {t("sign.password")}
             </FieldLabel>
-            <InputPassword id="password" {...form.register("password")} />
+            <InputPassword id="password" {...form.register("newPassword")} />
             <FieldDescription>{t("sign.resetPasswordDesc")}</FieldDescription>
-            <FieldError>{form.formState.errors.password?.message}</FieldError>
+            <FieldError>
+              {form.formState.errors.newPassword?.message}
+            </FieldError>
           </Field>
           <Field>
             <LoadingButton

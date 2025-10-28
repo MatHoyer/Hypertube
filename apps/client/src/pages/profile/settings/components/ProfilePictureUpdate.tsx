@@ -19,7 +19,7 @@ export const ProfilePictureUpdate = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  const updateMutation = useMutation({
+  const { mutate: updateMutate } = useMutation({
     mutationFn: async (file: File | undefined) => {
       if (!file) return;
       const formData = new FormData();
@@ -102,7 +102,7 @@ export const ProfilePictureUpdate = () => {
         type="file"
         className="w-full"
         onChange={(event) => {
-          updateMutation.mutate(event.currentTarget.files?.[0]);
+          updateMutate(event.currentTarget.files?.[0]);
           event.currentTarget.value = "";
         }}
       />
