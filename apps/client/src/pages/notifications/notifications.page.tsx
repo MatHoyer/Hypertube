@@ -178,7 +178,13 @@ export const NotificationsPage = () => {
           {t("notifications.unreadNotifications")}
         </LayoutDescription>
         <LayoutActions>
-          <Button onClick={() => markAllAsRead()}>
+          <Button
+            onClick={() => markAllAsRead()}
+            disabled={stats?.totalUnreadNotifications === 0}
+            className={cn(
+              readStatus !== notificationReadStatuses.UNREAD && "invisible"
+            )}
+          >
             {t("notifications.markAllAsRead")}
           </Button>
         </LayoutActions>
