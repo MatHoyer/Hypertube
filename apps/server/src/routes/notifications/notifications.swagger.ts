@@ -1,6 +1,7 @@
 import {
   getNotificationsSchemas,
   getUrl,
+  patchNotificationSchemas,
   patchNotificationsSchemas,
 } from "@hypertube/libs";
 
@@ -8,7 +9,7 @@ const notificationsPathParam = {
   in: "path",
   name: "notificationId",
   required: true,
-  schema: patchNotificationsSchemas.urlParams.shape.notificationId,
+  schema: patchNotificationSchemas.urlParams.shape.notificationId,
 };
 
 export const notificationsSwagger = {
@@ -43,6 +44,31 @@ export const notificationsSwagger = {
           content: {
             "application/json": {
               schema: getNotificationsSchemas.response,
+            },
+          },
+        },
+      },
+    },
+    patch: {
+      summary: "Update notifications",
+      tags: ["Notifications"],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: patchNotificationsSchemas.requirements,
+          },
+          example: {
+            read: false,
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Notifications updated successfully",
+          content: {
+            "application/json": {
+              schema: patchNotificationsSchemas.response,
             },
           },
         },

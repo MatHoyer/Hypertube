@@ -152,7 +152,13 @@
       "unread": "Unread"
     },
     "markAllAsRead": "Mark all as read",
-    "markAllAsUnread": "Mark all as unread"
+    "markedAsRead": "Notification marked as read",
+    "markedAllAsRead": "All notifications marked as read",
+    "unreadNotifications": "unread notifications",
+    "test": {
+      "title": "Test",
+      "message": "Test message"
+    }
   },
   "navbar": {
     "placeholder": "Search for a movie",

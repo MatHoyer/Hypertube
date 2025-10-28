@@ -1,9 +1,11 @@
 import {
   getNotificationsSchemas,
   getNotificationsSSESchemas,
+  getNotificationsStatsSchemas,
   hypertubeLogger,
   notificationReadStatuses,
   TGetNotificationsSchemas,
+  TPatchNotificationSchemas,
   TPatchNotificationsSchemas,
 } from "@hypertube/libs";
 import { EventsSubscriber, prisma } from "@hypertube/server-core";
@@ -50,6 +52,22 @@ export const getNotifications = async (
       totalResults: notifications.length,
     })
   );
+};
+
+export const patchNotifications = async (
+  c: Context<
+    TIsLogged & TBodyParser<TPatchNotificationsSchemas["requirements"]>
+  >
+) => {
+  const { read } = c.get("validatedBody");
+  const { id } = c.get("user");
+
+  await prisma.notification.updateMany({
+    where: { userId: id, read: false },
+    data: { read },
+  });
+
+  return c.json({ message: "Notifications updated successfully" }, 200);
 };
 
 export const getNotificationsSSE = async (c: Context<TIsLogged>) => {
@@ -102,11 +120,22 @@ export const getNotificationsSSE = async (c: Context<TIsLogged>) => {
   });
 };
 
+export const getNotificationsStats = async (c: Context<TIsLogged>) => {
+  const { id } = c.get("user");
+
+  const totalUnreadNotifications = await prisma.notification.count({
+    where: { userId: id, read: false },
+  });
+  return c.json(
+    getNotificationsStatsSchemas.response.parse({ totalUnreadNotifications })
+  );
+};
+
 export const patchNotification = async (
   c: Context<
     TIsLogged &
-      TUrlParamsParser<TPatchNotificationsSchemas["urlParams"]> &
-      TBodyParser<TPatchNotificationsSchemas["requirements"]>
+      TUrlParamsParser<TPatchNotificationSchemas["urlParams"]> &
+      TBodyParser<TPatchNotificationSchemas["requirements"]>
   >
 ) => {
   const { notificationId } = c.get("validatedUrlParams");

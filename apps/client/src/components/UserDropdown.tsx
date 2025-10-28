@@ -9,9 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { NotificationBell } from "@/pages/notifications/components/notification-bell";
 import { getUrl, signOutAuthentificationSchemas } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bell, File, LogOut, Settings, User } from "lucide-react";
+import { File, LogOut, Settings, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -53,7 +54,7 @@ export const UserDropdown = () => {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to={getUrl("client-notifications")}>
-              <Bell /> {t("navbar.notifications")}
+              <NotificationBell /> {t("navbar.notifications")}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

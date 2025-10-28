@@ -1,5 +1,6 @@
 import {
   getNotificationsSchemas,
+  patchNotificationSchemas,
   patchNotificationsSchemas,
 } from "@hypertube/libs";
 import { Hono } from "hono";
@@ -10,6 +11,9 @@ import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
   getNotifications,
   getNotificationsSSE,
+  getNotificationsStats,
+  patchNotification,
+  patchNotifications,
 } from "./notifications.controller";
 
 const notificationsRouter = new Hono();
@@ -21,13 +25,23 @@ notificationsRouter.get(
   getNotifications
 );
 
+notificationsRouter.patch(
+  "/",
+  isLogged,
+  bodyParser(patchNotificationsSchemas.requirements),
+  patchNotifications
+);
+
 notificationsRouter.get("/sse", isLogged, getNotificationsSSE);
+
+notificationsRouter.get("/stats", isLogged, getNotificationsStats);
 
 notificationsRouter.patch(
   "/:notificationId",
   isLogged,
-  urlParamsParser(patchNotificationsSchemas.urlParams),
-  bodyParser(patchNotificationsSchemas.requirements)
+  urlParamsParser(patchNotificationSchemas.urlParams),
+  bodyParser(patchNotificationsSchemas.requirements),
+  patchNotification
 );
 
 export default notificationsRouter;
