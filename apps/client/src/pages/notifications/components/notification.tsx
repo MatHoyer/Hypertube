@@ -1,15 +1,42 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { cn, getNearDateWithLocale } from "@/lib/utils";
-import type { TNotificationSchema } from "@hypertube/libs";
+import {
+  getUrl,
+  patchNotificationsSchemas,
+  type TNotificationSchema,
+} from "@hypertube/libs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCheck, CheckCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
   notification,
 }) => {
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
+
+  const { mutate: markNotificationAsRead } = useMutation({
+    mutationFn: async () => {
+      await axiosFetch({
+        method: "PATCH",
+        url: getUrl("api-notifications", { notificationId: notification.id }),
+        schemas: patchNotificationsSchemas,
+        data: {
+          read: true,
+        },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
+      toast.success(t("notifications.markedAsRead"));
+    },
+  });
 
   return (
     <Card
@@ -41,7 +68,9 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
                 variant="outline"
                 className="group-hover:opacity-100 opacity-0"
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
+                  markNotificationAsRead();
                 }}
               >
                 <CheckCheck />

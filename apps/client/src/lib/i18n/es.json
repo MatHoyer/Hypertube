@@ -123,7 +123,13 @@
       "unread": ""
     },
     "markAllAsRead": "",
-    "markAllAsUnread": ""
+    "markedAsRead": "",
+    "markedAllAsRead": "",
+    "unreadNotifications": "",
+    "test": {
+      "title": "",
+      "message": ""
+    }
   },
   "navbar": {
     "placeholder": "Buscar una película",

@@ -1,10 +1,13 @@
 import { UniqueFilter } from "@/components/animated/uniqueFilter";
 import { AppLoader } from "@/components/ui/app-loader";
+import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
 import { Typography } from "@/components/ui/typography";
 import {
   Layout,
+  LayoutActions,
   LayoutContent,
+  LayoutDescription,
   LayoutHeader,
   LayoutTitle,
 } from "@/layouts/PageLayout";
@@ -12,15 +15,24 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { cn } from "@/lib/utils";
 import {
   getNotificationsSchemas,
+  getNotificationsStatsSchemas,
   getUrl,
   notificationReadStatuses,
+  patchNotificationsSchemas,
 } from "@hypertube/libs";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { ChevronUpCircleIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { Notification } from "./components/notification";
+import { NotificationBell } from "./components/notification-bell";
 
 export const NotificationsPage = () => {
   const { t } = useTranslation();
@@ -31,6 +43,37 @@ export const NotificationsPage = () => {
   const [readStatus, setReadStatus] = useState<string>(
     notificationReadStatuses.UNREAD
   );
+  const queryClient = useQueryClient();
+
+  const { mutate: markAllAsRead } = useMutation({
+    mutationFn: async () => {
+      await axiosFetch({
+        method: "PATCH",
+        url: getUrl("api-notifications"),
+        schemas: patchNotificationsSchemas,
+        data: {
+          read: true,
+        },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
+      toast.success(t("notifications.markedAllAsRead"));
+    },
+  });
+
+  const { data: stats } = useQuery({
+    queryKey: ["notifications", "stats"],
+    queryFn: async () => {
+      return axiosFetch({
+        method: "GET",
+        url: getUrl("api-notifications-stats"),
+        schemas: getNotificationsStatsSchemas,
+      });
+    },
+  });
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -126,7 +169,19 @@ export const NotificationsPage = () => {
       </div>
       <LayoutHeader>
         <div ref={topRef} />
-        <LayoutTitle>{t("notifications.title")}</LayoutTitle>
+        <LayoutTitle className="flex items-center gap-2">
+          {t("notifications.title")}
+          <NotificationBell size={42} />
+        </LayoutTitle>
+        <LayoutDescription>
+          {stats?.totalUnreadNotifications}{" "}
+          {t("notifications.unreadNotifications")}
+        </LayoutDescription>
+        <LayoutActions>
+          <Button onClick={() => markAllAsRead()}>
+            {t("notifications.markAllAsRead")}
+          </Button>
+        </LayoutActions>
       </LayoutHeader>
       <LayoutContent>
         <div className="flex flex-col gap-4">

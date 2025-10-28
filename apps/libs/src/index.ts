@@ -101,10 +101,15 @@ export type {
 export {
   getNotificationsSchemas,
   getNotificationsSSESchemas,
+  getNotificationsStatsSchemas,
+  patchNotificationSchemas,
   patchNotificationsSchemas,
 } from "./schemas/api/notifications.schema.js";
 export type {
   TGetNotificationsSchemas,
+  TGetNotificationsSSESchemas,
+  TGetNotificationsStatsSchemas,
+  TPatchNotificationSchemas,
   TPatchNotificationsSchemas,
 } from "./schemas/api/notifications.schema.js";
 

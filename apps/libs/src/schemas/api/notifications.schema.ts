@@ -15,7 +15,6 @@ export const getNotificationsSchemas = {
   }),
   response: z.object({
     notifications: z.array(notificationSchema),
-    totalUnreadNotifications: z.number().int(),
     page: z.number(),
     totalPages: z.number(),
     totalResults: z.number(),
@@ -25,6 +24,20 @@ export const getNotificationsSchemas = {
 export type TGetNotificationsSchemas = {
   searchParams: z.infer<typeof getNotificationsSchemas.searchParams>;
   response: z.infer<typeof getNotificationsSchemas.response>;
+};
+
+export const patchNotificationsSchemas = {
+  requirements: z.object({
+    read: z.boolean(),
+  }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+
+export type TPatchNotificationsSchemas = {
+  requirements: z.infer<typeof patchNotificationsSchemas.requirements>;
+  response: z.infer<typeof patchNotificationsSchemas.response>;
 };
 
 export const getNotificationsSSESchemas = {
@@ -39,7 +52,17 @@ export type TGetNotificationsSSESchemas = {
   response: z.infer<typeof getNotificationsSSESchemas.response>;
 };
 
-export const patchNotificationsSchemas = {
+export const getNotificationsStatsSchemas = {
+  response: z.object({
+    totalUnreadNotifications: z.number().int(),
+  }),
+};
+
+export type TGetNotificationsStatsSchemas = {
+  response: z.infer<typeof getNotificationsStatsSchemas.response>;
+};
+
+export const patchNotificationSchemas = {
   urlParams: z.object({ notificationId: notificationSchema.shape.id }),
   requirements: z.object({
     read: z.boolean(),
@@ -49,8 +72,8 @@ export const patchNotificationsSchemas = {
   }),
 };
 
-export type TPatchNotificationsSchemas = {
-  urlParams: z.infer<typeof patchNotificationsSchemas.urlParams>;
-  requirements: z.infer<typeof patchNotificationsSchemas.requirements>;
-  response: z.infer<typeof patchNotificationsSchemas.response>;
+export type TPatchNotificationSchemas = {
+  urlParams: z.infer<typeof patchNotificationSchemas.urlParams>;
+  requirements: z.infer<typeof patchNotificationSchemas.requirements>;
+  response: z.infer<typeof patchNotificationSchemas.response>;
 };

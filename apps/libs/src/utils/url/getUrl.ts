@@ -53,6 +53,7 @@ export type TApiRouteDataRequirements = {
   "api-notifications": {
     notificationId?: string | "{notificationId}";
   };
+  "api-notifications-stats": undefined;
 
   // sse routes
   "sse-movies": {
@@ -150,6 +151,7 @@ const routes: {
 
   "api-notifications": ({ notificationId }) =>
     `/api/notifications` + (notificationId ? `/${notificationId}` : ""),
+  "api-notifications-stats": () => "/api/notifications/stats",
 
   "sse-movies": ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
 
