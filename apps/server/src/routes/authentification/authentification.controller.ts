@@ -93,9 +93,9 @@ export const signInSocial = async (
       },
       headers: c.req.raw.headers,
     });
-    return c.json({ url }, 200);
+    return c.json({ url, message: "OK" }, 200);
   } catch (e) {
-    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
+    return c.json({ url: "", message: betterAuthErrorTranslation(e) }, 400);
   }
 };
 
@@ -136,7 +136,7 @@ export const resetPassword = async (
 export const signOut = async (c: Context<TIsLogged>) => {
   try {
     await auth.api.signOut({ headers: c.req.raw.headers });
-    return c.json({ data: "OK" }, 200);
+    return c.json({ message: "OK" }, 200);
   } catch (e) {
     return c.json({ message: betterAuthErrorTranslation(e) }, 400);
   }
@@ -200,9 +200,9 @@ export const linkProvider = async (
       },
       headers: c.req.raw.headers,
     });
-    return c.json({ url }, 200);
+    return c.json({ url, message: "OK" }, 200);
   } catch (e) {
-    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
+    return c.json({ url: "", message: betterAuthErrorTranslation(e) }, 400);
   }
 };
 
@@ -219,7 +219,7 @@ export const unlinkProvider = async (
       body: { providerId },
       headers: c.req.raw.headers,
     });
-    return c.json({ data: "OK" }, 200);
+    return c.json({ message: "OK" }, 200);
   } catch (e) {
     return c.json({ message: betterAuthErrorTranslation(e) }, 400);
   }

@@ -115,7 +115,7 @@ export const patchUser = async (
     where: { id: userId },
     data: body,
   });
-  return c.json({ data: "OK" }, 200);
+  return c.json({ message: "OK" }, 200);
 };
 
 export const getAccounts = async (c: Context<TIsLogged>) => {
@@ -123,9 +123,9 @@ export const getAccounts = async (c: Context<TIsLogged>) => {
     const accounts = await auth.api.listUserAccounts({
       headers: c.req.raw.headers,
     });
-    return c.json({ data: accounts }, 200);
+    return c.json({ data: accounts, message: "OK" }, 200);
   } catch (e) {
-    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
+    return c.json({ data: {}, message: betterAuthErrorTranslation(e) }, 400);
   }
 };
 
@@ -134,9 +134,9 @@ export const getSession = async (c: Context<TIsLogged>) => {
     const session = await auth.api.getSession({
       headers: c.req.raw.headers,
     });
-    if (!session) return c.json({ message: "No session found" }, 400);
-    return c.json({ data: session }, 200);
+    if (!session) return c.json({ data: {}, message: "No session found" }, 400);
+    return c.json({ data: session, message: "OK" }, 200);
   } catch (e) {
-    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
+    return c.json({ data: {}, message: betterAuthErrorTranslation(e) }, 400);
   }
 };

@@ -39,8 +39,8 @@ export type TSignInAuthentificationSchemas = {
 export const signInSocialAuthentificationSchemas = {
   requirements: z.object({ providerId: z.enum(betterAuthProviders) }),
   response: z.object({
-    url: z.url().optional(),
-    message: z.string().optional(),
+    url: z.url(),
+    message: z.string(),
   }),
 };
 
@@ -54,7 +54,7 @@ export type TSignInSocialAuthentificationSchemas = {
 export const requestPasswordResetAuthentificationSchemas = {
   requirements: z.object({ email: userSchema.shape.email }),
   response: z.object({
-    message: z.string().optional(),
+    message: z.string(),
   }),
 };
 
@@ -73,7 +73,7 @@ export const resetPasswordAuthentificationSchemas = {
     token: z.string(),
   }),
   response: z.object({
-    message: z.string().optional(),
+    message: z.string(),
   }),
 };
 
@@ -86,8 +86,7 @@ export type TResetPasswordAuthentificationSchemas = {
 
 export const signOutAuthentificationSchemas = {
   response: z.object({
-    data: z.string().optional(),
-    message: z.string().optional(),
+    message: z.string(),
   }),
 };
 
@@ -112,8 +111,8 @@ export type TEmailVerificationAuthentificationSchemas = {
 export const linkProviderAuthentificationSchemas = {
   requirements: z.object({ providerId: z.enum(betterAuthProviders) }),
   response: z.object({
-    url: z.url().optional(),
-    message: z.string().optional(),
+    url: z.url(),
+    message: z.string(),
   }),
 };
 
@@ -127,8 +126,7 @@ export type TLinkProviderAuthentificationSchemas = {
 export const unlinkProviderAuthentificationSchemas = {
   urlParams: z.object({ providerId: z.enum(betterAuthProviders) }),
   response: z.object({
-    data: z.string().optional(),
-    message: z.string().optional(),
+    message: z.string(),
   }),
 };
 

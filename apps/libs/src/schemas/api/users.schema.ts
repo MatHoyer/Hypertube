@@ -26,8 +26,7 @@ export const patchUsersSchemas = {
       error: "old Password need password",
     }),
   response: z.object({
-    data: z.string().optional(),
-    message: z.string().optional(),
+    message: z.string(),
   }),
 };
 
@@ -39,8 +38,8 @@ export type TPatchUsersSchemas = {
 
 export const getAccountsUsersSchemas = {
   response: z.object({
-    data: accountsSchema.optional(),
-    message: z.string().optional(),
+    data: accountsSchema,
+    message: z.string(),
   }),
 };
 
@@ -50,13 +49,11 @@ export type TGetAccountsUsersSchemas = {
 
 export const getSessionUsersSchemas = {
   response: z.object({
-    data: z
-      .object({
-        session: sessionSchema,
-        user: userSchema,
-      })
-      .optional(),
-    message: z.string().optional(),
+    data: z.object({
+      session: sessionSchema,
+      user: userSchema,
+    }),
+    message: z.string(),
   }),
 };
 
