@@ -18,6 +18,7 @@ import { v5 } from "uuid";
 import z from "zod";
 import { mailTemplate } from "../emails/import-template";
 import { sendVerificationEmail } from "../emails/sendEmailVerification";
+import { betterAuthErrorTranslation } from "./better-auth/constants";
 import { sendEmail } from "./resend";
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
@@ -77,6 +78,29 @@ const updateEmail = (newEmail: string) => {
     throw new APIError("BAD_REQUEST", {
       code: "COULDNT_UPDATE_YOUR_EMAIL",
     });
+  }
+};
+
+const handleBetterAuthError = (
+  ctx: MiddlewareContext<
+    MiddlewareOptions,
+    AuthContext & {
+      returned?: unknown;
+      responseHeaders?: Headers;
+    }
+  >
+) => {
+  try {
+    throw new APIError("BAD_REQUEST", {
+      code: ctx.query ? (ctx.query.error as string).toUpperCase() : undefined,
+    });
+  } catch (e) {
+    throw ctx.redirect(
+      getUrl("client-error", {
+        withUrl: "client",
+        searchParams: { error: betterAuthErrorTranslation(e) },
+      })
+    );
   }
 };
 
@@ -159,6 +183,8 @@ export const auth = betterAuth({
           return updateUser(ctx);
         case "/change-email":
           return updateEmail(ctx.body.newEmail);
+        case "/error":
+          return handleBetterAuthError(ctx);
       }
     }),
   },

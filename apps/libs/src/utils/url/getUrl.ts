@@ -15,6 +15,7 @@ export type TClientRouteDataRequirements = {
   "client-movie": {
     tmdbId: TMovieSchema["tmdbId"] | ":tmdbId";
   };
+  "client-error": undefined;
 };
 
 export type TApiRouteDataRequirements = {
@@ -94,6 +95,7 @@ const routes: {
   "client-reset-password": () => "/reset-password",
   "client-settings": () => "/settings",
   "client-movie": ({ tmdbId }) => `/movie/${tmdbId}`,
+  "client-error": () => "/error",
 
   // API routes
   "api-swagger": ({ mode }) => (mode ? `/api/swagger/${mode}` : "/api/swagger"),

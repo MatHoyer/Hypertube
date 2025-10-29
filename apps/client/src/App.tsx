@@ -5,6 +5,7 @@ import { getUrl } from "@hypertube/libs";
 import { Route, Routes } from "react-router-dom";
 import { ForgetPasswordPage } from "./pages/auth/forgetPassword/ForgetPasswordPage";
 import { ResetPasswordPage } from "./pages/auth/resetPassword/ResetPasswordPage";
+import { ErrorPage } from "./pages/error/ErrorPage";
 import { HomePage } from "./pages/home/home.page";
 import MoviePage from "./pages/movie/movie.page";
 import { MoviePageParamsSchema } from "./pages/movie/schemas/urlParams.schema";
@@ -21,6 +22,7 @@ const App = () => {
       <Route element={<BaseLayoutRoute />}>
         {/* Default routes */}
         <Route index path="/" element={<HomePage />} />
+        <Route index path="/error" element={<ErrorPage />} />
         <Route path="/demo" element={<PlaygroundPage />} />
 
         {/* Protected url routes */}
