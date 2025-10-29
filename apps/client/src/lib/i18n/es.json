@@ -49,7 +49,8 @@
     "missAccount": "¿No tienes cuenta?",
     "gotAccount": "¿Ya tienes cuenta?",
     "connexion": "",
-    "emailVerification": ""
+    "emailVerification": "",
+    "resetPasswordEmail": ""
   },
   "settings": {
     "displayName": "",

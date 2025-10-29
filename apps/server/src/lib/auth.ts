@@ -13,6 +13,7 @@ import {
   getSessionFromCtx,
 } from "better-auth/api";
 import { genericOAuth, username } from "better-auth/plugins";
+import { addMinutes, isBefore } from "date-fns";
 import i18next from "i18next";
 import { v5 } from "uuid";
 import z from "zod";
@@ -113,6 +114,13 @@ export const auth = betterAuth({
     minPasswordLength: 8,
     maxPasswordLength: 50,
     sendResetPassword: async ({ user, url }) => {
+      const userInfo = user as TUserSchema;
+      if (isBefore(newUTCDate(), userInfo.passwordCooldown)) {
+        throw new APIError("TOO_MANY_REQUESTS", {
+          code: "TOO_MANY_EMAILS_SENT",
+        });
+      }
+
       const tokenUrl = new URL(url);
 
       const token = tokenUrl.pathname.split("/").pop();
@@ -128,8 +136,15 @@ export const auth = betterAuth({
         searchParams: { token },
       });
 
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          passwordCooldown: addMinutes(newUTCDate(), 5),
+        },
+      });
+
       await sendEmail({
-        to: user.email,
+        to: userInfo.email,
         subject: i18next.t("email.password.resetPassword"),
         html: mailTemplate({
           title: i18next.t("email.password.resetPassword"),
@@ -159,6 +174,11 @@ export const auth = betterAuth({
       lastName: { type: "string" },
       imageId: { type: "string", input: false },
       emailCooldown: {
+        type: "date",
+        input: false,
+        defaultValue: newUTCDate(),
+      },
+      passwordCooldown: {
         type: "date",
         input: false,
         defaultValue: newUTCDate(),

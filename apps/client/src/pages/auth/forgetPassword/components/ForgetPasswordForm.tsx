@@ -41,6 +41,9 @@ export const ForgetPasswordForm = () => {
         schemas: requestPasswordResetAuthentificationSchemas,
         data,
       }),
+    onSuccess: () => {
+      toast.success(t("sign.resetPasswordEmail"));
+    },
     onError: (e) => {
       toast.error(e.message);
     },

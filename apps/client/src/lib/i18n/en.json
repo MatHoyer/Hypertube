@@ -49,7 +49,8 @@
     "missAccount": "Don't have an account?",
     "gotAccount": "Already have an account?",
     "connexion": "You are now connected !",
-    "emailVerification": "Sending verification by email !"
+    "emailVerification": "Sending verification by email !",
+    "resetPasswordEmail": "Password reset link sent by email !"
   },
   "settings": {
     "displayName": "Display name",

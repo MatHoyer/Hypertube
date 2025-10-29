@@ -49,7 +49,8 @@
     "missAccount": "Vous n'avez pas de compte ?",
     "gotAccount": "Vous avez déjà un compte ?",
     "connexion": "Vous êtes maintenant connecté !",
-    "emailVerification": "Envoi de vérification par email !"
+    "emailVerification": "Envoi de vérification par email !",
+    "resetPasswordEmail": "Lien de réinitialisation du mot de passe envoyé par email !"
   },
   "settings": {
     "displayName": "Nom d'affichage",
