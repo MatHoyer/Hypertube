@@ -91,9 +91,8 @@ export const patchUser = async (
     } catch (e) {
       if (e instanceof APIError) {
         return c.json({ message: betterAuthErrorTranslation(e) }, 429);
-      } else {
-        return c.json({ message: i18next.t("httpCode.400") }, 400);
       }
+      return c.json({ message: i18next.t("httpCode.400") }, 400);
     }
 
     delete body.email;
