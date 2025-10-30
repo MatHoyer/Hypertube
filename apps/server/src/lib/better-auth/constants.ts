@@ -46,9 +46,11 @@ export const errorCodes = keyErrorCodes.map(
   (code) => `betterAuthError.${code}` as const
 );
 
-export const betterAuthErrorTranslation = (error: unknown): string => {
+export const betterAuthErrorTranslation = (
+  error: unknown,
+  code: string = "UNEXPECTED_ERROR"
+): string => {
   try {
-    let code = "UNEXPECTED_ERROR";
     if (error instanceof APIError && error.body?.code) code = error.body.code;
 
     if (

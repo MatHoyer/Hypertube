@@ -91,18 +91,17 @@ const handleBetterAuthError = (
     }
   >
 ) => {
-  try {
-    throw new APIError("BAD_REQUEST", {
-      code: ctx.query ? (ctx.query.error as string).toUpperCase() : undefined,
-    });
-  } catch (e) {
-    throw ctx.redirect(
-      getUrl("client-error", {
-        withUrl: "client",
-        searchParams: { error: betterAuthErrorTranslation(e) },
-      })
-    );
-  }
+  const errorCode = ctx.query
+    ? (ctx.query.error as string).toUpperCase()
+    : "UNEXPECTED_ERROR";
+  throw ctx.redirect(
+    getUrl("client-error", {
+      withUrl: "client",
+      searchParams: {
+        error: betterAuthErrorTranslation(null, errorCode),
+      },
+    })
+  );
 };
 
 export const auth = betterAuth({
