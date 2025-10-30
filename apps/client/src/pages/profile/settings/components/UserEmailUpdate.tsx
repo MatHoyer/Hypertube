@@ -57,7 +57,9 @@ export const UserEmailUpdate = () => {
   return (
     <form
       className="size-full"
-      onSubmit={form.handleSubmit((data) => mutate(data))}
+      onSubmit={form.handleSubmit((data) => {
+        if (form.formState.dirtyFields.email) return mutate(data);
+      })}
     >
       <Card>
         <CardHeader>
