@@ -8,22 +8,16 @@ export const patchUsersSchemas = {
   requirements: z
     .object({
       ...userSchema.pick({ email: true, image: true, imageId: true }).shape,
-      name: userSchema.shape.name.min(1, { error: "min 1 character" }),
-      username: userSchema.shape.username
-        .unwrap()
-        .min(1, { error: "min 1 character" }),
-      firstName: userSchema.shape.firstName.unwrap().min(1, {
-        error: "min 1 character",
-      }),
-      lastName: userSchema.shape.lastName
-        .unwrap()
-        .min(1, { error: "min 1 character" }),
+      name: userSchema.shape.name.min(1),
+      username: userSchema.shape.username.unwrap().min(1),
+      firstName: userSchema.shape.firstName.unwrap().min(1),
+      lastName: userSchema.shape.lastName.unwrap().min(1),
       oldPassword: z.string(),
       password: z.string(),
     })
     .partial()
     .refine((data) => (data.oldPassword ? data.password : true), {
-      error: "old Password need password",
+      path: ["passwordOldNeedNew"],
     }),
   response: z.object({
     message: z.string(),
