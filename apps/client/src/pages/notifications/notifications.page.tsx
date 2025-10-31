@@ -3,6 +3,7 @@ import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
 import { Typography } from "@/components/ui/typography";
+import { useNotificationsStats } from "@/hooks/use-notifications-stats";
 import {
   Layout,
   LayoutActions,
@@ -15,7 +16,6 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { cn } from "@/lib/utils";
 import {
   getNotificationsSchemas,
-  getNotificationsStatsSchemas,
   getUrl,
   notificationReadStatuses,
   patchNotificationsSchemas,
@@ -23,7 +23,6 @@ import {
 import {
   useInfiniteQuery,
   useMutation,
-  useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
 import { ChevronUpCircleIcon } from "lucide-react";
@@ -64,16 +63,7 @@ export const NotificationsPage = () => {
     },
   });
 
-  const { data: stats } = useQuery({
-    queryKey: ["notifications", "stats"],
-    queryFn: async () => {
-      return axiosFetch({
-        method: "GET",
-        url: getUrl("api-notifications-stats"),
-        schemas: getNotificationsStatsSchemas,
-      });
-    },
-  });
+  const { stats, isUnreadNotifications } = useNotificationsStats();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -174,13 +164,13 @@ export const NotificationsPage = () => {
           <NotificationBell size={42} />
         </LayoutTitle>
         <LayoutDescription>
-          {stats?.totalUnreadNotifications}{" "}
+          {stats?.totalUnreadNotifications ?? 0}{" "}
           {t("notifications.unreadNotifications")}
         </LayoutDescription>
         <LayoutActions>
           <Button
             onClick={() => markAllAsRead()}
-            disabled={stats?.totalUnreadNotifications === 0}
+            disabled={!isUnreadNotifications}
             className={cn(
               readStatus !== notificationReadStatuses.UNREAD && "invisible"
             )}
