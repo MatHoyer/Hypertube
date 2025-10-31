@@ -2,7 +2,6 @@ import { UniqueFilter } from "@/components/animated/uniqueFilter";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
-import { Typography } from "@/components/ui/typography";
 import { useNotificationsStats } from "@/hooks/use-notifications-stats";
 import {
   Layout,
@@ -32,6 +31,7 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Notification } from "./components/notification";
 import { NotificationBell } from "./components/notification-bell";
+import { NotificationsEmpty } from "./components/notifications-empty";
 
 export const NotificationsPage = () => {
   const { t } = useTranslation();
@@ -199,11 +199,7 @@ export const NotificationsPage = () => {
               </div>
             ))
           ) : (
-            <div className="flex justify-center">
-              <Typography variant="muted">
-                {t("notifications.noNotifications")}
-              </Typography>
-            </div>
+            <NotificationsEmpty />
           )}
         </div>
         <div className="flex justify-center" ref={bottomRef}>
