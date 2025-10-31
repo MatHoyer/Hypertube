@@ -118,5 +118,10 @@
     "account": "Mi cuenta",
     "profile": "Perfil",
     "settings": "Configuración"
+  },
+  "error": {
+    "UNEXPECTED_ERROR": "",
+    "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "",
+    "OAUTH_CODE_VERIFICATION_FAILED": ""
   }
 }

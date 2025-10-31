@@ -40,6 +40,7 @@ const keyErrorCodes = [
   "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER",
   "USER_ALREADY_HAS_A_PASSWORD",
   "TOO_MANY_EMAILS_SENT",
+  "OAUTH_CODE_VERIFICATION_FAILED",
 ] as const;
 
 export const errorCodes = keyErrorCodes.map(

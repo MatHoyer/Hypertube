@@ -66,6 +66,7 @@
     "FAILED_TO_UPDATE_PASSWORD": "Échec de la mise à jour du mot de passe",
     "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "Le compte est déjà associé à un utilisateur différent.",
     "USER_ALREADY_HAS_A_PASSWORD": "L'utilisateur a déjà un mot de passe",
-    "TOO_MANY_EMAILS_SENT": "Trop d'e-mails envoyés. Réessayez plus tard."
+    "TOO_MANY_EMAILS_SENT": "Trop d'e-mails envoyés. Réessayez plus tard.",
+    "OAUTH_CODE_VERIFICATION_FAILED": "La vérification du code OAuth a échoué."
   }
 }

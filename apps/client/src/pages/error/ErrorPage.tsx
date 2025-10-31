@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { Layout, LayoutContent } from "@/layouts/PageLayout";
+import type { keyErrorCodes } from "@/lib/better-auth/constants";
 import { getUrl } from "@hypertube/libs";
 import { TriangleAlert } from "lucide-react";
 import { useQueryState } from "nuqs";
@@ -19,7 +20,9 @@ export const ErrorPage = () => {
           <Card className="p-10 items-center text-center bg-primary/60">
             <TriangleAlert className="text-accent-foreground" size={100} />
             <Typography variant="h1">{t("global.error")}</Typography>
-            <Typography variant="h3">{error}</Typography>
+            <Typography variant="h3">
+              {t(`error.${error as (typeof keyErrorCodes)[number]}`)}
+            </Typography>
             <Button
               variant={"secondary"}
               onClick={() => navigate(getUrl("client-home"))}
