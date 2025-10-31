@@ -154,11 +154,7 @@
     "markAllAsRead": "Marquer toutes comme lues",
     "markedAsRead": "Notification marquée comme lue",
     "markedAllAsRead": "Toutes les notifications marquées comme lues",
-    "unreadNotifications": "notifications non lues",
-    "test": {
-      "title": "Test",
-      "message": "Message de test"
-    }
+    "unreadNotifications": "notifications non lues"
   },
   "navbar": {
     "placeholder": "Rechercher un film",

@@ -68,5 +68,11 @@
     "USER_ALREADY_HAS_A_PASSWORD": "L'utilisateur a déjà un mot de passe",
     "TOO_MANY_EMAILS_SENT": "Trop d'e-mails envoyés. Réessayez plus tard.",
     "OAUTH_CODE_VERIFICATION_FAILED": "La vérification du code OAuth a échoué."
+  },
+  "notifications": {
+    "test": {
+      "title": "Test fr",
+      "message": "Message de test"
+    }
   }
 }

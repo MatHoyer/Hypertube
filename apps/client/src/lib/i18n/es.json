@@ -154,11 +154,7 @@
     "markAllAsRead": "",
     "markedAsRead": "",
     "markedAllAsRead": "",
-    "unreadNotifications": "",
-    "test": {
-      "title": "",
-      "message": ""
-    }
+    "unreadNotifications": ""
   },
   "navbar": {
     "placeholder": "Buscar una película",

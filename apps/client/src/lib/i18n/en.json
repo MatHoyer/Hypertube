@@ -154,11 +154,7 @@
     "markAllAsRead": "Mark all as read",
     "markedAsRead": "Notification marked as read",
     "markedAllAsRead": "All notifications marked as read",
-    "unreadNotifications": "unread notifications",
-    "test": {
-      "title": "Test",
-      "message": "Test message"
-    }
+    "unreadNotifications": "unread notifications"
   },
   "navbar": {
     "placeholder": "Search for a movie",
