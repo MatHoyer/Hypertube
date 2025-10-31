@@ -157,16 +157,20 @@ export const NotificationsPage = () => {
       >
         <ChevronUpCircleIcon size={50} />
       </div>
-      <LayoutHeader>
+      <LayoutHeader className="mb-6">
         <div ref={topRef} />
-        <LayoutTitle className="flex items-center gap-2">
-          {t("notifications.title")}
-          <NotificationBell size={42} />
-        </LayoutTitle>
-        <LayoutDescription>
-          {stats?.totalUnreadNotifications ?? 0}{" "}
-          {t("notifications.unreadNotifications")}
-        </LayoutDescription>
+        <div className="flex items-center gap-2">
+          <NotificationBell size="lg" />
+          <div className="flex flex-col gap-2">
+            <LayoutTitle className="flex items-center gap-2">
+              {t("notifications.title")}
+            </LayoutTitle>
+            <LayoutDescription>
+              {stats?.totalUnreadNotifications ?? 0}{" "}
+              {t("notifications.unreadNotifications")}
+            </LayoutDescription>
+          </div>
+        </div>
         <LayoutActions>
           <Button
             onClick={() => markAllAsRead()}
