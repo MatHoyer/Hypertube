@@ -11,8 +11,7 @@
     "skipLibCheck": true,
     "types": ["node"],
     "paths": {
-      "@hypertube/libs": ["../libs/src"],
-      "@hypertube/server-core": ["../server-core/src"]
+      "@hypertube/libs": ["../libs/src"]
     }
   },
   "include": ["src"]
