@@ -1,7 +1,7 @@
 import { TUserSchema } from "@hypertube/libs";
 import { prisma } from "../prisma.js";
 import { EventsPublisher } from "../redis/EventsPubSub.js";
-import { TNotification } from "./notifications.js";
+import type { TNotification } from "./notifications.js";
 
 export const notificationsPayloads: Record<
   TNotification,

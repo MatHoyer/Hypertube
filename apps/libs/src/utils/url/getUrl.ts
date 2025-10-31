@@ -64,6 +64,7 @@ export type TApiRouteDataRequirements = {
   "sse-movies": {
     tmdbId: "{tmdbId}" | number;
   };
+  "sse-notifications": undefined;
 
   // Streaming routes
   "api-streaming-movie-resolution": {
@@ -163,14 +164,15 @@ const routes: {
     `/api/notifications` + (notificationId ? `/${notificationId}` : ""),
   "api-notifications-stats": () => "/api/notifications/stats",
 
+  // SSE routes
   "sse-movies": ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
+  "sse-notifications": () => "/api/notifications/sse",
 
+  // Streaming routes
   "api-streaming-movie-resolution": ({ tmdbId, resolution }) =>
     `/api/streaming/movie/${tmdbId}/resolution/${resolution}`,
   "api-streaming-movie-subtitles": ({ tmdbId, subtitlesLanguage }) =>
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
-
-  // Internal routes
 
   // External routes
   "external-imdb-movie": ({ imdbId }) => `https://www.imdb.com/title/${imdbId}`,

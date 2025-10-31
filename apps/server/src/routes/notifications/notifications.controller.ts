@@ -4,6 +4,7 @@ import {
   getNotificationsStatsSchemas,
   hypertubeLogger,
   notificationReadStatuses,
+  NOTIFICATIONS_EVENTS,
   TGetNotificationsSchemas,
   TPatchNotificationSchemas,
   TPatchNotificationsSchemas,
@@ -76,36 +77,18 @@ export const getNotificationsSSE = async (c: Context<TIsLogged>) => {
   hypertubeLogger.info(`[${id}] notifications SSE started`);
 
   return streamSSE(c, async (stream) => {
-    // Send the total number of unread notifications at connection start
-    const totalUnreadNotifications = await prisma.notification.count({
-      where: { userId: id, read: false },
-    });
-    stream.write(
-      JSON.stringify(
-        getNotificationsSSESchemas.response.parse({
-          title: "Notifications",
-          message: `You have ${totalUnreadNotifications} unread notifications`,
-          totalUnreadNotifications,
-        })
-      )
-    );
-
-    // Subscribe to notifications and send them to the client each time a new notification is created
     const eventsSubscriber = new EventsSubscriber(
       { event: "notification", userId: id },
       async (data) => {
-        const totalUnreadNotifications = await prisma.notification.count({
-          where: { userId: id, read: false },
-        });
-        await stream.write(
-          JSON.stringify(
+        await stream.writeSSE({
+          event: NOTIFICATIONS_EVENTS.NEW_NOTIFICATION,
+          data: JSON.stringify(
             getNotificationsSSESchemas.response.parse({
               title: data.title,
               message: data.message,
-              totalUnreadNotifications,
             })
-          )
-        );
+          ),
+        });
       }
     );
 

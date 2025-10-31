@@ -44,7 +44,6 @@ export const getNotificationsSSESchemas = {
   response: z.object({
     title: z.string().optional(),
     message: z.string().optional(),
-    totalUnreadNotifications: z.number().int(),
   }),
 };
 

@@ -1,7 +1,7 @@
 import {
   DownloadState,
+  MOVIE_EVENTS,
   Providers,
-  SSEEvents,
   TMovieSchema,
 } from "@hypertube/libs";
 import { prisma, TDownloadJobData } from "@hypertube/server-core";
@@ -53,7 +53,7 @@ export const sendSSEDownloadStateChange = (
   stream: SSEStreamingApi
 ) => {
   stream.writeSSE({
-    event: SSEEvents.DOWNLOAD_STATE_CHANGE,
+    event: MOVIE_EVENTS.DOWNLOAD_STATE_CHANGE,
     data: JSON.stringify({
       resolution: jobData.resolution,
       downloadState: downloadState,
@@ -66,7 +66,7 @@ export const sendSSEProgress = (
   stream: SSEStreamingApi
 ) => {
   stream.writeSSE({
-    event: SSEEvents.DOWNLOAD_PROGRESS,
+    event: MOVIE_EVENTS.DOWNLOAD_PROGRESS,
     data: JSON.stringify({
       resolution: job.data.resolution,
       progress: job.progress,
