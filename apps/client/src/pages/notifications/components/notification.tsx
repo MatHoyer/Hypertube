@@ -51,10 +51,8 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
         <CheckCircle />
         <div className="flex flex-row justify-between w-full gap-2">
           <div className="flex flex-col gap-2">
-            {/* @ts-expect-error - notification.title is a string */}
-            <Typography>{t(notification.title)}</Typography>
-            {/* @ts-expect-error - notification.message is a string */}
-            <Typography>{t(notification.message)}</Typography>
+            <Typography>{notification.title}</Typography>
+            <Typography>{notification.message}</Typography>
           </div>
           <div className="flex flex-col gap-2">
             <Typography variant="muted" className="text-xs">
