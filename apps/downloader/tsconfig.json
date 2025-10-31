@@ -9,10 +9,11 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@hypertube/libs": ["../libs/src"],
+      "@hypertube/server-core": ["../server-core/src"]
+    }
   },
-  "include": ["src"],
-  "paths": {
-    "@hypertube/libs": ["../libs/src"]
-  }
+  "include": ["src"]
 }
