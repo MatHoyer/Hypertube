@@ -59,7 +59,6 @@ export const getNotifications = async (
       notifications,
       page,
       totalPages: Math.ceil(notificationsCount / pageSize),
-      totalResults: notifications.length,
     })
   );
 };

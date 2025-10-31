@@ -17,7 +17,6 @@ export const getNotificationsSchemas = {
     notifications: z.array(notificationSchema),
     page: z.number(),
     totalPages: z.number(),
-    totalResults: z.number(),
   }),
 };
 
