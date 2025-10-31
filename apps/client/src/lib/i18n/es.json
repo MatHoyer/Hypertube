@@ -146,6 +146,7 @@
     "title": "",
     "description": "",
     "noNotifications": "",
+    "noNotificationsDescription": "",
     "readStatus": {
       "all": "",
       "read": "",

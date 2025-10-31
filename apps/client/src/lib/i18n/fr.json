@@ -145,7 +145,8 @@
   "notifications": {
     "title": "Notifications",
     "description": "Ici vous pouvez voir vos notifications",
-    "noNotifications": "Aucune notification trouvée",
+    "noNotifications": "Aucune notification",
+    "noNotificationsDescription": "Vous n'avez pas encore reçu de notification. Lorsque vous recevrez une notification, elle apparaîtra ici.",
     "readStatus": {
       "all": "Toutes",
       "read": "Lues",
