@@ -12,6 +12,7 @@ import {
   LayoutHeader,
   LayoutTitle,
 } from "@/layouts/PageLayout";
+import { LOCAL_STORAGE_KEYS } from "@/lib/const";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { cn } from "@/lib/utils";
 import {
@@ -45,7 +46,7 @@ export const NotificationsPage = () => {
   );
   const queryClient = useQueryClient();
   const [mutedNotifications, setMutedNotifications] = useLocalStorage<boolean>(
-    "notifications.mute",
+    LOCAL_STORAGE_KEYS.NOTIFICATIONS_MUTE,
     false
   );
 

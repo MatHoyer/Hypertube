@@ -1,8 +1,11 @@
+import type { TLocalStorageKeys } from "@/lib/const";
 import type { Dispatch } from "react";
 import { useEffect, useState } from "react";
 
+const storageEvents = new EventTarget();
+
 export function useLocalStorage<T>(
-  key: string,
+  key: TLocalStorageKeys,
   initialValue: T
 ): [T, Dispatch<React.SetStateAction<T>>] {
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -21,6 +24,11 @@ export function useLocalStorage<T>(
   useEffect(() => {
     try {
       window.localStorage.setItem(key, JSON.stringify(storedValue));
+      storageEvents.dispatchEvent(
+        new CustomEvent<{ newValue: T }>(`${key} changed`, {
+          detail: { newValue: storedValue },
+        })
+      );
     } catch (error) {
       console.warn(`Error setting localStorage key "${key}":`, error);
     }
@@ -42,10 +50,20 @@ export function useLocalStorage<T>(
         }
       }
     };
-
     window.addEventListener("storage", handleStorageChange);
+
+    const handleCustomStorageChange = (event: Event) => {
+      const customEvent = event as CustomEvent<{ newValue: T }>;
+      setStoredValue(customEvent.detail.newValue);
+    };
+    storageEvents.addEventListener(`${key} changed`, handleCustomStorageChange);
+
     return () => {
       window.removeEventListener("storage", handleStorageChange);
+      storageEvents.removeEventListener(
+        `${key} changed`,
+        handleCustomStorageChange
+      );
     };
   }, [key, initialValue]);
 

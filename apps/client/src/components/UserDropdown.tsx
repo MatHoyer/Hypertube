@@ -11,6 +11,7 @@ import {
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useNotificationsStats } from "@/hooks/use-notifications-stats";
 import { playBeep } from "@/lib/audio";
+import { LOCAL_STORAGE_KEYS } from "@/lib/const";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { NotificationBell } from "@/pages/notifications/components/notification-bell";
 import {
@@ -31,7 +32,7 @@ export const UserDropdown = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [mutedNotifications, _] = useLocalStorage<boolean>(
-    "notifications.mute",
+    LOCAL_STORAGE_KEYS.NOTIFICATIONS_MUTE,
     false
   );
 
