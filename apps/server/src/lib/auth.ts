@@ -91,14 +91,15 @@ const handleBetterAuthError = (
     }
   >
 ) => {
-  const errorCode = ctx.query
-    ? (ctx.query.error as string).toUpperCase()
-    : "UNEXPECTED_ERROR";
+  const error = new APIError("BAD_REQUEST", {
+    code: ctx.query ? (ctx.query.error as string).toUpperCase() : undefined,
+  });
+
   throw ctx.redirect(
     getUrl("client-error", {
       withUrl: "client",
       searchParams: {
-        error: betterAuthErrorTranslation(null, errorCode),
+        error: betterAuthErrorTranslation(error),
       },
     })
   );
