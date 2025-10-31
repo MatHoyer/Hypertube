@@ -12,6 +12,7 @@ import {
 import { EventsSubscriber, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { streamSSE } from "hono/streaming";
+import i18next from "i18next";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
@@ -84,8 +85,10 @@ export const getNotificationsSSE = async (c: Context<TIsLogged>) => {
           event: NOTIFICATIONS_EVENTS.NEW_NOTIFICATION,
           data: JSON.stringify(
             getNotificationsSSESchemas.response.parse({
-              title: data.title,
-              message: data.message,
+              // @ts-expect-error i18next is not typed
+              title: i18next.t(data.title),
+              // @ts-expect-error i18next is not typed
+              message: i18next.t(data.message),
             })
           ),
         });

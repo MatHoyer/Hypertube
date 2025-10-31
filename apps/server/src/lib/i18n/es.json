@@ -68,5 +68,11 @@
     "USER_ALREADY_HAS_A_PASSWORD": "",
     "TOO_MANY_EMAILS_SENT": "",
     "OAUTH_CODE_VERIFICATION_FAILED": ""
+  },
+  "notifications": {
+    "test": {
+      "title": "",
+      "message": ""
+    }
   }
 }
