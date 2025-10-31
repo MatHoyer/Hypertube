@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNotificationsStats } from "@/hooks/use-notifications-stats";
+import { playBeep } from "@/lib/audio";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { NotificationBell } from "@/pages/notifications/components/notification-bell";
 import {
@@ -65,6 +66,7 @@ export const UserDropdown = () => {
       }
       console.log("new notification:", data);
       toast.info(data.title);
+      playBeep();
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     };
 
