@@ -10,9 +10,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { NotificationBell } from "@/pages/notifications/components/notification-bell";
-import { getUrl, signOutAuthentificationSchemas } from "@hypertube/libs";
+import {
+  getNotificationsSSESchemas,
+  getUrl,
+  NOTIFICATIONS_EVENTS,
+  signOutAuthentificationSchemas,
+} from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { File, LogOut, Settings, User } from "lucide-react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -36,6 +42,42 @@ export const UserDropdown = () => {
       toast.error(e.message);
     },
   });
+
+  useEffect(() => {
+    const eventSource = new EventSource(getUrl("sse-notifications"));
+    eventSource.onopen = () => {
+      console.log("notifications SSE opened");
+    };
+    eventSource.onerror = (event: Event) => {
+      console.error("notifications SSE error", event);
+    };
+
+    const handleNotification = (event: MessageEvent<string>) => {
+      const { success, data } = getNotificationsSSESchemas.response.safeParse(
+        JSON.parse(event.data)
+      );
+      if (!success) {
+        console.error("invalid notification data", event.data);
+        return;
+      }
+      console.log("new notification:", data);
+      toast.info(data.title);
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    };
+
+    eventSource.addEventListener(
+      NOTIFICATIONS_EVENTS.NEW_NOTIFICATION,
+      handleNotification
+    );
+
+    return () => {
+      eventSource.close();
+      eventSource.removeEventListener(
+        NOTIFICATIONS_EVENTS.NEW_NOTIFICATION,
+        handleNotification
+      );
+    };
+  }, [queryClient]);
 
   return (
     <DropdownMenu>
