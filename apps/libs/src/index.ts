@@ -175,5 +175,5 @@ export { esZod } from "./utils/i18n/esZod.js";
 export { frZod } from "./utils/i18n/frZod.js";
 export { zodTranslate } from "./utils/i18n/zodTranslate.js";
 
-export { SSEEvents } from "./const/events.js";
-export type { SSEEvent } from "./const/events.js";
+export { MOVIE_EVENTS, NOTIFICATIONS_EVENTS } from "./const/events.js";
+export type { TMovieEvents, TNotificationsEvents } from "./const/events.js";

@@ -4,10 +4,10 @@ import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import {
   getMovieSchemas,
+  getMovieSSESchemas,
   getUrl,
   groupBy,
-  SSEEvents,
-  type TGetMovieSSESchemas,
+  MOVIE_EVENTS,
 } from "@hypertube/libs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
@@ -60,44 +60,53 @@ const MoviePage = () => {
       console.error("SSE error", event);
     };
 
-    const handleDownloadStateChange = (
-      event: MessageEvent<
-        TGetMovieSSESchemas["response"]["downloadStateChange"]
-      >
-    ) => {
-      console.log("downloadStateChange", event.data);
+    const handleDownloadStateChange = (event: MessageEvent<string>) => {
+      const { success, data } =
+        getMovieSSESchemas.response.downloadStateChange.safeParse(
+          JSON.parse(event.data)
+        );
+      if (!success) {
+        console.error("invalid downloadStateChange data", event.data);
+        return;
+      }
+      console.log("downloadStateChange", data);
       queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
     };
-    const handleDownloadProgress = (
-      event: MessageEvent<TGetMovieSSESchemas["response"]["downloadProgress"]>
-    ) => {
-      console.log(SSEEvents.DOWNLOAD_PROGRESS, event.data);
-      if (event.data.progress === 0) {
+    const handleDownloadProgress = (event: MessageEvent<string>) => {
+      const { success, data } =
+        getMovieSSESchemas.response.downloadProgress.safeParse(
+          JSON.parse(event.data)
+        );
+      if (!success) {
+        console.error("invalid downloadProgress data", event.data);
+        return;
+      }
+      if (data.progress === 0) {
         console.log("movie download started");
         queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
       }
     };
     eventSource.addEventListener(
-      SSEEvents.DOWNLOAD_STATE_CHANGE,
+      MOVIE_EVENTS.DOWNLOAD_STATE_CHANGE,
       handleDownloadStateChange
     );
     eventSource.addEventListener(
-      SSEEvents.DOWNLOAD_PROGRESS,
+      MOVIE_EVENTS.DOWNLOAD_PROGRESS,
       handleDownloadProgress
     );
 
     return () => {
       eventSource.close();
       eventSource.removeEventListener(
-        SSEEvents.DOWNLOAD_STATE_CHANGE,
+        MOVIE_EVENTS.DOWNLOAD_STATE_CHANGE,
         handleDownloadStateChange
       );
       eventSource.removeEventListener(
-        SSEEvents.DOWNLOAD_PROGRESS,
+        MOVIE_EVENTS.DOWNLOAD_PROGRESS,
         handleDownloadProgress
       );
     };
-  }, [tmdbId]);
+  }, [tmdbId, queryClient]);
 
   if (isLoading) {
     return <LoadingPage resource="movie" />;

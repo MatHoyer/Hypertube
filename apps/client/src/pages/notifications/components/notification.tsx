@@ -3,11 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { cn, getNearDateWithLocale } from "@/lib/utils";
-import {
-  getUrl,
-  patchNotificationsSchemas,
-  type TNotificationSchema,
-} from "@hypertube/libs";
+import type { TNotificationSchema } from "@hypertube/libs";
+import { getUrl, patchNotificationsSchemas } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCheck, CheckCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
