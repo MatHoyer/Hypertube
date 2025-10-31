@@ -1,4 +1,4 @@
-import { UniqueFilter } from "@/components/animated/uniqueFilter";
+import { UniqueFilter } from "@/components/animated/UniqueFilter";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
