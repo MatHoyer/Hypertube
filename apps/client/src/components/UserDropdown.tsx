@@ -8,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useNotificationsStats } from "@/hooks/use-notifications-stats";
 import { playBeep } from "@/lib/audio";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -29,6 +30,10 @@ import { UserImageAvatar } from "./images/Avatar";
 export const UserDropdown = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const [mutedNotifications, _] = useLocalStorage<boolean>(
+    "notifications.mute",
+    false
+  );
 
   const { isUnreadNotifications } = useNotificationsStats();
 
@@ -66,7 +71,9 @@ export const UserDropdown = () => {
       }
       console.log("new notification:", data);
       toast.info(data.title);
-      playBeep();
+      if (!mutedNotifications) {
+        playBeep();
+      }
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
     };
 
@@ -82,7 +89,7 @@ export const UserDropdown = () => {
         handleNotification
       );
     };
-  }, [queryClient]);
+  }, [queryClient, mutedNotifications]);
 
   return (
     <DropdownMenu>
