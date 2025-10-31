@@ -33,14 +33,22 @@ export const getNotifications = async (
 
   const whereClause = { userId: id, ...readStatusFilter };
 
-  const notifications = await prisma.notification.findMany({
-    where: whereClause,
-    skip: (page - 1) * pageSize,
-    take: pageSize,
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const notifications = (
+    await prisma.notification.findMany({
+      where: whereClause,
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+  ).map((notification) => ({
+    ...notification,
+    // @ts-expect-error - i18next is not typed
+    title: i18next.t(notification.title),
+    // @ts-expect-error - i18next is not typed
+    message: i18next.t(notification.message),
+  }));
 
   const notificationsCount = await prisma.notification.count({
     where: whereClause,
