@@ -8,6 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useNotificationsStats } from "@/hooks/use-notifications-stats";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { NotificationBell } from "@/pages/notifications/components/notification-bell";
 import {
@@ -27,6 +28,8 @@ import { UserImageAvatar } from "./images/Avatar";
 export const UserDropdown = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+
+  const { isUnreadNotifications } = useNotificationsStats();
 
   const signOutMutation = useMutation({
     mutationFn: () =>
@@ -81,9 +84,12 @@ export const UserDropdown = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild className="w-60">
+      <DropdownMenuTrigger asChild className="relative w-60">
         <Button variant="ghost" className="rounded-full size-fit p-0">
           <UserImageAvatar />
+          {isUnreadNotifications && (
+            <div className="absolute bg-red-500 rounded-full size-3 -top-0.5 -right-0.5" />
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
