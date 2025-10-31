@@ -13,6 +13,7 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getUrl, patchUsersSchemas } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -34,6 +35,11 @@ export const UserEmailUpdate = () => {
       email: user.email,
     },
   });
+
+  const dirtyFields = useMemo(
+    () => form.formState.dirtyFields,
+    [form.formState.dirtyFields]
+  );
 
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: (data: TFormSchema) =>
@@ -58,7 +64,7 @@ export const UserEmailUpdate = () => {
     <form
       className="size-full"
       onSubmit={form.handleSubmit((data) => {
-        if (form.formState.dirtyFields.email) return mutate(data);
+        if (dirtyFields.email) return mutate(data);
       })}
     >
       <Card>

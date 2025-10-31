@@ -54,8 +54,10 @@ export const patchUser = async (
   delete body.password;
 
   if (body.email) {
+    const email = body.email.toLowerCase();
+
     const otherUser = await prisma.user.findUnique({
-      where: { email: body.email },
+      where: { email: email },
     });
     if (otherUser) {
       return c.json(
@@ -71,14 +73,14 @@ export const patchUser = async (
     const token = jwtSign(
       {
         email: user.email,
-        newEmail: body.email,
+        newEmail: email,
         exp: getTime(addHours(newUTCDate(), 1)),
         iat: getTime(newUTCDate()),
       },
       env.BETTER_AUTH_SECRET
     );
     const url = getUrl("api-authentification-email-verification", {
-      withUrl: "server",
+      withUrl: "client",
       searchParams: { token },
     });
 
@@ -94,9 +96,9 @@ export const patchUser = async (
       }
       return c.json({ message: i18next.t("httpCode.400") }, 400);
     }
-
-    delete body.email;
   }
+
+  delete body.email;
 
   if (body.username) {
     const user = await prisma.user.findUnique({
