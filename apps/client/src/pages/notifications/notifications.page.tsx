@@ -2,6 +2,7 @@ import { UniqueFilter } from "@/components/animated/uniqueFilter";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useNotificationsStats } from "@/hooks/use-notifications-stats";
 import {
   Layout,
@@ -24,7 +25,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { ChevronUpCircleIcon } from "lucide-react";
+import { ChevronUpCircleIcon, Volume2Icon, VolumeOffIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -43,6 +44,10 @@ export const NotificationsPage = () => {
     notificationReadStatuses.UNREAD
   );
   const queryClient = useQueryClient();
+  const [mutedNotifications, setMutedNotifications] = useLocalStorage<boolean>(
+    "notifications.mute",
+    false
+  );
 
   const { mutate: markAllAsRead } = useMutation({
     mutationFn: async () => {
@@ -171,7 +176,7 @@ export const NotificationsPage = () => {
             </LayoutDescription>
           </div>
         </div>
-        <LayoutActions>
+        <LayoutActions className="flex items-center gap-2">
           <Button
             onClick={() => markAllAsRead()}
             disabled={!isUnreadNotifications}
@@ -180,6 +185,12 @@ export const NotificationsPage = () => {
             )}
           >
             {t("notifications.markAllAsRead")}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setMutedNotifications((prev) => !prev)}
+          >
+            {mutedNotifications ? <VolumeOffIcon /> : <Volume2Icon />}
           </Button>
         </LayoutActions>
       </LayoutHeader>
