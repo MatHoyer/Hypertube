@@ -11,6 +11,14 @@ export const Providers = {
   YTS: "YTS",
 } as const;
 
+export const betterAuthProviders = [
+  "google",
+  "github",
+  "discord",
+  "school42",
+] as const;
+export type TBetterAuthProviders = (typeof betterAuthProviders)[number];
+
 export const languageCodesArray = ["en", "fr", "es"] as const;
 
 export const languageCodes: Record<

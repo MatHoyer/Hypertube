@@ -1,77 +1,82 @@
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/LoadingButton";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth-client";
-import { betterAuthTranslation } from "@/lib/better-auth/constants";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUrl } from "@hypertube/libs";
-import { type ComponentProps } from "react";
+import {
+  getUrl,
+  requestPasswordResetAuthentificationSchemas,
+} from "@hypertube/libs";
+import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 
 const formSchema = z.object({ email: z.email() });
+type TFormSchema = z.infer<typeof formSchema>;
 
-export const ForgetPasswordForm: React.FC<ComponentProps<"div">> = ({
-  ...props
-}) => {
+export const ForgetPasswordForm = () => {
   const { t } = useTranslation();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<TFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
     },
   });
 
-  const onSubmit = async (userData: z.infer<typeof formSchema>) => {
-    await authClient.requestPasswordReset(
-      {
-        email: userData.email,
-        redirectTo: getUrl("client-reset-password", { withServerUrl: true }),
-      },
-      {
-        onError: (ctx) => {
-          toast.error(betterAuthTranslation(t, ctx.error.code));
-        },
-      }
-    );
-  };
+  const { mutate, isPending, isSuccess } = useMutation({
+    mutationFn: (data: TFormSchema) =>
+      axiosFetch({
+        method: "POST",
+        url: getUrl("api-authentification-request-password-reset"),
+        schemas: requestPasswordResetAuthentificationSchemas,
+        data,
+      }),
+    onSuccess: () => {
+      toast.success(t("sign.resetPasswordEmail"));
+    },
+    onError: (e) => {
+      toast.error(e.message);
+    },
+  });
 
   return (
-    <div {...props}>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("sign.email")}</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder={t("sign.emailExample")} />
-                </FormControl>
-                <FormDescription>
-                  {t("sign.forgetPasswordDesc")}
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full">
-            {t("sign.sendEmail")}
-          </Button>
-        </form>
-      </Form>
-    </div>
+    <form
+      className="size-full"
+      onSubmit={form.handleSubmit((data) => mutate(data))}
+    >
+      <FieldSet>
+        <FieldGroup>
+          <Field>
+            <FieldLabel htmlFor="input-email">{t("sign.email")}</FieldLabel>
+            <Input
+              id="email"
+              placeholder={t("sign.emailExample")}
+              {...form.register("email")}
+            />
+            <FieldDescription>{t("sign.forgetPasswordDesc")}</FieldDescription>
+            <FieldError>{form.formState.errors.email?.message}</FieldError>
+          </Field>
+          <Field>
+            <LoadingButton
+              type="submit"
+              loading={isPending}
+              success={isSuccess}
+            >
+              {t("sign.sendEmail")}
+            </LoadingButton>
+          </Field>
+        </FieldGroup>
+      </FieldSet>
+    </form>
   );
 };

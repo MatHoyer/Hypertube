@@ -27,7 +27,9 @@ export const enZod = {
     object: {
       invalid_type: "expected object",
     },
-    custom: {},
+    custom: {
+      passwordOldNeedNew: "The old password needs the new password",
+    },
     unknown: "Unknown error",
   },
 };

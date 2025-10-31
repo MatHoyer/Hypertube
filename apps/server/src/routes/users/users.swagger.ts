@@ -1,4 +1,9 @@
-import { getUrl, patchUsersSchemas } from "@hypertube/libs";
+import {
+  getAccountsUsersSchemas,
+  getSessionUsersSchemas,
+  getUrl,
+  patchUsersSchemas,
+} from "@hypertube/libs";
 
 const usersPathParam = {
   in: "path",
@@ -22,9 +27,12 @@ export const usersSwagger = {
               name: "",
               email: "",
               image: "",
+              username: "",
               firstName: "",
               lastName: "",
               imageId: "",
+              oldPassword: "",
+              password: "",
             },
           },
         },
@@ -34,7 +42,39 @@ export const usersSwagger = {
           description: "User updated successfully",
           content: {
             "application/json": {
-              schema: { image: null },
+              schema: patchUsersSchemas.response,
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl("api-users-accounts")]: {
+    get: {
+      summary: "Get accounts of user",
+      tags: ["Users"],
+      responses: {
+        "200": {
+          description: "User accounts taken successfully",
+          content: {
+            "application/json": {
+              schema: getAccountsUsersSchemas.response,
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl("api-users-session")]: {
+    get: {
+      summary: "Get session of user",
+      tags: ["Users"],
+      responses: {
+        "200": {
+          description: "User session taken successfully",
+          content: {
+            "application/json": {
+              schema: getSessionUsersSchemas.response,
             },
           },
         },

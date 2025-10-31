@@ -6,9 +6,9 @@ import { auth } from "../../lib/auth";
 const authRouter = new Hono();
 
 authRouter.use(
-  "/*",
+  "*",
   cors({
-    origin: [env.CLIENT_URL],
+    origin: env.BETTER_AUTH_URL,
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
@@ -17,6 +17,10 @@ authRouter.use(
   })
 );
 
-authRouter.on(["POST", "GET"], "/**", (c) => auth.handler(c.req.raw));
+authRouter.on(
+  ["POST", "GET"],
+  ["/callback/**", "/oauth2/callback/**", "/verify-email", "/error"],
+  (c) => auth.handler(c.req.raw)
+);
 
 export default authRouter;

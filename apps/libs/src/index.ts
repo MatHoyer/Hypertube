@@ -1,7 +1,8 @@
 // Utils export
 export { newUTCDate } from "./utils/date.utils.js";
-export { groupBy } from "./utils/object.utils.js";
+export { groupBy, pick } from "./utils/object.utils.js";
 export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
+export { getClientUrl } from "./utils/url/getClientUrl.js";
 export { getServerUrl } from "./utils/url/getServerUrl.js";
 export { getUrl } from "./utils/url/getUrl.js";
 export type {
@@ -11,6 +12,41 @@ export type {
 export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 
 // API Schemas export
+
+export {
+  emailVerificationAuthentificationSchemas,
+  linkProviderAuthentificationSchemas,
+  requestPasswordResetAuthentificationSchemas,
+  resetPasswordAuthentificationSchemas,
+  signInAuthentificationSchemas,
+  signInSocialAuthentificationSchemas,
+  signOutAuthentificationSchemas,
+  signUpAuthentificationSchemas,
+  unlinkProviderAuthentificationSchemas,
+} from "./schemas/api/authentification.schema.js";
+export type {
+  TEmailVerificationAuthentificationSchemas,
+  TLinkProviderAuthentificationSchemas,
+  TRequestPasswordResetAuthentificationSchemas,
+  TResetPasswordAuthentificationSchemas,
+  TSignInAuthentificationSchemas,
+  TSignInSocialAuthentificationSchemas,
+  TSignOutAuthentificationSchemas,
+  TSignUpAuthentificationSchemas,
+  TUnlinkProviderAuthentificationSchemas,
+} from "./schemas/api/authentification.schema.js";
+
+export {
+  getAccountsUsersSchemas,
+  getSessionUsersSchemas,
+  patchUsersSchemas,
+} from "./schemas/api/users.schema.js";
+export type {
+  TGetAccountsUsersSchemas,
+  TGetSessionUsersSchemas,
+  TPatchUsersSchemas,
+} from "./schemas/api/users.schema.js";
+
 export {
   deleteImageSchemas,
   postImageSchemas,
@@ -19,9 +55,6 @@ export type {
   TDeleteImageSchemas,
   TPostImageSchemas,
 } from "./schemas/api/images.schema.js";
-
-export { patchUsersSchemas } from "./schemas/api/users.schema.js";
-export type { TPatchUsersSchemas } from "./schemas/api/users.schema.js";
 
 export {
   getMovieSchemas,
@@ -64,6 +97,12 @@ export type { TImageSchema } from "./schemas/database/image.schema.js";
 export { userSchema } from "./schemas/database/user.schema.js";
 export type { TUserSchema } from "./schemas/database/user.schema.js";
 
+export { sessionSchema } from "./schemas/database/session.schema.js";
+export type { TSessionSchema } from "./schemas/database/session.schema.js";
+
+export { accountsSchema } from "./schemas/database/accounts.schema.js";
+export type { TAccountsSchema } from "./schemas/database/accounts.schema.js";
+
 export {
   movieSchema,
   resolutionSchema,
@@ -88,6 +127,7 @@ export {
 } from "./const/yts.const.js";
 
 export {
+  betterAuthProviders,
   DownloadStates,
   languageCodes,
   languageCodesArray,
@@ -95,6 +135,8 @@ export {
   sizeMaxFile,
 } from "./const/global.const.js";
 export type { DownloadState } from "./const/global.const.js";
+
+export type { TBetterAuthProviders } from "./const/global.const.js";
 
 export { enZod } from "./utils/i18n/enZod.js";
 export { esZod } from "./utils/i18n/esZod.js";

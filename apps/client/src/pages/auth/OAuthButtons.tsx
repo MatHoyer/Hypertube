@@ -1,67 +1,52 @@
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
+import { supportedOAuths } from "@/lib/better-auth/constants";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import type { TBetterAuthProviders } from "@hypertube/libs";
+import { getUrl, signInSocialAuthentificationSchemas } from "@hypertube/libs";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const OAuthButtons = () => {
-  const handleOAuth = async (provider: string) => {
-    await authClient.signIn.social({
-      provider: provider,
-    });
-  };
+  const linkMutation = useMutation({
+    mutationFn: (provider: { id: TBetterAuthProviders }) =>
+      axiosFetch({
+        method: "POST",
+        url: getUrl("api-authentification-signin-social"),
+        schemas: signInSocialAuthentificationSchemas,
+        data: {
+          providerId: provider.id,
+        },
+      }),
+    onSuccess: (data) => {
+      if (data.url) window.open(data.url, "_self");
+    },
+    onError: (e) => {
+      toast.error(e.message);
+    },
+  });
 
   return (
     <div className="flex justify-evenly gap-4">
-      <Button
-        onClick={() => handleOAuth("google")}
-        type="button"
-        className="light bg-background"
-      >
-        <img
-          src="/images/oauth_logo/google_logo.png"
-          className="size-6"
-          draggable={false}
-          alt="Google"
-          title="Google"
-        />
-      </Button>
-      <Button
-        onClick={() => handleOAuth("github")}
-        type="button"
-        className="light bg-background"
-      >
-        <img
-          src="/images/oauth_logo/github_logo.svg"
-          className="size-6"
-          draggable={false}
-          alt="GitHub"
-          title="GitHub"
-        />
-      </Button>
-      <Button
-        onClick={() => handleOAuth("discord")}
-        type="button"
-        className="light bg-background"
-      >
-        <img
-          src="/images/oauth_logo/discord_logo.webp"
-          className="size-6"
-          draggable={false}
-          alt="Discord"
-          title="Discord"
-        />
-      </Button>
-      <Button
-        onClick={() => handleOAuth("school42")}
-        type="button"
-        className="light bg-background"
-      >
-        <img
-          src="/images/oauth_logo/42_logo.png"
-          className="size-6"
-          draggable={false}
-          alt="42 School"
-          title="42 School"
-        />
-      </Button>
+      {Object.entries(supportedOAuths).map(([providerId, params]) => (
+        <Button
+          key={providerId}
+          onClick={() =>
+            linkMutation.mutate({
+              id: providerId as TBetterAuthProviders,
+            })
+          }
+          type="button"
+          className="light bg-background"
+        >
+          <img
+            src={params.img}
+            className="size-6"
+            draggable={false}
+            alt={params.name}
+            title={params.name}
+          />
+        </Button>
+      ))}
     </div>
   );
 };

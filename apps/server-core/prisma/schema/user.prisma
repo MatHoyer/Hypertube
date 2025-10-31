@@ -1,18 +1,20 @@
 model User {
-  id              String    @id
-  name            String
-  email           String
-  emailVerified   Boolean   @default(false)
-  image           String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @default(now()) @updatedAt
-  username        String?
-  displayUsername String?
-  firstName       String?
-  lastName        String?
-  imageId         String?
-  sessions        Session[]
-  accounts        Account[]
+  id                  String    @id
+  name                String
+  email               String
+  emailVerified       Boolean   @default(false)
+  image               String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @default(now()) @updatedAt
+  username            String?
+  displayUsername     String?
+  firstName           String?
+  lastName            String?
+  imageId             String?
+  emailCooldown       DateTime?
+  passwordCooldown    DateTime?
+  sessions            Session[]
+  accounts            Account[]
 
   @@unique([email])
   @@unique([username])

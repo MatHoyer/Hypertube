@@ -1,15 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuthAccounts } from "@/hooks/use-auth-accounts";
-import { authClient } from "@/lib/auth-client";
+import { supportedOAuths } from "@/lib/better-auth/constants";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import type { TBetterAuthProviders } from "@hypertube/libs";
 import {
-  betterAuthTranslation,
-  supportedOAuth,
-} from "@/lib/better-auth/constants";
-import { getUrl } from "@hypertube/libs";
+  betterAuthProviders,
+  getUrl,
+  linkProviderAuthentificationSchemas,
+  unlinkProviderAuthentificationSchemas,
+} from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useQueryState } from "nuqs";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -19,51 +20,49 @@ export const OAuthLinkButtons = () => {
   const queryClient = useQueryClient();
   const linkedAccounts = accounts.map((account) => account.provider);
 
-  const [error, setError] = useQueryState("error", { defaultValue: "" });
-
-  useEffect(() => {
-    if (error) {
-      toast.error(betterAuthTranslation(t, error.toUpperCase()));
-      setError(null);
-    }
-  }, [error]);
-
-  const linkMutation = useMutation({
-    mutationFn: async (provider: { id: string }) => {
-      const res = await authClient.linkSocial({
-        provider: provider.id,
-        callbackURL: getUrl("client-settings", { withServerUrl: true }),
-        errorCallbackURL: getUrl("client-settings", { withServerUrl: true }),
-      });
-      if (res.error) throw new Error(res.error.code);
-      return res;
+  const { mutate: linkMutate } = useMutation({
+    mutationFn: (provider: { id: (typeof betterAuthProviders)[number] }) =>
+      axiosFetch({
+        method: "POST",
+        url: getUrl("api-authentification-link"),
+        schemas: linkProviderAuthentificationSchemas,
+        data: {
+          providerId: provider.id,
+        },
+      }),
+    onSuccess: (data) => {
+      if (data.url) window.open(data.url, "_self");
     },
-    onError: (error) => {
-      toast.error(betterAuthTranslation(t, error.message));
+    onError: (e) => {
+      toast.error(e.message);
     },
   });
 
-  const unlinkMutation = useMutation({
-    mutationFn: async (provider: { id: string }) => {
-      const res = await authClient.unlinkAccount({
-        providerId: provider.id,
-      });
-      if (res.error) throw new Error(res.error.code);
-      return res;
-    },
+  const { mutate: unlinkMutate } = useMutation({
+    mutationFn: async (provider: {
+      id: (typeof betterAuthProviders)[number];
+    }) =>
+      axiosFetch({
+        method: "DELETE",
+        url: getUrl("api-authentification-link", { providerId: provider.id }),
+        schemas: unlinkProviderAuthentificationSchemas,
+        data: {
+          providerId: provider.id,
+        },
+      }),
     onSuccess: () => {
       toast.success(t("settings.unlinkMessage"));
       queryClient.invalidateQueries({ queryKey: ["accounts"] });
     },
-    onError: (error) => {
-      toast.error(betterAuthTranslation(t, error.message));
+    onError: (e) => {
+      toast.error(e.message);
     },
   });
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-5 m-1">
-      {Object.entries(supportedOAuth).map(([providerId, params], i) => (
-        <Card key={i}>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+      {Object.entries(supportedOAuths).map(([providerId, params]) => (
+        <Card key={providerId}>
           <CardContent className="flex flex-col gap-2">
             <img
               src={params.img}
@@ -74,12 +73,20 @@ export const OAuthLinkButtons = () => {
             {linkedAccounts.includes(providerId) ? (
               <Button
                 variant={"destructive"}
-                onClick={() => unlinkMutation.mutate({ id: providerId })}
+                onClick={() =>
+                  unlinkMutate({
+                    id: providerId as TBetterAuthProviders,
+                  })
+                }
               >
                 {t("settings.unlink")}
               </Button>
             ) : (
-              <Button onClick={() => linkMutation.mutate({ id: providerId })}>
+              <Button
+                onClick={() =>
+                  linkMutate({ id: providerId as TBetterAuthProviders })
+                }
+              >
                 {t("settings.link")}
               </Button>
             )}

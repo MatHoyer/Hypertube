@@ -27,7 +27,10 @@ export const frZod = {
     object: {
       invalid_type: "type invalide",
     },
-    custom: {},
+    custom: {
+      passwordOldNeedNew:
+        "L'ancien mot de passe a besoin du nouveau mot de passe",
+    },
     unknown: "Erreur inconnue",
   },
 };

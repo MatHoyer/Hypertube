@@ -1,5 +1,5 @@
 import { UserImageAvatar } from "@/components/images/Avatar";
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/LoadingButton";
 import { Input } from "@/components/ui/input";
 import { useRequiredUser } from "@/hooks/use-required-user";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -19,7 +19,7 @@ export const ProfilePictureUpdate = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  const updateMutation = useMutation({
+  const { mutate: updateMutate } = useMutation({
     mutationFn: async (file: File | undefined) => {
       if (!file) return;
       const formData = new FormData();
@@ -64,7 +64,11 @@ export const ProfilePictureUpdate = () => {
     },
   });
 
-  const deleteMutation = useMutation({
+  const {
+    mutate: delMutate,
+    isPending: isDelPending,
+    isSuccess: isDelSuccess,
+  } = useMutation({
     mutationFn: async () => {
       if (user.imageId)
         await axiosFetch({
@@ -98,20 +102,22 @@ export const ProfilePictureUpdate = () => {
         type="file"
         className="w-full"
         onChange={(event) => {
-          updateMutation.mutate(event.currentTarget.files?.[0]);
+          updateMutate(event.currentTarget.files?.[0]);
           event.currentTarget.value = "";
         }}
       />
-      <Button
+      <LoadingButton
         disabled={!user.image}
         type="button"
         className="w-full"
+        loading={isDelPending}
+        success={isDelSuccess}
         onClick={() => {
-          deleteMutation.mutate();
+          delMutate();
         }}
       >
         {t("settings.deletePicture")}
-      </Button>
+      </LoadingButton>
     </div>
   );
 };

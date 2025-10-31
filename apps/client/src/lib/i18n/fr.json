@@ -6,7 +6,9 @@
     "loadingMessage": "Chargement {{resource}}",
     "loadingRessource": "...",
     "unexpected-error": "Erreur inattendue",
-    "homepage": "Page d'accueil"
+    "homepage": "Page d'accueil",
+    "submit": "Soumettre",
+    "userNotFound": "utilisateur non trouvé"
   },
   "footer": {
     "sourceCode": "Code source",
@@ -25,44 +27,6 @@
     "continue": "Continuer",
     "confirmTextToType": "Pour confirmer, tapez: {{confirmTextToType}}",
     "doubleConfirm": "Double confirmation"
-  },
-  "better-auth-error": {
-    "INVALID_USERNAME_OR_PASSWORD": "Nom d'utilisateur ou mot de passe invalide",
-    "EMAIL_NOT_VERIFIED": "Email non vérifié",
-    "UNEXPECTED_ERROR": "Erreur inattendue",
-    "USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER": "Le nom d'utilisateur est déjà pris. Veuillez en essayer un autre.",
-    "USERNAME_IS_TOO_SHORT": "Le nom d'utilisateur est trop court",
-    "USERNAME_IS_TOO_LONG": "Le nom d'utilisateur est trop long",
-    "USERNAME_IS_INVALID": "Nom d'utilisateur invalide",
-    "DISPLAY_USERNAME_IS_INVALID": "Nom d'affichage invalide",
-    "USER_NOT_FOUND": "Utilisateur non trouvé",
-    "FAILED_TO_CREATE_USER": "Échec de la création de l'utilisateur",
-    "FAILED_TO_CREATE_SESSION": "Échec de la création de la session",
-    "FAILED_TO_UPDATE_USER": "Échec de la mise à jour de l'utilisateur",
-    "FAILED_TO_GET_SESSION": "Échec de récupération de la session",
-    "INVALID_PASSWORD": "Mot de passe invalide",
-    "INVALID_EMAIL": "Email invalide",
-    "INVALID_EMAIL_OR_PASSWORD": "Email ou mot de passe invalide",
-    "SOCIAL_ACCOUNT_ALREADY_LINKED": "Compte social déjà lié",
-    "PROVIDER_NOT_FOUND": "Fournisseur non trouvé",
-    "INVALID_TOKEN": "Jeton invalide",
-    "ID_TOKEN_NOT_SUPPORTED": "id_token non pris en charge",
-    "FAILED_TO_GET_USER_INFO": "Échec de récupération des informations utilisateur",
-    "USER_EMAIL_NOT_FOUND": "Email de l'utilisateur introuvable",
-    "PASSWORD_TOO_SHORT": "Mot de passe trop court",
-    "PASSWORD_TOO_LONG": "Mot de passe trop long",
-    "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL": "L'utilisateur existe déjà. Utilisez un autre email.",
-    "EMAIL_CAN_NOT_BE_UPDATED": "L'email ne peut pas être mis à jour",
-    "CREDENTIAL_ACCOUNT_NOT_FOUND": "Compte de crédentiel introuvable",
-    "SESSION_EXPIRED_REAUTHENTICATE_TO_PERFORM_THIS_ACTION": "Session expirée. Ré-authentifiez-vous pour effectuer cette action.",
-    "YOU_CANT_UNLINK_YOUR_LAST_ACCOUNT": "Vous ne pouvez pas dissocier votre dernier compte",
-    "ACCOUNT_NOT_FOUND": "Compte introuvable",
-    "USER_ALREADY_HAS_A_PASSWORD_PROVIDE_THAT_TO_DELETE_THE_ACCOUNT": "L'utilisateur a déjà un mot de passe. Fournissez-le pour supprimer le compte.",
-    "PASSWORD_POLICY": "Le mot de passe doit contenir au moins 1 lettre minuscule, 1 lettre majuscule, 1 chiffre et 1 caractère spécial.",
-    "EMAIL_IS_THE_SAME": "L'email est actuellement la même.",
-    "COULDNT_UPDATE_YOUR_EMAIL": "Impossible de mettre à jour l'adresse e-mail. Veuillez essayer avec une autre adresse e-mail.",
-    "FAILED_TO_UPDATE_PASSWORD": "Échec de la mise à jour du mot de passe",
-    "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "Le compte est déjà associé à un utilisateur différent."
   },
   "sign": {
     "username": "Nom d'utilisateur",
@@ -85,8 +49,8 @@
     "missAccount": "Vous n'avez pas de compte ?",
     "gotAccount": "Vous avez déjà un compte ?",
     "connexion": "Vous êtes maintenant connecté !",
-    "usernamePolicy": "Le nom d'utilisateur doit contenir au moins 1 caractère et un maximum de 50 caractères.",
-    "passwordPolicy": "Le mot de passe doit contenir au moins 1 caractère et un maximum de 50 caractères."
+    "emailVerification": "Envoi de vérification par email !",
+    "resetPasswordEmail": "Lien de réinitialisation du mot de passe envoyé par email !"
   },
   "settings": {
     "displayName": "Nom d'affichage",
@@ -100,7 +64,19 @@
     "link": "Associer",
     "unlink": "Dissocier",
     "credential": "Création de votre compte",
-    "credentialDesc": "Vous pouvez choisir votre nom d'utilisateur et votre mot de passe pour pouvoir vous connectez avec."
+    "credentialDesc": "Vous pouvez choisir votre nom d'utilisateur et votre mot de passe pour pouvoir vous connectez avec.",
+    "updateInfoTitle": "Mettre à jour vos informations",
+    "updatePasswordTitle": "Modifier votre mot de passe",
+    "setPasswordTitle": "Définissez votre mot de passe",
+    "oldPassword": "Ancien mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "usernameRequired": "Vous devez avoir un nom d'utilisateur.",
+    "email": "Email",
+    "emailTitle": "Mettre à jour votre email",
+    "emailVerification": "Envoi de vérification par email !",
+    "username": "Nom d'utilisateur",
+    "firstName": "Prénom",
+    "lastName": "Nom"
   },
   "movie": {
     "loadingRessource": "du film",
@@ -142,5 +118,10 @@
     "account": "Mon compte",
     "profile": "Profil",
     "settings": "Paramètres"
+  },
+  "error": {
+    "UNEXPECTED_ERROR": "Erreur inattendue.",
+    "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "Le compte est déjà associé à un utilisateur différent.",
+    "OAUTH_CODE_VERIFICATION_FAILED": "La vérification du code OAuth a échoué."
   }
 }

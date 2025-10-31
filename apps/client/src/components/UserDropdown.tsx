@@ -8,12 +8,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { authClient } from "@/lib/auth-client";
-import { getUrl } from "@hypertube/libs";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getUrl, signOutAuthentificationSchemas } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { File, LogOut, Settings, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import { UserImageAvatar } from "./images/Avatar";
 
 export const UserDropdown = () => {
@@ -21,11 +22,17 @@ export const UserDropdown = () => {
   const { t } = useTranslation();
 
   const signOutMutation = useMutation({
-    mutationFn: async () => {
-      await authClient.signOut();
-    },
+    mutationFn: () =>
+      axiosFetch({
+        method: "POST",
+        url: getUrl("api-authentification-signout"),
+        schemas: signOutAuthentificationSchemas,
+      }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["session"] });
+      queryClient.resetQueries({ queryKey: ["session"] });
+    },
+    onError: (e) => {
+      toast.error(e.message);
     },
   });
 
@@ -55,7 +62,7 @@ export const UserDropdown = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link
-            to={getUrl("api-swagger", { mode: "ui", withServerUrl: true })}
+            to={getUrl("api-swagger", { mode: "ui", withUrl: "server" })}
             target="_blank"
           >
             <File /> API

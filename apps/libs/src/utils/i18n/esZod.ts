@@ -27,7 +27,9 @@ export const esZod = {
     object: {
       invalid_type: "",
     },
-    custom: {},
+    custom: {
+      passwordOldNeedNew: "",
+    },
     unknown: "",
   },
 };
