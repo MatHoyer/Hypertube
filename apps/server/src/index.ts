@@ -16,6 +16,7 @@ import authRouter from "./routes/auth/auth.route.js";
 import authentificationRouter from "./routes/authentification/authentification.route.js";
 import imagesRouter from "./routes/images/images.route.js";
 import moviesRouter from "./routes/movies/movies.route.js";
+import { oauthRouter } from "./routes/oauth/oauth.route.js";
 import streamingRouter from "./routes/streaming/streaming.route.js";
 import swaggerRouter from "./routes/swagger/swagger.route.js";
 import usersRouter from "./routes/users/users.route.js";
@@ -47,6 +48,7 @@ app.use(
 const apiRouter = new Hono();
 
 apiRouter.route("/auth", authRouter);
+apiRouter.route("/oauth", oauthRouter);
 apiRouter.route("/authentification", authentificationRouter);
 apiRouter.route("/images", imagesRouter);
 apiRouter.route("/users", usersRouter);

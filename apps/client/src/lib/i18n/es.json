@@ -113,6 +113,18 @@
     },
     "cast": "Reparto"
   },
+  "oauthCredentials": {
+    "title": "",
+    "description": "",
+    "actions": {
+      "addCredential": "",
+      "openDocumentation": ""
+    },
+    "empty": {
+      "title": "",
+      "description": ""
+    }
+  },
   "navbar": {
     "placeholder": "Buscar una película",
     "account": "Mi cuenta",

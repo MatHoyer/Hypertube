@@ -61,10 +61,7 @@ export const UserDropdown = () => {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link
-            to={getUrl("api-swagger", { mode: "ui", withUrl: "server" })}
-            target="_blank"
-          >
+          <Link to={getUrl("client-oauth-credentials")}>
             <File /> API
           </Link>
         </DropdownMenuItem>

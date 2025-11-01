@@ -113,6 +113,18 @@
     },
     "cast": "Casting"
   },
+  "oauthCredentials": {
+    "title": "Credentials",
+    "description": "Gérer vos credentials OAuth pour les intégrations avec des tiers. ",
+    "actions": {
+      "addCredential": "Ajouter un credential",
+      "openDocumentation": "Ouvrir la documentation de l'API"
+    },
+    "empty": {
+      "title": "Encore aucun credential",
+      "description": "Vous n'avez pas encore créé de credential. Commencez par en créer un."
+    }
+  },
   "navbar": {
     "placeholder": "Rechercher un film",
     "account": "Mon compte",
