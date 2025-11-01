@@ -3,7 +3,6 @@ import { UniqueFilter } from "@/components/animated/UniqueFilter";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
-import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useNotificationsStats } from "@/hooks/use-notifications-stats";
 import {
   Layout,
@@ -13,27 +12,20 @@ import {
   LayoutHeader,
   LayoutTitle,
 } from "@/layouts/PageLayout";
-import { LOCAL_STORAGE_KEYS } from "@/lib/const";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
-import { cn } from "@/lib/utils";
 import {
   getNotificationsSchemas,
   getUrl,
   notificationReadStatuses,
-  patchNotificationsSchemas,
 } from "@hypertube/libs";
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { ChevronUp, Volume2Icon, VolumeOffIcon } from "lucide-react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
 import { Notification } from "./components/notification";
 import { NotificationBell } from "./components/notification-bell";
+import { NotificationsActions } from "./components/notifications-actions";
 import { NotificationsEmpty } from "./components/notifications-empty";
 
 export const NotificationsPage = () => {
@@ -46,30 +38,6 @@ export const NotificationsPage = () => {
   const [readStatus, setReadStatus] = useState<string>(
     notificationReadStatuses.UNREAD
   );
-  const queryClient = useQueryClient();
-  const [mutedNotifications, setMutedNotifications] = useLocalStorage<boolean>(
-    LOCAL_STORAGE_KEYS.NOTIFICATIONS_MUTE,
-    false
-  );
-
-  const { mutate: markAllAsRead } = useMutation({
-    mutationFn: async () => {
-      await axiosFetch({
-        method: "PATCH",
-        url: getUrl("api-notifications"),
-        schemas: patchNotificationsSchemas,
-        data: {
-          read: true,
-        },
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["notifications"],
-      });
-      toast.success(t("notifications.markedAllAsRead"));
-    },
-  });
 
   const { stats, isUnreadNotifications } = useNotificationsStats();
 
@@ -193,22 +161,11 @@ export const NotificationsPage = () => {
             </LayoutDescription>
           </div>
         </div>
-        <LayoutActions className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setMutedNotifications((prev) => !prev)}
-          >
-            {mutedNotifications ? <VolumeOffIcon /> : <Volume2Icon />}
-          </Button>
-          <Button
-            onClick={() => markAllAsRead()}
-            disabled={!isUnreadNotifications}
-            className={cn(
-              readStatus === notificationReadStatuses.READ && "hidden"
-            )}
-          >
-            {t("notifications.markAllAsRead")}
-          </Button>
+        <LayoutActions>
+          <NotificationsActions
+            readStatus={readStatus}
+            isUnreadNotifications={isUnreadNotifications}
+          />
         </LayoutActions>
       </LayoutHeader>
       <LayoutContent>
