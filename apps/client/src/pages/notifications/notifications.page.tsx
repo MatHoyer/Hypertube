@@ -1,3 +1,4 @@
+import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
 import { UniqueFilter } from "@/components/animated/UniqueFilter";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { ChevronUpCircleIcon, Volume2Icon, VolumeOffIcon } from "lucide-react";
+import { ChevronUp, Volume2Icon, VolumeOffIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -39,6 +40,7 @@ export const NotificationsPage = () => {
   const { t } = useTranslation();
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const filterRef = useRef<HTMLDivElement>(null);
   const [showScrollToTopButton, setShowScrollToTopButton] =
     useState<boolean>(false);
   const [readStatus, setReadStatus] = useState<string>(
@@ -135,34 +137,48 @@ export const NotificationsPage = () => {
   return (
     <Layout>
       <FloatingBar>
-        <UniqueFilter
-          value={readStatus}
-          onChange={(value) => {
-            topRef.current?.scrollIntoView({ behavior: "instant" });
-            setReadStatus(value);
+        <div ref={filterRef}>
+          <UniqueFilter
+            value={readStatus}
+            onChange={(value) => {
+              topRef.current?.scrollIntoView({ behavior: "instant" });
+              setReadStatus(value);
+            }}
+            values={{
+              [notificationReadStatuses.UNREAD]: t(
+                "notifications.readStatus.unread"
+              ),
+              [notificationReadStatuses.READ]: t(
+                "notifications.readStatus.read"
+              ),
+              [notificationReadStatuses.ALL]: t("notifications.readStatus.all"),
+            }}
+          />
+        </div>
+        <div
+          className="absolute overflow-hidden"
+          style={{
+            left: `${
+              (filterRef.current?.getBoundingClientRect()?.left ?? 0) +
+              (filterRef.current?.getBoundingClientRect()?.width ?? 0)
+            }px`,
           }}
-          values={{
-            [notificationReadStatuses.UNREAD]: t(
-              "notifications.readStatus.unread"
-            ),
-            [notificationReadStatuses.READ]: t("notifications.readStatus.read"),
-            [notificationReadStatuses.ALL]: t("notifications.readStatus.all"),
-          }}
-        />
+        >
+          <AnimateApparition
+            animation="slideToRight"
+            isAnimating={showScrollToTopButton}
+          >
+            <Button
+              onClick={() => {
+                topRef.current?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="ml-2"
+            >
+              <ChevronUp size={20} />
+            </Button>
+          </AnimateApparition>
+        </div>
       </FloatingBar>
-      <div
-        className={cn(
-          "fixed bottom-4 right-4 z-10 cursor-pointer transition-all duration-150 ease-in-out bg-background rounded-full",
-          {
-            "opacity-0": !showScrollToTopButton,
-          }
-        )}
-        onClick={() => {
-          topRef.current?.scrollIntoView({ behavior: "smooth" });
-        }}
-      >
-        <ChevronUpCircleIcon size={50} />
-      </div>
       <LayoutHeader className="mb-6">
         <div ref={topRef} />
         <div className="flex items-center gap-2">
