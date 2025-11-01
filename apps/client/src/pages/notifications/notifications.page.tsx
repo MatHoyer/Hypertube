@@ -179,19 +179,19 @@ export const NotificationsPage = () => {
         </div>
         <LayoutActions className="flex items-center gap-2">
           <Button
-            onClick={() => markAllAsRead()}
-            disabled={!isUnreadNotifications}
-            className={cn(
-              readStatus !== notificationReadStatuses.UNREAD && "invisible"
-            )}
-          >
-            {t("notifications.markAllAsRead")}
-          </Button>
-          <Button
             variant="outline"
             onClick={() => setMutedNotifications((prev) => !prev)}
           >
             {mutedNotifications ? <VolumeOffIcon /> : <Volume2Icon />}
+          </Button>
+          <Button
+            onClick={() => markAllAsRead()}
+            disabled={!isUnreadNotifications}
+            className={cn(
+              readStatus === notificationReadStatuses.READ && "hidden"
+            )}
+          >
+            {t("notifications.markAllAsRead")}
           </Button>
         </LayoutActions>
       </LayoutHeader>
