@@ -133,7 +133,14 @@
       },
       "clientId": "Client ID",
       "clientSecret": "Client Secret"
-    }
+    },
+    "postCredentials": {
+      "title": "Nouveaux credentials",
+      "description": "Veuillez entrer un nom pour vos nouveaux credentials.",
+      "namePlaceholder": "Nom",
+      "submit": "Créer les credentials"
+    },
+    "deleteCredentialSuccess": "Credential supprimé avec succès."
   },
   "navbar": {
     "placeholder": "Rechercher un film",

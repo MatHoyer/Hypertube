@@ -5,6 +5,7 @@ import {
   postCredentialsSchemas,
   postTokenSchemas,
   TDeleteCredentialsSchemas,
+  TPostCredentialsSchemas,
   TPostTokenSchemas,
 } from "@hypertube/libs";
 import { env, prisma } from "@hypertube/server-core";
@@ -32,8 +33,11 @@ export const getCredentials = async (c: Context<TIsLogged>) => {
   return c.json(getCredentialsSchemas.response.parse(credentials));
 };
 
-export const postCredentials = async (c: Context<TIsLogged>) => {
+export const postCredentials = async (
+  c: Context<TIsLogged & TBodyParser<TPostCredentialsSchemas["requirements"]>>
+) => {
   const { id: userId } = c.get("user");
+  const { name } = c.get("validatedBody");
 
   const clientId = "ci_" + crypto.randomBytes(20).toString("hex");
   const clientSecret = "cs_" + crypto.randomBytes(32).toString("hex");
@@ -45,6 +49,7 @@ export const postCredentials = async (c: Context<TIsLogged>) => {
       clientId,
       clientSecret: hashedClientSecret,
       userId,
+      name,
     },
   });
 

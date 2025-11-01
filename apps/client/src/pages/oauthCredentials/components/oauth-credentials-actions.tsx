@@ -1,46 +1,18 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
-import { LoadingButton } from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
-import { axiosFetch } from "@/lib/fetch/axiosFetch";
-import { getUrl, postCredentialsSchemas } from "@hypertube/libs";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { getUrl } from "@hypertube/libs";
 import { File } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 export const OAuthCredentialsActions = () => {
   const { t } = useTranslation();
-  const queryClient = useQueryClient();
-
-  const {
-    mutate: addCredential,
-    isPending,
-    isSuccess,
-  } = useMutation({
-    mutationFn: () =>
-      axiosFetch({
-        method: "POST",
-        url: getUrl("api-oauth-credentials"),
-        schemas: postCredentialsSchemas,
-      }),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["credentials"] });
-      openDialog("newCredential", {
-        clientId: data.clientId,
-        clientSecret: data.clientSecret,
-      });
-    },
-  });
 
   return (
     <div className="flex items-center justify-between w-full">
-      <LoadingButton
-        loading={isPending}
-        success={isSuccess}
-        onClick={() => addCredential()}
-      >
+      <Button onClick={() => openDialog("postCredentials")}>
         {t("oauthCredentials.actions.addCredential")}
-      </LoadingButton>
+      </Button>
       <div>
         <Button asChild>
           <Link

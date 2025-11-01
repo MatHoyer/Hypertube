@@ -133,7 +133,14 @@
       },
       "clientId": "",
       "clientSecret": ""
-    }
+    },
+    "postCredentials": {
+      "title": "",
+      "description": "",
+      "namePlaceholder": "",
+      "submit": ""
+    },
+    "deleteCredentialSuccess": "Credencial eliminada exitosamente."
   },
   "navbar": {
     "placeholder": "Buscar una película",

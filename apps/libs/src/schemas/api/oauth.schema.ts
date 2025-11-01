@@ -9,12 +9,16 @@ export type TGetCredentialsSchemas = {
 };
 
 export const postCredentialsSchemas = {
+  requirements: z.object({
+    name: credentialSchema.shape.name,
+  }),
   response: z.object({
     clientId: credentialSchema.shape.clientId,
     clientSecret: credentialSchema.shape.clientSecret,
   }),
 };
 export type TPostCredentialsSchemas = {
+  requirements: z.infer<typeof postCredentialsSchemas.requirements>;
   response: z.infer<typeof postCredentialsSchemas.response>;
 };
 

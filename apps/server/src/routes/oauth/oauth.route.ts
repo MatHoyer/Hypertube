@@ -1,4 +1,8 @@
-import { deleteCredentialsSchemas, postTokenSchemas } from "@hypertube/libs";
+import {
+  deleteCredentialsSchemas,
+  postCredentialsSchemas,
+  postTokenSchemas,
+} from "@hypertube/libs";
 import { Hono } from "hono";
 import { bodyParser } from "../../middlewares/bodyParser";
 import { isLogged } from "../../middlewares/isLogged";
@@ -14,7 +18,12 @@ export const oauthRouter = new Hono();
 
 oauthRouter.get("/credentials", isLogged, getCredentials);
 
-oauthRouter.post("/credentials", isLogged, postCredentials);
+oauthRouter.post(
+  "/credentials",
+  isLogged,
+  bodyParser(postCredentialsSchemas.requirements),
+  postCredentials
+);
 
 oauthRouter.delete(
   "/credentials/:credentialId",

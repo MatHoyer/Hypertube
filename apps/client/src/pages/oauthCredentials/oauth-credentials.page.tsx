@@ -28,7 +28,7 @@ export const OAuthCredentialsPage = () => {
   });
 
   return (
-    <Layout>
+    <Layout size="lg">
       <LayoutHeader className="mb-6">
         <LayoutTitle>{t("oauthCredentials.title")}</LayoutTitle>
         <LayoutDescription>
@@ -42,9 +42,11 @@ export const OAuthCredentialsPage = () => {
         {credentials?.length === 0 ? (
           <OAuthCredentialsEmpty />
         ) : (
-          credentials?.map((credential) => (
-            <OathCredential key={credential.id} credential={credential} />
-          ))
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {credentials?.map((credential) => (
+              <OathCredential key={credential.id} credential={credential} />
+            ))}
+          </div>
         )}
       </LayoutContent>
     </Layout>
