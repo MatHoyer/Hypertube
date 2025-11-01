@@ -4,12 +4,14 @@ import {
   getMoviesSchemas,
   hypertubeLogger,
   languageCodes,
+  TDeleteMovieSubscribeSchemas,
   TGetMovieSchemas,
   TGetMoviesSchemas,
   TGetMovieSSESchemas,
   tmdbMovieSchema,
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
+  TPostMovieSubscribeSchemas,
 } from "@hypertube/libs";
 import { env, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
@@ -20,6 +22,8 @@ import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
 import { downloaderQueue } from "../../lib/queues/downloader";
 import { downloadYifysubtitles } from "../../lib/scrappers/yifysubtitles.scrapper";
 import { SSEClients } from "../../lib/SSEClients";
+import { TIsLogged } from "../../middlewares/isLogged";
+import { TIsLoggedSafe } from "../../middlewares/isLoggedSafe";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import {
@@ -46,10 +50,11 @@ export const getMovies = async (
 };
 
 export const getMovie = async (
-  c: Context<TUrlParamsParser<TGetMovieSchemas["urlParams"]>>
+  c: Context<TUrlParamsParser<TGetMovieSchemas["urlParams"]> & TIsLoggedSafe>
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const language = c.get("language");
+  const user = c.get("user");
 
   const tmdbApi = new TmdbApi();
   const tmdbMovie =
@@ -117,12 +122,26 @@ export const getMovie = async (
     },
   });
 
+  let isSubscribed = false;
+  if (user) {
+    const subscription = await prisma.movieSubscription.findUnique({
+      where: {
+        movieId_userId: {
+          movieId: dbMovie.id,
+          userId: user.id,
+        },
+      },
+    });
+    isSubscribed = !!subscription;
+  }
+
   return c.json(
     getMovieSchemas.response.parse({
       ...tmdbMovie,
       ...dbMovie,
       resolutions,
       subtitles,
+      isSubscribed,
     })
   );
 };
@@ -285,4 +304,60 @@ export const downloadSubtitles = async (
   });
 
   return c.json({ message: "Subtitles downloaded" });
+};
+
+export const subscribeToMovie = async (
+  c: Context<
+    TIsLogged & TUrlParamsParser<TPostMovieSubscribeSchemas["urlParams"]>
+  >
+) => {
+  const { tmdbId } = c.get("validatedUrlParams");
+  const { id: userId } = c.get("user");
+
+  const dbMovie = await prisma.movie.findUnique({
+    where: {
+      tmdbId,
+    },
+  });
+  if (!dbMovie) {
+    return c.json({ message: "Movie not found" }, 404);
+  }
+
+  await prisma.movieSubscription.create({
+    data: {
+      movieId: dbMovie.id,
+      userId,
+    },
+  });
+
+  return c.json({ message: "Movie subscribed" });
+};
+
+export const unsubscribeFromMovie = async (
+  c: Context<
+    TIsLogged & TUrlParamsParser<TDeleteMovieSubscribeSchemas["urlParams"]>
+  >
+) => {
+  const { tmdbId } = c.get("validatedUrlParams");
+  const { id: userId } = c.get("user");
+
+  const dbMovie = await prisma.movie.findUnique({
+    where: {
+      tmdbId,
+    },
+  });
+  if (!dbMovie) {
+    return c.json({ message: "Movie not found" }, 404);
+  }
+
+  await prisma.movieSubscription.delete({
+    where: {
+      movieId_userId: {
+        movieId: dbMovie.id,
+        userId,
+      },
+    },
+  });
+
+  return c.json({ message: "Movie unsubscribed" });
 };

@@ -65,19 +65,23 @@ export type {
 } from "./schemas/api/images.schema.js";
 
 export {
+  deleteMovieSubscribeSchemas,
   getMovieSchemas,
   getMoviesSchemas,
   getMovieSSESchemas,
   postMovieDownloadResolutionSchemas,
   postMovieDownloadSubtitlesSchemas,
+  postMovieSubscribeSchemas,
   tmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
 export type {
+  TDeleteMovieSubscribeSchemas,
   TGetMovieSchemas,
   TGetMoviesSchemas,
   TGetMovieSSESchemas,
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
+  TPostMovieSubscribeSchemas,
 } from "./schemas/api/movie.schema.js";
 
 export {

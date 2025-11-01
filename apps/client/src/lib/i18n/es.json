@@ -111,7 +111,19 @@
       "noResolutionSelected": "",
       "resolutionDownloading": ""
     },
-    "cast": "Reparto"
+    "cast": "Reparto",
+    "subscriptions": {
+      "subscribe": "",
+      "unsubscribe": "",
+      "tooltip": {
+        "subscribe": "",
+        "unsubscribe": ""
+      },
+      "toast": {
+        "subscribe": "",
+        "unsubscribe": ""
+      }
+    }
   },
   "notifications": {
     "title": "",

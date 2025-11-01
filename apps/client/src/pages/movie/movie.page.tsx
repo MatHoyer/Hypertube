@@ -162,7 +162,10 @@ const MoviePage = () => {
               </TabsContent>
             </Tabs>
           </div>
-          <MovieInteraction />
+          <MovieInteraction
+            tmdbId={movie.tmdbId}
+            isSubscribed={movie.isSubscribed}
+          />
         </div>
       </div>
     </VideoPlayerProvider>

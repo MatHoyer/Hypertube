@@ -111,7 +111,19 @@
       "noResolutionSelected": "No resolution selected",
       "resolutionDownloading": "Can't seek the video while the resolution is downloading"
     },
-    "cast": "Cast"
+    "cast": "Cast",
+    "subscriptions": {
+      "subscribe": "Subscribe to notifications",
+      "unsubscribe": "Unsubscribe from notifications",
+      "tooltip": {
+        "subscribe": "Subscribe to notifications to get notified when something happens related to this movie",
+        "unsubscribe": "Unsubscribe from notifications to stop getting notified when something happens related to this movie"
+      },
+      "toast": {
+        "subscribe": "You are now subscribed to notifications for this movie",
+        "unsubscribe": "You are now unsubscribed from notifications for this movie"
+      }
+    }
   },
   "notifications": {
     "title": "Notifications",

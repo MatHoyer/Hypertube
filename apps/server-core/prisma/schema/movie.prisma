@@ -52,8 +52,24 @@ model Movie {
   additionalInfoFetched Boolean @default(false)
   demoMovie             Boolean @default(false)
 
+  subscriptions MovieSubscription[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   usedAt DateTime @default(now())
+}
+
+model MovieSubscription {
+  id String @id @default(uuid())
+
+  movieId String
+  movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([movieId, userId])
 }
