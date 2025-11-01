@@ -15,6 +15,7 @@ model User {
   passwordCooldown    DateTime?
   sessions            Session[]
   accounts            Account[]
+  credentials         Credential[]
 
   @@unique([email])
   @@unique([username])
@@ -64,4 +65,17 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+}
+
+model Credential {
+  id String @id @default(uuid())
+
+  clientId String @unique
+  clientSecret String
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
