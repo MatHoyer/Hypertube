@@ -73,6 +73,14 @@
     "test": {
       "title": "Test en",
       "message": "Test message"
+    },
+    "movieDownloaded": {
+      "title": "Movie downloaded",
+      "message": "Your movie has been downloaded"
+    },
+    "movieDownloading": {
+      "title": "Movie downloading",
+      "message": "Your movie is currently downloading"
     }
   }
 }

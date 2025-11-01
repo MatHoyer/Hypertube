@@ -138,7 +138,8 @@
     "markAllAsRead": "Mark all as read",
     "markedAsRead": "Notification marked as read",
     "markedAllAsRead": "All notifications marked as read",
-    "unreadNotifications": "unread notifications"
+    "unreadNotifications": "unread notifications",
+    "goToResource": "Click for more"
   },
   "navbar": {
     "placeholder": "Search for a movie",

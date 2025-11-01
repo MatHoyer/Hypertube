@@ -138,7 +138,8 @@
     "markAllAsRead": "Marquer toutes comme lues",
     "markedAsRead": "Notification marquée comme lue",
     "markedAllAsRead": "Toutes les notifications marquées comme lues",
-    "unreadNotifications": "notifications non lues"
+    "unreadNotifications": "notifications non lues",
+    "goToResource": "Cliquez pour voir plus"
   },
   "navbar": {
     "placeholder": "Rechercher un film",

@@ -8,6 +8,7 @@ import {
 import { Job, Worker } from "bullmq";
 import { Redis } from "ioredis";
 import { downloadMovie } from "./downloader/downloadMovie.js";
+import { notifySubscribers } from "./notifications/notifySubscribers.js";
 import { gracefulShutdown } from "./shutdown.js";
 
 const connection = new Redis({
@@ -48,6 +49,14 @@ worker.on("completed", async (job) => {
       downloadState: DownloadStates.DOWNLOADED,
     },
   });
+
+  try {
+    await notifySubscribers(job.data.movie.id, DownloadStates.DOWNLOADED);
+  } catch (error) {
+    hypertubeLogger.error(
+      `Error sending movie downloaded notification: ${error}`
+    );
+  }
 });
 
 worker.on("failed", async (job, err) => {

@@ -9,6 +9,7 @@ import {
 import { Job } from "bullmq";
 import * as fs from "fs";
 import path from "path";
+import { notifySubscribers } from "../notifications/notifySubscribers.js";
 import { downloader } from "./downloader.js";
 
 const Status = {
@@ -77,6 +78,13 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
         downloadState: DownloadStates.DOWNLOADING,
       },
     });
+    try {
+      await notifySubscribers(movie.id, DownloadStates.DOWNLOADING);
+    } catch (error) {
+      hypertubeLogger.error(
+        `Error sending movie downloading notification: ${error}`
+      );
+    }
     job.updateProgress(0);
 
     hypertubeLogger.info(`Movie downloaded started successfully`);

@@ -138,7 +138,8 @@
     "markAllAsRead": "",
     "markedAsRead": "",
     "markedAllAsRead": "",
-    "unreadNotifications": ""
+    "unreadNotifications": "",
+    "goToResource": ""
   },
   "navbar": {
     "placeholder": "Buscar una película",

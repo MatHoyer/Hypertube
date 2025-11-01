@@ -174,6 +174,9 @@ export type {
 
 export type { TBetterAuthProviders } from "./const/global.const.js";
 
+export { notifications } from "./const/notifications.const.js";
+export type { TNotification } from "./const/notifications.const.js";
+
 export { enZod } from "./utils/i18n/enZod.js";
 export { esZod } from "./utils/i18n/esZod.js";
 export { frZod } from "./utils/i18n/frZod.js";
