@@ -71,7 +71,9 @@ export const UserDropdown = () => {
         return;
       }
       console.log("new notification:", data);
-      toast.info(data.title);
+      toast.info(data.title, {
+        description: data.message,
+      });
       if (!mutedNotifications) {
         playBeep();
       }
