@@ -1,3 +1,4 @@
+import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
 import { CheckIcon, XIcon } from "lucide-react";
 import { motion } from "motion/react";
@@ -18,7 +19,10 @@ export const LoadingButton = ({
   onClick,
   ...props
 }: LoadingButtonProps) => {
-  const [showSuccess, setShowSuccess] = useState(false);
+  const { value: showSuccess, setValue: setShowSuccess } = useTimeoutResetState(
+    false,
+    1000
+  );
   const [firstMounted, setFirstMounted] = useState(true);
 
   useEffect(() => {
@@ -28,10 +32,6 @@ export const LoadingButton = ({
 
     if (!loading && success !== undefined && !firstMounted) {
       setShowSuccess(true);
-      const timer = setTimeout(() => {
-        setShowSuccess(false);
-      }, 1000);
-      return () => clearTimeout(timer);
     }
   }, [loading, success]);
 

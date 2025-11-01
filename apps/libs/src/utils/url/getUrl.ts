@@ -1,7 +1,7 @@
 import type { TBetterAuthProviders } from "../../const/global.const.js";
 import { languageCodes } from "../../const/global.const.js";
 import { ytsQualities } from "../../const/yts.const.js";
-import { TCredentialSchema } from "../../schemas/database/credential.schema.js";
+import type { TCredentialSchema } from "../../schemas/database/credential.schema.js";
 import type { TMovieSchema } from "../../schemas/database/movie.schema.js";
 import { getClientUrl } from "./getClientUrl.js";
 import { getServerUrl } from "./getServerUrl.js";

@@ -123,6 +123,16 @@
     "empty": {
       "title": "No Credentials Yet",
       "description": "You haven't created any credentials yet. Get started by creating your first credential."
+    },
+    "newCredential": {
+      "title": "New Credentials",
+      "description": {
+        "1": "Your new credentials have been generated.",
+        "2": "Please copy them and use them to authenticate your application.",
+        "3": "Client secret is only visible now."
+      },
+      "clientId": "Client ID",
+      "clientSecret": "Client Secret"
     }
   },
   "navbar": {

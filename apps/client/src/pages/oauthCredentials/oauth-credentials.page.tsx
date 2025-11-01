@@ -10,6 +10,7 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getCredentialsSchemas, getUrl } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { OathCredential } from "./components/oath-credential";
 import { OAuthCredentialsActions } from "./components/oauth-credentials-actions";
 import { OAuthCredentialsEmpty } from "./components/oauth-credentials-empty";
 
@@ -42,7 +43,7 @@ export const OAuthCredentialsPage = () => {
           <OAuthCredentialsEmpty />
         ) : (
           credentials?.map((credential) => (
-            <div key={credential.id}>{credential.clientId}</div>
+            <OathCredential key={credential.id} credential={credential} />
           ))
         )}
       </LayoutContent>

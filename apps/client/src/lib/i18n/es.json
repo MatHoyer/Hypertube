@@ -123,6 +123,16 @@
     "empty": {
       "title": "",
       "description": ""
+    },
+    "newCredential": {
+      "title": "",
+      "description": {
+        "1": "",
+        "2": "",
+        "3": ""
+      },
+      "clientId": "",
+      "clientSecret": ""
     }
   },
   "navbar": {
