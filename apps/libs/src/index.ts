@@ -108,6 +108,7 @@ export {
   getNotificationsStatsSchemas,
   patchNotificationSchemas,
   patchNotificationsSchemas,
+  postSendTestNotificationSchemas,
 } from "./schemas/api/notifications.schema.js";
 export type {
   TGetNotificationsSchemas,
@@ -115,6 +116,7 @@ export type {
   TGetNotificationsStatsSchemas,
   TPatchNotificationSchemas,
   TPatchNotificationsSchemas,
+  TPostSendTestNotificationSchemas,
 } from "./schemas/api/notifications.schema.js";
 
 // Database Schemas export

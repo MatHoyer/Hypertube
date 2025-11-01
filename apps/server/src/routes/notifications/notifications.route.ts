@@ -14,6 +14,7 @@ import {
   getNotificationsStats,
   patchNotification,
   patchNotifications,
+  postSendTestNotification,
 } from "./notifications.controller";
 
 const notificationsRouter = new Hono();
@@ -43,5 +44,7 @@ notificationsRouter.patch(
   bodyParser(patchNotificationsSchemas.requirements),
   patchNotification
 );
+
+notificationsRouter.post("/test", isLogged, postSendTestNotification);
 
 export default notificationsRouter;

@@ -139,7 +139,8 @@
     "markedAsRead": "Notification marquée comme lue",
     "markedAllAsRead": "Toutes les notifications marquées comme lues",
     "unreadNotifications": "notifications non lues",
-    "goToResource": "Cliquez pour voir plus"
+    "goToResource": "Cliquez pour voir plus",
+    "sendTestNotification": "Envoyer une notification de test"
   },
   "navbar": {
     "placeholder": "Rechercher un film",

@@ -26,9 +26,7 @@ export const notificationsPayloads: Record<
 };
 
 type TNotificationAddOns = {
-  test: {
-    someId: number;
-  };
+  test: undefined;
   movieDownloaded: {
     tmdbId: TMovieSchema["tmdbId"];
   };
@@ -41,9 +39,9 @@ type TNotificationAddOnsMap<T extends TNotification> =
   T extends keyof TNotificationAddOns ? TNotificationAddOns[T] : never;
 
 const createRessourceUrl: {
-  [T in TNotification]: (addOns: TNotificationAddOnsMap<T>) => string;
+  [T in TNotification]: (addOns: TNotificationAddOnsMap<T>) => string | null;
 } = {
-  test: ({ someId }) => `/test/${someId}`,
+  test: () => null,
   movieDownloaded: ({ tmdbId }) => getUrl("client-movie", { tmdbId }),
   movieDownloading: ({ tmdbId }) => getUrl("client-movie", { tmdbId }),
 };
@@ -51,7 +49,7 @@ const createRessourceUrl: {
 export const generateNotification = async <T extends TNotification>(
   forUserId: TUserSchema["id"] | TUserSchema["id"][],
   notification: T,
-  addOns: TNotificationAddOnsMap<T>
+  addOns?: TNotificationAddOnsMap<T>
 ) => {
   const userIds = Array.isArray(forUserId) ? forUserId : [forUserId];
 
@@ -71,7 +69,7 @@ export const generateNotification = async <T extends TNotification>(
       title,
       message,
       userId,
-      resourceUrl: createRessourceUrl[notification](addOns),
+      resourceUrl: addOns ? createRessourceUrl[notification](addOns) : null,
     })),
   });
 

@@ -139,7 +139,8 @@
     "markedAsRead": "",
     "markedAllAsRead": "",
     "unreadNotifications": "",
-    "goToResource": ""
+    "goToResource": "",
+    "sendTestNotification": ""
   },
   "navbar": {
     "placeholder": "Buscar una película",

@@ -7,6 +7,7 @@ import {
   getUrl,
   notificationReadStatuses,
   patchNotificationsSchemas,
+  postSendTestNotificationSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Volume2Icon, VolumeOffIcon } from "lucide-react";
@@ -43,21 +44,40 @@ export const NotificationsActions: React.FC<{
     },
   });
 
+  const { mutate: sendTestNotification } = useMutation({
+    mutationFn: async () => {
+      await axiosFetch({
+        method: "POST",
+        url: getUrl("api-notifications-test"),
+        schemas: postSendTestNotificationSchemas,
+      });
+    },
+  });
+
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        variant="outline"
-        onClick={() => setMutedNotifications((prev) => !prev)}
-      >
-        {mutedNotifications ? <VolumeOffIcon /> : <Volume2Icon />}
-      </Button>
-      <Button
-        onClick={() => markAllAsRead()}
-        disabled={!isUnreadNotifications}
-        className={cn(readStatus === notificationReadStatuses.READ && "hidden")}
-      >
-        {t("notifications.markAllAsRead")}
-      </Button>
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          onClick={() => setMutedNotifications((prev) => !prev)}
+        >
+          {mutedNotifications ? <VolumeOffIcon /> : <Volume2Icon />}
+        </Button>
+        <Button
+          onClick={() => markAllAsRead()}
+          disabled={!isUnreadNotifications}
+          className={cn(
+            readStatus === notificationReadStatuses.READ && "hidden"
+          )}
+        >
+          {t("notifications.markAllAsRead")}
+        </Button>
+      </div>
+      <div className="flex items-center">
+        <Button variant="outline" onClick={() => sendTestNotification()}>
+          {t("notifications.sendTestNotification")}
+        </Button>
+      </div>
     </div>
   );
 };
