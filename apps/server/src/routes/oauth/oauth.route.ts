@@ -34,6 +34,9 @@ oauthRouter.delete(
 
 oauthRouter.post(
   "/token",
-  bodyParser(postTokenSchemas.requirements),
+  bodyParser(
+    postTokenSchemas.requirements,
+    "application/x-www-form-urlencoded"
+  ),
   postToken
 );

@@ -39,10 +39,13 @@ export const postTokenSchemas = {
   requirements: z.object({
     clientId: z.string(),
     clientSecret: z.string(),
+    grant_type: z.enum(["client_credentials"]),
   }),
   response: z.object({
-    accessToken: z.string(),
-    expiresAt: z.int(),
+    access_token: z.string(),
+    expires_in: z.int(),
+    token_type: z.enum(["Bearer"]),
+    expires_at: z.int(),
   }),
 };
 export type TPostTokenSchemas = {

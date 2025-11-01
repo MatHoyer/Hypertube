@@ -97,15 +97,22 @@ export const postToken = async (
 
   const now = newUTCDate();
   const expiresAt = addMinutes(now, 5);
+  const expiresIn = differenceInMinutes(expiresAt, now);
+  const expiresAtSeconds = Math.floor(getTime(expiresAt) / 1000);
   const token = jwt.sign(
-    { credentialId: credential.id, expiresAt },
+    { credentialId: credential.id, expiresAt: expiresAtSeconds },
     env.BETTER_AUTH_SECRET,
     {
-      expiresIn: getTime(differenceInMinutes(expiresAt, now)),
+      expiresIn: `${expiresIn}m`,
     }
   );
 
   return c.json(
-    postTokenSchemas.response.parse({ token, expiresAt: getTime(expiresAt) })
+    postTokenSchemas.response.parse({
+      access_token: token,
+      expires_in: expiresIn * 60,
+      token_type: "Bearer",
+      expires_at: expiresAtSeconds,
+    })
   );
 };
