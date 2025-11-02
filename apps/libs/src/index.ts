@@ -1,5 +1,13 @@
 // Utils export
-export { newUTCDate } from "./utils/date.utils.js";
+export {
+  getDateAsString,
+  getNearDate,
+  newUTCDate,
+} from "./utils/date.utils.js";
+export type {
+  TDateFormatsKeys,
+  TDateFormatsParams,
+} from "./utils/date.utils.js";
 export { groupBy, pick } from "./utils/object.utils.js";
 export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
 export { getClientUrl } from "./utils/url/getClientUrl.js";
@@ -57,19 +65,23 @@ export type {
 } from "./schemas/api/images.schema.js";
 
 export {
+  deleteMovieSubscribeSchemas,
   getMovieSchemas,
   getMoviesSchemas,
   getMovieSSESchemas,
   postMovieDownloadResolutionSchemas,
   postMovieDownloadSubtitlesSchemas,
+  postMovieSubscribeSchemas,
   tmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
 export type {
+  TDeleteMovieSubscribeSchemas,
   TGetMovieSchemas,
   TGetMoviesSchemas,
   TGetMovieSSESchemas,
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
+  TPostMovieSubscribeSchemas,
 } from "./schemas/api/movie.schema.js";
 
 export {
@@ -89,6 +101,23 @@ export type {
   TPostMovieDownloadJobEndedSchemas,
   TPostMovieDownloadJobStartedSchemas,
 } from "./schemas/api/internal.schema.js";
+
+export {
+  getNotificationsSchemas,
+  getNotificationsSSESchemas,
+  getNotificationsStatsSchemas,
+  patchNotificationSchemas,
+  patchNotificationsSchemas,
+  postSendTestNotificationSchemas,
+} from "./schemas/api/notifications.schema.js";
+export type {
+  TGetNotificationsSchemas,
+  TGetNotificationsSSESchemas,
+  TGetNotificationsStatsSchemas,
+  TPatchNotificationSchemas,
+  TPatchNotificationsSchemas,
+  TPostSendTestNotificationSchemas,
+} from "./schemas/api/notifications.schema.js";
 
 export {
   deleteCredentialsSchemas,
@@ -130,6 +159,9 @@ export type {
   TSubtitleSchema,
 } from "./schemas/database/movie.schema.js";
 
+export { notificationSchema } from "./schemas/database/notifications.schema.js";
+export type { TNotificationSchema } from "./schemas/database/notifications.schema.js";
+
 // Logger export
 export { hypertubeLogger, LOG_LEVELS, specificLogger } from "./utils/logger.js";
 export type { TLogger, TLogLevel } from "./utils/logger.js";
@@ -147,17 +179,26 @@ export {
   DownloadStates,
   languageCodes,
   languageCodesArray,
+  notificationReadStatusArray,
+  notificationReadStatuses,
   Providers,
   sizeMaxFile,
 } from "./const/global.const.js";
-export type { DownloadState } from "./const/global.const.js";
+export type {
+  DownloadState,
+  LanguageCode,
+  NotificationReadStatus,
+} from "./const/global.const.js";
 
 export type { TBetterAuthProviders } from "./const/global.const.js";
+
+export { notifications } from "./const/notifications.const.js";
+export type { TNotification } from "./const/notifications.const.js";
 
 export { enZod } from "./utils/i18n/enZod.js";
 export { esZod } from "./utils/i18n/esZod.js";
 export { frZod } from "./utils/i18n/frZod.js";
 export { zodTranslate } from "./utils/i18n/zodTranslate.js";
 
-export { SSEEvents } from "./const/events.js";
-export type { SSEEvent } from "./const/events.js";
+export { MOVIE_EVENTS, NOTIFICATIONS_EVENTS } from "./const/events.js";
+export type { TMovieEvents, TNotificationsEvents } from "./const/events.js";

@@ -1,11 +1,15 @@
 import {
+  deleteMovieSubscribeSchemas,
   getMovieSchemas,
   getMoviesSchemas,
   getMovieSSESchemas,
   postMovieDownloadResolutionSchemas,
   postMovieDownloadSubtitlesSchemas,
+  postMovieSubscribeSchemas,
 } from "@hypertube/libs";
 import { Hono } from "hono";
+import { isLogged } from "../../middlewares/isLogged";
+import { isLoggedSafe } from "../../middlewares/isLoggedSafe";
 import { isVPNActive } from "../../middlewares/isVPNActive";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
@@ -15,6 +19,8 @@ import {
   getMovie,
   getMovies,
   getMovieSSE,
+  subscribeToMovie,
+  unsubscribeFromMovie,
 } from "./movies.controller";
 
 const moviesRouter = new Hono();
@@ -27,6 +33,7 @@ moviesRouter.get(
 
 moviesRouter.get(
   "/:tmdbId",
+  isLoggedSafe,
   urlParamsParser(getMovieSchemas.urlParams),
   getMovie
 );
@@ -49,6 +56,20 @@ moviesRouter.post(
   isVPNActive,
   urlParamsParser(postMovieDownloadSubtitlesSchemas.urlParams),
   downloadSubtitles
+);
+
+moviesRouter.post(
+  "/:tmdbId/subscription",
+  isLogged,
+  urlParamsParser(postMovieSubscribeSchemas.urlParams),
+  subscribeToMovie
+);
+
+moviesRouter.delete(
+  "/:tmdbId/subscription",
+  isLogged,
+  urlParamsParser(deleteMovieSubscribeSchemas.urlParams),
+  unsubscribeFromMovie
 );
 
 export default moviesRouter;

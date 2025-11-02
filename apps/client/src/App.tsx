@@ -9,6 +9,7 @@ import { ErrorPage } from "./pages/error/ErrorPage";
 import { HomePage } from "./pages/home/home.page";
 import MoviePage from "./pages/movie/movie.page";
 import { MoviePageParamsSchema } from "./pages/movie/schemas/urlParams.schema";
+import { NotificationsPage } from "./pages/notifications/notifications.page";
 import { OAuthCredentialsPage } from "./pages/oauthCredentials/oauth-credentials.page";
 import { PlaygroundPage } from "./pages/playground/playground.page";
 import { SettingsPage } from "./pages/profile/settings/SettingsPage";
@@ -52,6 +53,10 @@ const App = () => {
 
         {/* Private only routes */}
         <Route element={<PrivateOnlyRoute />}>
+          <Route
+            path={getUrl("client-notifications")}
+            element={<NotificationsPage />}
+          />
           <Route path={getUrl("client-settings")} element={<SettingsPage />} />
           <Route
             path={getUrl("client-oauth-credentials")}

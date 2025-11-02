@@ -18,6 +18,7 @@ export type TClientRouteDataRequirements = {
   };
   "client-oauth-credentials": undefined;
   "client-error": undefined;
+  "client-notifications": undefined;
 };
 
 export type TApiRouteDataRequirements = {
@@ -53,11 +54,19 @@ export type TApiRouteDataRequirements = {
     resolution?: (typeof ytsQualities)[number] | "{resolution}";
     subtitlesLanguage?: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
+  "api-movies-subscription": { tmdbId: TMovieSchema["tmdbId"] | "{tmdbId}" };
+
+  "api-notifications": {
+    notificationId?: string | "{notificationId}";
+  };
+  "api-notifications-stats": undefined;
+  "api-notifications-test": undefined;
 
   // sse routes
   "sse-movies": {
     tmdbId: "{tmdbId}" | number;
   };
+  "sse-notifications": undefined;
 
   // Streaming routes
   "api-streaming-movie-resolution": {
@@ -102,6 +111,7 @@ const routes: {
   "client-movie": ({ tmdbId }) => `/movie/${tmdbId}`,
   "client-oauth-credentials": () => "/credentials",
   "client-error": () => "/error",
+  "client-notifications": () => "/notifications",
 
   // API routes
   "api-swagger": ({ mode }) => (mode ? `/api/swagger/${mode}` : "/api/swagger"),
@@ -151,15 +161,23 @@ const routes: {
       return `/api/movies/${tmdbId}`;
     }
   },
+  "api-movies-subscription": ({ tmdbId }) =>
+    `/api/movies/${tmdbId}/subscription`,
 
+  "api-notifications": ({ notificationId }) =>
+    `/api/notifications` + (notificationId ? `/${notificationId}` : ""),
+  "api-notifications-stats": () => "/api/notifications/stats",
+  "api-notifications-test": () => "/api/notifications/test",
+
+  // SSE routes
   "sse-movies": ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
+  "sse-notifications": () => "/api/notifications/sse",
 
+  // Streaming routes
   "api-streaming-movie-resolution": ({ tmdbId, resolution }) =>
     `/api/streaming/movie/${tmdbId}/resolution/${resolution}`,
   "api-streaming-movie-subtitles": ({ tmdbId, subtitlesLanguage }) =>
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
-
-  // Internal routes
 
   // External routes
   "external-imdb-movie": ({ imdbId }) => `https://www.imdb.com/title/${imdbId}`,

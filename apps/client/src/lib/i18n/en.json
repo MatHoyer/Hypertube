@@ -111,7 +111,19 @@
       "noResolutionSelected": "No resolution selected",
       "resolutionDownloading": "Can't seek the video while the resolution is downloading"
     },
-    "cast": "Cast"
+    "cast": "Cast",
+    "subscriptions": {
+      "subscribe": "Subscribe to notifications",
+      "unsubscribe": "Unsubscribe from notifications",
+      "tooltip": {
+        "subscribe": "Subscribe to notifications to get notified when something happens related to this movie",
+        "unsubscribe": "Unsubscribe from notifications to stop getting notified when something happens related to this movie"
+      },
+      "toast": {
+        "subscribe": "You are now subscribed to notifications for this movie",
+        "unsubscribe": "You are now unsubscribed from notifications for this movie"
+      }
+    }
   },
   "oauthCredentials": {
     "title": "Credentials",
@@ -142,9 +154,27 @@
     },
     "deleteCredentialSuccess": "Credential deleted successfully."
   },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Here you can see your notifications",
+    "noNotifications": "No notifications",
+    "noNotificationsDescription": "You haven't received any notifications yet. When you receive a notification, it will appear here.",
+    "readStatus": {
+      "all": "All",
+      "read": "Read",
+      "unread": "Unread"
+    },
+    "markAllAsRead": "Mark all as read",
+    "markedAsRead": "Notification marked as read",
+    "markedAllAsRead": "All notifications marked as read",
+    "unreadNotifications": "unread notifications",
+    "goToResource": "Click for more",
+    "sendTestNotification": "Send test notification"
+  },
   "navbar": {
     "placeholder": "Search for a movie",
     "account": "My Account",
+    "notifications": "Notifications",
     "profile": "Profile",
     "settings": "Settings"
   },

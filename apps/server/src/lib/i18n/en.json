@@ -68,5 +68,19 @@
     "USER_ALREADY_HAS_A_PASSWORD": "User already has a password",
     "TOO_MANY_EMAILS_SENT": "Too many emails sent. Retry later.",
     "OAUTH_CODE_VERIFICATION_FAILED": "Oauth code verification failed."
+  },
+  "notifications": {
+    "test": {
+      "title": "Test en",
+      "message": "Test message"
+    },
+    "movieDownloaded": {
+      "title": "Movie downloaded",
+      "message": "Your movie has been downloaded"
+    },
+    "movieDownloading": {
+      "title": "Movie downloading",
+      "message": "Your movie is currently downloading"
+    }
   }
 }

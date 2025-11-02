@@ -111,7 +111,19 @@
       "noResolutionSelected": "",
       "resolutionDownloading": ""
     },
-    "cast": "Reparto"
+    "cast": "Reparto",
+    "subscriptions": {
+      "subscribe": "Suscribirse a notificaciones",
+      "unsubscribe": "Desuscribirse de notificaciones",
+      "tooltip": {
+        "subscribe": "Suscribirse a notificaciones para recibir notificaciones cuando algo suceda relacionado con esta película",
+        "unsubscribe": "Desuscribirse de notificaciones para dejar de recibir notificaciones cuando algo suceda relacionado con esta película"
+      },
+      "toast": {
+        "subscribe": "Ahora estás suscrito a notificaciones para esta película",
+        "unsubscribe": "Ahora estás desuscrito de notificaciones para esta película"
+      }
+    }
   },
   "oauthCredentials": {
     "title": "",
@@ -142,9 +154,27 @@
     },
     "deleteCredentialSuccess": "Credencial eliminada exitosamente."
   },
+  "notifications": {
+    "title": "",
+    "description": "",
+    "noNotifications": "",
+    "noNotificationsDescription": "",
+    "readStatus": {
+      "all": "",
+      "read": "",
+      "unread": ""
+    },
+    "markAllAsRead": "",
+    "markedAsRead": "",
+    "markedAllAsRead": "",
+    "unreadNotifications": "",
+    "goToResource": "",
+    "sendTestNotification": ""
+  },
   "navbar": {
     "placeholder": "Buscar una película",
     "account": "Mi cuenta",
+    "notifications": "",
     "profile": "Perfil",
     "settings": "Configuración"
   },

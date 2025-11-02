@@ -111,7 +111,19 @@
       "noResolutionSelected": "Aucune résolution sélectionnée",
       "resolutionDownloading": "Impossible de parcourir la vidéo pendant que la résolution est en cours de téléchargement"
     },
-    "cast": "Casting"
+    "cast": "Casting",
+    "subscriptions": {
+      "subscribe": "S'abonner aux notifications",
+      "unsubscribe": "Se désabonner des notifications",
+      "tooltip": {
+        "subscribe": "S'abonner aux notifications pour recevoir des notifications lorsque quelque chose se passe lié à ce film",
+        "unsubscribe": "Se désabonner des notifications pour ne plus recevoir des notifications lorsque quelque chose se passe lié à ce film"
+      },
+      "toast": {
+        "subscribe": "Vous êtes maintenant abonné aux notifications pour ce film",
+        "unsubscribe": "Vous êtes maintenant désabonné des notifications pour ce film"
+      }
+    }
   },
   "oauthCredentials": {
     "title": "Credentials",
@@ -142,9 +154,27 @@
     },
     "deleteCredentialSuccess": "Credential supprimé avec succès."
   },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Ici vous pouvez voir vos notifications",
+    "noNotifications": "Aucune notification",
+    "noNotificationsDescription": "Vous n'avez pas encore reçu de notification. Lorsque vous recevrez une notification, elle apparaîtra ici.",
+    "readStatus": {
+      "all": "Toutes",
+      "read": "Lues",
+      "unread": "Non lues"
+    },
+    "markAllAsRead": "Marquer toutes comme lues",
+    "markedAsRead": "Notification marquée comme lue",
+    "markedAllAsRead": "Toutes les notifications marquées comme lues",
+    "unreadNotifications": "notifications non lues",
+    "goToResource": "Cliquez pour voir plus",
+    "sendTestNotification": "Envoyer une notification de test"
+  },
   "navbar": {
     "placeholder": "Rechercher un film",
     "account": "Mon compte",
+    "notifications": "Notifications",
     "profile": "Profil",
     "settings": "Paramètres"
   },
