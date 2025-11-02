@@ -94,15 +94,6 @@ export type {
 } from "./schemas/api/streaming.schema.js";
 
 export {
-  postMovieDownloadJobEndedSchemas,
-  postMovieDownloadJobStartedSchemas,
-} from "./schemas/api/internal.schema.js";
-export type {
-  TPostMovieDownloadJobEndedSchemas,
-  TPostMovieDownloadJobStartedSchemas,
-} from "./schemas/api/internal.schema.js";
-
-export {
   getNotificationsSchemas,
   getNotificationsSSESchemas,
   getNotificationsStatsSchemas,
