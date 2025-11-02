@@ -118,11 +118,11 @@
       "tooltip": {
         "subscribe": "Suscribirse a notificaciones para recibir notificaciones cuando algo suceda relacionado con esta película",
         "unsubscribe": "Desuscribirse de notificaciones para dejar de recibir notificaciones cuando algo suceda relacionado con esta película"
+      },
+      "toast": {
+        "subscribe": "Ahora estás suscrito a notificaciones para esta película",
+        "unsubscribe": "Ahora estás desuscrito de notificaciones para esta película"
       }
-    },
-    "toast": {
-      "subscribe": "Ahora estás suscrito a notificaciones para esta película",
-      "unsubscribe": "Ahora estás desuscrito de notificaciones para esta película"
     }
   },
   "oauthCredentials": {

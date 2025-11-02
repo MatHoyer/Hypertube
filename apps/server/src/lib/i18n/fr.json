@@ -73,6 +73,14 @@
     "test": {
       "title": "Test fr",
       "message": "Message de test"
+    },
+    "movieDownloaded": {
+      "title": "Film téléchargé",
+      "message": "Votre film a été téléchargé"
+    },
+    "movieDownloading": {
+      "title": "Film en téléchargement",
+      "message": "Votre film est en cours de téléchargement"
     }
   }
 }
