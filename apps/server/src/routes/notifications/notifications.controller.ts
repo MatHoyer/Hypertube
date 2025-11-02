@@ -18,6 +18,7 @@ import {
 import { Context } from "hono";
 import { streamSSE } from "hono/streaming";
 import i18next from "i18next";
+import { env } from "process";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
@@ -93,6 +94,8 @@ export const getNotificationsSSE = async (c: Context<TIsLogged>) => {
   c.header("Cache-Control", "no-cache");
   c.header("Connection", "keep-alive");
   c.header("Content-Type", "text/event-stream");
+  c.header("Access-Control-Allow-Origin", env.BETTER_AUTH_URL);
+  c.header("Access-Control-Allow-Credentials", "true");
 
   return streamSSE(c, async (stream) => {
     const eventsSubscriber = new EventsSubscriber(
