@@ -113,7 +113,11 @@ export const getNotificationsSSE = async (c: Context<TIsLogged>) => {
     });
 
     while (true) {
-      await stream.sleep(60000);
+      await stream.writeSSE({
+        event: "ping",
+        data: "ping",
+      });
+      await stream.sleep(15000);
     }
   });
 };
