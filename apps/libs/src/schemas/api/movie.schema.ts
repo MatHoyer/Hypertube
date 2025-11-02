@@ -76,6 +76,7 @@ export const getMovieSchemas = {
     ...movieSchema.shape,
     resolutions: z.array(resolutionSchema),
     subtitles: z.array(subtitleSchema),
+    isSubscribed: z.boolean(),
   }),
 };
 export type TGetMovieSchemas = {
@@ -136,4 +137,30 @@ export const postMovieDownloadSubtitlesSchemas = {
 export type TPostMovieDownloadSubtitlesSchemas = {
   urlParams: z.infer<typeof postMovieDownloadSubtitlesSchemas.urlParams>;
   response: z.infer<typeof postMovieDownloadSubtitlesSchemas.response>;
+};
+
+export const postMovieSubscribeSchemas = {
+  urlParams: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+export type TPostMovieSubscribeSchemas = {
+  urlParams: z.infer<typeof postMovieSubscribeSchemas.urlParams>;
+  response: z.infer<typeof postMovieSubscribeSchemas.response>;
+};
+
+export const deleteMovieSubscribeSchemas = {
+  urlParams: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+export type TDeleteMovieSubscribeSchemas = {
+  urlParams: z.infer<typeof deleteMovieSubscribeSchemas.urlParams>;
+  response: z.infer<typeof deleteMovieSubscribeSchemas.response>;
 };

@@ -54,11 +54,13 @@ export type TApiRouteDataRequirements = {
     resolution?: (typeof ytsQualities)[number] | "{resolution}";
     subtitlesLanguage?: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
+  "api-movies-subscription": { tmdbId: TMovieSchema["tmdbId"] | "{tmdbId}" };
 
   "api-notifications": {
     notificationId?: string | "{notificationId}";
   };
   "api-notifications-stats": undefined;
+  "api-notifications-test": undefined;
 
   // sse routes
   "sse-movies": {
@@ -159,10 +161,13 @@ const routes: {
       return `/api/movies/${tmdbId}`;
     }
   },
+  "api-movies-subscription": ({ tmdbId }) =>
+    `/api/movies/${tmdbId}/subscription`,
 
   "api-notifications": ({ notificationId }) =>
     `/api/notifications` + (notificationId ? `/${notificationId}` : ""),
   "api-notifications-stats": () => "/api/notifications/stats",
+  "api-notifications-test": () => "/api/notifications/test",
 
   // SSE routes
   "sse-movies": ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,

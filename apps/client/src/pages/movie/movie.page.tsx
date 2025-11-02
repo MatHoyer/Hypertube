@@ -14,7 +14,7 @@ import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { NotFoundPage } from "../notFound/NotFound.page";
 import MovieInfo from "./components/movie-info";
-import MovieInteraction from "./components/movie-interaction";
+import { MovieInteraction } from "./components/movie-interaction";
 import { DownloadsSelector } from "./components/settings-selector";
 import VideoPlayer from "./components/video-player";
 import { VideoPlayerProvider } from "./components/video-player.context";
@@ -162,7 +162,10 @@ const MoviePage = () => {
               </TabsContent>
             </Tabs>
           </div>
-          <MovieInteraction />
+          <MovieInteraction
+            tmdbId={movie.tmdbId}
+            isSubscribed={movie.isSubscribed}
+          />
         </div>
       </div>
     </VideoPlayerProvider>

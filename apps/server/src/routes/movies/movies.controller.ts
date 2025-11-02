@@ -20,6 +20,7 @@ import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
 import { downloaderQueue } from "../../lib/queues/downloader";
 import { downloadYifysubtitles } from "../../lib/scrappers/yifysubtitles.scrapper";
 import { SSEClients } from "../../lib/SSEClients";
+import { TIsLoggedSafe } from "../../middlewares/isLoggedSafe";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import {
@@ -46,10 +47,11 @@ export const getMovies = async (
 };
 
 export const getMovie = async (
-  c: Context<TUrlParamsParser<TGetMovieSchemas["urlParams"]>>
+  c: Context<TUrlParamsParser<TGetMovieSchemas["urlParams"]> & TIsLoggedSafe>
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const language = c.get("language");
+  const user = c.get("user");
 
   const tmdbApi = new TmdbApi();
   const tmdbMovie =
@@ -117,12 +119,26 @@ export const getMovie = async (
     },
   });
 
+  let isSubscribed = false;
+  if (user) {
+    const subscription = await prisma.movieSubscription.findUnique({
+      where: {
+        movieId_userId: {
+          movieId: dbMovie.id,
+          userId: user.id,
+        },
+      },
+    });
+    isSubscribed = !!subscription;
+  }
+
   return c.json(
     getMovieSchemas.response.parse({
       ...tmdbMovie,
       ...dbMovie,
       resolutions,
       subtitles,
+      isSubscribed,
     })
   );
 };

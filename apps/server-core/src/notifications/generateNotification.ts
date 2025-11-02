@@ -1,7 +1,11 @@
-import { TUserSchema } from "@hypertube/libs";
+import {
+  getUrl,
+  TMovieSchema,
+  TNotification,
+  TUserSchema,
+} from "@hypertube/libs";
 import { prisma } from "../prisma.js";
 import { EventsPublisher } from "../redis/EventsPubSub.js";
-import type { TNotification } from "./notifications.js";
 
 export const notificationsPayloads: Record<
   TNotification,
@@ -11,11 +15,23 @@ export const notificationsPayloads: Record<
     title: "notifications.test.title",
     message: "notifications.test.message",
   },
+  movieDownloaded: {
+    title: "notifications.movieDownloaded.title",
+    message: "notifications.movieDownloaded.message",
+  },
+  movieDownloading: {
+    title: "notifications.movieDownloading.title",
+    message: "notifications.movieDownloading.message",
+  },
 };
 
 type TNotificationAddOns = {
-  test: {
-    someId: number;
+  test: undefined;
+  movieDownloaded: {
+    tmdbId: TMovieSchema["tmdbId"];
+  };
+  movieDownloading: {
+    tmdbId: TMovieSchema["tmdbId"];
   };
 };
 
@@ -23,31 +39,38 @@ type TNotificationAddOnsMap<T extends TNotification> =
   T extends keyof TNotificationAddOns ? TNotificationAddOns[T] : never;
 
 const createRessourceUrl: {
-  [T in TNotification]: (addOns: TNotificationAddOnsMap<T>) => string;
+  [T in TNotification]: (addOns: TNotificationAddOnsMap<T>) => string | null;
 } = {
-  test: ({ someId }) => `/test/${someId}`,
+  test: () => null,
+  movieDownloaded: ({ tmdbId }) => getUrl("client-movie", { tmdbId }),
+  movieDownloading: ({ tmdbId }) => getUrl("client-movie", { tmdbId }),
 };
 
 export const generateNotification = async <T extends TNotification>(
-  forUserId: TUserSchema["id"],
+  forUserId: TUserSchema["id"] | TUserSchema["id"][],
   notification: T,
-  addOns: TNotificationAddOnsMap<T>
+  addOns?: TNotificationAddOnsMap<T>
 ) => {
-  const notificationPublisher = new EventsPublisher({
-    event: "notification",
-    userId: forUserId,
-  });
+  const userIds = Array.isArray(forUserId) ? forUserId : [forUserId];
+
+  const notificationPublisher = new EventsPublisher(
+    userIds.map((userId) => ({
+      event: "notification",
+      userId,
+    }))
+  );
 
   const title = notificationsPayloads[notification].title;
   const message = notificationsPayloads[notification].message;
 
-  await prisma.notification.create({
-    data: {
+  await prisma.notification.createMany({
+    data: userIds.map((userId) => ({
+      type: notification,
       title,
       message,
-      userId: forUserId,
-      resourceUrl: createRessourceUrl[notification](addOns),
-    },
+      userId,
+      resourceUrl: addOns ? createRessourceUrl[notification](addOns) : null,
+    })),
   });
 
   await notificationPublisher.publish({

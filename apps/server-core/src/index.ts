@@ -29,5 +29,3 @@ export type { TDownloadJobData } from "./redis/const.js";
 export { EventsPublisher, EventsSubscriber } from "./redis/EventsPubSub.js";
 
 export { generateNotification } from "./notifications/generateNotification.js";
-export { notifications } from "./notifications/notifications.js";
-export type { TNotification } from "./notifications/notifications.js";

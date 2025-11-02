@@ -4,12 +4,17 @@ import {
   getNotificationsStatsSchemas,
   hypertubeLogger,
   notificationReadStatuses,
+  notifications,
   NOTIFICATIONS_EVENTS,
   TGetNotificationsSchemas,
   TPatchNotificationSchemas,
   TPatchNotificationsSchemas,
 } from "@hypertube/libs";
-import { EventsSubscriber, prisma } from "@hypertube/server-core";
+import {
+  EventsSubscriber,
+  generateNotification,
+  prisma,
+} from "@hypertube/server-core";
 import { Context } from "hono";
 import { streamSSE } from "hono/streaming";
 import i18next from "i18next";
@@ -140,4 +145,12 @@ export const patchNotification = async (
     data: { read },
   });
   return c.json({ message: "Notification updated successfully" }, 200);
+};
+
+export const postSendTestNotification = async (c: Context<TIsLogged>) => {
+  const { id } = c.get("user");
+
+  await generateNotification(id, notifications.TEST);
+
+  return c.json({ message: "Test notification sent successfully" }, 200);
 };

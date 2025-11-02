@@ -161,7 +161,7 @@ export const NotificationsPage = () => {
             </LayoutDescription>
           </div>
         </div>
-        <LayoutActions>
+        <LayoutActions className="w-full">
           <NotificationsActions
             readStatus={readStatus}
             isUnreadNotifications={isUnreadNotifications}

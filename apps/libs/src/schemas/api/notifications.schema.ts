@@ -75,3 +75,13 @@ export type TPatchNotificationSchemas = {
   requirements: z.infer<typeof patchNotificationSchemas.requirements>;
   response: z.infer<typeof patchNotificationSchemas.response>;
 };
+
+export const postSendTestNotificationSchemas = {
+  response: z.object({
+    message: z.string(),
+  }),
+};
+
+export type TPostSendTestNotificationSchemas = {
+  response: z.infer<typeof postSendTestNotificationSchemas.response>;
+};
