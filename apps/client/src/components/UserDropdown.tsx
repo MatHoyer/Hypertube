@@ -54,9 +54,7 @@ export const UserDropdown = () => {
   });
 
   useEffect(() => {
-    const eventSource = new EventSource(getUrl("sse-notifications"), {
-      withCredentials: true,
-    });
+    const eventSource = new EventSource(getUrl("sse-notifications"));
     eventSource.onopen = () => {
       console.log("notifications SSE opened");
     };
