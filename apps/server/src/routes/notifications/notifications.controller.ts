@@ -89,6 +89,11 @@ export const getNotificationsSSE = async (c: Context<TIsLogged>) => {
 
   hypertubeLogger.info(`[${id}] notifications SSE started`);
 
+  c.header("X-Accel-Buffering", "no");
+  c.header("Cache-Control", "no-cache");
+  c.header("Connection", "keep-alive");
+  c.header("Content-Type", "text/event-stream");
+
   return streamSSE(c, async (stream) => {
     const eventsSubscriber = new EventsSubscriber(
       { event: "notification", userId: id },
