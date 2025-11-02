@@ -23,13 +23,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    labels:
-      - traefik.http.routers.sse.rule=Host(`hypertube.mathieuhoyer.fr`) && PathPrefix(`/api/notifications/sse`)
-      - traefik.http.routers.sse.entrypoints=websecure
-      - traefik.http.routers.sse.tls=true
-      - traefik.http.routers.sse.service=hypertube-backend
-      - traefik.http.routers.sse.middlewares=no-buffering@file
-      - traefik.http.services.hypertube-backend.loadbalancer.server.port=3000
 
   downloader:
     container_name: hypertube-downloader-prod
