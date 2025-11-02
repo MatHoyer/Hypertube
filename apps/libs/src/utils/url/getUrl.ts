@@ -1,6 +1,7 @@
 import type { TBetterAuthProviders } from "../../const/global.const.js";
 import { languageCodes } from "../../const/global.const.js";
 import { ytsQualities } from "../../const/yts.const.js";
+import type { TCredentialSchema } from "../../schemas/database/credential.schema.js";
 import type { TMovieSchema } from "../../schemas/database/movie.schema.js";
 import { getClientUrl } from "./getClientUrl.js";
 import { getServerUrl } from "./getServerUrl.js";
@@ -15,6 +16,7 @@ export type TClientRouteDataRequirements = {
   "client-movie": {
     tmdbId: TMovieSchema["tmdbId"] | ":tmdbId";
   };
+  "client-oauth-credentials": undefined;
   "client-error": undefined;
 };
 
@@ -35,6 +37,9 @@ export type TApiRouteDataRequirements = {
   "api-authentification-email-verification": undefined;
   "api-authentification-link": {
     providerId?: TBetterAuthProviders | "{providerId}";
+  };
+  "api-oauth-credentials": {
+    credentialId?: TCredentialSchema["id"] | "{credentialId}";
   };
 
   "api-users": { userId?: string };
@@ -95,6 +100,7 @@ const routes: {
   "client-reset-password": () => "/reset-password",
   "client-settings": () => "/settings",
   "client-movie": ({ tmdbId }) => `/movie/${tmdbId}`,
+  "client-oauth-credentials": () => "/credentials",
   "client-error": () => "/error",
 
   // API routes
@@ -118,6 +124,10 @@ const routes: {
     providerId
       ? `/api/authentification/link/${providerId}`
       : "/api/authentification/link",
+  "api-oauth-credentials": ({ credentialId }) =>
+    credentialId
+      ? `/api/oauth/credentials/${credentialId}`
+      : "/api/oauth/credentials",
 
   "api-users": ({ userId }) => "/api/users" + (userId ? `/${userId}` : ""),
   "api-users-accounts": () => "/api/users/accounts",

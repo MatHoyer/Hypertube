@@ -113,6 +113,35 @@
     },
     "cast": "Casting"
   },
+  "oauthCredentials": {
+    "title": "Credentials",
+    "description": "Gérer vos credentials OAuth pour les intégrations avec des tiers. ",
+    "actions": {
+      "addCredential": "Ajouter un credential",
+      "openDocumentation": "Ouvrir la documentation de l'API"
+    },
+    "empty": {
+      "title": "Encore aucun credential",
+      "description": "Vous n'avez pas encore créé de credential. Commencez par en créer un."
+    },
+    "newCredential": {
+      "title": "Nouveaux credentials",
+      "description": {
+        "1": "Vos nouveaux credentials ont été générés.",
+        "2": "Veuillez les copier et les utiliser pour authentifier votre application.",
+        "3": "Le client secret n'est visible que maintenant."
+      },
+      "clientId": "Client ID",
+      "clientSecret": "Client Secret"
+    },
+    "postCredentials": {
+      "title": "Nouveaux credentials",
+      "description": "Veuillez entrer un nom pour vos nouveaux credentials.",
+      "namePlaceholder": "Nom",
+      "submit": "Créer les credentials"
+    },
+    "deleteCredentialSuccess": "Credential supprimé avec succès."
+  },
   "navbar": {
     "placeholder": "Rechercher un film",
     "account": "Mon compte",

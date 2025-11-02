@@ -90,9 +90,25 @@ export type {
   TPostMovieDownloadJobStartedSchemas,
 } from "./schemas/api/internal.schema.js";
 
+export {
+  deleteCredentialsSchemas,
+  getCredentialsSchemas,
+  postCredentialsSchemas,
+  postTokenSchemas,
+} from "./schemas/api/oauth.schema.js";
+export type {
+  TDeleteCredentialsSchemas,
+  TGetCredentialsSchemas,
+  TPostCredentialsSchemas,
+  TPostTokenSchemas,
+} from "./schemas/api/oauth.schema.js";
+
 // Database Schemas export
 export { imageSchema } from "./schemas/database/image.schema.js";
 export type { TImageSchema } from "./schemas/database/image.schema.js";
+
+export { credentialSchema } from "./schemas/database/credential.schema.js";
+export type { TCredentialSchema } from "./schemas/database/credential.schema.js";
 
 export { userSchema } from "./schemas/database/user.schema.js";
 export type { TUserSchema } from "./schemas/database/user.schema.js";

@@ -113,6 +113,35 @@
     },
     "cast": "Cast"
   },
+  "oauthCredentials": {
+    "title": "Credentials",
+    "description": "Manage your OAuth credentials for third-party integrations.",
+    "actions": {
+      "addCredential": "Add Credential",
+      "openDocumentation": "Open API documentation"
+    },
+    "empty": {
+      "title": "No Credentials Yet",
+      "description": "You haven't created any credentials yet. Get started by creating your first credential."
+    },
+    "newCredential": {
+      "title": "New Credentials",
+      "description": {
+        "1": "Your new credentials have been generated.",
+        "2": "Please copy them and use them to authenticate your application.",
+        "3": "Client secret is only visible now."
+      },
+      "clientId": "Client ID",
+      "clientSecret": "Client Secret"
+    },
+    "postCredentials": {
+      "title": "New Credentials",
+      "description": "Please enter a name for your new credentials.",
+      "namePlaceholder": "Name",
+      "submit": "Create Credentials"
+    },
+    "deleteCredentialSuccess": "Credential deleted successfully."
+  },
   "navbar": {
     "placeholder": "Search for a movie",
     "account": "My Account",

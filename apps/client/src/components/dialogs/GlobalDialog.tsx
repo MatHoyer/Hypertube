@@ -1,4 +1,6 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { NewCredentialsDialog } from "@/pages/oauthCredentials/dialogs/new-credentials";
+import { PostCredentialsDialog } from "@/pages/oauthCredentials/dialogs/post-credentials";
 import { Button } from "../ui/button";
 import { openAlertDialog } from "./alert-dialog.store";
 import {
@@ -32,6 +34,19 @@ const dialogComponents: Record<TDialogType, React.FC> = {
         </Button>
       </DialogContent>
     );
+  },
+  newCredential: () => {
+    const data = getDialogData("newCredential");
+
+    return (
+      <NewCredentialsDialog
+        clientId={data.clientId}
+        clientSecret={data.clientSecret}
+      />
+    );
+  },
+  postCredentials: () => {
+    return <PostCredentialsDialog />;
   },
 };
 

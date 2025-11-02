@@ -1,3 +1,4 @@
+import { credentialSchema } from "@hypertube/libs";
 import z from "zod";
 import { create } from "zustand";
 
@@ -5,10 +6,17 @@ const dialogSchemas = {
   example: z.object({
     id: z.string(),
   }),
+  newCredential: z.object({
+    clientId: credentialSchema.shape.clientId,
+    clientSecret: credentialSchema.shape.clientSecret,
+  }),
+  postCredentials: null,
 };
 
 type TDialogDataMap = {
   example: z.infer<typeof dialogSchemas.example>;
+  newCredential: z.infer<typeof dialogSchemas.newCredential>;
+  postCredentials: null;
 };
 
 export type TDialogType = keyof TDialogDataMap;
