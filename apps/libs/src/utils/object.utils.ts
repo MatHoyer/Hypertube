@@ -19,3 +19,21 @@ export const pick = <T extends Record<string, any>, K extends keyof T>(
     {} as Pick<T, K>
   );
 };
+
+export const typedKeys = <T extends object>(obj: T) => {
+  return Object.keys(obj) as Array<keyof T>;
+};
+
+export const typedValues = <T extends object>(obj: T) => {
+  return Object.values(obj) as Array<T[keyof T]>;
+};
+
+export const typedEntries = <T extends object>(obj: T) => {
+  return Object.entries(obj) as Array<[keyof T, T[keyof T]]>;
+};
+
+export const isPurObject = (
+  obj: unknown
+): obj is Record<string | number | symbol, unknown> => {
+  return typeof obj === "object" && obj !== null && !Array.isArray(obj);
+};

@@ -1,4 +1,11 @@
-import { languageCodes, tmdbMovieSchema } from "@hypertube/libs";
+import {
+  languageCodes,
+  tmdbDefaultSort,
+  tmdbMovieSchema,
+  TTmdbCategory,
+  TTmdbGenresValue,
+  TTmdbSort,
+} from "@hypertube/libs";
 import { env } from "@hypertube/server-core";
 import z from "zod";
 
@@ -11,7 +18,7 @@ export class TmdbApi {
   constructor() {
     this.apiKey = env.TMDB_TOKEN;
     this.apiUrl = "https://api.themoviedb.org/3";
-    this.imgUrl = "https://image.tmdb.org/t/p/original";
+    this.imgUrl = "https://image.tmdb.org/t/p/w342";
     this.fetchOptions = {
       headers: {
         "Content-Type": "application/json",
@@ -44,7 +51,9 @@ export class TmdbApi {
       ? `${this.imgUrl}${response.backdrop_path}`
       : null;
 
-    return responseSchema.parse(response);
+    const responseParsed = responseSchema.safeParse(response);
+    if (!responseParsed.success) return null;
+    return responseParsed.data;
   }
 
   private async getAllMovieDetails(
@@ -58,12 +67,16 @@ export class TmdbApi {
     return await Promise.all(moviePromises);
   }
 
-  private async getMoviesByType({
-    type,
+  private async getMoviesBySort({
+    category,
+    sort = tmdbDefaultSort,
+    genres,
     page,
     language,
   }: {
-    type: "popular" | "top_rated" | "upcoming" | "now_playing";
+    category: TTmdbCategory | undefined;
+    sort: TTmdbSort | undefined;
+    genres: TTmdbGenresValue[] | undefined;
     page: number;
     language: keyof typeof languageCodes;
   }) {
@@ -77,9 +90,20 @@ export class TmdbApi {
         })
       ),
     });
+
+    if (category) {
+      const response = await this.fetch<z.infer<typeof responseSchema>>(
+        `/movie/${category}?page=${page}&language=${language}`
+      );
+      return responseSchema.parse(response);
+    }
+
+    const genresString = genres?.join(",");
+
     const response = await this.fetch<z.infer<typeof responseSchema>>(
-      `/movie/${type}?page=${page}&language=${language}`
+      `/discover/movie?language=${language}&page=${page}&sort_by=${sort}&with_genres=${genresString}`
     );
+
     return responseSchema.parse(response);
   }
 
@@ -112,10 +136,16 @@ export class TmdbApi {
     query,
     language,
     page,
+    category,
+    sort,
+    genres,
   }: {
     query: string | undefined;
     language: keyof typeof languageCodes;
     page: number;
+    category: TTmdbCategory | undefined;
+    sort: TTmdbSort | undefined;
+    genres: TTmdbGenresValue[] | undefined;
   }) {
     const rawMovies = query
       ? await this.getMoviesWithQuery({
@@ -123,8 +153,10 @@ export class TmdbApi {
           language,
           page,
         })
-      : await this.getMoviesByType({
-          type: "popular",
+      : await this.getMoviesBySort({
+          category,
+          sort,
+          genres,
           page,
           language,
         });

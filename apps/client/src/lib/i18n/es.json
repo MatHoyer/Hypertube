@@ -124,6 +124,63 @@
         "subscribe": "Te has suscrito a las notificaciones de esta película",
         "unsubscribe": "Te has dado de baja de las notificaciones de esta película"
       }
+    },
+    "page": {
+      "missing": {
+        "desc": "",
+        "genres": "",
+        "date": ""
+      },
+      "seen": "",
+      "evaluation": "",
+      "evaluations": "",
+      "noFound": ""
+    },
+    "filter": {
+      "title": "",
+      "desc": "",
+      "descNote": "",
+      "reset": "",
+      "category": {
+        "title": "",
+        "now_playing": "",
+        "popular": "",
+        "top_rated": "",
+        "upcoming": ""
+      },
+      "sort": {
+        "title": "",
+        "popularity.desc": "",
+        "popularity.asc": "",
+        "original_title.desc": "",
+        "original_title.asc": "",
+        "primary_release_date.desc": "",
+        "primary_release_date.asc": "",
+        "vote_count.desc": "",
+        "vote_count.asc": ""
+      },
+      "genres": {
+        "title": "",
+        "Action": "",
+        "Adventure": "",
+        "Animation": "",
+        "Comedy": "",
+        "Crime": "",
+        "Documentary": "",
+        "Drama": "",
+        "Family": "",
+        "Fantasy": "",
+        "History": "",
+        "Horror": "",
+        "Music": "",
+        "Mystery": "",
+        "Romance": "",
+        "Science Fiction": "",
+        "TV Movie": "",
+        "Thriller": "",
+        "War": "",
+        "Western": ""
+      }
     }
   },
   "oauthCredentials": {

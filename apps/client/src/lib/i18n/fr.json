@@ -8,7 +8,8 @@
     "unexpected-error": "Erreur inattendue",
     "homepage": "Page d'accueil",
     "submit": "Soumettre",
-    "userNotFound": "utilisateur non trouvé"
+    "userNotFound": "utilisateur non trouvé",
+    "close": "Fermer"
   },
   "footer": {
     "sourceCode": "Code source",
@@ -123,6 +124,63 @@
       "toast": {
         "subscribe": "Vous êtes maintenant abonné aux notifications pour ce film",
         "unsubscribe": "Vous êtes maintenant désabonné des notifications pour ce film"
+      }
+    },
+    "page": {
+      "missing": {
+        "desc": "Pas description pour ce film.",
+        "genres": "Pas de genres pour ce film.",
+        "date": "Pas de date"
+      },
+      "seen": "Vu",
+      "evaluation": "évaluation",
+      "evaluations": "évaluations",
+      "noFound": "Aucun film trouvé..."
+    },
+    "filter": {
+      "title": "Filtres",
+      "desc": "Filtrez les films par options de tri et genres.",
+      "descNote": "Note : Les filtres de catégorie et les recherches sont indépendants - les catégories ne s'appliquent pas lors de l'utilisation des options de tri ou des filtres de genre",
+      "reset": "Réinitialiser les filtres",
+      "category": {
+        "title": "Catégorie",
+        "now_playing": "À l'affiche",
+        "popular": "Populaires",
+        "top_rated": "Mieux notés",
+        "upcoming": "Prochainement"
+      },
+      "sort": {
+        "title": "Trier par",
+        "popularity.desc": "Plus populaires",
+        "popularity.asc": "Moins populaires",
+        "original_title.desc": "Titre Z-A",
+        "original_title.asc": "Titre A-Z",
+        "primary_release_date.desc": "Plus récents",
+        "primary_release_date.asc": "Plus anciens",
+        "vote_count.desc": "Plus votés",
+        "vote_count.asc": "Moins votés"
+      },
+      "genres": {
+        "title": "Genres",
+        "Action": "Action",
+        "Adventure": "Aventure",
+        "Animation": "Animation",
+        "Comedy": "Comédie",
+        "Crime": "Crime",
+        "Documentary": "Documentaire",
+        "Drama": "Drame",
+        "Family": "Familial",
+        "Fantasy": "Fantaisie",
+        "History": "Histoire",
+        "Horror": "Horreur",
+        "Music": "Musique",
+        "Mystery": "Mystère",
+        "Romance": "Romance",
+        "Science Fiction": "Science-fiction",
+        "TV Movie": "Téléfilm",
+        "Thriller": "Thriller",
+        "War": "Guerre",
+        "Western": "Western"
       }
     }
   },

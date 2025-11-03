@@ -8,7 +8,8 @@
     "unexpected-error": "Unexpected error",
     "homepage": "Homepage",
     "submit": "Submit",
-    "userNotFound": "User not found"
+    "userNotFound": "User not found",
+    "close": "Close"
   },
   "footer": {
     "sourceCode": "Source code",
@@ -123,6 +124,63 @@
       "toast": {
         "subscribe": "You are now subscribed to notifications for this movie",
         "unsubscribe": "You are now unsubscribed from notifications for this movie"
+      }
+    },
+    "page": {
+      "missing": {
+        "desc": "No description available for this film.",
+        "genres": "This film doesn't fit into any genre.",
+        "date": "No date"
+      },
+      "seen": "Seen",
+      "evaluation": "evaluation",
+      "evaluations": "evaluations",
+      "noFound": "No films found..."
+    },
+    "filter": {
+      "title": "Filters",
+      "desc": "Filter movies by sort options and genres.",
+      "descNote": "Note: Category filters and search queries are independent - categories ans queries are not applied when using Sort options or Genre filters",
+      "reset": "Reset filters",
+      "category": {
+        "title": "Category",
+        "now_playing": "Now Playing",
+        "popular": "Popular",
+        "top_rated": "Top Rated",
+        "upcoming": "Upcoming"
+      },
+      "sort": {
+        "title": "Sort by",
+        "popularity.desc": "Most Popular",
+        "popularity.asc": "Least Popular",
+        "original_title.desc": "Title Z-A",
+        "original_title.asc": "Title A-Z",
+        "primary_release_date.desc": "Newest First",
+        "primary_release_date.asc": "Oldest First",
+        "vote_count.desc": "Most Voted",
+        "vote_count.asc": "Least Voted"
+      },
+      "genres": {
+        "title": "Genres",
+        "Action": "Action",
+        "Adventure": "Adventure",
+        "Animation": "Animation",
+        "Comedy": "Comedy",
+        "Crime": "Crime",
+        "Documentary": "Documentary",
+        "Drama": "Drama",
+        "Family": "Family",
+        "Fantasy": "Fantasy",
+        "History": "History",
+        "Horror": "Horror",
+        "Music": "Music",
+        "Mystery": "Mystery",
+        "Romance": "Romance",
+        "Science Fiction": "Science Fiction",
+        "TV Movie": "TV Movie",
+        "Thriller": "Thriller",
+        "War": "War",
+        "Western": "Western"
       }
     }
   },

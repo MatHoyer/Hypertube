@@ -8,7 +8,14 @@ export type {
   TDateFormatsKeys,
   TDateFormatsParams,
 } from "./utils/date.utils.js";
-export { groupBy, pick } from "./utils/object.utils.js";
+export {
+  groupBy,
+  isPurObject,
+  pick,
+  typedEntries,
+  typedKeys,
+  typedValues,
+} from "./utils/object.utils.js";
 export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
 export { getClientUrl } from "./utils/url/getClientUrl.js";
 export { getServerUrl } from "./utils/url/getServerUrl.js";
@@ -83,6 +90,7 @@ export type {
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
   TPostMovieSubscribeSchemas,
+  TTmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
 
 export {
@@ -165,6 +173,17 @@ export {
   ytsQualities,
   ytsScrapperSortBy,
 } from "./const/yts.const.js";
+
+export {
+  tmdbCategories,
+  tmdbDefaultSort,
+  tmdbGenres,
+  tmdbSorts,
+  type TTmdbCategory,
+  type TTmdbGenresKey,
+  type TTmdbGenresValue,
+  type TTmdbSort,
+} from "./const/tmdb.const.js";
 
 export {
   betterAuthProviders,

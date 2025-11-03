@@ -89,8 +89,8 @@ const DownloadButton: React.FC<{
 };
 
 export const DownloadsSelector: React.FC<{
-  resolutions: TGetMovieSchemas["response"]["resolutions"];
-  subtitlesLanguages: TGetMovieSchemas["response"]["subtitles"];
+  resolutions: NonNullable<TGetMovieSchemas["response"]>["resolutions"];
+  subtitlesLanguages: NonNullable<TGetMovieSchemas["response"]>["subtitles"];
 }> = ({ resolutions, subtitlesLanguages }) => {
   const { tmdbId } = useConvertParams(MoviePageParamsSchema);
   const queryClient = useQueryClient();
