@@ -123,6 +123,12 @@
         "subscribe": "You are now subscribed to notifications for this movie",
         "unsubscribe": "You are now unsubscribed from notifications for this movie"
       }
+    },
+    "page": {
+      "missing": {
+        "noDesc": "No description available for this film.",
+        "noGenres": "This film doesn't fit into any genre."
+      }
     }
   },
   "oauthCredentials": {
