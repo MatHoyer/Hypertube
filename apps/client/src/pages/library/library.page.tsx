@@ -49,7 +49,7 @@ export const Library = () => {
     const currentRef = bottomRef.current;
     if (currentRef) observer.observe(currentRef);
     return () => {
-      if (currentRef) observer.unobserve(currentRef);
+      if (currentRef) observer.disconnect();
     };
   }, [bottomRef, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
