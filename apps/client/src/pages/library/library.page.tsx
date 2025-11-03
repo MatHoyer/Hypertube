@@ -1,0 +1,80 @@
+import { ImageContainer } from "@/components/images/ImageContainer";
+import { LoadingPage } from "@/components/LoadingPage";
+import { Card } from "@/components/ui/card";
+import { Typography } from "@/components/ui/typography";
+import { Layout, LayoutContent } from "@/layouts/PageLayout";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getMoviesSchemas, getUrl } from "@hypertube/libs";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
+
+export const Library = () => {
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const fetchMovies = async ({ pageParam = 1 }) => {
+    const res = await axiosFetch({
+      method: "GET",
+      schemas: getMoviesSchemas,
+      url: getUrl("api-movies", {
+        searchParams: { page: pageParam.toString() },
+      }),
+    });
+    return res;
+  };
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending,
+    isError,
+  } = useInfiniteQuery({
+    queryKey: ["movies"],
+    queryFn: fetchMovies,
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, _) => lastPage.page + 1,
+  });
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    });
+    const currentRef = bottomRef.current;
+    if (currentRef) observer.observe(currentRef);
+    return () => {
+      if (currentRef) observer.unobserve(currentRef);
+    };
+  }, [bottomRef, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  if (isPending) return <LoadingPage resource="global"></LoadingPage>;
+  if (isError) return <Typography>Error</Typography>;
+
+  return (
+    <Layout>
+      <LayoutContent>
+        <Card className="p-5">
+          {data.pages.map((group, i) => (
+            <div key={i} className="grid grid-cols-2 md:grid-cols-4 gap-5">
+              {group.movies.map((movie) => (
+                <Card key={movie.id} className="flex p-1 md:p-5 items-center">
+                  <ImageContainer
+                    imageSrc={movie.poster_path}
+                    altImage={movie.title}
+                    size="md"
+                  />
+                  <div>
+                    <Typography variant="small">{movie.title}</Typography>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ))}
+        </Card>
+        <div ref={bottomRef} />
+      </LayoutContent>
+    </Layout>
+  );
+};

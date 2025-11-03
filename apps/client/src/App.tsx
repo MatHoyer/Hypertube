@@ -6,7 +6,7 @@ import { Route, Routes } from "react-router-dom";
 import { ForgetPasswordPage } from "./pages/auth/forgetPassword/ForgetPasswordPage";
 import { ResetPasswordPage } from "./pages/auth/resetPassword/ResetPasswordPage";
 import { ErrorPage } from "./pages/error/ErrorPage";
-import { HomePage } from "./pages/home/home.page";
+import { Library } from "./pages/library/library.page";
 import MoviePage from "./pages/movie/movie.page";
 import { MoviePageParamsSchema } from "./pages/movie/schemas/urlParams.schema";
 import { NotificationsPage } from "./pages/notifications/notifications.page";
@@ -23,7 +23,7 @@ const App = () => {
     <Routes>
       <Route element={<BaseLayoutRoute />}>
         {/* Default routes */}
-        <Route index path="/" element={<HomePage />} />
+        <Route index path="/" element={<Library />} />
         <Route index path="/error" element={<ErrorPage />} />
         <Route path="/demo" element={<PlaygroundPage />} />
 

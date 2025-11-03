@@ -50,7 +50,7 @@ export type TApiRouteDataRequirements = {
   "api-images": { imageId?: string | null };
 
   "api-movies": {
-    tmdbId: "{tmdbId}" | number | undefined;
+    tmdbId?: "{tmdbId}" | number;
     resolution?: (typeof ytsQualities)[number] | "{resolution}";
     subtitlesLanguage?: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
