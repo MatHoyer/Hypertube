@@ -86,7 +86,7 @@ export const getMovie = async (
     dbMovie = await prisma.movie.create({
       data: {
         tmdbId,
-        imdbId: tmdbMovie.imdb_id ?? "",
+        imdbId: tmdbMovie.imdb_id,
       },
     });
   }
@@ -94,7 +94,6 @@ export const getMovie = async (
   try {
     if (dbMovie.demoMovie) throw new Error("Demo movie");
     if (!env.VPN_IS_ACTIVE) throw new Error("VPN is not active");
-    console.log(env.VPN_IS_ACTIVE);
 
     if (!dbMovie.additionalInfoFetched) {
       await getMovieData(dbMovie);

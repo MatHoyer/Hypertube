@@ -22,7 +22,7 @@ const MovieInfo: React.FC<{
       <div className="flex flex-col gap-2">
         <Link
           to={getUrl("external-imdb-movie", {
-            imdbId: movie.imdbId,
+            imdbId: movie.imdbId ?? "",
           })}
           target="_blank"
         >

@@ -11,6 +11,8 @@ import { YtsApi } from "../../lib/apis/yts.api";
 import { getSubtitlesDownloadLinks } from "../../lib/scrappers/yifysubtitles.scrapper";
 
 export const getMovieData = async (movie: TMovieSchema) => {
+  if (!movie.imdbId) throw new Error("Movie has no IMDB ID");
+
   const ytsApi = new YtsApi();
 
   const resolutions = await ytsApi.getResolutions(movie.imdbId);
