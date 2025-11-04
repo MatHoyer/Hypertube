@@ -1,3 +1,4 @@
+import { closeDialog } from "@/components/dialogs/dialog.store";
 import { ImageContainer } from "@/components/images/ImageContainer";
 import { Button } from "@/components/ui/button";
 import {
@@ -44,7 +45,10 @@ export const MovieDialog: React.FC<{ movie: TTmdbMovieSchema }> = ({
         </div>
         <DialogFooter>
           <Button variant={"outline"} className="w-full" asChild>
-            <Link to={getUrl("client-movie", { tmdbId: movie.id })}>
+            <Link
+              to={getUrl("client-movie", { tmdbId: movie.id })}
+              onClick={() => closeDialog()}
+            >
               <PlayCircle />
             </Link>
           </Button>

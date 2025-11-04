@@ -10,11 +10,13 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
+const initialPageParam = 1;
+
 export const Library = () => {
   const { t } = useTranslation();
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const fetchMovies = async ({ pageParam = 1 }) => {
+  const fetchMovies = async ({ pageParam = initialPageParam }) => {
     const res = await axiosFetch({
       method: "GET",
       schemas: getMoviesSchemas,
@@ -35,7 +37,7 @@ export const Library = () => {
   } = useInfiniteQuery({
     queryKey: ["movies"],
     queryFn: fetchMovies,
-    initialPageParam: 1,
+    initialPageParam,
     getNextPageParam: (lastPage, _) => lastPage.page + 1,
   });
 
