@@ -86,7 +86,7 @@ export const getMovie = async (
     dbMovie = await prisma.movie.create({
       data: {
         tmdbId,
-        imdbId: tmdbMovie.imdb_id,
+        imdbId: tmdbMovie.imdb_id ?? "",
       },
     });
   }
