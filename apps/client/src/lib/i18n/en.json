@@ -128,7 +128,9 @@
       "missing": {
         "noDesc": "No description available for this film.",
         "noGenres": "This film doesn't fit into any genre."
-      }
+      },
+      "noMore": "No more films to find",
+      "noFound": "No films found..."
     }
   },
   "oauthCredentials": {

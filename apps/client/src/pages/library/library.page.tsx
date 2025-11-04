@@ -6,24 +6,30 @@ import { Typography } from "@/components/ui/typography";
 import { Layout, LayoutContent } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getMoviesSchemas, getUrl } from "@hypertube/libs";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryState } from "nuqs";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { SearchCard } from "./components/SearchCard";
 
 const initialPageParam = 1;
 
 export const Library = () => {
   const { t } = useTranslation();
+  const [maxPages, setMaxPages] = useState(1);
+  const [query, setQuery] = useQueryState("query", { defaultValue: "" });
   const bottomRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
 
   const fetchMovies = async ({ pageParam = initialPageParam }) => {
     const res = await axiosFetch({
       method: "GET",
       schemas: getMoviesSchemas,
       url: getUrl("api-movies", {
-        searchParams: { page: pageParam.toString() },
+        searchParams: { page: pageParam.toString(), name: query },
       }),
     });
+    setMaxPages(res.totalPages);
     return res;
   };
 
@@ -38,7 +44,8 @@ export const Library = () => {
     queryKey: ["movies"],
     queryFn: fetchMovies,
     initialPageParam,
-    getNextPageParam: (lastPage, _) => lastPage.page + 1,
+    getNextPageParam: (lastPage) =>
+      maxPages > lastPage.page ? lastPage.page + 1 : null,
   });
 
   useEffect(() => {
@@ -54,12 +61,17 @@ export const Library = () => {
     };
   }, [bottomRef, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  useEffect(() => {
+    queryClient.resetQueries({ queryKey: ["movies"] });
+  }, [query, queryClient]);
+
   if (isPending) return <LoadingPage resource="global"></LoadingPage>;
   if (isError) return <Typography>Error</Typography>;
 
   return (
     <Layout>
       <LayoutContent>
+        <SearchCard setQuery={setQuery} />
         <Card className="p-5">
           {data.pages.map((group, i) => (
             <div key={i} className="grid grid-cols-2 md:grid-cols-4 gap-5">
@@ -88,6 +100,15 @@ export const Library = () => {
               ))}
             </div>
           ))}
+          {!hasNextPage && (
+            <div className="flex justify-center">
+              <Typography variant="large">
+                {data.pages[0].totalResults
+                  ? t("movie.page.noMore")
+                  : t("movie.page.noFound")}
+              </Typography>
+            </div>
+          )}
         </Card>
         <div ref={bottomRef} />
       </LayoutContent>

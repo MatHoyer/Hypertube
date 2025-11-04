@@ -128,7 +128,9 @@
       "missing": {
         "noDesc": "",
         "noGenres": ""
-      }
+      },
+      "noMore": "",
+      "noFound": ""
     }
   },
   "oauthCredentials": {
