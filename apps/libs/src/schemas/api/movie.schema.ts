@@ -33,6 +33,8 @@ export const tmdbMovieSchema = z.object({
   adult: z.boolean(),
 });
 
+export type TTmdbMovieSchema = z.infer<typeof tmdbMovieSchema>;
+
 export const getMoviesSchemas = {
   searchParams: z.object({
     page: z.coerce.number().int().positive().default(1),

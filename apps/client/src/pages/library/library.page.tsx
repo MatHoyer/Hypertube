@@ -1,7 +1,7 @@
+import { openDialog } from "@/components/dialogs/dialog.store";
 import { ImageContainer } from "@/components/images/ImageContainer";
 import { LoadingPage } from "@/components/LoadingPage";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Typography } from "@/components/ui/typography";
 import { Layout, LayoutContent } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -9,7 +9,6 @@ import { getMoviesSchemas, getUrl } from "@hypertube/libs";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { MovieDialog } from "./components/MovieDialog";
 
 export const Library = () => {
   const { t } = useTranslation();
@@ -63,28 +62,27 @@ export const Library = () => {
           {data.pages.map((group, i) => (
             <div key={i} className="grid grid-cols-2 md:grid-cols-4 gap-5">
               {group.movies.map((movie) => (
-                <Dialog key={movie.id}>
-                  <DialogTrigger asChild>
-                    <Card className="flex p-1 md:p-5 items-center">
-                      <ImageContainer
-                        imageSrc={movie.poster_path}
-                        altImage={movie.title}
-                        size="md"
-                      />
-                      <div className="flex flex-col items-center gap-2">
-                        <Typography variant="large" className="line-clamp-1">
-                          {movie.title}
-                        </Typography>
-                        <Typography variant="muted">
-                          {movie.genres.length
-                            ? movie.genres.map(({ name }) => name).join(" / ")
-                            : t("movie.page.missing.noGenres")}
-                        </Typography>
-                      </div>
-                    </Card>
-                  </DialogTrigger>
-                  <MovieDialog movie={movie} />
-                </Dialog>
+                <Card
+                  key={movie.id}
+                  className="flex p-1 md:p-5 items-center"
+                  onClick={() => openDialog("movie", movie)}
+                >
+                  <ImageContainer
+                    imageSrc={movie.poster_path}
+                    altImage={movie.title}
+                    size="md"
+                  />
+                  <div className="flex flex-col items-center gap-2">
+                    <Typography variant="large" className="line-clamp-1">
+                      {movie.title}
+                    </Typography>
+                    <Typography variant="muted">
+                      {movie.genres.length
+                        ? movie.genres.map(({ name }) => name).join(" / ")
+                        : t("movie.page.missing.noGenres")}
+                    </Typography>
+                  </div>
+                </Card>
               ))}
             </div>
           ))}

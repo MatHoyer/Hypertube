@@ -82,6 +82,7 @@ export type {
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
   TPostMovieSubscribeSchemas,
+  TTmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
 
 export {
