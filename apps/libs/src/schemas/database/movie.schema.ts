@@ -24,6 +24,6 @@ export type TSubtitleSchema = z.infer<typeof subtitleSchema>;
 export const movieSchema = z.object({
   id: z.uuid(),
   tmdbId: z.coerce.number(),
-  imdbId: z.string(),
+  imdbId: z.string().nullable(),
 });
 export type TMovieSchema = z.infer<typeof movieSchema>;

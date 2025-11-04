@@ -111,6 +111,7 @@ export class YtsApi {
   }
 
   public async downloadTorrent(movie: TMovieSchema, targetResolution: string) {
+    if (!movie.imdbId) throw new Error("Movie has no IMDB ID");
     const resolution = await this.getResolution(movie.imdbId, targetResolution);
 
     const res = await fetch(resolution.url);

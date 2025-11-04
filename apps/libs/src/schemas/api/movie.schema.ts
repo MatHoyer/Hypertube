@@ -8,7 +8,7 @@ import {
 
 export const tmdbMovieSchema = z.object({
   id: z.coerce.number().int().nonnegative(),
-  imdb_id: z.string(),
+  imdb_id: z.string().nullable(),
 
   original_title: z.string(),
   original_language: z.string(),

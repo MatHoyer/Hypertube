@@ -42,9 +42,9 @@ model Subtitle {
 }
 
 model Movie {
-  id     String @id @default(uuid())
-  tmdbId Int    @unique
-  imdbId String @unique
+  id     String  @id @default(uuid())
+  tmdbId Int     @unique
+  imdbId String? @unique
 
   resolutions   Resolution[]
   subtitles     Subtitle[]
