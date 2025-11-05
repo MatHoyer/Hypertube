@@ -2,7 +2,7 @@ import { LoadingPage } from "@/components/LoadingPage";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getMoviesSchemas, getUrl } from "@hypertube/libs";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Thumbnail } from "./Thumbnail";
@@ -13,7 +13,6 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
   const { t } = useTranslation();
   const [maxPages, setMaxPages] = useState(1);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const queryClient = useQueryClient();
 
   const fetchMovies = async ({ pageParam = initialPageParam }) => {
     const res = await axiosFetch({
@@ -35,7 +34,7 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
     isPending,
     isError,
   } = useInfiniteQuery({
-    queryKey: ["movies"],
+    queryKey: ["movies", query],
     queryFn: fetchMovies,
     initialPageParam,
     getNextPageParam: (lastPage) =>
@@ -54,10 +53,6 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
       if (currentRef) observer.disconnect();
     };
   }, [bottomRef, hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  useEffect(() => {
-    queryClient.resetQueries({ queryKey: ["movies"] });
-  }, [query, queryClient]);
 
   if (isPending) return <LoadingPage resource="global"></LoadingPage>;
   if (isError) return <Typography>Error</Typography>;
