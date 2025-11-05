@@ -126,8 +126,9 @@
     },
     "page": {
       "missing": {
-        "noDesc": "No description available for this film.",
-        "noGenres": "This film doesn't fit into any genre."
+        "desc": "No description available for this film.",
+        "genres": "This film doesn't fit into any genre.",
+        "date": "No date"
       },
       "noMore": "No more films to find",
       "noFound": "No films found..."

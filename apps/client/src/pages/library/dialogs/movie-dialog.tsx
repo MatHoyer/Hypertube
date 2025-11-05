@@ -29,14 +29,14 @@ export const MovieDialog: React.FC<{ movie: TTmdbMovieSchema }> = ({
         <DialogHeader>
           <DialogTitle>{movie.title}</DialogTitle>
           <DialogDescription>
-            {movie.overview || t("movie.page.missing.noDesc")}
+            {movie.overview || t("movie.page.missing.desc")}
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-3 m-2">
           <div className="col-span-2">
             {movie.genres.length
               ? movie.genres.map(({ name }) => name).join(" / ")
-              : t("movie.page.missing.noGenres")}
+              : t("movie.page.missing.genres")}
           </div>
           <div className="flex items-center justify-end gap-1">
             {movie.vote_average.toPrecision(2)}/10
