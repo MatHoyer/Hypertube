@@ -7,7 +7,7 @@ export const LibraryPage = () => {
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
 
   return (
-    <Layout>
+    <Layout size="lg">
       <LayoutContent className="flex flex-col gap-2">
         <SearchCard setQuery={setQuery} />
         <Library query={query} />
