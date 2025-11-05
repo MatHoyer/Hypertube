@@ -24,23 +24,22 @@ export const Thumbnail: React.FC<{ movie: TTmdbMovieSchema }> = ({ movie }) => {
         <Typography variant="large" className="text-center line-clamp-1">
           {movie.title}
         </Typography>
-        <div className="flex flex-col md:flex-row gap-2 items-center w-full justify-between">
-          <Badge>{movie.release_date || t("movie.page.missing.date")}</Badge>
-          <ScoreRated score={movie.vote_average} />
-        </div>
         {movie.genres.length ? (
-          <div className="flex flex-wrap justify-center gap-2 w-full">
-            {movie.genres.map(({ name }, i) => (
-              <Badge key={i} variant={"outline"}>
-                {name}
-              </Badge>
-            ))}
+          <div className="flex justify-center gap-2 w-full">
+            <Badge variant={"outline"}>{movie.genres[0].name}</Badge>
+            {movie.genres.length > 1 && (
+              <Badge variant={"outline"}>+{movie.genres.length - 1}</Badge>
+            )}
           </div>
         ) : (
           <Typography variant="muted" className="text-center">
             {t("movie.page.missing.genres")}
           </Typography>
         )}
+        <div className="flex flex-col md:flex-row gap-2 items-center w-full justify-between">
+          <Badge>{movie.release_date || t("movie.page.missing.date")}</Badge>
+          <ScoreRated score={movie.vote_average} />
+        </div>
       </div>
     </Card>
   );
