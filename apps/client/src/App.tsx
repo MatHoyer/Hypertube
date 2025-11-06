@@ -27,16 +27,6 @@ const App = () => {
         <Route index path="/error" element={<ErrorPage />} />
         <Route path="/demo" element={<PlaygroundPage />} />
 
-        {/* Protected url routes */}
-        <Route element={<ProtectedUrlRoute schema={MoviePageParamsSchema} />}>
-          <Route
-            path={getUrl("client-movie", {
-              tmdbId: ":tmdbId",
-            })}
-            element={<MoviePage />}
-          />
-        </Route>
-
         {/* Public only routes */}
         <Route element={<PublicOnlyRoute />}>
           <Route path={getUrl("client-signin")} element={<SignInPage />} />
@@ -62,6 +52,14 @@ const App = () => {
             path={getUrl("client-oauth-credentials")}
             element={<OAuthCredentialsPage />}
           />
+          <Route element={<ProtectedUrlRoute schema={MoviePageParamsSchema} />}>
+            <Route
+              path={getUrl("client-movie", {
+                tmdbId: ":tmdbId",
+              })}
+              element={<MoviePage />}
+            />
+          </Route>
         </Route>
 
         {/* Not found route */}

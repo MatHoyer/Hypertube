@@ -9,7 +9,6 @@ import {
 } from "@hypertube/libs";
 import { Hono } from "hono";
 import { isLogged } from "../../middlewares/isLogged";
-import { isLoggedSafe } from "../../middlewares/isLoggedSafe";
 import { isVPNActive } from "../../middlewares/isVPNActive";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
@@ -33,7 +32,7 @@ moviesRouter.get(
 
 moviesRouter.get(
   "/:tmdbId",
-  isLoggedSafe,
+  isLogged,
   urlParamsParser(getMovieSchemas.urlParams),
   getMovie
 );
