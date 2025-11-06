@@ -23,7 +23,6 @@ import { downloaderQueue } from "../../lib/queues/downloader";
 import { downloadYifysubtitles } from "../../lib/scrappers/yifysubtitles.scrapper";
 import { SSEClients } from "../../lib/SSEClients";
 import { TIsLogged } from "../../middlewares/isLogged";
-import { TIsLoggedSafe } from "../../middlewares/isLoggedSafe";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import {
@@ -50,7 +49,7 @@ export const getMovies = async (
 };
 
 export const getMovie = async (
-  c: Context<TUrlParamsParser<TGetMovieSchemas["urlParams"]> & TIsLoggedSafe>
+  c: Context<TUrlParamsParser<TGetMovieSchemas["urlParams"]> & TIsLogged>
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const language = c.get("language");
@@ -121,18 +120,15 @@ export const getMovie = async (
     },
   });
 
-  let isSubscribed = false;
-  if (user) {
-    const subscription = await prisma.movieSubscription.findUnique({
-      where: {
-        movieId_userId: {
-          movieId: dbMovie.id,
-          userId: user.id,
-        },
+  const subscription = await prisma.movieSubscription.findUnique({
+    where: {
+      movieId_userId: {
+        movieId: dbMovie.id,
+        userId: user.id,
       },
-    });
-    isSubscribed = !!subscription;
-  }
+    },
+  });
+  const isSubscribed = !!subscription;
 
   return c.json(
     getMovieSchemas.response.parse({
