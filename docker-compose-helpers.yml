@@ -1,0 +1,25 @@
+services:
+  adminer:
+    container_name: hypertube_adminer
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - hypertube-network
+
+  redisinsight:
+    container_name: hypertube_redisinsight
+    image: redis/redisinsight:latest
+    ports:
+      - 5540:5540
+    volumes:
+      - redisinsight:/data
+    networks:
+      - hypertube-network
+
+networks:
+  hypertube-network:
+    external: true
+
+volumes:
+  redisinsight:

@@ -23,10 +23,16 @@ cp .env.example .env
 docker network create hypertube-network
 ```
 
-### 3. Start the databases
+### 3. Start the infra
 
 ```bash
 docker compose up
+```
+
+### 4. [OPTIONAL] Start infra helpers
+
+```bash
+docker compose -f docker-compose-helpers.yml up
 ```
 
 ## 📂 Launch Modes

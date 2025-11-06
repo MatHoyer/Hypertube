@@ -15,17 +15,6 @@ services:
       timeout: 5s
       retries: 5
 
-  adminer:
-    container_name: hypertube_adminer
-    image: adminer
-    ports:
-      - 8080
-    networks:
-      - hypertube-network
-    depends_on:
-      db:
-        condition: service_healthy
-
   transmission:
     container_name: transmission
     image: linuxserver/transmission
