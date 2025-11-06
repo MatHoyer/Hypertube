@@ -3,10 +3,6 @@ services:
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
 
-  adminer:
-    ports:
-      - "8080:8080"
-
   transmission:
     ports:
       - "${TRANSMISSION_RCP_PORT}:${TRANSMISSION_RCP_PORT}"
