@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
+import { NAVBAR_HEIGHT } from "@/layouts/BaseLayout";
 import { Layout, LayoutContent } from "@/layouts/PageLayout";
 import { keyErrorCodes } from "@/lib/better-auth/constants";
+import { cn } from "@/lib/utils";
 import { getUrl } from "@hypertube/libs";
 import { TriangleAlert } from "lucide-react";
 import { useQueryState } from "nuqs";
@@ -17,7 +19,12 @@ export const ErrorPage = () => {
   return (
     <Layout>
       <LayoutContent>
-        <div className="flex justify-center items-center inset-0 h-[calc(100dvh-65px)]">
+        <div
+          className={cn(
+            "flex justify-center items-center inset-0",
+            `h-[calc(100dvh-${NAVBAR_HEIGHT}px)]`
+          )}
+        >
           <Card className="p-10 items-center text-center bg-primary/60">
             <TriangleAlert className="text-accent-foreground" size={100} />
             <Typography variant="h1">{t("global.error")}</Typography>

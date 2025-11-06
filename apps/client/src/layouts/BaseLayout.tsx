@@ -3,6 +3,7 @@ import { Navbar } from "@/components/navigation/Navbar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Typography } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
@@ -34,14 +35,20 @@ const Footer = () => {
   );
 };
 
+export const NAVBAR_HEIGHT = 65;
+
 export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex flex-col h-dvh w-dvw bg-background overflow-hidden">
-      <header className="h-[65px] w-full">
+      <header className={cn("w-full", `h-[${NAVBAR_HEIGHT}px]`)}>
         <Navbar />
       </header>
-      <ScrollArea className="h-[calc(100dvh-65px)] w-full">
-        <main className="min-h-[calc(100dvh-65px)]">{children}</main>
+      <ScrollArea
+        className={cn("w-full", `h-[calc(100dvh-${NAVBAR_HEIGHT}px)]`)}
+      >
+        <main className={cn(`min-h-[calc(100dvh-${NAVBAR_HEIGHT}px)]`)}>
+          {children}
+        </main>
         <Footer />
       </ScrollArea>
     </div>

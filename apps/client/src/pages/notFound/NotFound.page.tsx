@@ -1,5 +1,6 @@
 import { Typography } from "@/components/ui/typography";
 import { useMouse } from "@/hooks/use-mouse";
+import { NAVBAR_HEIGHT } from "@/layouts/BaseLayout";
 import { cn } from "@/lib/utils";
 import { getUrl } from "@hypertube/libs";
 import { useRef } from "react";
@@ -13,7 +14,12 @@ export const NotFoundPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative h-[calc(100dvh-65px)] overflow-hidden">
+    <div
+      className={cn(
+        "relative overflow-hidden",
+        `h-[calc(100dvh-${NAVBAR_HEIGHT}px)]`
+      )}
+    >
       <div className="absolute flex justify-center items-center inset-0">
         <div
           className="z-10 size-52 rounded-full text-center content-center select-none bg-primary/60 backdrop-blur-sm"
