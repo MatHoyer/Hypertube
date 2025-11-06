@@ -61,7 +61,10 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
     <>
       <div className="flex flex-col gap-2">
         {data.pages.map((group, i) => (
-          <div key={i} className="grid grid-cols-2 md:grid-cols-5 gap-2">
+          <div
+            key={i}
+            className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2"
+          >
             {group.movies.map((movie) => (
               <Thumbnail key={movie.id} movie={movie} />
             ))}

@@ -12,7 +12,7 @@ export const Thumbnail: React.FC<{ movie: TTmdbMovieSchema }> = ({ movie }) => {
 
   return (
     <Card
-      className="flex p-4 md:pt-7 items-center"
+      className="flex p-4 items-center"
       onClick={() => openDialog("movie", movie)}
     >
       <ImageContainer
@@ -36,7 +36,7 @@ export const Thumbnail: React.FC<{ movie: TTmdbMovieSchema }> = ({ movie }) => {
             {t("movie.page.missing.genres")}
           </Typography>
         )}
-        <div className="flex flex-col md:flex-row gap-2 items-center w-full justify-between">
+        <div className="flex flex-col lg:flex-row gap-2 items-center w-full justify-between">
           <Badge>{movie.release_date || t("movie.page.missing.date")}</Badge>
           <ScoreRated score={movie.vote_average} />
         </div>
