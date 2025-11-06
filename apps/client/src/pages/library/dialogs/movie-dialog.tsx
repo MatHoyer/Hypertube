@@ -1,7 +1,7 @@
-import { closeDialog } from "@/components/dialogs/dialog.store";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
 import { Button } from "@/components/ui/button";
 import {
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -23,14 +23,13 @@ export const MovieDialog: React.FC<{ movie: TTmdbMovieSchema }> = ({
       </VisuallyHidden>
       <MovieBaseInfo movie={movie} truncate />
       <DialogFooter className="w-full">
-        <Button variant={"outline"} className="w-full" asChild>
-          <Link
-            to={getUrl("client-movie", { tmdbId: movie.id })}
-            onClick={() => closeDialog()}
-          >
-            <PlayCircle />
-          </Link>
-        </Button>
+        <DialogClose asChild>
+          <Button variant={"outline"} className="w-full" asChild>
+            <Link to={getUrl("client-movie", { tmdbId: movie.id })}>
+              <PlayCircle />
+            </Link>
+          </Button>
+        </DialogClose>
       </DialogFooter>
     </DialogContent>
   );

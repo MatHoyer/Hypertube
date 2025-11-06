@@ -7,14 +7,12 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Thumbnail } from "./Thumbnail";
 
-const initialPageParam = 1;
-
 export const Library: React.FC<{ query: string }> = ({ query }) => {
   const { t } = useTranslation();
   const [maxPages, setMaxPages] = useState(1);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const fetchMovies = async ({ pageParam = initialPageParam }) => {
+  const fetchMovies = async (pageParam: number) => {
     const res = await axiosFetch({
       method: "GET",
       schemas: getMoviesSchemas,
@@ -35,8 +33,8 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
     isError,
   } = useInfiniteQuery({
     queryKey: ["movies", query],
-    queryFn: fetchMovies,
-    initialPageParam,
+    queryFn: ({ pageParam }) => fetchMovies(pageParam),
+    initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       maxPages > lastPage.page ? lastPage.page + 1 : null,
   });

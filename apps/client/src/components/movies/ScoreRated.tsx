@@ -6,7 +6,7 @@ export const ScoreRated: React.FC<
   ComponentProps<"div"> & { score: number; total?: number }
 > = ({ score, total = 10 }, ...props) => {
   return (
-    <div className="flex" {...props}>
+    <div {...props} className="flex">
       <Typography variant="mono">
         {score.toPrecision(2)}/{total}
       </Typography>
