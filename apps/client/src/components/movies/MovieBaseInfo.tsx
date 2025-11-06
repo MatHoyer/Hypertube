@@ -1,14 +1,12 @@
 import { cn } from "@/lib/utils";
-import type { TGetMovieSchemas, TTmdbMovieSchema } from "@hypertube/libs";
+import { type TTmdbMovieSchema } from "@hypertube/libs";
 import { useTranslation } from "react-i18next";
 import { ImageContainer } from "../images/ImageContainer";
 import { Badge } from "../ui/badge";
 import { Typography } from "../ui/typography";
 import { ScoreRated } from "./ScoreRated";
 
-type TMovieBaseInfo = Omit<TTmdbMovieSchema, "id"> & {
-  id: TTmdbMovieSchema["id"] | TGetMovieSchemas["response"]["id"];
-};
+type TMovieBaseInfo = Omit<TTmdbMovieSchema, "id">;
 
 export const MovieBaseInfo: React.FC<{
   movie: TMovieBaseInfo;
