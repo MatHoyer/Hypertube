@@ -6,12 +6,45 @@ import { Badge } from "../ui/badge";
 import { Typography } from "../ui/typography";
 import { ScoreRated } from "./ScoreRated";
 
-type TMovieBaseInfo = Omit<TTmdbMovieSchema, "id">;
+const DisplayGenresMovie: React.FC<{
+  genres: { name: string; id: number }[];
+  displayOnlyOne?: boolean;
+}> = ({ genres, displayOnlyOne = false }) => {
+  const { t } = useTranslation();
+
+  if (displayOnlyOne) {
+    return (
+      <>
+        {genres.length ? (
+          <div className="flex justify-center gap-2 w-full">
+            <Badge variant={"outline"}>{genres[0].name}</Badge>
+            {genres.length > 1 && (
+              <Badge variant={"outline"}>+{genres.length - 1}</Badge>
+            )}
+          </div>
+        ) : (
+          <Typography variant="muted" className="text-center">
+            {t("movie.page.missing.genres")}
+          </Typography>
+        )}
+      </>
+    );
+  }
+  return (
+    <>
+      {genres.map(({ name }, i) => (
+        <Badge key={i} variant={"outline"}>
+          {name}
+        </Badge>
+      ))}
+    </>
+  );
+};
 
 export const MovieBaseInfo: React.FC<{
-  movie: TMovieBaseInfo;
-  truncate?: boolean;
-}> = ({ movie, truncate = false }) => {
+  movie: Omit<TTmdbMovieSchema, "id">;
+  info?: "all" | "truncate" | "partial";
+}> = ({ movie, info = "all" }) => {
   const { t } = useTranslation();
 
   return (
@@ -19,26 +52,36 @@ export const MovieBaseInfo: React.FC<{
       <ImageContainer
         imageSrc={movie.poster_path}
         altImage={movie.title}
-        size={truncate ? "md" : "lg"}
+        size={(info === "all" && "lg") || "md"}
       />
-      <Typography variant="h1">{movie.title}</Typography>
-      <div className="flex gap-2">
-        <Typography variant="muted" className={cn(truncate && "line-clamp-1")}>
-          {movie.original_title}
+      {info === "partial" ? (
+        <Typography variant="large" className="line-clamp-1">
+          {movie.title}
         </Typography>
-        <Badge variant={"outline"}>
-          {movie.original_language.toUpperCase()}
-        </Badge>
-      </div>
-      <Typography className={cn(truncate && "line-clamp-5")}>
-        {movie.overview || t("movie.page.missing.desc")}
-      </Typography>
+      ) : (
+        <>
+          <Typography variant="h1">{movie.title}</Typography>
+          <div className="flex gap-2">
+            <Typography
+              variant="muted"
+              className={cn(info === "truncate" && "line-clamp-1")}
+            >
+              {movie.original_title}
+            </Typography>
+            <Badge variant={"outline"}>
+              {movie.original_language.toUpperCase()}
+            </Badge>
+          </div>
+          <Typography className={cn(info === "truncate" && "line-clamp-5")}>
+            {movie.overview || t("movie.page.missing.desc")}
+          </Typography>
+        </>
+      )}
       <div className="flex gap-2 justify-center">
-        {movie.genres.map(({ name }, i) => (
-          <Badge key={i} variant={"outline"}>
-            {name}
-          </Badge>
-        ))}
+        <DisplayGenresMovie
+          genres={movie.genres}
+          displayOnlyOne={info === "partial"}
+        />
       </div>
       <div className="flex justify-between w-full">
         <Badge>{movie.release_date}</Badge>

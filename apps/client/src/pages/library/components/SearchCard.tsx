@@ -86,7 +86,7 @@ export const SearchCard: React.FC<{
       </Card>
       {isSearching && isOnFocus && (
         <Card
-          className="absolute z-50 rounded-t-none"
+          className="absolute z-50 rounded-t-none p-0"
           style={{
             left: cardCoords.x,
             top: cardCoords.y + cardCoords.height - 65 - 1,

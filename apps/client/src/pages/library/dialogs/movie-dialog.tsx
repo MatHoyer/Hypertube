@@ -21,7 +21,7 @@ export const MovieDialog: React.FC<{ movie: TTmdbMovieSchema }> = ({
         <DialogTitle />
         <DialogDescription />
       </VisuallyHidden>
-      <MovieBaseInfo movie={movie} truncate />
+      <MovieBaseInfo movie={movie} info="truncate" />
       <DialogFooter className="w-full">
         <DialogClose asChild>
           <Button variant={"outline"} className="w-full" asChild>
