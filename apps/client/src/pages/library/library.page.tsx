@@ -7,13 +7,11 @@ export const LibraryPage = () => {
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
 
   return (
-    <div className="relative">
-      <Layout size="lg">
-        <LayoutContent className="flex flex-col gap-2">
-          <SearchCard setQuery={setQuery} />
-          <Library query={query} />
-        </LayoutContent>
-      </Layout>
-    </div>
+    <Layout size="lg">
+      <LayoutContent className="flex flex-col gap-2">
+        <SearchCard setQuery={setQuery} />
+        <Library query={query} />
+      </LayoutContent>
+    </Layout>
   );
 };
