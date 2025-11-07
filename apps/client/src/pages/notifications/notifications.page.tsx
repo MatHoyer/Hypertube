@@ -124,7 +124,7 @@ export const NotificationsPage = () => {
           />
         </div>
         <div
-          className="absolute overflow-hidden"
+          className="absolute overflow-hidden flex items-center inset-0"
           style={{
             left: `${
               (filterRef.current?.getBoundingClientRect()?.left ?? 0) +
