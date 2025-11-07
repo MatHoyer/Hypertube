@@ -15,6 +15,7 @@ import {
 } from "@hypertube/libs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
 export const SearchCard: React.FC<{
   setQuery: (value: string) => void;
@@ -54,12 +55,14 @@ export const SearchCard: React.FC<{
             <CommandGroup>
               {movies.map((movie, i) => (
                 <CommandItem key={i} value={movie.title + movie.id}>
-                  <MovieBaseInfo
-                    className="flex flex-col sm:grid sm:grid-cols-[1fr_4fr_1fr_1fr] items-center w-full gap-2"
-                    movie={movie}
-                    posterSize="sm"
-                    info="partial"
-                  />
+                  <Link to={getUrl("client-movie", { tmdbId: movie.id })}>
+                    <MovieBaseInfo
+                      className="flex flex-col sm:grid sm:grid-cols-[1fr_4fr_1fr_1fr] items-center w-full gap-2"
+                      movie={movie}
+                      posterSize="sm"
+                      info="partial"
+                    />
+                  </Link>
                 </CommandItem>
               ))}
             </CommandGroup>
