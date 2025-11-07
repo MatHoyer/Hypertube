@@ -16,7 +16,7 @@ export const subtitleSchema = z.object({
 
   language: z.string(),
   rating: z.coerce.number().int().positive(),
-  downloadLink: z.url(),
+  downloadLink: z.union([z.url(), z.string()]),
   downloadState: z.enum([...Object.values(DownloadStates)] as const),
 });
 export type TSubtitleSchema = z.infer<typeof subtitleSchema>;
