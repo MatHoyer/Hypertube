@@ -98,7 +98,7 @@ export const MovieBaseInfo: React.FC<
         />
       </div>
       <div className="flex justify-between w-full gap-2">
-        <Badge>{movie.release_date}</Badge>
+        <Badge>{movie.release_date || t("movie.page.missing.date")}</Badge>
         <ScoreRated score={movie.vote_average} />
       </div>
     </div>
