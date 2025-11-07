@@ -9,7 +9,7 @@ export const Thumbnail: React.FC<{ movie: TTmdbMovieSchema }> = ({ movie }) => {
       className="flex p-2 md:p-4 items-center"
       onClick={() => openDialog("movie", movie)}
     >
-      <MovieBaseInfo movie={movie} info="partial" />
+      <MovieBaseInfo movie={movie} posterSize="md" info="partial" />
     </Card>
   );
 };

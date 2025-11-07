@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { type TTmdbMovieSchema } from "@hypertube/libs";
+import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { ImageContainer } from "../images/ImageContainer";
 import { Badge } from "../ui/badge";
@@ -41,18 +42,31 @@ const DisplayGenresMovie: React.FC<{
   );
 };
 
-export const MovieBaseInfo: React.FC<{
-  movie: Omit<TTmdbMovieSchema, "id">;
-  info?: "all" | "truncate" | "partial";
-}> = ({ movie, info = "all" }) => {
+export const MovieBaseInfo: React.FC<
+  ComponentProps<"div"> & {
+    movie: Omit<TTmdbMovieSchema, "id">;
+    posterSize?: "lg" | "md" | "sm";
+    info?: "all" | "partial";
+    truncate?: boolean;
+  }
+> = ({
+  movie,
+  posterSize = "lg",
+  info = "all",
+  truncate = false,
+  ...props
+}) => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col items-center w-full gap-2 text-center">
+    <div
+      className="flex flex-col items-center w-full gap-2 text-center"
+      {...props}
+    >
       <ImageContainer
         imageSrc={movie.poster_path}
         altImage={movie.title}
-        size={(info === "all" && "lg") || "md"}
+        size={posterSize}
       />
       {info === "partial" ? (
         <Typography variant="large" className="line-clamp-1">
@@ -64,7 +78,7 @@ export const MovieBaseInfo: React.FC<{
           <div className="flex gap-2">
             <Typography
               variant="muted"
-              className={cn(info === "truncate" && "line-clamp-1")}
+              className={cn(truncate && "line-clamp-1")}
             >
               {movie.original_title}
             </Typography>
@@ -72,7 +86,7 @@ export const MovieBaseInfo: React.FC<{
               {movie.original_language.toUpperCase()}
             </Badge>
           </div>
-          <Typography className={cn(info === "truncate" && "line-clamp-5")}>
+          <Typography className={cn(truncate && "line-clamp-5")}>
             {movie.overview || t("movie.page.missing.desc")}
           </Typography>
         </>
@@ -83,7 +97,7 @@ export const MovieBaseInfo: React.FC<{
           displayOnlyOne={info === "partial"}
         />
       </div>
-      <div className="flex justify-between w-full">
+      <div className="flex justify-between w-full gap-2">
         <Badge>{movie.release_date}</Badge>
         <ScoreRated score={movie.vote_average} />
       </div>

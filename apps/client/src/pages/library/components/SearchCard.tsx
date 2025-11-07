@@ -6,6 +6,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import {
   getMoviesSchemas,
@@ -39,7 +40,7 @@ export const SearchCard: React.FC<{
   }, [input]);
 
   return (
-    <Command>
+    <Command filter={(_, __) => 1}>
       <CommandInput
         placeholder={t("navbar.placeholder")}
         onKeyDown={({ code }) => {
@@ -47,19 +48,24 @@ export const SearchCard: React.FC<{
         }}
         onValueChange={(value) => setInput(value)}
       />
-      <CommandList>
-        {!!movies.length && (
-          <CommandGroup>
-            {movies.map((movie, i) => (
-              <CommandItem key={i} value={movie.title + movie.id}>
-                <div className="flex">
-                  <MovieBaseInfo movie={movie} info="partial" />
-                </div>
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        )}
-      </CommandList>
+      <ScrollArea>
+        <CommandList className="overflow-visible">
+          {!!movies.length && (
+            <CommandGroup>
+              {movies.map((movie, i) => (
+                <CommandItem key={i} value={movie.title + movie.id}>
+                  <MovieBaseInfo
+                    className="flex flex-col sm:grid sm:grid-cols-[1fr_4fr_1fr_1fr] items-center w-full gap-2"
+                    movie={movie}
+                    posterSize="sm"
+                    info="partial"
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+        </CommandList>
+      </ScrollArea>
     </Command>
   );
 };
