@@ -59,7 +59,10 @@ export const SearchCard: React.FC<{
             <CommandGroup>
               {movies.map((movie, i) => (
                 <CommandItem key={i} value={movie.title + movie.id}>
-                  <Link to={getUrl("client-movie", { tmdbId: movie.id })}>
+                  <Link
+                    className="w-full"
+                    to={getUrl("client-movie", { tmdbId: movie.id })}
+                  >
                     <MovieBaseInfo
                       className="flex flex-col sm:grid sm:grid-cols-[1fr_4fr_1fr_1fr] items-center w-full gap-2"
                       movie={movie}
