@@ -41,13 +41,17 @@ export const SearchCard: React.FC<{
   }, [input]);
 
   return (
-    <Command filter={(_, __) => 1}>
+    <Command filter={() => 1}>
       <CommandInput
         placeholder={t("navbar.placeholder")}
         onKeyDown={({ code }) => {
-          if (code === "Enter") setQuery(input);
+          if (code === "Enter") {
+            setQuery(input);
+            setInput("");
+          }
         }}
         onValueChange={(value) => setInput(value)}
+        value={input}
       />
       <ScrollArea>
         <CommandList className="overflow-visible">
