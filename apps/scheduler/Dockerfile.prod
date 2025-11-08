@@ -18,6 +18,6 @@ COPY apps/scheduler ./apps/scheduler
 RUN pnpm i --frozen-lockfile
 RUN pnpm lint
 RUN pnpm --filter server-core prisma:generate
-RUN pnpm build
+RUN pnpm build:scheduler
 
-CMD ["pnpm", "start"]
+CMD ["pnpm", "start:scheduler"]

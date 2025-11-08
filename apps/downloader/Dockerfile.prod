@@ -18,6 +18,6 @@ COPY apps/downloader ./apps/downloader
 RUN pnpm i --frozen-lockfile
 RUN pnpm lint
 RUN pnpm --filter server-core prisma:generate
-RUN pnpm build
+RUN pnpm build:downloader
 
-CMD ["pnpm", "start"]
+CMD ["pnpm", "start:downloader"]
