@@ -1,6 +1,8 @@
-import { DownloadStates, hypertubeLogger } from "@hypertube/libs";
+import { DownloadStates, hypertubeLogger, TMovieSchema } from "@hypertube/libs";
 import {
+  convertSrtToVtt,
   getResolutionPath,
+  getSubtitlePath,
   prisma,
   renameFile,
   TDownloadJobData,
@@ -24,6 +26,50 @@ const Status = {
 
 const defaultMovieName = "movie.mp4";
 
+const handleSrtFile = async (
+  movie: TMovieSchema,
+  srtFile: { name: string }
+) => {
+  const target = path.resolve(
+    process.cwd(),
+    `./downloads/incomplete/${srtFile.name}`
+  );
+  hypertubeLogger.info(`Waiting for SRT file to be downloaded ${target}`);
+  await waitFile(target, 100000);
+  let language = srtFile.name.substring(
+    srtFile.name.lastIndexOf("/") + 1,
+    srtFile.name.lastIndexOf(".")
+  );
+  if (language.includes("[YTS.MX]")) {
+    return;
+  }
+  language = "YTS - " + language;
+
+  await prisma.subtitle.upsert({
+    where: {
+      downloadLink: srtFile.name,
+    },
+    update: {},
+    create: {
+      movieId: movie.id,
+      language: language,
+      rating: 5,
+      downloadLink: srtFile.name,
+      downloadState: DownloadStates.DOWNLOADED,
+    },
+  });
+  const srtPath = path.join(
+    getSubtitlePath(movie.tmdbId, language),
+    "subtitles.srt"
+  );
+  hypertubeLogger.info(`Copying SRT file to ${srtPath}`);
+  await fs.promises.cp(target, srtPath, {
+    recursive: true,
+    force: true,
+  });
+  await convertSrtToVtt(srtPath);
+};
+
 export const downloadMovie = async (job: Job<TDownloadJobData>) => {
   const { movie, resolution } = job.data;
   const resolutionPath = `/downloads/${movie.tmdbId}/resolutions/${resolution}/resolution.torrent`;
@@ -45,6 +91,14 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       throw new Error("MP4 file not found");
     }
     hypertubeLogger.info(`MP4 file found ${mp4File.name}`);
+    const srtFiles = files.filter((file) => file.name.endsWith(".srt"));
+    if (srtFiles.length > 0) {
+      hypertubeLogger.info(
+        `${srtFiles.length} SRT files found ${srtFiles
+          .map((file) => file.name)
+          .join(", ")}`
+      );
+    }
 
     await downloader.start(result.id);
 
@@ -54,7 +108,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     );
 
     hypertubeLogger.info(`Waiting for file to be downloaded ${target}`);
-    await waitFile(target, 100000);
+    await waitFile(target, 1000000);
 
     const linkPath = path.join(
       getResolutionPath(movie.tmdbId, resolution),
@@ -65,6 +119,15 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       await fs.promises.symlink(target, linkPath, "file");
     } catch (error) {
       hypertubeLogger.error(`Error symlinking movie ${error}`);
+    }
+
+    try {
+      const srtPromises = srtFiles.map((srtFile) =>
+        handleSrtFile(movie, srtFile)
+      );
+      await Promise.allSettled(srtPromises);
+    } catch (error) {
+      hypertubeLogger.error(`Error handling SRT files ${error}`);
     }
 
     await prisma.resolution.update({

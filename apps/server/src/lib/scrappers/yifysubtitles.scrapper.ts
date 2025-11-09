@@ -1,5 +1,10 @@
 import { TSubtitleSchema } from "@hypertube/libs";
-import { getSubtitlePath, renameFile, waitFile } from "@hypertube/server-core";
+import {
+  convertSrtToVtt,
+  getSubtitlePath,
+  renameFile,
+  waitFile,
+} from "@hypertube/server-core";
 import AdmZip from "adm-zip";
 import * as fs from "fs";
 import * as path from "path";
@@ -70,20 +75,6 @@ export const getSubtitlesDownloadLinks = async ({
   return filtered;
 };
 
-const convertSrtToVtt = (srtPath: string) => {
-  const srtData = fs.readFileSync(srtPath, "utf8");
-
-  // Replace the timecode format from 00:00:00,000 to 00:00:00.000
-  let vttData = "WEBVTT\n\n" + srtData.replace(/(\d+:\d+:\d+),(\d+)/g, "$1.$2");
-
-  // Remove number lines
-  vttData = vttData.replace(/^\d+\s*[\r\n]+/gm, "");
-
-  const vttPath = path.join(path.dirname(srtPath), "subtitles.vtt");
-  fs.writeFileSync(vttPath, vttData, "utf8");
-  fs.unlinkSync(srtPath);
-};
-
 export const downloadYifysubtitles = async (
   subtitles: TSubtitleSchema & { tmdbId: number }
 ) => {
@@ -135,8 +126,8 @@ export const downloadYifysubtitles = async (
   }
   const srtFilename = path.basename(srtEntry.entryName);
   const srtFilePath = path.join(downloadDir, srtFilename);
-  fs.writeFileSync(srtFilePath, srtEntry.getData());
-  fs.unlinkSync(zipPath);
+  await fs.promises.writeFile(srtFilePath, srtEntry.getData());
+  await fs.promises.unlink(zipPath);
 
-  convertSrtToVtt(srtFilePath);
+  await convertSrtToVtt(srtFilePath);
 };
