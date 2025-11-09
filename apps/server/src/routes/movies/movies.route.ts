@@ -12,6 +12,7 @@ import {
   postMovieSubscribeSchemas,
 } from "@hypertube/libs";
 import { Hono } from "hono";
+import { bodyParser } from "../../middlewares/bodyParser";
 import { isLogged } from "../../middlewares/isLogged";
 import { isVPNActive } from "../../middlewares/isVPNActive";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
@@ -97,6 +98,7 @@ moviesRouter.post(
   "/:tmdbId/comments",
   isLogged,
   urlParamsParser(postMovieCommentSchemas.urlParams),
+  bodyParser(postMovieCommentSchemas.requirements),
   commentMovie
 );
 
@@ -106,13 +108,5 @@ moviesRouter.delete(
   urlParamsParser(deleteMovieLikeSchemas.urlParams),
   deleteMovieLike
 );
-
-// moviesRouter.delete(
-//   "/:tmdbId/comments/:commentId", //pas besoin du parent (movie)
-//   isLogged,
-//   urlParamsParser(deleteMovieCommentSchemas.urlParams),
-//   deleteMovieComment
-// ); //fonction récursive pour tout delete
-//ou garder les réponses associées
 
 export default moviesRouter;

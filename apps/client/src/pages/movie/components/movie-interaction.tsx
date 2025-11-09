@@ -18,6 +18,7 @@ import {
   deleteMovieSubscribeSchemas,
   getMovieCommentSchemas,
   getUrl,
+  postMovieCommentSchemas,
   postMovieLikeSchemas,
   postMovieSubscribeSchemas,
   ROUTES,
@@ -31,7 +32,7 @@ import {
 } from "@tanstack/react-query";
 import { t } from "i18next";
 import { ThumbsUp } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -128,6 +129,46 @@ const LikeButton: React.FC<{
   );
 };
 
+const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
+  tmdbId,
+}) => {
+  const queryClient = useQueryClient();
+  const [newComment, setNewComment] = useState("");
+  const { mutate: postComment } = useMutation({
+    mutationFn: (content: string) =>
+      axiosFetch({
+        method: "POST",
+        url: getUrl("api-movies-comment", { tmdbId: tmdbId }),
+        data: { content },
+        schemas: postMovieCommentSchemas,
+      }),
+    onSuccess: () => {
+      toast.success("Comment posted");
+      setNewComment("");
+      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] });
+    },
+    onError: () => {
+      toast.error("Error when posting comment");
+    },
+  });
+  return (
+    <InputGroup>
+      {" "}
+      <InputGroupInput
+        placeholder="Add a comment..."
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && newComment) {
+            postComment(newComment);
+          }
+        }}
+      />{" "}
+      <InputGroupAddon align="inline-start"></InputGroupAddon>{" "}
+    </InputGroup>
+  );
+};
+
 export const MovieInteraction = ({
   movie,
 }: {
@@ -181,10 +222,7 @@ export const MovieInteraction = ({
         ></LikeButton>
       </div>
       <div>
-        <InputGroup>
-          <InputGroupInput placeholder={"Add a comment..."} />
-          <InputGroupAddon align="inline-start"></InputGroupAddon>
-        </InputGroup>
+        <PostComment tmdbId={movie.tmdbId} />
       </div>
       <div>
         {data?.pages.map((page) =>
