@@ -182,6 +182,14 @@
         "War": "Guerre",
         "Western": "Western"
       }
+    },
+    "likes": {
+      "likeMovie": "Film liké avec succès",
+      "unlikeMovie": "Film retiré des likes avec succès",
+      "tooltip": {
+        "likeMovie": "J'aime ce film",
+        "unlikeMovie": "Je n'aime plus"
+      }
     }
   },
   "oauthCredentials": {

@@ -14,6 +14,7 @@ import {
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
+  deleteMovieLikeSchemas,
   deleteMovieSubscribeSchemas,
   getMovieCommentSchemas,
   getUrl,
@@ -28,7 +29,9 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import { t } from "i18next";
 import { ThumbsUp } from "lucide-react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -80,14 +83,56 @@ const SubscriptionButton: React.FC<{
   );
 };
 
-// fetchnextpage refait la requete avec l'aide de getnextpageparam qu lui fournit les params et queryfn qui lui donne l'url
+const LikeButton: React.FC<{
+  tmdbId: TMovieSchema["tmdbId"];
+  isLiked: boolean;
+}> = ({ tmdbId, isLiked }) => {
+  const queryClient = useQueryClient();
+
+  const { mutate: toggleLike } = useMutation({
+    mutationFn: () =>
+      axiosFetch({
+        method: isLiked ? "DELETE" : "POST",
+        url: getUrl("api-movies-like", { tmdbId }),
+        schemas: isLiked ? deleteMovieLikeSchemas : postMovieLikeSchemas,
+      }),
+    onSuccess: () => {
+      toast.success(
+        isLiked ? t("movie.likes.unlikeMovie") : t("movie.likes.likeMovie")
+      );
+      queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
+    },
+  });
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" onClick={() => toggleLike()}>
+            <ThumbsUp
+              className={`transition-colors ${
+                isLiked
+                  ? "text-[var(--primary)] fill-[var(--primary)]"
+                  : "text-gray-500"
+              }`}
+            />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {isLiked
+            ? t("movie.likes.tooltip.unlikeMovie")
+            : t("movie.likes.tooltip.likeMovie")}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
+
 export const MovieInteraction = ({
   movie,
 }: {
   movie: TGetMovieSchemas["response"];
 }) => {
-  const queryClient = useQueryClient();
-
   const {
     data,
     fetchNextPage,
@@ -120,23 +165,6 @@ export const MovieInteraction = ({
     initialPageParam: 1,
   });
 
-  const likeMutation = useMutation({
-    mutationFn: (tmdbId: number) =>
-      axiosFetch({
-        method: "POST",
-        url: getUrl(ROUTES.API.MOVIES_LIKE, { tmdbId }),
-        schemas: postMovieLikeSchemas,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["movie", movie.tmdbId] });
-      toast.success("Movie liked!");
-    },
-    onError: (error) => {
-      toast.error("Failed to like movie");
-      console.error("Like error:", error);
-    },
-  });
-
   return (
     <div className="h-[1500px] border">
       <ThemeToggle />
@@ -147,16 +175,10 @@ export const MovieInteraction = ({
       <div className="text-2xl font-extrabold flex justify-between">
         <span>{data?.pages?.[0]?.totalComments} Commentaires</span>
         <span>{movie.likesNumber} Likes</span>
-        <Button
-          variant="ghost"
-          onClick={() => likeMutation.mutate(movie.tmdbId)}
-        >
-          <ThumbsUp
-            className={`transition-colors ${
-              movie.isLikedByUser ? "text-blue-500" : "text-gray-500"
-            }`}
-          />
-        </Button>
+        <LikeButton
+          tmdbId={movie.tmdbId}
+          isLiked={movie.isLikedByUser}
+        ></LikeButton>
       </div>
       <div>
         <InputGroup>

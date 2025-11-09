@@ -230,6 +230,7 @@ export type {
   DownloadState,
   LanguageCode,
   NotificationReadStatus,
+  TParentType,
 } from "./const/global.const.js";
 
 export type { TBetterAuthProviders } from "./const/global.const.js";
