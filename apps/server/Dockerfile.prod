@@ -30,9 +30,14 @@ COPY package.json pnpm-lock.yaml ./
 COPY .env ./
 COPY eslint.config.js ./
 
-COPY apps ./apps
+COPY apps/server ./apps/server
+COPY apps/client ./apps/client
+COPY apps/libs ./apps/libs
+COPY apps/server-core ./apps/server-core
 
-RUN pnpm i --filter server --filter client --filter libs --filter server-core --frozen-lockfile
+RUN pnpm i --frozen-lockfile
 RUN pnpm lint
 RUN pnpm --filter server-core prisma:generate
 RUN pnpm build:app
+
+CMD ["pnpm", "start:app"]

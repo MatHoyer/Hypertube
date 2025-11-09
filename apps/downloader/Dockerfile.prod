@@ -15,7 +15,9 @@ COPY apps/libs ./apps/libs
 COPY apps/server-core ./apps/server-core
 COPY apps/downloader ./apps/downloader
 
-RUN pnpm i --filter "downloader..." --frozen-lockfile
+RUN pnpm i --frozen-lockfile
 RUN pnpm lint
 RUN pnpm --filter server-core prisma:generate
 RUN pnpm build:downloader
+
+CMD ["pnpm", "start:downloader"]

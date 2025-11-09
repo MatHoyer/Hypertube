@@ -1,7 +1,2 @@
 packages:
-  - "apps/client"
-  - "apps/server"
-  - "apps/server-core"
-  - "apps/libs"
-  - "apps/downloader"
-  - "apps/scheduler"
+  - "apps/*"
