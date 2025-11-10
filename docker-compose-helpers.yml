@@ -17,6 +17,19 @@ services:
     networks:
       - hypertube-network
 
+  bull-board:
+    container_name: hypertube_bull-board
+    build:
+      context: ./custom/bull-board-docker
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=${REDIS_PORT}
+    ports:
+      - 5541:3000
+    networks:
+      - hypertube-network
+
 networks:
   hypertube-network:
     external: true
