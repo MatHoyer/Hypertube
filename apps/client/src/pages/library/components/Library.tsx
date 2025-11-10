@@ -12,7 +12,7 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
   const [maxPages, setMaxPages] = useState(1);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const fetchMovies = async (pageParam: number) => {
+  const fetchMovies = async ({ pageParam }: { pageParam: number }) => {
     const res = await axiosFetch({
       method: "GET",
       schemas: getMoviesSchemas,
@@ -33,7 +33,7 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
     isError,
   } = useInfiniteQuery({
     queryKey: ["movies", query],
-    queryFn: ({ pageParam }) => fetchMovies(pageParam),
+    queryFn: fetchMovies,
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       maxPages > lastPage.page ? lastPage.page + 1 : null,
@@ -47,9 +47,8 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
     });
     const currentRef = bottomRef.current;
     if (currentRef) observer.observe(currentRef);
-    return () => {
-      if (currentRef) observer.disconnect();
-    };
+
+    return () => observer.disconnect();
   }, [bottomRef, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (isPending) return <LoadingPage resource="global"></LoadingPage>;

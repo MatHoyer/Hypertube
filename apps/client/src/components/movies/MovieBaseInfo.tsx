@@ -54,13 +54,17 @@ export const MovieBaseInfo: React.FC<
   posterSize = "lg",
   info = "all",
   truncate = false,
+  className,
   ...props
 }) => {
   const { t } = useTranslation();
 
   return (
     <div
-      className="flex flex-col items-center w-full gap-2 text-center"
+      className={cn(
+        "flex flex-col items-center w-full gap-2 text-center",
+        className
+      )}
       {...props}
     >
       <ImageContainer
