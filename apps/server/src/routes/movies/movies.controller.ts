@@ -1,4 +1,5 @@
 import {
+  DownloadState,
   DownloadStates,
   getMovieSchemas,
   getMoviesSchemas,
@@ -45,7 +46,49 @@ export const getMovies = async (
     page,
   });
 
-  return c.json(getMoviesSchemas.response.parse(moviesPagination));
+  const moviesWithResolutionsOrderByDownloadState = await prisma.movie.findMany(
+    {
+      where: {
+        tmdbId: { in: moviesPagination.movies.map((movie) => movie.id) },
+      },
+      include: {
+        resolutions: {
+          orderBy: {
+            downloadState: "desc",
+          },
+        },
+      },
+    }
+  );
+
+  let moviesWithStatutPagination = {
+    ...moviesPagination,
+    movies: moviesPagination.movies.map((movie) => {
+      return {
+        ...movie,
+        status: DownloadStates.NOT_DOWNLOADED as DownloadState,
+      };
+    }),
+  };
+
+  const resolutionStatusById = Object.fromEntries(
+    moviesWithResolutionsOrderByDownloadState.map((movie) => [
+      movie.tmdbId,
+      movie.resolutions[0]?.downloadState ?? DownloadStates.NOT_DOWNLOADED,
+    ])
+  );
+
+  moviesWithStatutPagination = {
+    ...moviesWithStatutPagination,
+    movies: moviesWithStatutPagination.movies.map((movie) => {
+      return {
+        ...movie,
+        status: resolutionStatusById[movie.id] ?? DownloadStates.NOT_DOWNLOADED,
+      };
+    }),
+  };
+
+  return c.json(getMoviesSchemas.response.parse(moviesWithStatutPagination));
 };
 
 export const getMovie = async (

@@ -41,7 +41,7 @@ export const getMoviesSchemas = {
     name: z.string().optional(),
   }),
   response: z.object({
-    movies: z.array(tmdbMovieSchema),
+    movies: z.array(tmdbMovieSchema.extend({ status: z.enum(DownloadStates) })),
     page: z.number(),
     totalPages: z.number(),
     totalResults: z.number(),

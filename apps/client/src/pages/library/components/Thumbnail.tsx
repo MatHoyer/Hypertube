@@ -1,5 +1,6 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
+import { AppLoader } from "@/components/ui/app-loader";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -9,11 +10,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { TTmdbMovieSchema } from "@hypertube/libs";
-import { Check, EllipsisVertical, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { DownloadStates, type TGetMoviesSchemas } from "@hypertube/libs";
+import {
+  Check,
+  CheckIcon,
+  CircleX,
+  Clock,
+  EllipsisVertical,
+} from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-export const Thumbnail: React.FC<{ movie: TTmdbMovieSchema }> = ({ movie }) => {
-  const movieSee = true; //TODO : movieSeen by user
+export const Thumbnail: React.FC<{
+  movie: TGetMoviesSchemas["response"]["movies"][number];
+}> = ({ movie }) => {
+  const movieSeen = true; //TODO : movieSeen by user
+  const { t } = useTranslation();
 
   return (
     <div>
@@ -26,13 +42,20 @@ export const Thumbnail: React.FC<{ movie: TTmdbMovieSchema }> = ({ movie }) => {
       <Card className="p-2 rounded-t-none border-t-0">
         <div className="flex gap-2 w-full items-center justify-between">
           <div className="overflow-hidden">
-            <Badge variant={"outline"}>
-              <Info />
-              Status
-            </Badge>
+            <Tooltip>
+              <TooltipTrigger className="flex items-center">
+                {movie.status === DownloadStates.DOWNLOADED && <CheckIcon />}
+                {movie.status === DownloadStates.DOWNLOADING && <AppLoader />}
+                {movie.status === DownloadStates.WAITING && <Clock />}
+                {movie.status === DownloadStates.NOT_DOWNLOADED && <CircleX />}
+              </TooltipTrigger>
+              <TooltipContent>
+                {t(`movie.downloadPage.tooltip.${movie.status}`)}
+              </TooltipContent>
+            </Tooltip>
           </div>
           <div className="flex items-center gap-2">
-            {movieSee && (
+            {movieSeen && (
               <Badge variant={"success"}>
                 <Check />
               </Badge>
