@@ -13,6 +13,8 @@ import type { TTmdbMovieSchema } from "@hypertube/libs";
 import { Check, EllipsisVertical, Info } from "lucide-react";
 
 export const Thumbnail: React.FC<{ movie: TTmdbMovieSchema }> = ({ movie }) => {
+  const movieSee = true; //TODO : movieSeen by user
+
   return (
     <div>
       <Card
@@ -30,9 +32,11 @@ export const Thumbnail: React.FC<{ movie: TTmdbMovieSchema }> = ({ movie }) => {
             </Badge>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={"success"}>
-              <Check />
-            </Badge>
+            {movieSee && (
+              <Badge variant={"success"}>
+                <Check />
+              </Badge>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <EllipsisVertical size={15} />
