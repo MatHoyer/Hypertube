@@ -39,6 +39,8 @@ export const getMoviesSchemas = {
   searchParams: z.object({
     page: z.coerce.number().int().positive().default(1),
     name: z.string().optional(),
+    sortBy: z.string().optional(),
+    filters: z.string().optional(),
   }),
   response: z.object({
     movies: z.array(tmdbMovieSchema.extend({ status: z.enum(DownloadStates) })),

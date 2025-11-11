@@ -15,15 +15,16 @@ import {
 } from "@/components/ui/sheet";
 import { Toggle } from "@/components/ui/toggle";
 import { Typography } from "@/components/ui/typography";
-import { defaultSortBy, tmdbGenres, tmdbSortBy } from "@hypertube/libs";
+import { tmdbDefaultSortBy, tmdbGenres, tmdbSortBy } from "@hypertube/libs";
 import { Circle } from "lucide-react";
 
 export const Filter: React.FC<{
   setQuery: (value: string) => void;
+  sortBy: string;
   setSortBy: (value: string) => void;
   filters: string[];
   setFilters: (value: string[] | ((old: string[]) => string[])) => void;
-}> = ({ setQuery, setSortBy, filters, setFilters }) => {
+}> = ({ setQuery, sortBy, setSortBy, filters, setFilters }) => {
   return (
     <div className="flex justify-between p-2">
       <Sheet>
@@ -40,7 +41,7 @@ export const Filter: React.FC<{
             <div className="flex flex-col gap-5 p-5">
               <Typography variant="h2">{"SortBy"}</Typography>
               <Separator />
-              <RadioGroup defaultValue={defaultSortBy}>
+              <RadioGroup defaultValue={sortBy || tmdbDefaultSortBy}>
                 {tmdbSortBy.map((sort) => (
                   <div key={sort} className="flex gap-2">
                     <RadioGroupItem
@@ -54,23 +55,23 @@ export const Filter: React.FC<{
               <Typography variant="h2">{"Genres"}</Typography>
               <Separator />
               <div className="flex flex-wrap gap-2">
-                {tmdbGenres.map((genre) => (
+                {Object.entries(tmdbGenres).map(([name, id]) => (
                   <Toggle
-                    key={genre.id}
+                    key={id}
                     variant={"outline"}
                     className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-primary data-[state=on]:*:[svg]:stroke-primary"
-                    defaultPressed={filters.includes(genre.name)}
+                    defaultPressed={filters.includes(name)}
                     onClick={() => {
                       setFilters((prev) => {
-                        if (prev.includes(genre.name)) {
-                          return prev.filter((g) => g !== genre.name);
+                        if (prev.includes(name)) {
+                          return prev.filter((g) => g !== name);
                         }
-                        return [...prev, genre.name];
+                        return [...prev, name];
                       });
                     }}
                   >
                     <Circle />
-                    {genre.name}
+                    {name}
                   </Toggle>
                 ))}
               </div>

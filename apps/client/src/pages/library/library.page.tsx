@@ -11,7 +11,7 @@ export const LibraryPage = () => {
   const [filters, setFilters] = useQueryState(
     "filter",
     parseAsArrayOf(
-      parseAsStringLiteral(tmdbGenres.map((genre) => genre.name))
+      parseAsStringLiteral(Object.keys(tmdbGenres).map((name) => name))
     ).withDefault([])
   );
 
@@ -23,11 +23,12 @@ export const LibraryPage = () => {
         <SearchCard setQuery={setQuery} />
         <Filter
           setQuery={setQuery}
+          sortBy={sortBy}
           setSortBy={setSortBy}
           filters={filters}
           setFilters={setFilters}
         />
-        <Library query={query} />
+        <Library query={query} sortBy={sortBy} filters={filters} />
       </LayoutContent>
     </Layout>
   );

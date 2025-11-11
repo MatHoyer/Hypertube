@@ -8,7 +8,11 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Thumbnail } from "./Thumbnail";
 
-export const Library: React.FC<{ query: string }> = ({ query }) => {
+export const Library: React.FC<{
+  query: string;
+  sortBy: string;
+  filters: string[];
+}> = ({ query, sortBy, filters }) => {
   const { t } = useTranslation();
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -17,7 +21,12 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
       method: "GET",
       schemas: getMoviesSchemas,
       url: getUrl("api-movies", {
-        searchParams: { page: pageParam.toString(), name: query },
+        searchParams: {
+          page: pageParam.toString(),
+          name: query,
+          sortBy,
+          filters: filters.join("+"),
+        },
       }),
     });
     return res;
@@ -31,7 +40,7 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
     isPending,
     isError,
   } = useInfiniteQuery({
-    queryKey: ["movies", query],
+    queryKey: ["movies", query, sortBy, filters],
     queryFn: fetchMovies,
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>

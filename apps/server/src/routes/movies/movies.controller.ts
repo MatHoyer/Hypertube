@@ -36,13 +36,15 @@ export const getMovies = async (
 ) => {
   const tmdbApi = new TmdbApi();
 
-  const { name, page } = c.get("validatedSearchParams");
+  const { name, page, sortBy, filters } = c.get("validatedSearchParams");
   const language = c.get("language");
 
   const moviesPagination = await tmdbApi.getMovies({
     query: name,
     language: language as keyof typeof languageCodes,
     page,
+    sortBy,
+    filters,
   });
 
   const moviesWithResolutionsOrderByDownloadState = await prisma.movie.findMany(

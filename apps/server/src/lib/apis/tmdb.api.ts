@@ -1,4 +1,11 @@
-import { languageCodes, tmdbMovieSchema } from "@hypertube/libs";
+import {
+  languageCodes,
+  tmdbGenres,
+  tmdbMovieSchema,
+  tmdbSortBy,
+  tmdbTypes,
+} from "@hypertube/libs";
+import { tmdbDefaultSortBy } from "@hypertube/libs/src/const/tmdb.const";
 import { env } from "@hypertube/server-core";
 import z from "zod";
 
@@ -58,12 +65,14 @@ export class TmdbApi {
     return await Promise.all(moviePromises);
   }
 
-  private async getMoviesByType({
-    type,
+  private async getMoviesBySort({
+    sortBy = tmdbDefaultSortBy,
+    filters,
     page,
     language,
   }: {
-    type: "popular" | "top_rated";
+    sortBy: (typeof tmdbSortBy)[number] | undefined;
+    filters: string | undefined;
     page: number;
     language: keyof typeof languageCodes;
   }) {
@@ -77,9 +86,23 @@ export class TmdbApi {
         })
       ),
     });
+
+    if (sortBy && tmdbTypes.includes(sortBy)) {
+      const response = await this.fetch<z.infer<typeof responseSchema>>(
+        `/movie/${sortBy}?page=${page}&language=${language}`
+      );
+      return responseSchema.parse(response);
+    }
+
+    const genres = filters
+      ?.split("+")
+      .map((filter) => tmdbGenres[filter as keyof typeof tmdbGenres])
+      .join(",");
+
     const response = await this.fetch<z.infer<typeof responseSchema>>(
-      `/movie/${type}?page=${page}&language=${language}`
+      `/discover/movie?language=${language}&page=${page}&sort_by=${sortBy}&with_genres=${genres}`
     );
+
     return responseSchema.parse(response);
   }
 
@@ -112,10 +135,14 @@ export class TmdbApi {
     query,
     language,
     page,
+    sortBy,
+    filters,
   }: {
     query: string | undefined;
     language: keyof typeof languageCodes;
     page: number;
+    sortBy: string | undefined;
+    filters: string | undefined;
   }) {
     const rawMovies = query
       ? await this.getMoviesWithQuery({
@@ -123,8 +150,9 @@ export class TmdbApi {
           language,
           page,
         })
-      : await this.getMoviesByType({
-          type: "popular",
+      : await this.getMoviesBySort({
+          sortBy,
+          filters,
           page,
           language,
         });
