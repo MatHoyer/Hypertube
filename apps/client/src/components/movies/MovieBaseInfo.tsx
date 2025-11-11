@@ -13,10 +13,10 @@ const DisplayGenresMovie: React.FC<{
 }> = ({ genres, displayOnlyOne = false }) => {
   const { t } = useTranslation();
 
-  if (displayOnlyOne) {
-    return (
-      <>
-        {genres.length ? (
+  return (
+    <div className="flex gap-2 justify-center">
+      {genres.length ? (
+        displayOnlyOne ? (
           <div className="flex justify-center gap-2 w-full">
             <Badge variant={"outline"}>{genres[0].name}</Badge>
             {genres.length > 1 && (
@@ -24,21 +24,18 @@ const DisplayGenresMovie: React.FC<{
             )}
           </div>
         ) : (
-          <Typography variant="muted" className="text-center">
-            {t("movie.page.missing.genres")}
-          </Typography>
-        )}
-      </>
-    );
-  }
-  return (
-    <>
-      {genres.map(({ name }, i) => (
-        <Badge key={i} variant={"outline"}>
-          {name}
-        </Badge>
-      ))}
-    </>
+          genres.map(({ name }, i) => (
+            <Badge key={i} variant={"outline"}>
+              {name}
+            </Badge>
+          ))
+        )
+      ) : (
+        <Typography variant="muted" className="text-center">
+          {t("movie.page.missing.genres")}
+        </Typography>
+      )}
+    </div>
   );
 };
 
@@ -95,12 +92,10 @@ export const MovieBaseInfo: React.FC<
           </Typography>
         </>
       )}
-      <div className="flex gap-2 justify-center">
-        <DisplayGenresMovie
-          genres={movie.genres}
-          displayOnlyOne={info === "partial"}
-        />
-      </div>
+      <DisplayGenresMovie
+        genres={movie.genres}
+        displayOnlyOne={info === "partial"}
+      />
       <div className="flex justify-between w-full gap-2">
         <Badge>{movie.release_date || t("movie.page.missing.date")}</Badge>
         <ScoreRated score={movie.vote_average} />
