@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/command";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { cn } from "@/lib/utils";
 import {
   getMoviesSchemas,
   getUrl,
@@ -37,13 +38,17 @@ export const SearchCard: React.FC<{
         });
         setMovies(res.movies);
       } else setMovies([]);
-    }, 500);
+    }, 200);
     return () => clearTimeout(timeout);
   }, [input]);
 
   return (
     <div className="relative">
-      <Command ref={searchBarRef} className="rounded-b-none" filter={() => 1}>
+      <Command
+        ref={searchBarRef}
+        className={cn(movies.length && "rounded-b-none")}
+        filter={() => 1}
+      >
         <CommandInput
           placeholder={t("navbar.placeholder")}
           onKeyDown={({ code }) => {
