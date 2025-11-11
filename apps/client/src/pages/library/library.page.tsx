@@ -15,8 +15,6 @@ export const LibraryPage = () => {
     ).withDefault([])
   );
 
-  void sortBy;
-
   return (
     <Layout size="lg">
       <LayoutContent className="flex flex-col gap-2">

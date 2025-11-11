@@ -14,7 +14,7 @@ const DisplayGenresMovie: React.FC<{
   const { t } = useTranslation();
 
   return (
-    <div className="flex gap-2 justify-center">
+    <div className="flex flex-wrap gap-2 justify-center">
       {genres.length ? (
         displayOnlyOne ? (
           <div className="flex justify-center gap-2 w-full">
