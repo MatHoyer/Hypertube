@@ -1,15 +1,15 @@
 import { LoadingPage } from "@/components/LoadingPage";
+import { AppLoader } from "@/components/ui/app-loader";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getMoviesSchemas, getUrl } from "@hypertube/libs";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Thumbnail } from "./Thumbnail";
 
 export const Library: React.FC<{ query: string }> = ({ query }) => {
   const { t } = useTranslation();
-  const [maxPages, setMaxPages] = useState(1);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const fetchMovies = async ({ pageParam }: { pageParam: number }) => {
@@ -20,7 +20,6 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
         searchParams: { page: pageParam.toString(), name: query },
       }),
     });
-    setMaxPages(res.totalPages);
     return res;
   };
 
@@ -36,7 +35,7 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
     queryFn: fetchMovies,
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
-      maxPages > lastPage.page ? lastPage.page + 1 : null,
+      lastPage.totalPages > lastPage.page ? lastPage.page + 1 : undefined,
   });
 
   useEffect(() => {
@@ -77,6 +76,9 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
           </div>
         )}
       </div>
+      {isFetchingNextPage && (
+        <AppLoader className="flex w-full justify-center" />
+      )}
       <div ref={bottomRef} />
     </>
   );
