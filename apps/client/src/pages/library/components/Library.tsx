@@ -1,6 +1,7 @@
 import { LoadingPage } from "@/components/LoadingPage";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Typography } from "@/components/ui/typography";
+import useDebounce from "@/hooks/use-debounce";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getMoviesSchemas, getUrl } from "@hypertube/libs";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -32,6 +33,10 @@ export const Library: React.FC<{
     return res;
   };
 
+  const queryDebounced = useDebounce(query, 500);
+  const filtersDebounced = useDebounce(filters, 500);
+  const sortByDebounced = useDebounce(sortBy, 500);
+
   const {
     data,
     fetchNextPage,
@@ -40,7 +45,7 @@ export const Library: React.FC<{
     isPending,
     isError,
   } = useInfiniteQuery({
-    queryKey: ["movies", query, sortBy, filters],
+    queryKey: ["movies", queryDebounced, sortByDebounced, filtersDebounced],
     queryFn: fetchMovies,
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
