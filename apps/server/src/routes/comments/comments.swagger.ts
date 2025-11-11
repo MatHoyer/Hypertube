@@ -16,7 +16,7 @@ const commentIdPathParam = {
 };
 
 export const commentsSwagger = {
-  [getUrl("api-comments", { commentId: "{commentId}" }) + "/replies"]: {
+  [getUrl("api-comments-replies", { commentId: "{commentId}" })]: {
     get: {
       summary: "Get comment replies",
       tags: ["Comments"],
@@ -80,7 +80,7 @@ export const commentsSwagger = {
     },
   },
 
-  [getUrl("api-comments", { commentId: "{commentId}" }) + "/like"]: {
+  [getUrl("api-comments-like", { commentId: "{commentId}" })]: {
     post: {
       summary: "Like a comment",
       tags: ["Comments"],

@@ -61,13 +61,6 @@ export const postCommentReplySchemas = {
   }),
   response: z.object({
     message: z.string(),
-    comment: commentSchema.pick({
-      id: true,
-      content: true,
-      userId: true,
-      createdAt: true,
-      updatedAt: true,
-    }),
   }),
 };
 

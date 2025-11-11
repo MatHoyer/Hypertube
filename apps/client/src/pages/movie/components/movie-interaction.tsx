@@ -67,7 +67,7 @@ const SubscriptionButton: React.FC<{
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button onClick={() => toggleSubscription()}>
             {isSubscribed
               ? t("movie.subscriptions.unsubscribe")

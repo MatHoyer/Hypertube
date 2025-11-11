@@ -33,7 +33,7 @@ import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
-import { likeParent } from "../global.helper";
+import { commentParent, likeParent, unlikeParent } from "../global.helper";
 import {
   getMovieData,
   sendSSEDownloadStateChange,
@@ -471,21 +471,8 @@ export const deleteMovieLike = async (
     return c.json({ message: "Movie not found" }, 404);
   }
 
-  try {
-    await prisma.like.delete({
-      where: {
-        userId_parentId: {
-          userId: id,
-          parentId: movie.id,
-        },
-      },
-    });
-
-    return c.json({ message: "Movie disliked successfully" }, 200);
-  } catch (error) {
-    console.error("Error when disliking movie", error);
-    return c.json({ message: "Like not found" }, 404);
-  }
+  const result = await unlikeParent(id, movie.id, ParentTypes.MOVIE);
+  return c.json({ message: result.message }, result.status);
 };
 
 export const getMovieComments = async (
@@ -557,25 +544,6 @@ export const commentMovie = async (
     return c.json({ message: "Movie not found" }, 404);
   }
 
-  try {
-    const comment = await prisma.comment.create({
-      data: {
-        content,
-        userId: id,
-        parentId: movie.id,
-        parentType: ParentTypes.MOVIE,
-      },
-    });
-
-    return c.json(
-      {
-        message: "Comment posted successfully",
-        comment,
-      },
-      201
-    );
-  } catch (error) {
-    console.error("Error posting comment:", error);
-    return c.json({ message: "Failed to post comment" }, 500);
-  }
+  const result = await commentParent(content, id, movie.id, ParentTypes.MOVIE);
+  return c.json({ message: result.message }, result.status);
 };

@@ -14,7 +14,7 @@ import { TIsLogged } from "../../middlewares/isLogged";
 import { TIsLoggedSafe } from "../../middlewares/isLoggedSafe";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
-import { likeParent } from "../global.helper";
+import { commentParent, likeParent, unlikeParent } from "../global.helper";
 
 export const getCommentReplies = async (
   c: Context<
@@ -137,32 +137,17 @@ export const replyToComment = async (
   const parentComment = await prisma.comment.findUnique({
     where: { id: commentId },
   });
-
   if (!parentComment) {
     return c.json({ message: "Comment not found" }, 404);
   }
 
-  try {
-    const comment = await prisma.comment.create({
-      data: {
-        content,
-        userId: id,
-        parentId: commentId,
-        parentType: ParentTypes.COMMENT,
-      },
-    });
-
-    return c.json(
-      {
-        message: "Reply posted successfully",
-        comment,
-      },
-      201
-    );
-  } catch (error) {
-    console.error("Error posting reply:", error);
-    return c.json({ message: "Failed to post reply" }, 500);
-  }
+  const result = await commentParent(
+    content,
+    id,
+    commentId,
+    ParentTypes.COMMENT
+  );
+  return c.json({ message: result.message }, result.status);
 };
 
 export const deleteCommentLike = async (
@@ -177,21 +162,8 @@ export const deleteCommentLike = async (
     return c.json({ message: "Comment not found" }, 404);
   }
 
-  try {
-    await prisma.like.delete({
-      where: {
-        userId_parentId: {
-          userId: id,
-          parentId: commentId,
-        },
-      },
-    });
-
-    return c.json({ message: "Comment unliked successfully" }, 200);
-  } catch (error) {
-    console.error("Error when unliking comment", error);
-    return c.json({ message: "Like not found" }, 404);
-  }
+  const result = await unlikeParent(id, commentId, ParentTypes.COMMENT);
+  return c.json({ message: result.message }, result.status);
 };
 
 export const deleteComment = async (
