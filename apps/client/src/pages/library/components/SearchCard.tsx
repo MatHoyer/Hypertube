@@ -7,14 +7,12 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import useDebounce from "@/hooks/use-debounce";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { cn } from "@/lib/utils";
-import {
-  getMoviesSchemas,
-  getUrl,
-  type TTmdbMovieSchema,
-} from "@hypertube/libs";
-import { useEffect, useRef, useState } from "react";
+import { getMoviesSchemas, getUrl } from "@hypertube/libs";
+import { useQuery } from "@tanstack/react-query";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
@@ -23,30 +21,27 @@ export const SearchCard: React.FC<{
 }> = ({ setQuery }) => {
   const { t } = useTranslation();
   const [input, setInput] = useState("");
-  const [movies, setMovies] = useState<TTmdbMovieSchema[]>([]);
   const searchBarRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const timeout = setTimeout(async () => {
-      if (input) {
-        const res = await axiosFetch({
-          method: "GET",
-          schemas: getMoviesSchemas,
-          url: getUrl("api-movies", {
-            searchParams: { page: "1", name: input },
-          }),
-        });
-        setMovies(res.movies);
-      } else setMovies([]);
-    }, 200);
-    return () => clearTimeout(timeout);
-  }, [input]);
+  const inputDebounced = useDebounce(input, 200);
+
+  const { data } = useQuery({
+    queryKey: ["searchMovies", inputDebounced],
+    queryFn: async () =>
+      await axiosFetch({
+        method: "GET",
+        schemas: getMoviesSchemas,
+        url: getUrl("api-movies", {
+          searchParams: { page: "1", name: inputDebounced ?? "" },
+        }),
+      }),
+  });
 
   return (
     <div className="relative">
       <Command
         ref={searchBarRef}
-        className={cn(movies.length && "rounded-b-none")}
+        className={cn(data?.movies.length && "rounded-b-none")}
         filter={() => 1}
       >
         <CommandInput
@@ -68,9 +63,9 @@ export const SearchCard: React.FC<{
         >
           <ScrollArea>
             <CommandList className="overflow-visible">
-              {!!movies.length && (
+              {!!data?.movies.length && (
                 <CommandGroup className="bg-card">
-                  {movies.map((movie, i) => (
+                  {data?.movies.map((movie, i) => (
                     <CommandItem key={i} value={movie.title + movie.id}>
                       <Link
                         className="w-full"
