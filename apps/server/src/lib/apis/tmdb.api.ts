@@ -1,11 +1,11 @@
 import {
   languageCodes,
+  tmdbDefaultSortBy,
   tmdbGenres,
   tmdbMovieSchema,
   tmdbSortBy,
   tmdbTypes,
 } from "@hypertube/libs";
-import { tmdbDefaultSortBy } from "@hypertube/libs/src/const/tmdb.const";
 import { env } from "@hypertube/server-core";
 import z from "zod";
 
