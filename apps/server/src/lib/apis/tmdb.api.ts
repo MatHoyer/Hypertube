@@ -63,7 +63,7 @@ export class TmdbApi {
     page,
     language,
   }: {
-    type: "popular" | "top_rated" | "upcoming" | "now_playing";
+    type: "popular" | "top_rated";
     page: number;
     language: keyof typeof languageCodes;
   }) {

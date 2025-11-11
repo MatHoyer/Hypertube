@@ -166,6 +166,8 @@ export {
   ytsScrapperSortBy,
 } from "./const/yts.const.js";
 
+export { defaultSortBy, tmdbGenres, tmdbSortBy } from "./const/tmdb.const.js";
+
 export {
   betterAuthProviders,
   DownloadStates,
