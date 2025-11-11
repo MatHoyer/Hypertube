@@ -1,5 +1,4 @@
 import {
-  DownloadState,
   DownloadStates,
   getMovieSchemas,
   getMoviesSchemas,
@@ -61,26 +60,16 @@ export const getMovies = async (
     }
   );
 
-  let moviesWithStatutPagination = {
-    ...moviesPagination,
-    movies: moviesPagination.movies.map((movie) => {
-      return {
-        ...movie,
-        status: DownloadStates.NOT_DOWNLOADED as DownloadState,
-      };
-    }),
-  };
-
   const resolutionStatusById = Object.fromEntries(
     moviesWithResolutionsOrderByDownloadState.map((movie) => [
       movie.tmdbId,
-      movie.resolutions[0]?.downloadState ?? DownloadStates.NOT_DOWNLOADED,
+      movie.resolutions[0]?.downloadState,
     ])
   );
 
-  moviesWithStatutPagination = {
-    ...moviesWithStatutPagination,
-    movies: moviesWithStatutPagination.movies.map((movie) => {
+  const moviesWithStatutPagination = {
+    ...moviesPagination,
+    movies: moviesPagination.movies.map((movie) => {
       return {
         ...movie,
         status: resolutionStatusById[movie.id] ?? DownloadStates.NOT_DOWNLOADED,
