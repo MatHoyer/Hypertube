@@ -66,19 +66,17 @@ export const Library: React.FC<{ query: string }> = ({ query }) => {
             ))}
           </div>
         ))}
-        {!hasNextPage && (
-          <div className="flex justify-center">
+        <div className="flex w-full justify-center">
+          {isFetchingNextPage && <AppLoader />}
+          {!hasNextPage && (
             <Typography variant="large">
               {data.pages[0].totalResults
                 ? t("movie.page.noMore")
                 : t("movie.page.noFound")}
             </Typography>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-      {isFetchingNextPage && (
-        <AppLoader className="flex w-full justify-center" />
-      )}
       <div ref={bottomRef} />
     </>
   );
