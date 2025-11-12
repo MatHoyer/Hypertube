@@ -51,7 +51,9 @@ export class TmdbApi {
       ? `${this.imgUrl}${response.backdrop_path}`
       : null;
 
-    return responseSchema.parse(response);
+    const responseParsed = responseSchema.safeParse(response);
+    if (!responseParsed.success) return null;
+    return responseParsed.data;
   }
 
   private async getAllMovieDetails(

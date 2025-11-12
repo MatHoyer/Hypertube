@@ -50,7 +50,9 @@ export const getMovies = async (
   const moviesWithResolutionsOrderByDownloadState = await prisma.movie.findMany(
     {
       where: {
-        tmdbId: { in: moviesPagination.movies.map((movie) => movie.id) },
+        tmdbId: {
+          in: moviesPagination.movies.filter(Boolean).map((movie) => movie!.id),
+        },
       },
       include: {
         resolutions: {
@@ -72,6 +74,7 @@ export const getMovies = async (
   const moviesWithStatutPagination = {
     ...moviesPagination,
     movies: moviesPagination.movies.map((movie) => {
+      if (!movie) return null;
       return {
         ...movie,
         status: resolutionStatusById[movie.id] ?? DownloadStates.NOT_DOWNLOADED,
@@ -109,6 +112,8 @@ export const getMovie = async (
           adult: false,
         } as z.infer<typeof tmdbMovieSchema>)
       : await tmdbApi.getMovie(tmdbId, language as keyof typeof languageCodes);
+
+  if (!tmdbMovie) return c.json(null, 404);
 
   let dbMovie = await prisma.movie.findUnique({
     where: {

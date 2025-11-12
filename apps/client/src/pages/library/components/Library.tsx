@@ -73,19 +73,16 @@ export const Library = () => {
             key={i}
             className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2"
           >
-            {group.movies.map((movie) => (
-              <Thumbnail key={movie.id} movie={movie} />
-            ))}
+            {group.movies.map((movie) => {
+              if (!movie) return <div></div>;
+              return <Thumbnail key={movie.id} movie={movie} />;
+            })}
           </div>
         ))}
         <div className="flex w-full justify-center">
           {isFetchingNextPage && <AppLoader />}
-          {!hasNextPage && (
-            <Typography variant="large">
-              {data.pages[0].totalResults
-                ? t("movie.page.noMore")
-                : t("movie.page.noFound")}
-            </Typography>
+          {!data.pages[0].totalResults && (
+            <Typography variant="large">{t("movie.page.noFound")}</Typography>
           )}
         </div>
       </div>
