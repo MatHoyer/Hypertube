@@ -19,10 +19,11 @@ import { LibraryContext } from "../library.page";
 
 export const SearchBar = () => {
   const { t } = useTranslation();
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState<string | null>(null);
   const searchBarRef = useRef<HTMLDivElement>(null);
-  const { setQuery } = useContext(LibraryContext);
+  const { query, setQuery } = useContext(LibraryContext);
   const inputDebounced = useDebounce(input, 200);
+  const [onFocus, setOnFocus] = useState(false);
 
   const { data } = useQuery({
     queryKey: ["searchMovies", inputDebounced],
@@ -47,12 +48,18 @@ export const SearchBar = () => {
           placeholder={t("navbar.placeholder")}
           onKeyDown={({ code }) => {
             if (code === "Enter") {
-              setQuery(input);
-              setInput("");
+              setQuery(input ?? "");
+              setOnFocus(false);
             }
           }}
-          onValueChange={(value) => setInput(value)}
-          value={input}
+          onValueChange={(value) => {
+            setInput(value);
+            setOnFocus(true);
+          }}
+          value={input === null ? query : input}
+          onFocus={() => setOnFocus(true)}
+          onBlur={() => setOnFocus(false)}
+          onClick={() => setOnFocus(true)}
         />
         <div
           className="absolute inset-0 z-50"
@@ -62,7 +69,7 @@ export const SearchBar = () => {
         >
           <ScrollArea>
             <CommandList className="overflow-visible">
-              {!!data?.movies.length && (
+              {!!data?.movies.length && onFocus && (
                 <CommandGroup className="bg-card">
                   {data?.movies.filter(Boolean).map((movie, i) => (
                     <CommandItem key={i} value={movie!.title + movie!.id}>

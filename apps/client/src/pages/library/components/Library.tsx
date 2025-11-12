@@ -73,10 +73,9 @@ export const Library = () => {
             key={i}
             className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2"
           >
-            {group.movies.map((movie) => {
-              if (!movie) return <div></div>;
-              return <Thumbnail key={movie.id} movie={movie} />;
-            })}
+            {group.movies.map((movie, i) => (
+              <Thumbnail key={i} movie={movie} />
+            ))}
           </div>
         ))}
         <div className="flex w-full justify-center">

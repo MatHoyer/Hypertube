@@ -31,6 +31,8 @@ export const Thumbnail: React.FC<{
   const movieSeen = true; //TODO : movieSeen by user
   const { t } = useTranslation();
 
+  if (!movie) return <div></div>;
+
   return (
     <div>
       <Card

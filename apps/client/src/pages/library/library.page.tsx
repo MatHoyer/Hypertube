@@ -17,11 +17,11 @@ type TLibraryContext = {
 
 export const LibraryContext = createContext<TLibraryContext>({
   query: "",
-  setQuery: () => null,
+  setQuery: () => Promise<URLSearchParams>,
   sortBy: "",
-  setSortBy: () => null,
+  setSortBy: () => Promise<URLSearchParams>,
   filters: [],
-  setFilters: () => null,
+  setFilters: () => Promise<URLSearchParams>,
 });
 
 export const LibraryPage = () => {
