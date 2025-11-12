@@ -17,8 +17,6 @@ export const Library: React.FC<{
   const { t } = useTranslation();
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  console.log("allo le loader ???");
-
   const fetchMovies = async ({ pageParam }: { pageParam: number }) => {
     const res = await axiosFetch({
       method: "GET",
