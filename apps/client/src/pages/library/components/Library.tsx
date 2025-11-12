@@ -5,17 +5,15 @@ import useDebounce from "@/hooks/use-debounce";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getMoviesSchemas, getUrl } from "@hypertube/libs";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { LibraryContext } from "../library.page";
 import { Thumbnail } from "./Thumbnail";
 
-export const Library: React.FC<{
-  query: string;
-  sortBy: string;
-  filters: string[];
-}> = ({ query, sortBy, filters }) => {
+export const Library = () => {
   const { t } = useTranslation();
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { query, sortBy, filters } = useContext(LibraryContext);
 
   const fetchMovies = async ({ pageParam }: { pageParam: number }) => {
     const res = await axiosFetch({

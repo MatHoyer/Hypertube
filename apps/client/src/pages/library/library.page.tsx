@@ -1,9 +1,28 @@
 import { Layout, LayoutContent } from "@/layouts/PageLayout";
 import { tmdbGenres } from "@hypertube/libs";
 import { parseAsArrayOf, parseAsStringLiteral, useQueryState } from "nuqs";
+import { createContext } from "react";
 import { Filter } from "./components/Filter";
 import { Library } from "./components/Library";
 import { SearchBar } from "./components/SearchBar";
+
+type TLibraryContext = {
+  query: string;
+  setQuery: (value: string) => void;
+  sortBy: string;
+  setSortBy: (value: string) => void;
+  filters: string[];
+  setFilters: (value: string[] | ((old: string[]) => string[])) => void;
+};
+
+export const LibraryContext = createContext<TLibraryContext>({
+  query: "",
+  setQuery: () => null,
+  sortBy: "",
+  setSortBy: () => null,
+  filters: [],
+  setFilters: () => null,
+});
 
 export const LibraryPage = () => {
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
@@ -18,15 +37,20 @@ export const LibraryPage = () => {
   return (
     <Layout size="lg">
       <LayoutContent className="flex flex-col gap-2">
-        <SearchBar setQuery={setQuery} />
-        <Filter
-          setQuery={setQuery}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          filters={filters}
-          setFilters={setFilters}
-        />
-        <Library query={query} sortBy={sortBy} filters={filters} />
+        <LibraryContext.Provider
+          value={{
+            query,
+            setQuery,
+            sortBy,
+            setSortBy,
+            filters,
+            setFilters,
+          }}
+        >
+          <SearchBar />
+          <Filter />
+          <Library />
+        </LibraryContext.Provider>
       </LayoutContent>
     </Layout>
   );

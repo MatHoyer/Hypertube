@@ -17,14 +17,13 @@ import { Toggle } from "@/components/ui/toggle";
 import { Typography } from "@/components/ui/typography";
 import { tmdbDefaultSortBy, tmdbGenres, tmdbSortBy } from "@hypertube/libs";
 import { Circle } from "lucide-react";
+import { useContext } from "react";
+import { LibraryContext } from "../library.page";
 
-export const Filter: React.FC<{
-  setQuery: (value: string) => void;
-  sortBy: string;
-  setSortBy: (value: string) => void;
-  filters: string[];
-  setFilters: (value: string[] | ((old: string[]) => string[])) => void;
-}> = ({ setQuery, sortBy, setSortBy, filters, setFilters }) => {
+export const Filter = () => {
+  const { setQuery, sortBy, setSortBy, filters, setFilters } =
+    useContext(LibraryContext);
+
   return (
     <div className="flex justify-between p-2">
       <Sheet>
