@@ -4,7 +4,10 @@ import { type TGetMovieSchemas } from "@hypertube/libs";
 // Scroll Area ?
 
 const MovieInfo: React.FC<{
-  movie: Omit<TGetMovieSchemas["response"], "resolutions" | "subtitles">;
+  movie: Omit<
+    NonNullable<TGetMovieSchemas["response"]>,
+    "resolutions" | "subtitles"
+  >;
 }> = ({ movie }) => {
   return (
     <div className="flex flex-col gap-4 m-5 h-full">
