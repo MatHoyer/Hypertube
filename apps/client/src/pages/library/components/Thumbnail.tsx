@@ -1,4 +1,5 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
+import { Logo } from "@/components/images/Logo";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +32,12 @@ export const Thumbnail: React.FC<{
   const movieSeen = true; //TODO : movieSeen by user
   const { t } = useTranslation();
 
-  if (!movie) return <div></div>;
+  if (!movie)
+    return (
+      <Card className="flex flex-col justify-center items-center">
+        <Logo size="lg" />
+      </Card>
+    );
 
   return (
     <div>
