@@ -12,16 +12,16 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { cn } from "@/lib/utils";
 import { getMoviesSchemas, getUrl } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { LibraryContext } from "../library.page";
+import { useLibrary } from "./LibraryProvider";
 
 export const SearchBar = () => {
   const { t } = useTranslation();
   const [input, setInput] = useState<string | null>(null);
   const searchBarRef = useRef<HTMLDivElement>(null);
-  const { query, setQuery } = useContext(LibraryContext);
+  const { query, setQuery } = useLibrary();
   const inputDebounced = useDebounce(input, 200);
   const [onFocus, setOnFocus] = useState(false);
 
