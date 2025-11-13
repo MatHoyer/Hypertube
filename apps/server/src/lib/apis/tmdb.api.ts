@@ -74,7 +74,7 @@ export class TmdbApi {
     language,
   }: {
     sortBy: (typeof tmdbSortBy)[number] | undefined;
-    filters: string | undefined;
+    filters: (typeof tmdbGenres)[keyof typeof tmdbGenres][] | undefined;
     page: number;
     language: keyof typeof languageCodes;
   }) {
@@ -96,10 +96,7 @@ export class TmdbApi {
       return responseSchema.parse(response);
     }
 
-    const genres = filters
-      ?.split("+")
-      .map((filter) => tmdbGenres[filter as keyof typeof tmdbGenres])
-      .join(",");
+    const genres = filters?.join(",");
 
     const response = await this.fetch<z.infer<typeof responseSchema>>(
       `/discover/movie?language=${language}&page=${page}&sort_by=${sortBy}&with_genres=${genres}`
@@ -144,7 +141,7 @@ export class TmdbApi {
     language: keyof typeof languageCodes;
     page: number;
     sortBy: (typeof tmdbSortBy)[number] | undefined;
-    filters: string | undefined;
+    filters: (typeof tmdbGenres)[keyof typeof tmdbGenres][] | undefined;
   }) {
     const rawMovies = query
       ? await this.getMoviesWithQuery({

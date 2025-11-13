@@ -1,5 +1,5 @@
 import { tmdbDefaultSortBy, tmdbGenres, tmdbSortBy } from "@hypertube/libs";
-import { parseAsArrayOf, parseAsStringLiteral, useQueryState } from "nuqs";
+import { createParser, useQueryState } from "nuqs";
 import { createContext, useContext } from "react";
 
 type TLibraryContext = {
@@ -7,11 +7,35 @@ type TLibraryContext = {
   setQuery: (value: string) => void;
   sortBy: (typeof tmdbSortBy)[number];
   setSortBy: (value: (typeof tmdbSortBy)[number]) => void;
-  filters: string[];
-  setFilters: (value: string[] | ((old: string[]) => string[])) => void;
+  filters: (keyof typeof tmdbGenres)[];
+  setFilters: (
+    value:
+      | (keyof typeof tmdbGenres)[]
+      | ((old: (keyof typeof tmdbGenres)[]) => (keyof typeof tmdbGenres)[])
+  ) => void;
 };
 
 const LibraryContext = createContext<TLibraryContext | undefined>(undefined);
+
+const parseAsTmdbSortBy = createParser<(typeof tmdbSortBy)[number]>({
+  parse: (value) => {
+    if (!tmdbSortBy.includes(value as (typeof tmdbSortBy)[number])) {
+      return null;
+    }
+    return value as (typeof tmdbSortBy)[number];
+  },
+  serialize: (value) => value,
+});
+
+export const parseAsTmdbGenres = createParser<(keyof typeof tmdbGenres)[]>({
+  parse: (value) => {
+    if (!Object.keys(tmdbGenres).includes(value as keyof typeof tmdbGenres)) {
+      return null;
+    }
+    return [value as keyof typeof tmdbGenres];
+  },
+  serialize: (value) => value.join("+"),
+});
 
 export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -19,21 +43,11 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({
   const [query, setQuery] = useQueryState("query", { defaultValue: "" });
   const [sortBy, setSortBy] = useQueryState<(typeof tmdbSortBy)[number]>(
     "sortBy",
-    {
-      defaultValue: tmdbDefaultSortBy,
-      parse: (value) => {
-        if (!tmdbSortBy.includes(value as (typeof tmdbSortBy)[number])) {
-          return null;
-        }
-        return value as (typeof tmdbSortBy)[number];
-      },
-    }
+    parseAsTmdbSortBy.withDefault(tmdbDefaultSortBy)
   );
-  const [filters, setFilters] = useQueryState(
+  const [filters, setFilters] = useQueryState<(keyof typeof tmdbGenres)[]>(
     "filter",
-    parseAsArrayOf(
-      parseAsStringLiteral(Object.keys(tmdbGenres).map((name) => name))
-    ).withDefault([])
+    parseAsTmdbGenres.withDefault([])
   );
 
   return (

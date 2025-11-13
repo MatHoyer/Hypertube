@@ -50,13 +50,7 @@ export const Filter = () => {
                       value={sort}
                       onClick={() => setSortBy(sort)}
                     />
-                    <Label>
-                      {t(
-                        `movie.filter.sort.${
-                          sort as (typeof tmdbSortBy)[number]
-                        }`
-                      )}
-                    </Label>
+                    <Label>{t(`movie.filter.sort.${sort}`)}</Label>
                   </div>
                 ))}
               </RadioGroup>
@@ -65,7 +59,12 @@ export const Filter = () => {
               </Typography>
               <Separator />
               <div className="flex flex-wrap gap-2">
-                {Object.entries(tmdbGenres).map(([name, id]) => (
+                {(
+                  Object.entries(tmdbGenres) as [
+                    keyof typeof tmdbGenres,
+                    number
+                  ][]
+                ).map(([name, id]) => (
                   <Toggle
                     key={id}
                     variant={"outline"}
@@ -81,9 +80,7 @@ export const Filter = () => {
                     }}
                   >
                     <Circle />
-                    {t(
-                      `movie.filter.genres.${name as keyof typeof tmdbGenres}`
-                    )}
+                    {t(`movie.filter.genres.${name}`)}
                   </Toggle>
                 ))}
               </div>

@@ -8,6 +8,7 @@ import {
   TGetMovieSchemas,
   TGetMoviesSchemas,
   TGetMovieSSESchemas,
+  tmdbGenres,
   tmdbMovieSchema,
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
@@ -39,12 +40,26 @@ export const getMovies = async (
   const { name, page, sortBy, filters } = c.get("validatedSearchParams");
   const language = c.get("language");
 
+  const tmdbGenresSchemas = z.array(
+    z.enum(
+      Object.keys(tmdbGenres) as [
+        keyof typeof tmdbGenres,
+        ...(keyof typeof tmdbGenres)[]
+      ]
+    )
+  );
+
+  const filtersTyped = tmdbGenresSchemas.safeParse(
+    filters ? filters.split("+") : []
+  );
+  const filtersId = filtersTyped.data?.map((filter) => tmdbGenres[filter]);
+
   const moviesPagination = await tmdbApi.getMovies({
     query: name,
     language: language as keyof typeof languageCodes,
     page,
     sortBy,
-    filters,
+    filters: filtersId,
   });
 
   const moviesWithResolutionsOrderByDownloadState = await prisma.movie.findMany(

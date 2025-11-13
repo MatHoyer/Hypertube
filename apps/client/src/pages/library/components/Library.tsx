@@ -7,7 +7,7 @@ import { getMoviesSchemas, getUrl } from "@hypertube/libs";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useLibrary } from "./LibraryProvider";
+import { parseAsTmdbGenres, useLibrary } from "./LibraryProvider";
 import { Thumbnail } from "./Thumbnail";
 
 export const Library = () => {
@@ -24,7 +24,7 @@ export const Library = () => {
           page: pageParam.toString(),
           name: query,
           sortBy,
-          filters: filters.join("+"),
+          filters: parseAsTmdbGenres.serialize(filters),
         },
       }),
     });
