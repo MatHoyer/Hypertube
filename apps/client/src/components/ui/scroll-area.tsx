@@ -1,13 +1,36 @@
-import * as React from "react"
-import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
+import { useLocation } from "react-router-dom";
+
+// Do not overwrite this component it have custom logic to scroll to top on change
 
 function ScrollArea({
   className,
   children,
+  scrollToTopOnChildrenChange = false,
+  scrollToTopOnUrlChange = false,
   ...props
-}: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
+}: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & {
+  scrollToTopOnChildrenChange?: boolean;
+  scrollToTopOnUrlChange?: boolean;
+}) {
+  const viewportRef = React.useRef<HTMLDivElement>(null);
+  const location = useLocation();
+
+  React.useEffect(() => {
+    if (scrollToTopOnChildrenChange && viewportRef.current) {
+      viewportRef.current.scrollTop = 0;
+    }
+  }, [children, scrollToTopOnChildrenChange]);
+
+  React.useEffect(() => {
+    if (scrollToTopOnUrlChange && viewportRef.current) {
+      viewportRef.current.scrollTop = 0;
+    }
+  }, [location.pathname, scrollToTopOnUrlChange]);
+
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
@@ -15,6 +38,7 @@ function ScrollArea({
       {...props}
     >
       <ScrollAreaPrimitive.Viewport
+        ref={viewportRef}
         data-slot="scroll-area-viewport"
         className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
       >
@@ -23,7 +47,7 @@ function ScrollArea({
       <ScrollBar />
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
-  )
+  );
 }
 
 function ScrollBar({
@@ -50,7 +74,7 @@ function ScrollBar({
         className="bg-border relative flex-1 rounded-full"
       />
     </ScrollAreaPrimitive.ScrollAreaScrollbar>
-  )
+  );
 }
 
-export { ScrollArea, ScrollBar }
+export { ScrollArea, ScrollBar };

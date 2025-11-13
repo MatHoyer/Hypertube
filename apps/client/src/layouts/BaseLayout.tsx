@@ -40,7 +40,10 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
       <header className="h-[65px] w-full">
         <Navbar />
       </header>
-      <ScrollArea className="h-[calc(100dvh-65px)] w-full">
+      <ScrollArea
+        scrollToTopOnUrlChange
+        className="h-[calc(100dvh-65px)] w-full"
+      >
         <main className="min-h-[calc(100dvh-65px)]">{children}</main>
         <Footer />
       </ScrollArea>

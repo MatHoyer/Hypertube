@@ -67,7 +67,7 @@ export const SearchBar = () => {
             top: searchBarRef.current?.getBoundingClientRect()?.height,
           }}
         >
-          <ScrollArea>
+          <ScrollArea scrollToTopOnChildrenChange>
             <CommandList className="overflow-visible">
               {!!data?.movies.length && onFocus && (
                 <CommandGroup className="bg-card">
