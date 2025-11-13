@@ -143,7 +143,7 @@ export class TmdbApi {
     query: string | undefined;
     language: keyof typeof languageCodes;
     page: number;
-    sortBy: string | undefined;
+    sortBy: (typeof tmdbSortBy)[number] | undefined;
     filters: string | undefined;
   }) {
     const rawMovies = query

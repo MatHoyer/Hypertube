@@ -100,7 +100,7 @@ export const Filter = () => {
       <Button
         onClick={() => {
           setQuery("");
-          setSortBy("");
+          setSortBy(tmdbDefaultSortBy);
           setFilters([]);
         }}
       >

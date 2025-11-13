@@ -1,5 +1,6 @@
 import z from "zod";
 import { DownloadStates } from "../../const/global.const.js";
+import { tmdbSortBy } from "../../const/tmdb.const.js";
 import {
   movieSchema,
   resolutionSchema,
@@ -39,7 +40,7 @@ export const getMoviesSchemas = {
   searchParams: z.object({
     page: z.coerce.number().int().positive().default(1),
     name: z.string().optional(),
-    sortBy: z.string().optional(),
+    sortBy: z.enum(tmdbSortBy).optional(),
     filters: z.string().optional(),
   }),
   response: z.object({
