@@ -18,7 +18,7 @@ export class TmdbApi {
   constructor() {
     this.apiKey = env.TMDB_TOKEN;
     this.apiUrl = "https://api.themoviedb.org/3";
-    this.imgUrl = "https://image.tmdb.org/t/p/original";
+    this.imgUrl = "https://image.tmdb.org/t/p/w342";
     this.fetchOptions = {
       headers: {
         "Content-Type": "application/json",
