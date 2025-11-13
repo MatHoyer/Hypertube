@@ -32,6 +32,6 @@ export const tmdbSortBy = [
   "vote_count.desc",
   "vote_count.asc",
   "top_rated",
-];
+] as const;
 
 export const tmdbDefaultSortBy = tmdbSortBy[0];

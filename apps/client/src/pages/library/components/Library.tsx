@@ -63,7 +63,13 @@ export const Library = () => {
   }, [bottomRef, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   if (isPending) return <LoadingPage resource="global"></LoadingPage>;
-  if (isError) return <Typography>Error</Typography>;
+  if (isError) {
+    return (
+      <div className="flex justify-center items-center">
+        <Typography variant="large">{t("global.error")}</Typography>
+      </div>
+    );
+  }
 
   return (
     <>

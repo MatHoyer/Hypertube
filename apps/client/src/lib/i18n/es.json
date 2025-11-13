@@ -8,7 +8,8 @@
     "unexpected-error": "",
     "homepage": "",
     "submit": "",
-    "userNotFound": ""
+    "userNotFound": "",
+    "close": ""
   },
   "footer": {
     "sourceCode": "",
@@ -132,6 +133,46 @@
       },
       "noMore": "",
       "noFound": ""
+    },
+    "filter": {
+      "title": "",
+      "desc": "",
+      "descNote": "",
+      "reset": "",
+      "sort": {
+        "title": "",
+        "popularity.desc": "",
+        "popularity.asc": "",
+        "original_title.desc": "",
+        "original_title.asc": "",
+        "primary_release_date.desc": "",
+        "primary_release_date.asc": "",
+        "vote_count.desc": "",
+        "vote_count.asc": "",
+        "top_rated": ""
+      },
+      "genres": {
+        "title": "",
+        "Action": "",
+        "Adventure": "",
+        "Animation": "",
+        "Comedy": "",
+        "Crime": "",
+        "Documentary": "",
+        "Drama": "",
+        "Family": "",
+        "Fantasy": "",
+        "History": "",
+        "Horror": "",
+        "Music": "",
+        "Mystery": "",
+        "Romance": "",
+        "Science Fiction": "",
+        "TV Movie": "",
+        "Thriller": "",
+        "War": "",
+        "Western": ""
+      }
     }
   },
   "oauthCredentials": {

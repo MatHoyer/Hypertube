@@ -8,7 +8,8 @@
     "unexpected-error": "Unexpected error",
     "homepage": "Homepage",
     "submit": "Submit",
-    "userNotFound": "User not found"
+    "userNotFound": "User not found",
+    "close": "Close"
   },
   "footer": {
     "sourceCode": "Source code",
@@ -132,6 +133,46 @@
       },
       "noMore": "No more films to find",
       "noFound": "No films found..."
+    },
+    "filter": {
+      "title": "Filters",
+      "desc": "Filter movies by sort options and genres.",
+      "descNote": "Note: filters are not applied when searching by movie name, and 'Top Rated' sorting cannot be combined with genre filters.",
+      "reset": "Reset filters",
+      "sort": {
+        "title": "Sort by",
+        "popularity.desc": "Most Popular",
+        "popularity.asc": "Least Popular",
+        "original_title.desc": "Title Z-A",
+        "original_title.asc": "Title A-Z",
+        "primary_release_date.desc": "Newest First",
+        "primary_release_date.asc": "Oldest First",
+        "vote_count.desc": "Most Voted",
+        "vote_count.asc": "Least Voted",
+        "top_rated": "Top Rated"
+      },
+      "genres": {
+        "title": "Genres",
+        "Action": "Action",
+        "Adventure": "Adventure",
+        "Animation": "Animation",
+        "Comedy": "Comedy",
+        "Crime": "Crime",
+        "Documentary": "Documentary",
+        "Drama": "Drama",
+        "Family": "Family",
+        "Fantasy": "Fantasy",
+        "History": "History",
+        "Horror": "Horror",
+        "Music": "Music",
+        "Mystery": "Mystery",
+        "Romance": "Romance",
+        "Science Fiction": "Science Fiction",
+        "TV Movie": "TV Movie",
+        "Thriller": "Thriller",
+        "War": "War",
+        "Western": "Western"
+      }
     }
   },
   "oauthCredentials": {
