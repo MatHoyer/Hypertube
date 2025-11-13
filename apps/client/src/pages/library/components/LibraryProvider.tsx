@@ -11,14 +11,7 @@ type TLibraryContext = {
   setFilters: (value: string[] | ((old: string[]) => string[])) => void;
 };
 
-const LibraryContext = createContext<TLibraryContext>({
-  query: "",
-  setQuery: () => Promise<URLSearchParams>,
-  sortBy: "",
-  setSortBy: () => Promise<URLSearchParams>,
-  filters: [],
-  setFilters: () => Promise<URLSearchParams>,
-});
+const LibraryContext = createContext<TLibraryContext | undefined>(undefined);
 
 export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
