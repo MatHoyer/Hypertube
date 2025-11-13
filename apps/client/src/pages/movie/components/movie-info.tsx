@@ -1,8 +1,6 @@
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
 import { type TGetMovieSchemas } from "@hypertube/libs";
 
-// Scroll Area ?
-
 const MovieInfo: React.FC<{
   movie: Omit<
     NonNullable<TGetMovieSchemas["response"]>,
