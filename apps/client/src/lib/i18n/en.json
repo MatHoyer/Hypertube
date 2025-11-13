@@ -184,12 +184,16 @@
       }
     },
     "likes": {
+      "likes": "Likes",
       "likeMovie": "Movie liked successfully",
       "unlikeMovie": "Movie unliked successfully",
       "tooltip": {
         "likeMovie": "I like this movie",
         "unlikeMovie": "I don't like this movie anymore"
       }
+    },
+    "comments": {
+      "comments": "Comments"
     }
   },
   "oauthCredentials": {

@@ -471,7 +471,7 @@ export const deleteMovieLike = async (
     return c.json({ message: "Movie not found" }, 404);
   }
 
-  const result = await unlikeParent(id, movie.id, ParentTypes.MOVIE);
+  const result = await unlikeParent(id, movie.id);
   return c.json({ message: result.message }, result.status);
 };
 

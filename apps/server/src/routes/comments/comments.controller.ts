@@ -25,6 +25,8 @@ export const getCommentReplies = async (
 ) => {
   const { commentId } = c.get("validatedUrlParams");
   const { page, pageSize } = c.get("validatedSearchParams");
+  const user = c.get("user");
+  const userId = user?.id;
 
   const comment = await prisma.comment.findUnique({ where: { id: commentId } });
   if (!comment) {
@@ -60,9 +62,6 @@ export const getCommentReplies = async (
     skip,
     take: pageSize,
   });
-
-  const user = c.get("user");
-  const userId = user?.id;
 
   const commentIds = comments.map((c) => c.id);
 
@@ -162,7 +161,7 @@ export const deleteCommentLike = async (
     return c.json({ message: "Comment not found" }, 404);
   }
 
-  const result = await unlikeParent(id, commentId, ParentTypes.COMMENT);
+  const result = await unlikeParent(id, commentId);
   return c.json({ message: result.message }, result.status);
 };
 

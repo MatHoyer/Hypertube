@@ -11,6 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
@@ -112,9 +113,7 @@ const LikeButton: React.FC<{
           <Button variant="ghost" onClick={() => toggleLike()}>
             <ThumbsUp
               className={`transition-colors ${
-                isLiked
-                  ? "text-[var(--primary)] fill-[var(--primary)]"
-                  : "text-gray-500"
+                isLiked ? "text-primary fill-primary" : "text-gray-500"
               }`}
             />
           </Button>
@@ -153,7 +152,6 @@ const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
   });
   return (
     <InputGroup>
-      {" "}
       <InputGroupInput
         placeholder="Add a comment..."
         value={newComment}
@@ -163,7 +161,7 @@ const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
             postComment(newComment);
           }
         }}
-      />{" "}
+      />
       <InputGroupAddon align="inline-start"></InputGroupAddon>{" "}
     </InputGroup>
   );
@@ -214,8 +212,13 @@ export const MovieInteraction = ({
         isSubscribed={movie.isSubscribed}
       />
       <div className="text-2xl font-extrabold flex justify-between">
-        <span>{data?.pages?.[0]?.totalComments} Commentaires</span>
-        <span>{movie.likesNumber} Likes</span>
+        <Typography variant="large">
+          {data?.pages?.[0]?.totalComments} {t("movie.comments.comments")}
+        </Typography>
+        <Typography variant="large">
+          {" "}
+          {movie.likesNumber} {t("movie.likes.likes")}
+        </Typography>
         <LikeButton
           tmdbId={movie.tmdbId}
           isLiked={movie.isLikedByUser}
@@ -228,8 +231,8 @@ export const MovieInteraction = ({
         {data?.pages.map((page) =>
           page.comments.map((comment) => (
             <div key={comment.id} className="border-b py-2">
-              <span className="font-semibold">{comment.user.username}:</span>{" "}
-              <span>{comment.content}</span>
+              <Typography>{comment.user.username}: </Typography>
+              <Typography variant="small">{comment.content}</Typography>
             </div>
           ))
         )}
