@@ -214,6 +214,9 @@ export const getMovieCommentSchemas = {
             id: true,
             username: true,
           }),
+          likesNumber: z.number(),
+          isLikedByUser: z.boolean(),
+          isOwnComment: z.boolean(),
         })
     ),
     page: z.number(),

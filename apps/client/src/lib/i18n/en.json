@@ -193,7 +193,17 @@
       }
     },
     "comments": {
-      "comments": "Comments"
+      "comments": "Comments",
+      "addComment": "Add a comment...",
+      "sendComment": "Send",
+      "deleteComment": "Delete",
+      "tooltip": {
+        "deleteComment": "Delete the comment"
+      },
+      "toast": {
+        "deleteSuccess": "The comment was successfully deleted",
+        "deleteError": "The comment could not be deleted"
+      }
     }
   },
   "oauthCredentials": {

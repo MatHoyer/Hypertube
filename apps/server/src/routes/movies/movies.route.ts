@@ -54,6 +54,7 @@ moviesRouter.get(
 
 moviesRouter.get(
   "/:tmdbId/comments",
+  isLogged,
   urlParamsParser(getMovieCommentSchemas.urlParams),
   searchParamsParser(getMovieCommentSchemas.searchParams),
   getMovieComments

@@ -15,6 +15,7 @@ import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
+  deleteCommentSchemas,
   deleteMovieLikeSchemas,
   deleteMovieSubscribeSchemas,
   getMovieCommentSchemas,
@@ -26,6 +27,7 @@ import {
   type TGetMovieSchemas,
   type TMovieSchema,
 } from "@hypertube/libs";
+import type { TCommentSchema } from "@hypertube/libs/src/schemas/database/comments.schema";
 import {
   useInfiniteQuery,
   useMutation,
@@ -153,7 +155,7 @@ const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
   return (
     <InputGroup>
       <InputGroupInput
-        placeholder="Add a comment..."
+        placeholder={t("movie.comments.addComment")}
         value={newComment}
         onChange={(e) => setNewComment(e.target.value)}
         onKeyDown={(e) => {
@@ -162,8 +164,48 @@ const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
           }
         }}
       />
-      <InputGroupAddon align="inline-start"></InputGroupAddon>{" "}
+      <InputGroupAddon align="inline-end">
+        <Button onClick={() => postComment(newComment)}>
+          {t("movie.comments.sendComment")}
+        </Button>
+      </InputGroupAddon>{" "}
     </InputGroup>
+  );
+};
+
+const DeleteCommentButton: React.FC<{
+  commentId: TCommentSchema["id"];
+  tmdbId: TMovieSchema["tmdbId"];
+}> = ({ commentId, tmdbId }) => {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
+  const { mutate: deleteComment, isPending } = useMutation({
+    mutationFn: () =>
+      axiosFetch({
+        method: "DELETE",
+        url: getUrl("api-comments", { commentId }),
+        schemas: deleteCommentSchemas,
+      }),
+    onSuccess: () => {
+      toast.success(t("movie.comments.toast.deleteSuccess"));
+      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] });
+    },
+    onError: () => {
+      toast.error(t("movie.comments.toast.deleteError"));
+    },
+  });
+
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button onClick={() => deleteComment()} disabled={isPending}>
+            {t("movie.comments.deleteComment")}
+          </Button>
+        </TooltipTrigger>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
@@ -231,8 +273,26 @@ export const MovieInteraction = ({
         {data?.pages.map((page) =>
           page.comments.map((comment) => (
             <div key={comment.id} className="border-b py-2">
-              <Typography>{comment.user.username}: </Typography>
-              <Typography variant="small">{comment.content}</Typography>
+              {comment.isOwnComment && (
+                <DeleteCommentButton
+                  commentId={comment.id}
+                  tmdbId={movie.tmdbId}
+                />
+              )}
+              <Typography>{comment.user.username}:</Typography>
+              <Typography variant="small">
+                {comment.content} {comment.isOwnComment}
+              </Typography>
+              <div className="flex">
+                <ThumbsUp
+                  className={`transition-colors ${
+                    comment.isLikedByUser
+                      ? "text-primary fill-primary"
+                      : "text-gray-500"
+                  }`}
+                />
+                {comment.likesNumber}
+              </div>
             </div>
           ))
         )}

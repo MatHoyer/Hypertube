@@ -11,14 +11,13 @@ import { prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
-import { TIsLoggedSafe } from "../../middlewares/isLoggedSafe";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import { commentParent, likeParent, unlikeParent } from "../global.helper";
 
 export const getCommentReplies = async (
   c: Context<
-    TIsLoggedSafe &
+    TIsLogged &
       TUrlParamsParser<TGetCommentRepliesSchemas["urlParams"]> &
       TSearchParamsParser<TGetCommentRepliesSchemas["searchParams"]>
   >

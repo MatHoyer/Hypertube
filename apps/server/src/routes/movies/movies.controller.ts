@@ -477,12 +477,15 @@ export const deleteMovieLike = async (
 
 export const getMovieComments = async (
   c: Context<
-    TUrlParamsParser<TGetMovieCommentsSchemas["urlParams"]> &
+    TIsLogged &
+      TUrlParamsParser<TGetMovieCommentsSchemas["urlParams"]> &
       TSearchParamsParser<TGetMovieCommentsSchemas["searchParams"]>
   >
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const { page, pageSize } = c.get("validatedSearchParams");
+  const user = c.get("user");
+  const userId = user?.id;
 
   const movie = await prisma.movie.findUnique({ where: { tmdbId } });
   if (!movie) {
@@ -519,8 +522,43 @@ export const getMovieComments = async (
     take: pageSize,
   });
 
+  const commentIds = comments.map((c) => c.id);
+
+  const likeCounts = await prisma.like.groupBy({
+    by: ["parentId"],
+    where: {
+      parentId: { in: commentIds },
+      parentType: ParentTypes.COMMENT,
+    },
+    _count: true,
+  });
+
+  let userLikes = new Set<string>();
+  if (userId) {
+    const likes = await prisma.like.findMany({
+      where: {
+        userId: userId,
+        parentId: { in: commentIds },
+        parentType: ParentTypes.COMMENT,
+      },
+      select: { parentId: true },
+    });
+    userLikes = new Set(likes.map((l) => l.parentId));
+  }
+
+  const likeCountMap = new Map(
+    likeCounts.map((lc) => [lc.parentId, lc._count])
+  );
+
+  const commentsWithLikes = comments.map((comment) => ({
+    ...comment,
+    likesNumber: likeCountMap.get(comment.id) || 0,
+    isLikedByUser: userLikes.has(comment.id),
+    isOwnComment: userId ? userId === comment.userId : false,
+  }));
+
   return c.json({
-    comments,
+    comments: commentsWithLikes,
     page,
     pageSize,
     totalComments,

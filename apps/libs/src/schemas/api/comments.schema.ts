@@ -25,6 +25,8 @@ export const getCommentRepliesSchemas = {
             id: true,
             username: true,
           }),
+          likesNumber: z.number(),
+          isLikedByUser: z.boolean(),
         })
     ),
     page: z.number(),

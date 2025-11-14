@@ -193,7 +193,17 @@
       }
     },
     "comments": {
-      "comments": "Comentarios"
+      "comments": "Comentarios",
+      "addComment": "Añadir un comentario...",
+      "sendComment": "Enviar",
+      "deleteComment": "Eliminar",
+      "tooltip": {
+        "deleteComment": "Eliminar el comentario"
+      },
+      "toast": {
+        "deleteSuccess": "El comentario se eliminó correctamente",
+        "deleteError": "No se pudo eliminar el comentario"
+      }
     }
   },
   "oauthCredentials": {

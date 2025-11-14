@@ -9,7 +9,6 @@ import {
 import { Hono } from "hono";
 import { bodyParser } from "../../middlewares/bodyParser";
 import { isLogged } from "../../middlewares/isLogged";
-import { isLoggedSafe } from "../../middlewares/isLoggedSafe";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
@@ -25,7 +24,7 @@ const commentsRouter = new Hono();
 
 commentsRouter.get(
   "/:commentId/replies",
-  isLoggedSafe,
+  isLogged,
   urlParamsParser(getCommentRepliesSchemas.urlParams),
   searchParamsParser(getCommentRepliesSchemas.searchParams),
   getCommentReplies
@@ -59,7 +58,6 @@ commentsRouter.delete(
   deleteComment
 );
 
-//même route sur comments/ pour POST , mais comment savoir le type du parent ?
 commentsRouter.patch(
   "/:commentId",
   isLogged,
