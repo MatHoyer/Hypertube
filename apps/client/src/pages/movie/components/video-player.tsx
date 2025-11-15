@@ -11,6 +11,7 @@ import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
 import { getUrl, languageCodes, ytsQualities } from "@hypertube/libs";
+import { intervalToDuration } from "date-fns";
 import { Expand, Pause, Play, Shrink, Volume2, VolumeX } from "lucide-react";
 import {
   useEffect,
@@ -127,21 +128,31 @@ const VolumeControl = () => {
   );
 };
 
-const formatTime = (seconds: number) => {
-  if (isNaN(seconds)) return null;
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = Math.floor(seconds % 60);
-  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+const secondsToHMS = (totalSeconds: number) => {
+  const d = intervalToDuration({
+    start: 0,
+    end: totalSeconds * 1000,
+  });
+
+  const hours = d.hours ? `${d.hours.toString().padStart(2, "0")}:` : "00:";
+
+  const minutes = d.minutes
+    ? `${d.minutes.toString().padStart(2, "0")}:`
+    : "00:";
+
+  const seconds = d.seconds ? `${d.seconds.toString().padStart(2, "0")}` : "00";
+
+  return `${hours}${minutes}${seconds}`;
 };
 
 const ProgressBar = () => {
   const { videoRef, progress, bufferedProgress, handleSeek } = useVideoPlayer();
 
-  const currentTime = formatTime(
+  const currentTime = secondsToHMS(
     (progress * (videoRef.current?.duration ?? 0)) / 100
   );
   const duration = useMemo(
-    () => formatTime(videoRef.current?.duration ?? 0),
+    () => secondsToHMS(videoRef.current?.duration ?? 0),
     // eslint doesn't understand that videoRef.current?.duration is a dependency of the function and not only videoRef
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [videoRef.current?.duration]
