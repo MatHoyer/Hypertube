@@ -212,9 +212,14 @@ export const VideoPlayerProvider: React.FC<{
   // Code shortcuts
   const handleJumpVideo = useCallback(
     (seconds: number) => {
-      handleSeek(progress + seconds);
+      const currentTimeInSeconds =
+        (progress * (videoRef.current?.duration ?? 0)) / 100;
+      handleSeek(
+        ((currentTimeInSeconds + seconds) / (videoRef.current?.duration ?? 0)) *
+          100
+      );
     },
-    [progress, handleSeek]
+    [videoRef, progress, handleSeek]
   );
 
   const handleJumpVolume = useCallback(

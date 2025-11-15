@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTimeoutResetState } from "./use-timeout-state-reset";
 
 export const useMouse = (
@@ -13,12 +13,13 @@ export const useMouse = (
     useTimeoutResetState(false, timeoutDuration);
   const [mouseIn, setMouseIn] = useState(false);
 
-  const handleMouseMove = () => {
+  const handleMouseMove = useCallback(() => {
     setMouseMoving(true);
-  };
-  const handleMouseClick = () => {
+  }, [setMouseMoving]);
+
+  const handleMouseClick = useCallback(() => {
     setMouseClicked(true);
-  };
+  }, [setMouseClicked]);
 
   useEffect(() => {
     if (!containerRef?.current) return;
@@ -42,7 +43,9 @@ export const useMouse = (
       container.removeEventListener("mouseenter", handleMouseEnter);
       container.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [containerRef.current]);
+    // If we pass only containerRef it is not working
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerRef.current, handleMouseMove, handleMouseClick]);
 
   return {
     mouseMoving,
