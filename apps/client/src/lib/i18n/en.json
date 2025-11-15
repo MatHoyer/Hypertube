@@ -100,6 +100,7 @@
       }
     },
     "playerSettings": {
+      "settings": "Settings",
       "readingSpeed": "Reading speed",
       "resolutions": "Resolutions",
       "subtitles": "Subtitles",
