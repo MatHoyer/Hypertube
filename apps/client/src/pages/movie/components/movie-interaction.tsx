@@ -20,6 +20,7 @@ import {
   deleteMovieSubscribeSchemas,
   getMovieCommentSchemas,
   getUrl,
+  patchCommentSchemas,
   postMovieCommentSchemas,
   postMovieLikeSchemas,
   postMovieSubscribeSchemas,
@@ -209,6 +210,69 @@ const DeleteCommentButton: React.FC<{
   );
 };
 
+const EditCommentButton: React.FC<{
+  commentId: TCommentSchema["id"];
+  tmdbId: TMovieSchema["tmdbId"];
+  initialContent: TCommentSchema["content"];
+}> = ({ commentId, tmdbId, initialContent }) => {
+  const queryClient = useQueryClient();
+  const [editedContent, setEditedContent] = useState(initialContent);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const { mutate: patchComment, isPending } = useMutation({
+    mutationFn: (content: string) =>
+      axiosFetch({
+        method: "PATCH",
+        url: getUrl("api-comments", { commentId }),
+        data: { content },
+        schemas: patchCommentSchemas,
+      }),
+    onSuccess: () => {
+      toast.success("Comment updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] });
+      setIsEditing(false);
+    },
+    onError: () => {
+      toast.error("Comment updating error");
+    },
+  });
+
+  if (!isEditing) {
+    return <Button onClick={() => setIsEditing(true)}>Edit</Button>;
+  }
+
+  const handleCancel = () => {
+    setEditedContent(initialContent);
+    setIsEditing(false);
+  };
+
+  return (
+    <InputGroup>
+      <InputGroupInput
+        placeholder={t("movie.comments.addComment")}
+        value={editedContent}
+        onChange={(e) => setEditedContent(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && editedContent) {
+            patchComment(editedContent);
+          } else if (e.key === "Escape") {
+            handleCancel();
+          }
+        }}
+        disabled={isPending}
+      />
+      <InputGroupAddon align="inline-end">
+        <Button
+          disabled={isPending}
+          onClick={() => patchComment(editedContent)}
+        >
+          {"modifier"}
+        </Button>
+      </InputGroupAddon>{" "}
+    </InputGroup>
+  );
+};
+
 export const MovieInteraction = ({
   movie,
 }: {
@@ -277,6 +341,13 @@ export const MovieInteraction = ({
                 <DeleteCommentButton
                   commentId={comment.id}
                   tmdbId={movie.tmdbId}
+                />
+              )}
+              {comment.isOwnComment && (
+                <EditCommentButton
+                  commentId={comment.id}
+                  tmdbId={movie.tmdbId}
+                  initialContent={comment.content}
                 />
               )}
               <Typography>{comment.user.username}:</Typography>
