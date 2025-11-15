@@ -113,7 +113,7 @@ export const VideoPlayerProvider: React.FC<{
       videoRef.current.pause();
     }
     videoRef.current.volume = volume / 100;
-  }, [playing, volume]);
+  }, [videoRef, playing, volume]);
 
   // Mute/Unmute
   useEffect(() => {
@@ -121,23 +121,26 @@ export const VideoPlayerProvider: React.FC<{
 
     videoRef.current.muted = muted;
     if (!muted && volume === 0) setVolume(20);
-  }, [muted, volume]);
+  }, [videoRef, muted, volume, setVolume]);
 
   // Volume
   useEffect(() => {
     if (!videoRef.current) return;
 
     videoRef.current.volume = volume / 100;
-  }, [volume]);
+  }, [videoRef, volume]);
 
-  const handleVolumeChange = (volume: number) => {
-    if (!videoRef.current) return;
-    if (volume < 0) volume = 0;
-    if (volume > 100) volume = 100;
-    if (volume === 0) setMute(true);
-    else setMute(false);
-    setVolume(volume);
-  };
+  const handleVolumeChange = useCallback(
+    (volume: number) => {
+      if (!videoRef.current) return;
+      if (volume < 0) volume = 0;
+      if (volume > 100) volume = 100;
+      if (volume === 0) setMute(true);
+      else setMute(false);
+      setVolume(volume);
+    },
+    [videoRef, setMute, setVolume]
+  );
 
   // Fullscreen
   useEffect(() => {
@@ -153,7 +156,7 @@ export const VideoPlayerProvider: React.FC<{
     };
 
     handleFullscreen();
-  }, [isFullscreen]);
+  }, [containerRef, isFullscreen]);
 
   useEffect(() => {
     if (document.readyState !== "complete") return;
@@ -169,7 +172,7 @@ export const VideoPlayerProvider: React.FC<{
   }, [setIsFullscreen]);
 
   // Progress
-  const handleProgress = () => {
+  const handleProgress = useCallback(() => {
     if (!videoRef.current) return;
     const video = videoRef.current;
     const percent = (video.currentTime / video.duration) * 100;
@@ -185,33 +188,40 @@ export const VideoPlayerProvider: React.FC<{
     if (percent >= 100) {
       togglePlay();
     }
-  };
+  }, [videoRef, togglePlay, setProgress, setBufferedProgress]);
 
-  const handleSeek = (percent: number) => {
-    if (!videoRef.current) return;
-    videoRef.current.currentTime = (percent / 100) * videoRef.current.duration;
-    setProgress(percent);
-  };
+  const handleSeek = useCallback(
+    (percent: number) => {
+      if (!videoRef.current) return;
+      videoRef.current.currentTime =
+        (percent / 100) * videoRef.current.duration;
+      setProgress(percent);
+    },
+    [videoRef, setProgress]
+  );
 
-  const handleSetSpeed = (speed: Speed) => {
-    if (!videoRef.current) return;
-    setSpeed(speed);
-    videoRef.current.playbackRate = speed;
-  };
+  const handleSetSpeed = useCallback(
+    (speed: Speed) => {
+      if (!videoRef.current) return;
+      setSpeed(speed);
+      videoRef.current.playbackRate = speed;
+    },
+    [videoRef, setSpeed]
+  );
 
   // Code shortcuts
   const handleJumpVideo = useCallback(
     (seconds: number) => {
       handleSeek(progress + seconds);
     },
-    [progress]
+    [progress, handleSeek]
   );
 
   const handleJumpVolume = useCallback(
     (units: number) => {
       handleVolumeChange(volume + units);
     },
-    [volume]
+    [volume, handleVolumeChange]
   );
 
   // Keyboard shortcuts
@@ -253,7 +263,16 @@ export const VideoPlayerProvider: React.FC<{
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [videoRef]);
+  }, [
+    videoRef,
+    triggerMouseMove,
+    triggerMouseClick,
+    togglePlay,
+    toggleMute,
+    toggleFullscreen,
+    handleJumpVideo,
+    handleJumpVolume,
+  ]);
 
   return (
     <VideoPlayerContext.Provider
