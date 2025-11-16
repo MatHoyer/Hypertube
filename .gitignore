@@ -17,6 +17,14 @@ dist/
 !**/downloader/downloads/0/**
 !**/downloader/downloads/.gitkeep
 
+# Download transmission
+**/downloads-transmission/**
+!**/downloader/downloads-transmission/.gitkeep
+
+# Transmission config
+**/apps/downloader/config/**
+!**/apps/downloader/config/settings.json
+
 # Server public
 **/server/public/images/**
 !**/server/public/images/.gitkeep

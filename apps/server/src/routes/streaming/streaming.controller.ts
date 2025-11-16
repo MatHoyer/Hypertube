@@ -11,7 +11,7 @@ export const getStreamingResolution = async (
   c: Context<TUrlParamsParser<TGetStreamingResolutionSchemas["urlParams"]>>
 ) => {
   const { movieId, resolution } = c.get("validatedUrlParams");
-  const filePath = getResolutionPath(movieId, resolution, "movie.mp4");
+  const filePath = getResolutionPath(movieId, resolution, false, "movie.mp4");
   const stat = fs.statSync(filePath);
   const fileSize = stat.size;
   const range = c.req.header("range");

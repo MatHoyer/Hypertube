@@ -9,8 +9,10 @@ import {
   waitFile,
 } from "@hypertube/server-core";
 import { Job } from "bullmq";
+import ffmpeg from "fluent-ffmpeg";
 import * as fs from "fs";
 import path from "path";
+import { Readable } from "stream";
 import { notifySubscribers } from "../notifications/notifySubscriber.js";
 import { downloader } from "./downloader.js";
 
@@ -26,13 +28,56 @@ const Status = {
 
 const defaultMovieName = "movie.mp4";
 
+const convertWhileDownloading = (
+  input: {
+    stream: Readable;
+    extension: string;
+  },
+  output: {
+    path: string;
+  },
+  handler?: {
+    onStart?: () => void;
+    onProgress?: (progress: { percent: number }) => void;
+    onEnd?: () => void;
+    onError?: (error: Error) => void;
+  }
+) => {
+  const outputStream = fs.createWriteStream(output.path);
+
+  ffmpeg(input.stream)
+    .inputFormat(input.extension)
+    .output(outputStream)
+    .inputOptions(["-fflags +genpts"])
+    .outputOptions(["-c copy"])
+    .on("start", () => {
+      hypertubeLogger.info(`Conversion started`);
+      handler?.onStart?.();
+    })
+    .on("progress", (progress) => {
+      hypertubeLogger.info(
+        `Conversion progress: ${progress.percent?.toFixed(2) || 0}%`
+      );
+      handler?.onProgress?.({ percent: progress.percent || 0 });
+    })
+    .on("end", () => {
+      hypertubeLogger.info(`Conversion ended`);
+      handler?.onEnd?.();
+    })
+    .on("error", (error) => {
+      hypertubeLogger.error(`Conversion error: ${error}`);
+      handler?.onError?.(error);
+    })
+    .run();
+};
+
 const handleSrtFile = async (
   movie: TMovieSchema,
   srtFile: { name: string }
 ) => {
   const target = path.resolve(
     process.cwd(),
-    `./downloads/incomplete/${srtFile.name}`
+    `./downloads-transmission/incomplete/${srtFile.name}`
   );
   hypertubeLogger.info(`Waiting for SRT file to be downloaded ${target}`);
   await waitFile(target, 100000);
@@ -41,9 +86,21 @@ const handleSrtFile = async (
     srtFile.name.lastIndexOf(".")
   );
   if (language.includes("[YTS.MX]")) {
-    return;
+    language = "YTS OFFICIAL - English";
+  } else {
+    language = "YTS - " + language;
   }
-  language = "YTS - " + language;
+
+  const srtPath = path.join(
+    getSubtitlePath(movie.tmdbId, language),
+    "subtitles.srt"
+  );
+  hypertubeLogger.info(`Copying SRT file to ${srtPath}`);
+  await fs.promises.cp(target, srtPath, {
+    recursive: true,
+    force: true,
+  });
+  await convertSrtToVtt(srtPath);
 
   await prisma.subtitle.upsert({
     where: {
@@ -58,16 +115,6 @@ const handleSrtFile = async (
       downloadState: DownloadStates.DOWNLOADED,
     },
   });
-  const srtPath = path.join(
-    getSubtitlePath(movie.tmdbId, language),
-    "subtitles.srt"
-  );
-  hypertubeLogger.info(`Copying SRT file to ${srtPath}`);
-  await fs.promises.cp(target, srtPath, {
-    recursive: true,
-    force: true,
-  });
-  await convertSrtToVtt(srtPath);
 };
 
 export const downloadMovie = async (job: Job<TDownloadJobData>) => {
@@ -77,7 +124,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
   hypertubeLogger.info(`Downloading movie ${resolutionPath}`);
 
   const result = await downloader.addFile(resolutionPath, {
-    "download-dir": `/downloads/${movie.tmdbId}/resolutions/${resolution}`,
+    "download-dir": `/downloads-transmission/${movie.tmdbId}/resolutions/${resolution}`,
     paused: true,
   });
   hypertubeLogger.info(`Torrent added with ID: ${result.id}`);
@@ -104,17 +151,20 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
 
     const target = path.resolve(
       process.cwd(),
-      `./downloads/incomplete/${mp4File.name}.part`
+      `./downloads-transmission/incomplete/${mp4File.name}`
     );
 
     hypertubeLogger.info(`Waiting for file to be downloaded ${target}`);
     await waitFile(target, 1000000);
 
     const linkPath = path.join(
-      getResolutionPath(movie.tmdbId, resolution),
-      `/${defaultMovieName}`
+      getResolutionPath(movie.tmdbId, resolution, true),
+      mp4File.name
     );
     try {
+      // We remove the old symlink/file and create a new one
+      const dir = path.dirname(linkPath);
+      await fs.promises.mkdir(dir, { recursive: true });
       await fs.promises.rm(linkPath, { recursive: true, force: true });
       await fs.promises.symlink(target, linkPath, "file");
     } catch (error) {
@@ -149,6 +199,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       );
     }
     job.updateProgress(0);
+    let isConverting = false;
 
     hypertubeLogger.info(`Movie downloaded started successfully`);
     return new Promise<void>((resolve, reject) => {
@@ -164,16 +215,19 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
           const status = torrent.status;
 
           if (status === Status.SEEDING || status === Status.STOPPED) {
+            // We wait for transmission to put the file in the correct folder
+            // then we keep the mp4 file, we rename it and remove the others
             const mp4Path = path.join(
-              getResolutionPath(movie.tmdbId, resolution),
+              getResolutionPath(movie.tmdbId, resolution, true),
               mp4File.name
             );
             await waitFile(mp4Path);
             renameFile(mp4Path, `../${defaultMovieName}`);
             await fs.promises.rm(
-              getResolutionPath(movie.tmdbId, resolution) +
-                "/" +
-                mp4File.name.split("/")[0],
+              path.join(
+                getResolutionPath(movie.tmdbId, resolution, true),
+                mp4File.name.split("/")[0]
+              ),
               {
                 recursive: true,
                 force: true,
@@ -189,6 +243,29 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
             )}, Download speed: ${downloadSpeed.toFixed(2)}, Status: ${status}`
           );
           job.updateProgress(percentDone);
+
+          if (!isConverting && percentDone > 25) {
+            isConverting = true;
+            try {
+              convertWhileDownloading(
+                {
+                  stream: fs.createReadStream(linkPath),
+                  extension: mp4File.name.split(".").pop() || "mp4",
+                },
+                {
+                  path: getResolutionPath(
+                    movie.tmdbId,
+                    resolution,
+                    false,
+                    "movie.mp4"
+                  ),
+                }
+              );
+            } catch (error) {
+              hypertubeLogger.error(`Error converting movie ${error}`);
+              isConverting = false;
+            }
+          }
         } catch (error) {
           reject(new Error(`Error in ending download: ${error}`));
         }

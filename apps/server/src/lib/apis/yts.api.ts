@@ -131,6 +131,7 @@ export class YtsApi {
     const outputPath = getResolutionPath(
       movie.tmdbId,
       resolution.quality,
+      false,
       "resolution.torrent"
     );
     await writeFile(outputPath, buffer);

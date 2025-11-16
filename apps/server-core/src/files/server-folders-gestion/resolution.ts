@@ -7,18 +7,25 @@ const resolutionFolderName = "resolutions";
 export const getResolutionPath = (
   movieId: TMovieSchema["tmdbId"],
   resolution: TResolutionSchema["resolution"],
+  forTransmission: boolean = false,
   type?: "resolution.torrent" | "movie.mp4"
 ) => {
-  return `${getMovieFolderPath(movieId)}/${resolutionFolderName}/${resolution}${
-    type ? `/${type}` : ""
-  }`;
+  return `${getMovieFolderPath(
+    movieId,
+    forTransmission
+  )}/${resolutionFolderName}/${resolution}${type ? `/${type}` : ""}`;
 };
 
 export const createResolution = async (
   movieId: TMovieSchema["tmdbId"],
-  resolution: TResolutionSchema["resolution"]
+  resolution: TResolutionSchema["resolution"],
+  forTransmission: boolean = false
 ) => {
-  const resolutionFolderPath = getResolutionPath(movieId, resolution);
+  const resolutionFolderPath = getResolutionPath(
+    movieId,
+    resolution,
+    forTransmission
+  );
   await fs.promises.mkdir(resolutionFolderPath, {
     recursive: true,
   });
@@ -26,8 +33,13 @@ export const createResolution = async (
 
 export const deleteResolution = async (
   movieId: TMovieSchema["tmdbId"],
-  resolution: TResolutionSchema["resolution"]
+  resolution: TResolutionSchema["resolution"],
+  forTransmission: boolean = false
 ) => {
-  const resolutionFolderPath = getResolutionPath(movieId, resolution);
+  const resolutionFolderPath = getResolutionPath(
+    movieId,
+    resolution,
+    forTransmission
+  );
   await fs.promises.rm(resolutionFolderPath, { recursive: true });
 };
