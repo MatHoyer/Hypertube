@@ -183,8 +183,8 @@ const ProgressBar = () => {
 
         <input
           type="range"
-          min="1"
-          max="99"
+          min="0"
+          max="100"
           step="0.1"
           value={progress}
           onChange={(e) => handleSeek(e.target.valueAsNumber)}

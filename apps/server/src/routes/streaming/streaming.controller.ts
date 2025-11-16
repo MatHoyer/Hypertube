@@ -12,19 +12,31 @@ export const getStreamingResolution = async (
 ) => {
   const { movieId, resolution } = c.get("validatedUrlParams");
   const filePath = getResolutionPath(movieId, resolution, false, "movie.mp4");
-  const stat = fs.statSync(filePath);
+  const stat = await fs.promises.stat(filePath);
   const fileSize = stat.size;
   const range = c.req.header("range");
 
   if (range) {
-    const parts = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-    const chunkSize = end - start + 1;
+    const [rawStart, rawEnd] = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(rawStart, 10);
+    const end = rawEnd ? parseInt(rawEnd, 10) : start + 5000000; // 5MB
 
-    const fileStream = fs.createReadStream(filePath, { start, end });
+    if (start >= fileSize) {
+      c.header("Content-Range", `bytes */${fileSize}`);
+      return c.json(
+        {
+          message: "Requested range not satisfiable",
+        },
+        416
+      );
+    }
 
-    c.header("Content-Range", `bytes ${start}-${end}/${fileSize}`);
+    const safeEnd = Math.min(end, fileSize - 1);
+    const chunkSize = safeEnd - start + 1;
+
+    const fileStream = fs.createReadStream(filePath, { start, end: safeEnd });
+
+    c.header("Content-Range", `bytes ${start}-${safeEnd}/${fileSize}`);
     c.header("Accept-Ranges", "bytes");
     c.header("Content-Length", chunkSize.toString());
     c.header("Content-Type", "video/mp4");
