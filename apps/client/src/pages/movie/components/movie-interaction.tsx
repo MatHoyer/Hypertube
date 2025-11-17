@@ -22,12 +22,14 @@ import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
+  deleteCommentLikeSchemas,
   deleteCommentSchemas,
   deleteMovieLikeSchemas,
   deleteMovieSubscribeSchemas,
   getMovieCommentSchemas,
   getUrl,
   patchCommentSchemas,
+  postCommentLikeSchemas,
   postMovieCommentSchemas,
   postMovieLikeSchemas,
   postMovieSubscribeSchemas,
@@ -96,13 +98,29 @@ const SubscriptionButton: React.FC<{
   );
 };
 
-const LikeButton: React.FC<{
+export const BaseLikeButton: React.FC<{
+  isLiked: boolean;
+  likesNumber?: number;
+  onToggle: () => void;
+}> = ({ isLiked, likesNumber, onToggle }) => (
+  <Button variant="ghost" onClick={onToggle}>
+    <ThumbsUp
+      className={`transition-colors ${
+        isLiked ? "text-primary fill-primary" : "text-gray-500"
+      }`}
+    />
+    {likesNumber}
+  </Button>
+);
+
+export const MovieLikeButton: React.FC<{
   tmdbId: TMovieSchema["tmdbId"];
   isLiked: boolean;
-}> = ({ tmdbId, isLiked }) => {
+  likesNumber: number;
+}> = ({ tmdbId, isLiked, likesNumber }) => {
   const queryClient = useQueryClient();
 
-  const { mutate: toggleLike } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: () =>
       axiosFetch({
         method: isLiked ? "DELETE" : "POST",
@@ -110,32 +128,45 @@ const LikeButton: React.FC<{
         schemas: isLiked ? deleteMovieLikeSchemas : postMovieLikeSchemas,
       }),
     onSuccess: () => {
-      toast.success(
-        isLiked ? t("movie.likes.unlikeMovie") : t("movie.likes.likeMovie")
-      );
       queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
     },
   });
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" onClick={() => toggleLike()}>
-            <ThumbsUp
-              className={`transition-colors ${
-                isLiked ? "text-primary fill-primary" : "text-gray-500"
-              }`}
-            />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          {isLiked
-            ? t("movie.likes.tooltip.unlikeMovie")
-            : t("movie.likes.tooltip.likeMovie")}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <BaseLikeButton
+      isLiked={isLiked}
+      likesNumber={likesNumber}
+      onToggle={() => mutate()}
+    />
+  );
+};
+
+export const CommentLikeButton: React.FC<{
+  commentId: TCommentSchema["id"];
+  tmdbId: TMovieSchema["tmdbId"];
+  isLiked: boolean;
+  likesNumber: number;
+}> = ({ commentId, tmdbId, isLiked, likesNumber }) => {
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: () =>
+      axiosFetch({
+        method: isLiked ? "DELETE" : "POST",
+        url: getUrl("api-comments-like", { commentId }),
+        schemas: isLiked ? deleteCommentLikeSchemas : postCommentLikeSchemas,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] });
+    },
+  });
+
+  return (
+    <BaseLikeButton
+      isLiked={isLiked}
+      likesNumber={likesNumber}
+      onToggle={() => mutate()}
+    />
   );
 };
 
@@ -347,14 +378,12 @@ const CommentComponent: React.FC<{
         {comment.content} {comment.isOwnComment}
       </Typography>
       <div className="flex">
-        <ThumbsUp
-          className={`transition-colors ${
-            comment.isLikedByUser
-              ? "text-primary fill-primary"
-              : "text-gray-500"
-          }`}
+        <CommentLikeButton
+          commentId={comment.id}
+          tmdbId={tmdbId}
+          isLiked={comment.isLikedByUser}
+          likesNumber={comment.likesNumber}
         />
-        {comment.likesNumber}
       </div>
     </div>
   );
@@ -412,10 +441,11 @@ export const MovieInteraction = ({
           {" "}
           {movie.likesNumber} {t("movie.likes.likes")}
         </Typography>
-        <LikeButton
+        <MovieLikeButton
           tmdbId={movie.tmdbId}
           isLiked={movie.isLikedByUser}
-        ></LikeButton>
+          likesNumber={movie.likesNumber}
+        />
       </div>
       <div>
         <PostComment tmdbId={movie.tmdbId} />
