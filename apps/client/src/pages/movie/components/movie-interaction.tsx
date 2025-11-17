@@ -32,6 +32,7 @@ import {
   postMovieLikeSchemas,
   postMovieSubscribeSchemas,
   ROUTES,
+  type TGetMovieCommentsSchemas,
   type TGetMovieSchemas,
   type TMovieSchema,
 } from "@hypertube/libs";
@@ -328,6 +329,37 @@ const EditCommentButton: React.FC<{
   );
 };
 
+const CommentComponent: React.FC<{
+  comment: TGetMovieCommentsSchemas["response"]["comments"][number];
+  tmdbId: TMovieSchema["tmdbId"];
+}> = ({ comment, tmdbId }) => {
+  return (
+    <div className="border-b py-2">
+      {comment.isOwnComment && (
+        <CommentActionsDropdown
+          commentId={comment.id}
+          tmdbId={tmdbId}
+          initialContent={comment.content}
+        />
+      )}
+      <Typography>{comment.user.displayUsername}:</Typography>
+      <Typography variant="small">
+        {comment.content} {comment.isOwnComment}
+      </Typography>
+      <div className="flex">
+        <ThumbsUp
+          className={`transition-colors ${
+            comment.isLikedByUser
+              ? "text-primary fill-primary"
+              : "text-gray-500"
+          }`}
+        />
+        {comment.likesNumber}
+      </div>
+    </div>
+  );
+};
+
 export const MovieInteraction = ({
   movie,
 }: {
@@ -391,29 +423,11 @@ export const MovieInteraction = ({
       <div>
         {data?.pages.map((page) =>
           page.comments.map((comment) => (
-            <div key={comment.id} className="border-b py-2">
-              {comment.isOwnComment && (
-                <CommentActionsDropdown
-                  commentId={comment.id}
-                  tmdbId={movie.tmdbId}
-                  initialContent={comment.content}
-                />
-              )}
-              <Typography>{comment.user.displayUsername}:</Typography>
-              <Typography variant="small">
-                {comment.content} {comment.isOwnComment}
-              </Typography>
-              <div className="flex">
-                <ThumbsUp
-                  className={`transition-colors ${
-                    comment.isLikedByUser
-                      ? "text-primary fill-primary"
-                      : "text-gray-500"
-                  }`}
-                />
-                {comment.likesNumber}
-              </div>
-            </div>
+            <CommentComponent
+              key={comment.id}
+              comment={comment}
+              tmdbId={movie.tmdbId}
+            />
           ))
         )}
       </div>
