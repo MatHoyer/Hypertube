@@ -195,6 +195,7 @@ const CommentLikeButton: React.FC<{
         schemas: isLiked ? deleteCommentLikeSchemas : postCommentLikeSchemas,
       }),
     onSuccess: () => {
+      console.log("invalidating query key", getParentQueryKey(parent));
       queryClient.invalidateQueries({ queryKey: getParentQueryKey(parent) });
     },
   });
@@ -231,8 +232,7 @@ export const PostMovieComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
 
 export const PostReplyComment: React.FC<{
   commentId: TCommentSchema["id"];
-  parent: TQueryParent;
-}> = ({ commentId, parent }) => {
+}> = ({ commentId }) => {
   const queryClient = useQueryClient();
 
   const { mutate: postReply } = useMutation({
@@ -244,7 +244,9 @@ export const PostReplyComment: React.FC<{
         schemas: postCommentReplySchemas,
       }),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: getParentQueryKey(parent) }),
+      queryClient.invalidateQueries({
+        queryKey: ["comment-replies", commentId],
+      }),
   });
 
   return <BasePostComment postComment={postReply} />;
@@ -431,7 +433,8 @@ const EditCommentButton: React.FC<{
 
 const CommentComponent: React.FC<{
   comment: TGetMovieCommentsSchemas["response"]["comments"][number];
-}> = ({ comment }) => {
+  parent: TQueryParent;
+}> = ({ comment, parent }) => {
   const [isReplying, setIsReplying] = useState(false);
 
   const {
@@ -471,11 +474,11 @@ const CommentComponent: React.FC<{
       {comment.isOwnComment && (
         <CommentActionsDropdown
           commentId={comment.id}
-          parent={{ id: comment.id, type: ParentTypes.COMMENT }}
+          parent={parent}
           initialContent={comment.content}
         />
       )}
-      <Typography>{comment.user.name}:</Typography>
+      <Typography>{comment.id}:</Typography>
       <Typography variant="small">
         {comment.content} {comment.isOwnComment}
       </Typography>
@@ -484,20 +487,19 @@ const CommentComponent: React.FC<{
           commentId={comment.id}
           isLiked={comment.isLikedByUser}
           likesNumber={comment.likesNumber}
-          parent={{ id: comment.id, type: ParentTypes.COMMENT }}
+          parent={parent}
         />
         <Button onClick={() => setIsReplying((prev) => !prev)}>Répondre</Button>
-        {isReplying && (
-          <PostReplyComment
-            commentId={comment.id}
-            parent={{ id: comment.id, type: ParentTypes.COMMENT }}
-          />
-        )}
+        {isReplying && <PostReplyComment commentId={comment.id} />}
       </div>
       <div>
         {data?.pages.map((page) =>
-          page.comments.map((comment) => (
-            <CommentComponent key={comment.id} comment={comment} />
+          page.comments.map((subComment) => (
+            <CommentComponent
+              key={subComment.id}
+              comment={subComment}
+              parent={{ id: comment.id, type: ParentTypes.COMMENT }}
+            />
           ))
         )}
       </div>
@@ -576,7 +578,11 @@ export const MovieInteraction = ({
       <div>
         {data?.pages.map((page) =>
           page.comments.map((comment) => (
-            <CommentComponent key={comment.id} comment={comment} />
+            <CommentComponent
+              key={comment.id}
+              comment={comment}
+              parent={{ id: movie.tmdbId, type: ParentTypes.MOVIE }}
+            />
           ))
         )}
       </div>
