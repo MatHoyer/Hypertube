@@ -24,9 +24,11 @@ export const getCommentRepliesSchemas = {
           user: userSchema.pick({
             id: true,
             username: true,
+            displayUsername: true,
           }),
           likesNumber: z.number(),
           isLikedByUser: z.boolean(),
+          isOwnComment: z.boolean(),
         })
     ),
     page: z.number(),

@@ -52,6 +52,7 @@ export const getCommentReplies = async (
         select: {
           id: true,
           username: true,
+          displayUsername: true,
         },
       },
     },
@@ -94,6 +95,7 @@ export const getCommentReplies = async (
     ...comment,
     likesNumber: likeCountMap.get(comment.id) || 0,
     isLikedByUser: userLikes.has(comment.id),
+    isOwnComment: userId ? userId === comment.userId : false,
   }));
 
   return c.json({

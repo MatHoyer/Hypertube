@@ -31,6 +31,7 @@ import {
   ParentTypes,
   patchCommentSchemas,
   postCommentLikeSchemas,
+  postCommentReplySchemas,
   postMovieCommentSchemas,
   postMovieLikeSchemas,
   postMovieSubscribeSchemas,
@@ -195,28 +196,51 @@ export const CommentLikeButton: React.FC<{
   );
 };
 
-const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
+export const PostMovieComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
   tmdbId,
 }) => {
   const queryClient = useQueryClient();
-  const [newComment, setNewComment] = useState("");
+
   const { mutate: postComment } = useMutation({
     mutationFn: (content: string) =>
       axiosFetch({
         method: "POST",
-        url: getUrl("api-movies-comment", { tmdbId: tmdbId }),
+        url: getUrl("api-movies-comment", { tmdbId }),
         data: { content },
         schemas: postMovieCommentSchemas,
       }),
-    onSuccess: () => {
-      toast.success("Comment posted");
-      setNewComment("");
-      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] });
-    },
-    onError: () => {
-      toast.error("Error when posting comment");
-    },
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] }),
   });
+
+  return <BasePostComment postComment={postComment} />;
+};
+
+export const PostReplyComment: React.FC<{
+  commentId: TCommentSchema["id"];
+  tmdbId: TMovieSchema["tmdbId"];
+}> = ({ commentId, tmdbId }) => {
+  const queryClient = useQueryClient();
+
+  const { mutate: postReply } = useMutation({
+    mutationFn: (content: string) =>
+      axiosFetch({
+        method: "POST",
+        url: getUrl("api-comments-replies", { commentId }),
+        data: { content },
+        schemas: postCommentReplySchemas,
+      }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] }),
+  });
+
+  return <BasePostComment postComment={postReply} />;
+};
+
+const BasePostComment: React.FC<{
+  postComment: (content: string) => void;
+}> = ({ postComment }) => {
+  const [newComment, setNewComment] = useState("");
   return (
     <InputGroup>
       <InputGroupInput
@@ -226,6 +250,7 @@ const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
         onKeyDown={(e) => {
           if (e.key === "Enter" && newComment) {
             postComment(newComment);
+            setNewComment("");
           }
         }}
       />
@@ -233,7 +258,12 @@ const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={() => postComment(newComment)}>
+              <Button
+                onClick={() => {
+                  postComment(newComment);
+                  setNewComment("");
+                }}
+              >
                 {t("movie.comments.sendComment")}
               </Button>
             </TooltipTrigger>
@@ -246,6 +276,58 @@ const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
     </InputGroup>
   );
 };
+
+// const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
+//   tmdbId,
+// }) => {
+//   const queryClient = useQueryClient();
+//   const [newComment, setNewComment] = useState("");
+//   const { mutate: postComment } = useMutation({
+//     mutationFn: (content: string) =>
+//       axiosFetch({
+//         method: "POST",
+//         url: getUrl("api-movies-comment", { tmdbId: tmdbId }),
+//         data: { content },
+//         schemas: postMovieCommentSchemas,
+//       }),
+//     onSuccess: () => {
+//       toast.success("Comment posted");
+//       setNewComment("");
+//       queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] });
+//     },
+//     onError: () => {
+//       toast.error("Error when posting comment");
+//     },
+//   });
+//   return (
+//     <InputGroup>
+//       <InputGroupInput
+//         placeholder={t("movie.comments.addComment")}
+//         value={newComment}
+//         onChange={(e) => setNewComment(e.target.value)}
+//         onKeyDown={(e) => {
+//           if (e.key === "Enter" && newComment) {
+//             postComment(newComment);
+//           }
+//         }}
+//       />
+//       <InputGroupAddon align="inline-end">
+//         <TooltipProvider>
+//           <Tooltip>
+//             <TooltipTrigger asChild>
+//               <Button onClick={() => postComment(newComment)}>
+//                 {t("movie.comments.sendComment")}
+//               </Button>
+//             </TooltipTrigger>
+//             <TooltipContent>
+//               {t("movie.comments.tooltip.sendComment")}
+//             </TooltipContent>
+//           </Tooltip>
+//         </TooltipProvider>
+//       </InputGroupAddon>{" "}
+//     </InputGroup>
+//   );
+// };
 
 const CommentActionsDropdown: React.FC<{
   commentId: TCommentSchema["id"];
@@ -409,6 +491,7 @@ const CommentComponent: React.FC<{
           isLiked={comment.isLikedByUser}
           likesNumber={comment.likesNumber}
         />
+        <PostReplyComment commentId={comment.id} tmdbId={tmdbId} />
       </div>
     </div>
   );
@@ -473,7 +556,7 @@ export const MovieInteraction = ({
         />
       </div>
       <div>
-        <PostComment tmdbId={movie.tmdbId} />
+        <PostMovieComment tmdbId={movie.tmdbId} />
       </div>
       <div>
         {data?.pages.map((page) =>

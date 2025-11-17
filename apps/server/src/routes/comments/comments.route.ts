@@ -41,6 +41,7 @@ commentsRouter.post(
   "/:commentId/replies",
   isLogged,
   urlParamsParser(postCommentReplySchemas.urlParams),
+  bodyParser(postCommentReplySchemas.requirements),
   replyToComment
 );
 
