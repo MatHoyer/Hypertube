@@ -26,6 +26,7 @@ import {
   deleteCommentSchemas,
   deleteMovieLikeSchemas,
   deleteMovieSubscribeSchemas,
+  getCommentRepliesSchemas,
   getMovieCommentSchemas,
   getUrl,
   ParentTypes,
@@ -46,6 +47,7 @@ import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
+  type QueryKey,
 } from "@tanstack/react-query";
 import { t } from "i18next";
 import { MoreVertical, ThumbsUp } from "lucide-react";
@@ -166,12 +168,23 @@ export const MovieLikeButton: React.FC<{
   );
 };
 
-export const CommentLikeButton: React.FC<{
+type TQueryParent = {
+  type: TParentType;
+  id: TCommentSchema["id"] | TMovieSchema["tmdbId"];
+};
+const getParentQueryKey = (parent: TQueryParent) => {
+  if (parent.type === ParentTypes.MOVIE) {
+    return ["movie-comments", parent.id] as QueryKey;
+  }
+  return ["comment-replies", parent.id] as QueryKey;
+};
+
+const CommentLikeButton: React.FC<{
   commentId: TCommentSchema["id"];
-  tmdbId: TMovieSchema["tmdbId"];
   isLiked: boolean;
   likesNumber: number;
-}> = ({ commentId, tmdbId, isLiked, likesNumber }) => {
+  parent: TQueryParent;
+}> = ({ commentId, isLiked, likesNumber, parent }) => {
   const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
@@ -182,7 +195,7 @@ export const CommentLikeButton: React.FC<{
         schemas: isLiked ? deleteCommentLikeSchemas : postCommentLikeSchemas,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] });
+      queryClient.invalidateQueries({ queryKey: getParentQueryKey(parent) });
     },
   });
 
@@ -191,7 +204,7 @@ export const CommentLikeButton: React.FC<{
       isLiked={isLiked}
       likesNumber={likesNumber}
       onToggle={() => mutate()}
-      likeType={ParentTypes.COMMENT}
+      likeType={parent.type}
     />
   );
 };
@@ -218,8 +231,8 @@ export const PostMovieComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
 
 export const PostReplyComment: React.FC<{
   commentId: TCommentSchema["id"];
-  tmdbId: TMovieSchema["tmdbId"];
-}> = ({ commentId, tmdbId }) => {
+  parent: TQueryParent;
+}> = ({ commentId, parent }) => {
   const queryClient = useQueryClient();
 
   const { mutate: postReply } = useMutation({
@@ -231,7 +244,7 @@ export const PostReplyComment: React.FC<{
         schemas: postCommentReplySchemas,
       }),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] }),
+      queryClient.invalidateQueries({ queryKey: getParentQueryKey(parent) }),
   });
 
   return <BasePostComment postComment={postReply} />;
@@ -241,6 +254,7 @@ const BasePostComment: React.FC<{
   postComment: (content: string) => void;
 }> = ({ postComment }) => {
   const [newComment, setNewComment] = useState("");
+
   return (
     <InputGroup>
       <InputGroupInput
@@ -277,63 +291,11 @@ const BasePostComment: React.FC<{
   );
 };
 
-// const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
-//   tmdbId,
-// }) => {
-//   const queryClient = useQueryClient();
-//   const [newComment, setNewComment] = useState("");
-//   const { mutate: postComment } = useMutation({
-//     mutationFn: (content: string) =>
-//       axiosFetch({
-//         method: "POST",
-//         url: getUrl("api-movies-comment", { tmdbId: tmdbId }),
-//         data: { content },
-//         schemas: postMovieCommentSchemas,
-//       }),
-//     onSuccess: () => {
-//       toast.success("Comment posted");
-//       setNewComment("");
-//       queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] });
-//     },
-//     onError: () => {
-//       toast.error("Error when posting comment");
-//     },
-//   });
-//   return (
-//     <InputGroup>
-//       <InputGroupInput
-//         placeholder={t("movie.comments.addComment")}
-//         value={newComment}
-//         onChange={(e) => setNewComment(e.target.value)}
-//         onKeyDown={(e) => {
-//           if (e.key === "Enter" && newComment) {
-//             postComment(newComment);
-//           }
-//         }}
-//       />
-//       <InputGroupAddon align="inline-end">
-//         <TooltipProvider>
-//           <Tooltip>
-//             <TooltipTrigger asChild>
-//               <Button onClick={() => postComment(newComment)}>
-//                 {t("movie.comments.sendComment")}
-//               </Button>
-//             </TooltipTrigger>
-//             <TooltipContent>
-//               {t("movie.comments.tooltip.sendComment")}
-//             </TooltipContent>
-//           </Tooltip>
-//         </TooltipProvider>
-//       </InputGroupAddon>{" "}
-//     </InputGroup>
-//   );
-// };
-
 const CommentActionsDropdown: React.FC<{
   commentId: TCommentSchema["id"];
-  tmdbId: TMovieSchema["tmdbId"];
+  parent: TQueryParent;
   initialContent: TCommentSchema["content"];
-}> = ({ commentId, tmdbId, initialContent }) => {
+}> = ({ commentId, parent, initialContent }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
@@ -347,7 +309,7 @@ const CommentActionsDropdown: React.FC<{
       }),
     onSuccess: () => {
       toast.success(t("movie.comments.toast.deleteSuccess"));
-      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] });
+      queryClient.invalidateQueries({ queryKey: getParentQueryKey(parent) });
     },
     onError: () => {
       toast.error(t("movie.comments.toast.deleteError"));
@@ -358,7 +320,7 @@ const CommentActionsDropdown: React.FC<{
     return (
       <EditCommentButton
         commentId={commentId}
-        tmdbId={tmdbId}
+        parent={parent}
         initialContent={initialContent}
         setIsEditing={setIsEditing}
       />
@@ -391,10 +353,10 @@ const CommentActionsDropdown: React.FC<{
 
 const EditCommentButton: React.FC<{
   commentId: TCommentSchema["id"];
-  tmdbId: TMovieSchema["tmdbId"];
+  parent: TQueryParent;
   initialContent: TCommentSchema["content"];
   setIsEditing: (value: boolean) => void;
-}> = ({ commentId, tmdbId, initialContent, setIsEditing }) => {
+}> = ({ commentId, parent, initialContent, setIsEditing }) => {
   const queryClient = useQueryClient();
   const [editedContent, setEditedContent] = useState(initialContent);
 
@@ -408,7 +370,7 @@ const EditCommentButton: React.FC<{
       }),
     onSuccess: () => {
       toast.success("Comment updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] });
+      queryClient.invalidateQueries({ queryKey: getParentQueryKey(parent) });
       setIsEditing(false);
     },
     onError: () => {
@@ -469,30 +431,83 @@ const EditCommentButton: React.FC<{
 
 const CommentComponent: React.FC<{
   comment: TGetMovieCommentsSchemas["response"]["comments"][number];
-  tmdbId: TMovieSchema["tmdbId"];
-}> = ({ comment, tmdbId }) => {
+}> = ({ comment }) => {
+  const [isReplying, setIsReplying] = useState(false);
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status: _,
+  } = useInfiniteQuery({
+    queryKey: ["comment-replies", comment.id],
+    queryFn: async ({ pageParam }) =>
+      axiosFetch({
+        method: "GET",
+        url: getUrl("api-comments-replies", {
+          commentId: comment.id,
+          searchParams: { page: pageParam.toString(), pageSize: "10" },
+        }),
+        schemas: getCommentRepliesSchemas,
+      }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.page < lastPage.totalPages) {
+        return lastPage.page + 1;
+      }
+      return undefined;
+    },
+    getPreviousPageParam: (lastPage) => {
+      if (lastPage.page > 1) {
+        return lastPage.page - 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
+  });
+
   return (
     <div className="border-b py-2">
       {comment.isOwnComment && (
         <CommentActionsDropdown
           commentId={comment.id}
-          tmdbId={tmdbId}
+          parent={{ id: comment.id, type: ParentTypes.COMMENT }}
           initialContent={comment.content}
         />
       )}
-      <Typography>{comment.user.displayUsername}:</Typography>
+      <Typography>{comment.user.name}:</Typography>
       <Typography variant="small">
         {comment.content} {comment.isOwnComment}
       </Typography>
       <div className="flex">
         <CommentLikeButton
           commentId={comment.id}
-          tmdbId={tmdbId}
           isLiked={comment.isLikedByUser}
           likesNumber={comment.likesNumber}
+          parent={{ id: comment.id, type: ParentTypes.COMMENT }}
         />
-        <PostReplyComment commentId={comment.id} tmdbId={tmdbId} />
+        <Button onClick={() => setIsReplying((prev) => !prev)}>Répondre</Button>
+        {isReplying && (
+          <PostReplyComment
+            commentId={comment.id}
+            parent={{ id: comment.id, type: ParentTypes.COMMENT }}
+          />
+        )}
       </div>
+      <div>
+        {data?.pages.map((page) =>
+          page.comments.map((comment) => (
+            <CommentComponent key={comment.id} comment={comment} />
+          ))
+        )}
+      </div>
+      <button
+        className="cursor-pointer"
+        disabled={!hasNextPage || isFetchingNextPage}
+        onClick={() => fetchNextPage()}
+      >
+        {isFetchingNextPage ? "Chargement..." : "Charger plus"}
+      </button>
     </div>
   );
 };
@@ -561,11 +576,7 @@ export const MovieInteraction = ({
       <div>
         {data?.pages.map((page) =>
           page.comments.map((comment) => (
-            <CommentComponent
-              key={comment.id}
-              comment={comment}
-              tmdbId={movie.tmdbId}
-            />
+            <CommentComponent key={comment.id} comment={comment} />
           ))
         )}
       </div>

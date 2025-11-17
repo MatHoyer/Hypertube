@@ -51,8 +51,7 @@ export const getCommentReplies = async (
       user: {
         select: {
           id: true,
-          username: true,
-          displayUsername: true,
+          name: true,
         },
       },
     },

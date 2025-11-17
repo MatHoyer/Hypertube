@@ -2,6 +2,7 @@ import z from "zod";
 import { commentSchema } from "../database/comments.schema.js";
 import { userSchema } from "../database/user.schema.js";
 
+//TODO create commentSchema override
 export const getCommentRepliesSchemas = {
   urlParams: z.object({
     commentId: commentSchema.shape.parentId,
@@ -23,8 +24,7 @@ export const getCommentRepliesSchemas = {
         .extend({
           user: userSchema.pick({
             id: true,
-            username: true,
-            displayUsername: true,
+            name: true,
           }),
           likesNumber: z.number(),
           isLikedByUser: z.boolean(),

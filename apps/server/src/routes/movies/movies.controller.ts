@@ -511,8 +511,7 @@ export const getMovieComments = async (
       user: {
         select: {
           id: true,
-          username: true,
-          displayUsername: true,
+          name: true,
         },
       },
     },
@@ -553,6 +552,10 @@ export const getMovieComments = async (
 
   const commentsWithLikes = comments.map((comment) => ({
     ...comment,
+    user: {
+      ...comment.user,
+      name: "test",
+    },
     likesNumber: likeCountMap.get(comment.id) || 0,
     isLikedByUser: userLikes.has(comment.id),
     isOwnComment: userId ? userId === comment.userId : false,
