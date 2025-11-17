@@ -206,6 +206,10 @@
         "cancel": "Cancel the modification",
         "edit": "Edit the comment"
       },
+      "likes": {
+        "likeComment": "I like this comment",
+        "unlikeComment": "I don't like this comment anymore"
+      },
       "toast": {
         "deleteSuccess": "The comment was successfully deleted",
         "deleteError": "The comment could not be deleted"

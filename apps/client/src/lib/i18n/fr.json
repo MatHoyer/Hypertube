@@ -189,7 +189,7 @@
       "unlikeMovie": "Film retiré des likes avec succès",
       "tooltip": {
         "likeMovie": "J'aime ce film",
-        "unlikeMovie": "Je n'aime plus"
+        "unlikeMovie": "Je n'aime plus ce film"
       }
     },
     "comments": {
@@ -205,6 +205,10 @@
         "sendComment": "Envoyer le commentaire",
         "cancel": "Annuler la modification",
         "edit": "Modifier le commentaire"
+      },
+      "likes": {
+        "likeComment": "J'aime ce commentaire",
+        "unlikeComment": "Je n'aime plus ce commentaire"
       },
       "toast": {
         "deleteSuccess": "Le commentaire a bien été supprimé.",

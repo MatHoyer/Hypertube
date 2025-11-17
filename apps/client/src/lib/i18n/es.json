@@ -206,6 +206,10 @@
         "cancel": "Eliminar la modificacion",
         "edit": "Cambiar el comentario"
       },
+      "likes": {
+        "likeComment": "Me gusta este comentario",
+        "unlikeComment": "Ya no me gusta este comentario"
+      },
       "toast": {
         "deleteSuccess": "El comentario se eliminó correctamente",
         "deleteError": "No se pudo eliminar el comentario"

@@ -28,6 +28,7 @@ import {
   deleteMovieSubscribeSchemas,
   getMovieCommentSchemas,
   getUrl,
+  ParentTypes,
   patchCommentSchemas,
   postCommentLikeSchemas,
   postMovieCommentSchemas,
@@ -37,6 +38,7 @@ import {
   type TGetMovieCommentsSchemas,
   type TGetMovieSchemas,
   type TMovieSchema,
+  type TParentType,
 } from "@hypertube/libs";
 import type { TCommentSchema } from "@hypertube/libs/src/schemas/database/comments.schema";
 import {
@@ -102,16 +104,37 @@ export const BaseLikeButton: React.FC<{
   isLiked: boolean;
   likesNumber?: number;
   onToggle: () => void;
-}> = ({ isLiked, likesNumber, onToggle }) => (
-  <Button variant="ghost" onClick={onToggle}>
-    <ThumbsUp
-      className={`transition-colors ${
-        isLiked ? "text-primary fill-primary" : "text-gray-500"
-      }`}
-    />
-    {likesNumber}
-  </Button>
-);
+  likeType: TParentType;
+}> = ({ isLiked, likesNumber, onToggle, likeType }) => {
+  const tooltipText = () => {
+    if (likeType === ParentTypes.MOVIE) {
+      return isLiked
+        ? t("movie.likes.tooltip.unlikeMovie")
+        : t("movie.likes.tooltip.likeMovie");
+    } else {
+      return isLiked
+        ? t("movie.comments.likes.unlikeComment")
+        : t("movie.comments.likes.likeComment");
+    }
+  };
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant="ghost" onClick={onToggle}>
+            <ThumbsUp
+              className={`transition-colors ${
+                isLiked ? "text-primary fill-primary" : "text-gray-500"
+              }`}
+            />
+            {likesNumber}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>{tooltipText()}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
 
 export const MovieLikeButton: React.FC<{
   tmdbId: TMovieSchema["tmdbId"];
@@ -137,6 +160,7 @@ export const MovieLikeButton: React.FC<{
       isLiked={isLiked}
       likesNumber={likesNumber}
       onToggle={() => mutate()}
+      likeType={ParentTypes.MOVIE}
     />
   );
 };
@@ -166,6 +190,7 @@ export const CommentLikeButton: React.FC<{
       isLiked={isLiked}
       likesNumber={likesNumber}
       onToggle={() => mutate()}
+      likeType={ParentTypes.COMMENT}
     />
   );
 };
