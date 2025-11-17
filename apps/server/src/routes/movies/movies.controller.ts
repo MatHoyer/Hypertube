@@ -512,6 +512,7 @@ export const getMovieComments = async (
         select: {
           id: true,
           username: true,
+          displayUsername: true,
         },
       },
     },

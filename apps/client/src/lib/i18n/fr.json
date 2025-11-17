@@ -197,8 +197,14 @@
       "addComment": "Ajouter un commentaire...",
       "sendComment": "Envoyer",
       "deleteComment": "Supprimer",
+      "editComment": "Modifier le commentaire",
+      "cancel": "Annuler",
+      "save": "Sauvegarder",
       "tooltip": {
-        "deleteComment": "Supprimer le commentaire"
+        "deleteComment": "Supprimer le commentaire",
+        "sendComment": "Envoyer le commentaire",
+        "cancel": "Annuler la modification",
+        "edit": "Modifier le commentaire"
       },
       "toast": {
         "deleteSuccess": "Le commentaire a bien été supprimé.",

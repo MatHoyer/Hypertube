@@ -213,6 +213,7 @@ export const getMovieCommentSchemas = {
           user: userSchema.pick({
             id: true,
             username: true,
+            displayUsername: true,
           }),
           likesNumber: z.number(),
           isLikedByUser: z.boolean(),

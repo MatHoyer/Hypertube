@@ -1,6 +1,13 @@
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
@@ -35,7 +42,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { t } from "i18next";
-import { ThumbsUp } from "lucide-react";
+import { MoreVertical, ThumbsUp } from "lucide-react";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -166,22 +173,33 @@ const PostComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
         }}
       />
       <InputGroupAddon align="inline-end">
-        <Button onClick={() => postComment(newComment)}>
-          {t("movie.comments.sendComment")}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => postComment(newComment)}>
+                {t("movie.comments.sendComment")}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {t("movie.comments.tooltip.sendComment")}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </InputGroupAddon>{" "}
     </InputGroup>
   );
 };
 
-const DeleteCommentButton: React.FC<{
+const CommentActionsDropdown: React.FC<{
   commentId: TCommentSchema["id"];
   tmdbId: TMovieSchema["tmdbId"];
-}> = ({ commentId, tmdbId }) => {
+  initialContent: TCommentSchema["content"];
+}> = ({ commentId, tmdbId, initialContent }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const [isEditing, setIsEditing] = useState(false);
 
-  const { mutate: deleteComment, isPending } = useMutation({
+  const { mutate: deleteComment, isPending: isDeleting } = useMutation({
     mutationFn: () =>
       axiosFetch({
         method: "DELETE",
@@ -197,16 +215,38 @@ const DeleteCommentButton: React.FC<{
     },
   });
 
+  if (isEditing) {
+    return (
+      <EditCommentButton
+        commentId={commentId}
+        tmdbId={tmdbId}
+        initialContent={initialContent}
+        setIsEditing={setIsEditing}
+      />
+    );
+  }
+
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button onClick={() => deleteComment()} disabled={isPending}>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild className="relative w-60">
+        <Button className="rounded-full size-fit p-0">
+          <MoreVertical />{" "}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end">
+        <DropdownMenuGroup>
+          <DropdownMenuItem onClick={() => setIsEditing(true)}>
+            {t("movie.comments.editComment")}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => deleteComment()}
+            disabled={isDeleting}
+          >
             {t("movie.comments.deleteComment")}
-          </Button>
-        </TooltipTrigger>
-      </Tooltip>
-    </TooltipProvider>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
@@ -214,10 +254,10 @@ const EditCommentButton: React.FC<{
   commentId: TCommentSchema["id"];
   tmdbId: TMovieSchema["tmdbId"];
   initialContent: TCommentSchema["content"];
-}> = ({ commentId, tmdbId, initialContent }) => {
+  setIsEditing: (value: boolean) => void;
+}> = ({ commentId, tmdbId, initialContent, setIsEditing }) => {
   const queryClient = useQueryClient();
   const [editedContent, setEditedContent] = useState(initialContent);
-  const [isEditing, setIsEditing] = useState(false);
 
   const { mutate: patchComment, isPending } = useMutation({
     mutationFn: (content: string) =>
@@ -237,10 +277,6 @@ const EditCommentButton: React.FC<{
     },
   });
 
-  if (!isEditing) {
-    return <Button onClick={() => setIsEditing(true)}>Edit</Button>;
-  }
-
   const handleCancel = () => {
     setEditedContent(initialContent);
     setIsEditing(false);
@@ -249,7 +285,7 @@ const EditCommentButton: React.FC<{
   return (
     <InputGroup>
       <InputGroupInput
-        placeholder={t("movie.comments.addComment")}
+        placeholder={t("movie.comments.editComment")}
         value={editedContent}
         onChange={(e) => setEditedContent(e.target.value)}
         onKeyDown={(e) => {
@@ -262,12 +298,31 @@ const EditCommentButton: React.FC<{
         disabled={isPending}
       />
       <InputGroupAddon align="inline-end">
-        <Button
-          disabled={isPending}
-          onClick={() => patchComment(editedContent)}
-        >
-          {"modifier"}
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button disabled={isPending} onClick={() => handleCancel()}>
+                {t("movie.comments.cancel")}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {t("movie.comments.tooltip.cancel")}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                disabled={isPending}
+                onClick={() => patchComment(editedContent)}
+              >
+                {t("movie.comments.save")}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{t("movie.comments.tooltip.edit")}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </InputGroupAddon>{" "}
     </InputGroup>
   );
@@ -338,19 +393,13 @@ export const MovieInteraction = ({
           page.comments.map((comment) => (
             <div key={comment.id} className="border-b py-2">
               {comment.isOwnComment && (
-                <DeleteCommentButton
-                  commentId={comment.id}
-                  tmdbId={movie.tmdbId}
-                />
-              )}
-              {comment.isOwnComment && (
-                <EditCommentButton
+                <CommentActionsDropdown
                   commentId={comment.id}
                   tmdbId={movie.tmdbId}
                   initialContent={comment.content}
                 />
               )}
-              <Typography>{comment.user.username}:</Typography>
+              <Typography>{comment.user.displayUsername}:</Typography>
               <Typography variant="small">
                 {comment.content} {comment.isOwnComment}
               </Typography>

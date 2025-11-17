@@ -197,8 +197,14 @@
       "addComment": "Add a comment...",
       "sendComment": "Send",
       "deleteComment": "Delete",
+      "editComment": "Edit the comment",
+      "cancel": "Cancel",
+      "save": "Save",
       "tooltip": {
-        "deleteComment": "Delete the comment"
+        "deleteComment": "Delete the comment",
+        "sendComment": "Send the comment",
+        "cancel": "Cancel the modification",
+        "edit": "Edit the comment"
       },
       "toast": {
         "deleteSuccess": "The comment was successfully deleted",
