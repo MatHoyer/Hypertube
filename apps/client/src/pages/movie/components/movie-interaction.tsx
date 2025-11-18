@@ -25,6 +25,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { t } from "i18next";
+import { ChevronDown } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -157,7 +158,7 @@ export const MovieInteraction = ({
         disabled={!hasNextPage || isFetchingNextPage}
         onClick={() => fetchNextPage()}
       >
-        {isFetchingNextPage ? "Chargement..." : "Charger plus"}
+        {isFetchingNextPage ? "..." : hasNextPage ? <ChevronDown /> : null}
       </button>
     </div>
   );

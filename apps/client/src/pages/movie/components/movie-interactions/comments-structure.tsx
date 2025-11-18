@@ -92,8 +92,10 @@ export const CommentActionsDropdown: React.FC<{
 export const CommentComponent: React.FC<{
   comment: TGetMovieCommentsSchemas["response"]["comments"][number];
   parent: TQueryParent;
-}> = ({ comment, parent }) => {
+  depth?: number;
+}> = ({ comment, parent, depth = 0 }) => {
   const [isReplying, setIsReplying] = useState(false);
+  const maxDepth = 3;
 
   const {
     data,
@@ -160,13 +162,18 @@ export const CommentComponent: React.FC<{
           />
         )}
       </div>
-      <div className="flex-col pl-6 border-l border-muted/30">
+      <div
+        className={`flex-col mt-2 ${
+          depth < maxDepth ? "pl-6 border-l border-muted/30" : ""
+        }`}
+      >
         {data?.pages.map((page) =>
           page.comments.map((subComment) => (
             <CommentComponent
               key={subComment.id}
               comment={subComment}
               parent={{ id: comment.id, type: ParentTypes.COMMENT }}
+              depth={depth + 1}
             />
           ))
         )}

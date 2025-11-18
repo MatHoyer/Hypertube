@@ -203,7 +203,7 @@
       "tooltip": {
         "deleteComment": "Supprimer le commentaire",
         "sendComment": "Envoyer le commentaire",
-        "cancel": "Annuler la modification",
+        "cancel": "Annuler",
         "edit": "Modifier le commentaire"
       },
       "likes": {
