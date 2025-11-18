@@ -13,8 +13,10 @@ import { useNotificationsStats } from "@/hooks/use-notifications-stats";
 import { playBeep } from "@/lib/audio";
 import { LOCAL_STORAGE_KEYS } from "@/lib/const";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { NotificationBell } from "@/pages/notifications/components/notification-bell";
 import {
+  API_ROUTES,
   getNotificationsSSESchemas,
   getUrl,
   NOTIFICATIONS_EVENTS,
@@ -77,7 +79,9 @@ export const UserDropdown = () => {
       if (!mutedNotifications) {
         playBeep();
       }
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(API_ROUTES.API_NOTIFICATIONS),
+      });
     };
 
     eventSource.addEventListener(

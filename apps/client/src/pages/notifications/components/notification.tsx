@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { cn, getNearDateWithLocale } from "@/lib/utils";
 import type { TNotification, TNotificationSchema } from "@hypertube/libs";
 import {
+  API_ROUTES,
   getUrl,
   notifications,
   patchNotificationsSchemas,
@@ -45,7 +47,7 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["notifications"],
+        queryKey: getQueryKey(API_ROUTES.API_NOTIFICATIONS),
       });
       toast.success(t("notifications.markedAsRead"));
     },

@@ -326,7 +326,7 @@ export const getUrl = <T extends TRoute>(
   const { withUrl, searchParams, ...rawParams } = params || {};
 
   const schema = routeSchemas[route];
-  const routeParams = schema.parse(rawParams) as TRouteDataMap<T>;
+  const routeParams = schema.parse(rawParams ?? {}) as TRouteDataMap<T>;
   const routeFn = routes[route];
 
   const computedUrl = routeFn(routeParams);

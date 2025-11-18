@@ -2,8 +2,10 @@ import { Button } from "@/components/ui/button";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { LOCAL_STORAGE_KEYS } from "@/lib/const";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import {
+  API_ROUTES,
   getUrl,
   notificationReadStatuses,
   patchNotificationsSchemas,
@@ -38,7 +40,7 @@ export const NotificationsActions: React.FC<{
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["notifications"],
+        queryKey: getQueryKey(API_ROUTES.API_NOTIFICATIONS),
       });
       toast.success(t("notifications.markedAllAsRead"));
     },
@@ -50,6 +52,11 @@ export const NotificationsActions: React.FC<{
         method: "POST",
         url: getUrl("api-notifications-test"),
         schemas: postSendTestNotificationSchemas,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(API_ROUTES.API_NOTIFICATIONS),
       });
     },
   });

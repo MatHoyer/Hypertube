@@ -1,4 +1,5 @@
 import {
+  CLIENT_ROUTES,
   getUrl,
   TMovieSchema,
   TNotification,
@@ -42,8 +43,10 @@ const createRessourceUrl: {
   [T in TNotification]: (addOns: TNotificationAddOnsMap<T>) => string | null;
 } = {
   test: () => null,
-  movieDownloaded: ({ tmdbId }) => getUrl("client-movie", { tmdbId }),
-  movieDownloading: ({ tmdbId }) => getUrl("client-movie", { tmdbId }),
+  movieDownloaded: ({ tmdbId }) =>
+    getUrl(CLIENT_ROUTES.CLIENT_MOVIE, { tmdbId }),
+  movieDownloading: ({ tmdbId }) =>
+    getUrl(CLIENT_ROUTES.CLIENT_MOVIE, { tmdbId }),
 };
 
 export const generateNotification = async <T extends TNotification>(

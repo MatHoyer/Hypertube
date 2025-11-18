@@ -1,11 +1,16 @@
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
-import { getNotificationsStatsSchemas, getUrl } from "@hypertube/libs";
+import { getQueryKey } from "@/lib/getQueryKey";
+import {
+  API_ROUTES,
+  getNotificationsStatsSchemas,
+  getUrl,
+} from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 export const useNotificationsStats = () => {
   const { data: stats } = useQuery({
-    queryKey: ["notifications", "stats"],
+    queryKey: getQueryKey(API_ROUTES.API_NOTIFICATIONS, { type: "stats" }),
     queryFn: async () => {
       return axiosFetch({
         method: "GET",

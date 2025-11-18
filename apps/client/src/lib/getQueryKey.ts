@@ -1,10 +1,15 @@
-import { API_ROUTES } from "@hypertube/libs";
+import { API_ROUTES, notificationReadStatuses } from "@hypertube/libs";
 import type { QueryKey } from "@tanstack/react-query";
 import z from "zod";
 
 const apiRouteQueryKeySchemas = {
   [API_ROUTES.API_MOVIES]: z.object({
     tmdbId: z.number().optional(),
+  }),
+  [API_ROUTES.API_NOTIFICATIONS]: z.object({
+    type: z
+      .union([z.enum(notificationReadStatuses), z.literal("stats")])
+      .optional(),
   }),
 };
 
@@ -26,6 +31,12 @@ const queryKeys: {
   [API_ROUTES.API_MOVIES]: ({ tmdbId }) => {
     return tmdbId ? [API_ROUTES.API_MOVIES, tmdbId] : [API_ROUTES.API_MOVIES];
   },
+  [API_ROUTES.API_NOTIFICATIONS]: ({ type }) => {
+    if (!type) return [API_ROUTES.API_NOTIFICATIONS];
+    return type === "stats"
+      ? [API_ROUTES.API_NOTIFICATIONS, "stats"]
+      : [API_ROUTES.API_NOTIFICATIONS, type];
+  },
 };
 
 export const getQueryKey = <T extends TRoute>(
@@ -33,7 +44,9 @@ export const getQueryKey = <T extends TRoute>(
   params?: TRouteDataMap<T>
 ) => {
   const schema = apiRouteQueryKeySchemas[route];
-  const parsedParams = schema.parse(params) as TApiRouteDataRequirements[T];
+  const parsedParams = schema.parse(
+    params ?? {}
+  ) as TApiRouteDataRequirements[T];
 
   const queryKeyFn = queryKeys[route] as (
     params: TApiRouteDataRequirements[T]
