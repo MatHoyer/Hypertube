@@ -1,4 +1,5 @@
 import { API_ROUTES } from "@hypertube/libs";
+import type { QueryKey } from "@tanstack/react-query";
 import z from "zod";
 
 const apiRouteQueryKeySchemas = {
@@ -7,30 +8,36 @@ const apiRouteQueryKeySchemas = {
   }),
 };
 
-type TApiRouteQueryKeySchemas = {
-  [API_ROUTES.API_MOVIES]: z.infer<
-    (typeof apiRouteQueryKeySchemas)[typeof API_ROUTES.API_MOVIES]
+type TApiRouteDataRequirements = {
+  [T in keyof typeof apiRouteQueryKeySchemas]: z.infer<
+    (typeof apiRouteQueryKeySchemas)[T]
   >;
 };
 
-const queryKeys = {
-  [API_ROUTES.API_MOVIES]: (
-    params: TApiRouteQueryKeySchemas[typeof API_ROUTES.API_MOVIES]
-  ) => {
-    return params.tmdbId
-      ? [API_ROUTES.API_MOVIES, params.tmdbId]
-      : [API_ROUTES.API_MOVIES];
+type TRoute = keyof TApiRouteDataRequirements;
+
+type TRouteDataMap<T extends TRoute> = T extends keyof TApiRouteDataRequirements
+  ? TApiRouteDataRequirements[T]
+  : never;
+
+const queryKeys: {
+  [T in TRoute]: (params: TRouteDataMap<T>) => QueryKey;
+} = {
+  [API_ROUTES.API_MOVIES]: ({ tmdbId }) => {
+    return tmdbId ? [API_ROUTES.API_MOVIES, tmdbId] : [API_ROUTES.API_MOVIES];
   },
 };
 
-export const getQueryKey = <T extends keyof typeof apiRouteQueryKeySchemas>(
+export const getQueryKey = <T extends TRoute>(
   route: T,
-  params: T extends keyof TApiRouteQueryKeySchemas
-    ? TApiRouteQueryKeySchemas[T]
-    : never
+  params?: TRouteDataMap<T>
 ) => {
   const schema = apiRouteQueryKeySchemas[route];
-  const parsedParams = schema.parse(params);
+  const parsedParams = schema.parse(params) as TApiRouteDataRequirements[T];
 
-  return queryKeys[route](parsedParams);
+  const queryKeyFn = queryKeys[route] as (
+    params: TApiRouteDataRequirements[T]
+  ) => QueryKey;
+
+  return queryKeyFn(parsedParams);
 };
