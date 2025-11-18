@@ -17,6 +17,7 @@ import { getQueryKey } from "@/lib/getQueryKey";
 import { NotificationBell } from "@/pages/notifications/components/notification-bell";
 import {
   API_ROUTES,
+  CLIENT_ROUTES,
   getNotificationsSSESchemas,
   getUrl,
   NOTIFICATIONS_EVENTS,
@@ -117,7 +118,7 @@ export const UserDropdown = () => {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to={getUrl("client-notifications")}>
+            <Link to={getUrl(CLIENT_ROUTES.CLIENT_NOTIFICATIONS)}>
               <NotificationBell /> {t("navbar.notifications")}
             </Link>
           </DropdownMenuItem>
@@ -129,7 +130,7 @@ export const UserDropdown = () => {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to={getUrl("client-oauth-credentials")}>
+          <Link to={getUrl(CLIENT_ROUTES.CLIENT_OAUTH_CREDENTIALS)}>
             <File /> API
           </Link>
         </DropdownMenuItem>

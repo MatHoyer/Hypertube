@@ -3,7 +3,9 @@ import { LoadingButton } from "@/components/LoadingButton";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import {
+  API_ROUTES,
   deleteCredentialsSchemas,
   getUrl,
   type TGetCredentialsSchemas,
@@ -28,11 +30,15 @@ export const OathCredential: React.FC<{
     mutationFn: () =>
       axiosFetch({
         method: "DELETE",
-        url: getUrl("api-oauth-credentials", { credentialId: credential.id }),
+        url: getUrl(API_ROUTES.API_OAUTH_CREDENTIALS, {
+          credentialId: credential.id,
+        }),
         schemas: deleteCredentialsSchemas,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["credentials"] });
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(API_ROUTES.API_OAUTH_CREDENTIALS),
+      });
       toast.success(t("oauthCredentials.deleteCredentialSuccess"));
     },
   });

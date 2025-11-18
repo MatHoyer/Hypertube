@@ -11,6 +11,7 @@ const apiRouteQueryKeySchemas = {
       .union([z.enum(notificationReadStatuses), z.literal("stats")])
       .optional(),
   }),
+  [API_ROUTES.API_OAUTH_CREDENTIALS]: z.object({}),
 };
 
 type TApiRouteDataRequirements = {
@@ -37,6 +38,7 @@ const queryKeys: {
       ? [API_ROUTES.API_NOTIFICATIONS, "stats"]
       : [API_ROUTES.API_NOTIFICATIONS, type];
   },
+  [API_ROUTES.API_OAUTH_CREDENTIALS]: () => [API_ROUTES.API_OAUTH_CREDENTIALS],
 };
 
 export const getQueryKey = <T extends TRoute>(
