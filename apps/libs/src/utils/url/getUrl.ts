@@ -309,6 +309,11 @@ type TGetUrlArgs<T extends TRoute> = TRouteDataMap<T> extends undefined
       withUrl?: "server" | "client";
       searchParams?: TSearchParams;
     }
+  : TRouteDataMap<T> extends Record<string, never>
+  ? {
+      withUrl?: "server" | "client";
+      searchParams?: TSearchParams;
+    }
   : TRouteDataMap<T> & {
       withUrl?: "server" | "client";
       searchParams?: TSearchParams;
