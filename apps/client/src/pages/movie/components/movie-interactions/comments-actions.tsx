@@ -75,6 +75,8 @@ const BasePostComment: React.FC<{
 }> = ({ postComment }) => {
   const [newComment, setNewComment] = useState("");
 
+  const handleCancel = () => setNewComment("");
+
   return (
     <InputGroup>
       <InputGroupInput
@@ -85,10 +87,26 @@ const BasePostComment: React.FC<{
           if (e.key === "Enter" && newComment) {
             postComment(newComment);
             setNewComment("");
+          } else if (e.key === "Escape") {
+            handleCancel();
           }
         }}
       />
       <InputGroupAddon align="inline-end">
+        {newComment && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button disabled={!newComment} onClick={handleCancel}>
+                  {t("movie.comments.cancel")}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t("movie.comments.tooltip.cancel")}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>

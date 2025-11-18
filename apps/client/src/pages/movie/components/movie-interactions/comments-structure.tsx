@@ -21,7 +21,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { MoreVertical } from "lucide-react";
+import { ChevronDown, MoreVertical } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -128,19 +128,24 @@ export const CommentComponent: React.FC<{
   });
 
   return (
-    <div className="border-b py-2">
-      {comment.isOwnComment && (
-        <CommentActionsDropdown
-          commentId={comment.id}
-          parent={parent}
-          initialContent={comment.content}
-        />
-      )}
-      <Typography>{comment.id}:</Typography>
-      <Typography variant="small">
-        {comment.content} {comment.isOwnComment}
+    <div className="flex-col border-b-2 py-1">
+      <div className="flex justify-between">
+        <Typography>{comment.user.name}:</Typography>
+        {comment.isOwnComment && (
+          <CommentActionsDropdown
+            commentId={comment.id}
+            parent={parent}
+            initialContent={comment.content}
+          />
+        )}
+      </div>
+      <Typography
+        variant="small"
+        className="whitespace-pre-wrap break-words mb-2"
+      >
+        {comment.content}
       </Typography>
-      <div className="flex">
+      <div className="flex space-x-4">
         <CommentLikeButton
           commentId={comment.id}
           isLiked={comment.isLikedByUser}
@@ -155,7 +160,7 @@ export const CommentComponent: React.FC<{
           />
         )}
       </div>
-      <div>
+      <div className="flex-col pl-6 border-l border-muted/30">
         {data?.pages.map((page) =>
           page.comments.map((subComment) => (
             <CommentComponent
@@ -171,7 +176,7 @@ export const CommentComponent: React.FC<{
         disabled={!hasNextPage || isFetchingNextPage}
         onClick={() => fetchNextPage()}
       >
-        {isFetchingNextPage ? "Chargement..." : "Charger plus"}
+        {isFetchingNextPage ? "..." : hasNextPage ? <ChevronDown /> : null}
       </button>
     </div>
   );
