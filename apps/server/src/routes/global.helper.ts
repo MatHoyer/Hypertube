@@ -1,13 +1,13 @@
-import { hypertubeLogger, TParentType } from "@hypertube/libs";
+import { hypertubeLogger, ParentTypes, TParentType } from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
 
-type StatusCode = 200 | 201 | 400 | 404 | 500;
+type TStatusCode = 200 | 201 | 400 | 404 | 500;
 
 export const likeParent = async (
   userId: string,
   parentId: string,
   parentType: TParentType
-): Promise<{ message: string; status: StatusCode }> => {
+): Promise<{ message: string; status: TStatusCode }> => {
   try {
     await prisma.like.create({
       data: {
@@ -34,7 +34,7 @@ export const commentParent = async (
   userId: string,
   parentId: string,
   parentType: TParentType
-): Promise<{ message: string; status: StatusCode }> => {
+): Promise<{ message: string; status: TStatusCode }> => {
   try {
     await prisma.comment.create({
       data: {
@@ -65,7 +65,7 @@ export const commentParent = async (
 export const unlikeParent = async (
   userId: string,
   parentId: string
-): Promise<{ message: string; status: StatusCode }> => {
+): Promise<{ message: string; status: TStatusCode }> => {
   try {
     await prisma.like.delete({
       where: {
@@ -86,6 +86,100 @@ export const unlikeParent = async (
     return {
       message: `Unexpected error when unliking ${parentId}`,
       status: 400,
+    };
+  }
+};
+
+export const getParentComments = async (
+  parentId: string,
+  parentType: TParentType,
+  userId: string,
+  page: number,
+  pageSize: number
+) => {
+  try {
+    const totalComments = await prisma.comment.count({
+      where: {
+        parentId: parentId,
+        parentType: parentType,
+      },
+    });
+
+    const totalPages = Math.ceil(totalComments / pageSize);
+    const skip = (page - 1) * pageSize;
+
+    const comments = await prisma.comment.findMany({
+      where: {
+        parentId: parentId,
+        parentType: parentType,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      skip,
+      take: pageSize,
+    });
+
+    const commentIds = comments.map((c) => c.id);
+
+    const likeCounts = await prisma.like.groupBy({
+      by: ["parentId"],
+      where: {
+        parentId: { in: commentIds },
+        parentType: ParentTypes.COMMENT,
+      },
+      _count: true,
+    });
+
+    let userLikes = new Set<string>();
+    if (userId) {
+      const likes = await prisma.like.findMany({
+        where: {
+          userId: userId,
+          parentId: { in: commentIds },
+          parentType: ParentTypes.COMMENT,
+        },
+        select: { parentId: true },
+      });
+      userLikes = new Set(likes.map((l) => l.parentId));
+    }
+
+    const likeCountMap = new Map(
+      likeCounts.map((lc) => [lc.parentId, lc._count])
+    );
+
+    const commentsWithLikes = comments.map((comment) => ({
+      ...comment,
+      likesNumber: likeCountMap.get(comment.id) || 0,
+      isLikedByUser: userLikes.has(comment.id),
+      isOwnComment: userId ? userId === comment.userId : false,
+    }));
+
+    return {
+      data: {
+        comments: commentsWithLikes,
+        page,
+        pageSize,
+        totalComments,
+        totalPages,
+      },
+      message: `Comment succesfully posted on ${parentType}`,
+      status: 200 as TStatusCode,
+    };
+  } catch (error) {
+    hypertubeLogger.error(`Error getting comments: ${error}`);
+    return {
+      data: null,
+      message: `Unexpected error when getting comments on ${parentId}`,
+      status: 400 as TStatusCode,
     };
   }
 };

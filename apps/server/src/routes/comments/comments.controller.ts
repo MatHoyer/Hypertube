@@ -13,7 +13,12 @@ import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
-import { commentParent, likeParent, unlikeParent } from "../global.helper";
+import {
+  commentParent,
+  getParentComments,
+  likeParent,
+  unlikeParent,
+} from "../global.helper";
 
 export const getCommentReplies = async (
   c: Context<
@@ -32,78 +37,18 @@ export const getCommentReplies = async (
     return c.json({ message: "Comment not found " }, 404);
   }
 
-  const totalComments = await prisma.comment.count({
-    where: {
-      parentId: commentId,
-      parentType: ParentTypes.COMMENT,
-    },
-  });
-
-  const totalPages = Math.ceil(totalComments / pageSize);
-  const skip = (page - 1) * pageSize;
-
-  const comments = await prisma.comment.findMany({
-    where: {
-      parentId: commentId,
-      parentType: ParentTypes.COMMENT,
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    skip,
-    take: pageSize,
-  });
-
-  const commentIds = comments.map((c) => c.id);
-
-  const likeCounts = await prisma.like.groupBy({
-    by: ["parentId"],
-    where: {
-      parentId: { in: commentIds },
-      parentType: ParentTypes.COMMENT,
-    },
-    _count: true,
-  });
-
-  let userLikes = new Set<string>();
-  if (userId) {
-    const likes = await prisma.like.findMany({
-      where: {
-        userId: userId,
-        parentId: { in: commentIds },
-        parentType: ParentTypes.COMMENT,
-      },
-      select: { parentId: true },
-    });
-    userLikes = new Set(likes.map((l) => l.parentId));
-  }
-
-  const likeCountMap = new Map(
-    likeCounts.map((lc) => [lc.parentId, lc._count])
+  const result = await getParentComments(
+    commentId,
+    ParentTypes.COMMENT,
+    userId,
+    page,
+    pageSize
   );
 
-  const commentsWithLikes = comments.map((comment) => ({
-    ...comment,
-    likesNumber: likeCountMap.get(comment.id) || 0,
-    isLikedByUser: userLikes.has(comment.id),
-    isOwnComment: userId ? userId === comment.userId : false,
-  }));
-
-  return c.json({
-    comments: commentsWithLikes,
-    page,
-    pageSize,
-    totalComments,
-    totalPages,
-  });
+  if (result.data) {
+    return c.json(result.data);
+  }
+  return c.json({ message: result.message }, result.status);
 };
 
 export const likeComment = async (
