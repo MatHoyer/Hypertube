@@ -7,7 +7,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import {
+  API_ROUTES,
   deleteMovieSubscribeSchemas,
   getUrl,
   postMovieSubscribeSchemas,
@@ -39,7 +41,9 @@ const SubscriptionButton: React.FC<{
           ? t("movie.subscriptions.toast.unsubscribe")
           : t("movie.subscriptions.toast.subscribe")
       );
-      queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(API_ROUTES.API_MOVIES, { tmdbId }),
+      });
     },
   });
 

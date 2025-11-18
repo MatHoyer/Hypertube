@@ -6,74 +6,124 @@ import type { TMovieSchema } from "../../schemas/database/movie.schema.js";
 import { getClientUrl } from "./getClientUrl.js";
 import { getServerUrl } from "./getServerUrl.js";
 
+export const CLIENT_ROUTES = {
+  CLIENT_HOME: "client-home",
+  CLIENT_SIGNIN: "client-signin",
+  CLIENT_SIGNUP: "client-signup",
+  CLIENT_FORGET_PASSWORD: "client-forget-password",
+  CLIENT_RESET_PASSWORD: "client-reset-password",
+  CLIENT_SETTINGS: "client-settings",
+  CLIENT_MOVIE: "client-movie",
+  CLIENT_OAUTH_CREDENTIALS: "client-oauth-credentials",
+  CLIENT_ERROR: "client-error",
+  CLIENT_NOTIFICATIONS: "client-notifications",
+} as const;
+
+export type TClientRoute = (typeof CLIENT_ROUTES)[keyof typeof CLIENT_ROUTES];
+
 export type TClientRouteDataRequirements = {
-  "client-home": undefined;
-  "client-signin": undefined;
-  "client-signup": undefined;
-  "client-forget-password": undefined;
-  "client-reset-password": undefined;
-  "client-settings": undefined;
-  "client-movie": {
+  [CLIENT_ROUTES.CLIENT_HOME]: undefined;
+  [CLIENT_ROUTES.CLIENT_SIGNIN]: undefined;
+  [CLIENT_ROUTES.CLIENT_SIGNUP]: undefined;
+  [CLIENT_ROUTES.CLIENT_FORGET_PASSWORD]: undefined;
+  [CLIENT_ROUTES.CLIENT_RESET_PASSWORD]: undefined;
+  [CLIENT_ROUTES.CLIENT_SETTINGS]: undefined;
+  [CLIENT_ROUTES.CLIENT_MOVIE]: {
     tmdbId: TMovieSchema["tmdbId"] | ":tmdbId";
   };
-  "client-oauth-credentials": undefined;
-  "client-error": undefined;
-  "client-notifications": undefined;
+  [CLIENT_ROUTES.CLIENT_OAUTH_CREDENTIALS]: undefined;
+  [CLIENT_ROUTES.CLIENT_ERROR]: undefined;
+  [CLIENT_ROUTES.CLIENT_NOTIFICATIONS]: undefined;
 };
 
+export const API_ROUTES = {
+  API_SWAGGER: "api-swagger",
+  API_HEALTH: "api-health",
+  API_AUTH: "api-auth",
+  API_AUTHENTIFICATION: "api-authentification",
+  API_AUTHENTIFICATION_SIGNUP: "api-authentification-signup",
+  API_AUTHENTIFICATION_SIGNIN: "api-authentification-signin",
+  API_AUTHENTIFICATION_SIGNIN_SOCIAL: "api-authentification-signin-social",
+  API_AUTHENTIFICATION_REQUEST_PASSWORD_RESET:
+    "api-authentification-request-password-reset",
+  API_AUTHENTIFICATION_RESET_PASSWORD: "api-authentification-reset-password",
+  API_AUTHENTIFICATION_SIGNOUT: "api-authentification-signout",
+  API_AUTHENTIFICATION_EMAIL_VERIFICATION:
+    "api-authentification-email-verification",
+  API_AUTHENTIFICATION_LINK: "api-authentification-link",
+  API_OAUTH_CREDENTIALS: "api-oauth-credentials",
+  API_USERS: "api-users",
+  API_USERS_ACCOUNTS: "api-users-accounts",
+  API_USERS_SESSION: "api-users-session",
+  API_IMAGES: "api-images",
+  API_MOVIES: "api-movies",
+  API_MOVIES_SUBSCRIPTION: "api-movies-subscription",
+  API_NOTIFICATIONS: "api-notifications",
+  API_NOTIFICATIONS_STATS: "api-notifications-stats",
+  API_NOTIFICATIONS_TEST: "api-notifications-test",
+  API_STREAMING_MOVIE_RESOLUTION: "api-streaming-movie-resolution",
+  API_STREAMING_MOVIE_SUBTITLES: "api-streaming-movie-subtitles",
+  SSE_MOVIES: "sse-movies",
+  SSE_NOTIFICATIONS: "sse-notifications",
+} as const;
+
+export type TApiRoute = (typeof API_ROUTES)[keyof typeof API_ROUTES];
+
 export type TApiRouteDataRequirements = {
-  "api-swagger": {
+  [API_ROUTES.API_SWAGGER]: {
     mode?: "doc" | "ui";
   };
-  "api-health": undefined;
+  [API_ROUTES.API_HEALTH]: undefined;
 
-  "api-auth": undefined;
-  "api-authentification": undefined;
-  "api-authentification-signup": undefined;
-  "api-authentification-signin": undefined;
-  "api-authentification-signin-social": undefined;
-  "api-authentification-request-password-reset": undefined;
-  "api-authentification-reset-password": undefined;
-  "api-authentification-signout": undefined;
-  "api-authentification-email-verification": undefined;
-  "api-authentification-link": {
+  [API_ROUTES.API_AUTH]: undefined;
+  [API_ROUTES.API_AUTHENTIFICATION]: undefined;
+  [API_ROUTES.API_AUTHENTIFICATION_SIGNUP]: undefined;
+  [API_ROUTES.API_AUTHENTIFICATION_SIGNIN]: undefined;
+  [API_ROUTES.API_AUTHENTIFICATION_SIGNIN_SOCIAL]: undefined;
+  [API_ROUTES.API_AUTHENTIFICATION_REQUEST_PASSWORD_RESET]: undefined;
+  [API_ROUTES.API_AUTHENTIFICATION_RESET_PASSWORD]: undefined;
+  [API_ROUTES.API_AUTHENTIFICATION_SIGNOUT]: undefined;
+  [API_ROUTES.API_AUTHENTIFICATION_EMAIL_VERIFICATION]: undefined;
+  [API_ROUTES.API_AUTHENTIFICATION_LINK]: {
     providerId?: TBetterAuthProviders | "{providerId}";
   };
-  "api-oauth-credentials": {
+  [API_ROUTES.API_OAUTH_CREDENTIALS]: {
     credentialId?: TCredentialSchema["id"] | "{credentialId}";
   };
 
-  "api-users": { userId?: string };
-  "api-users-accounts": undefined;
-  "api-users-session": undefined;
+  [API_ROUTES.API_USERS]: { userId?: string };
+  [API_ROUTES.API_USERS_ACCOUNTS]: undefined;
+  [API_ROUTES.API_USERS_SESSION]: undefined;
 
-  "api-images": { imageId?: string | null };
+  [API_ROUTES.API_IMAGES]: { imageId?: string | null };
 
-  "api-movies": {
+  [API_ROUTES.API_MOVIES]: {
     tmdbId: "{tmdbId}" | number | undefined;
     resolution?: (typeof ytsQualities)[number] | "{resolution}";
     subtitlesLanguage?: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
-  "api-movies-subscription": { tmdbId: TMovieSchema["tmdbId"] | "{tmdbId}" };
+  [API_ROUTES.API_MOVIES_SUBSCRIPTION]: {
+    tmdbId: TMovieSchema["tmdbId"] | "{tmdbId}";
+  };
 
-  "api-notifications": {
+  [API_ROUTES.API_NOTIFICATIONS]: {
     notificationId?: string | "{notificationId}";
   };
-  "api-notifications-stats": undefined;
-  "api-notifications-test": undefined;
+  [API_ROUTES.API_NOTIFICATIONS_STATS]: undefined;
+  [API_ROUTES.API_NOTIFICATIONS_TEST]: undefined;
 
   // sse routes
-  "sse-movies": {
+  [API_ROUTES.SSE_MOVIES]: {
     tmdbId: "{tmdbId}" | number;
   };
-  "sse-notifications": undefined;
+  [API_ROUTES.SSE_NOTIFICATIONS]: undefined;
 
   // Streaming routes
-  "api-streaming-movie-resolution": {
+  [API_ROUTES.API_STREAMING_MOVIE_RESOLUTION]: {
     tmdbId: TMovieSchema["tmdbId"];
     resolution: (typeof ytsQualities)[number] | "{resolution}";
   };
-  "api-streaming-movie-subtitles": {
+  [API_ROUTES.API_STREAMING_MOVIE_SUBTITLES]: {
     tmdbId: TMovieSchema["tmdbId"];
     subtitlesLanguage: keyof typeof languageCodes | "{subtitlesLanguage}";
   };
@@ -102,50 +152,56 @@ const routes: {
   [T in TRoute]: (params: TRouteDataMap<T>) => string;
 } = {
   // Client routes
-  "client-home": () => "/",
-  "client-signin": () => "/sign-in",
-  "client-signup": () => "/sign-up",
-  "client-forget-password": () => "/forget-password",
-  "client-reset-password": () => "/reset-password",
-  "client-settings": () => "/settings",
-  "client-movie": ({ tmdbId }) => `/movie/${tmdbId}`,
-  "client-oauth-credentials": () => "/credentials",
-  "client-error": () => "/error",
-  "client-notifications": () => "/notifications",
+  [CLIENT_ROUTES.CLIENT_HOME]: () => "/",
+  [CLIENT_ROUTES.CLIENT_SIGNIN]: () => "/sign-in",
+  [CLIENT_ROUTES.CLIENT_SIGNUP]: () => "/sign-up",
+  [CLIENT_ROUTES.CLIENT_FORGET_PASSWORD]: () => "/forget-password",
+  [CLIENT_ROUTES.CLIENT_RESET_PASSWORD]: () => "/reset-password",
+  [CLIENT_ROUTES.CLIENT_SETTINGS]: () => "/settings",
+  [CLIENT_ROUTES.CLIENT_MOVIE]: ({ tmdbId }) => `/movie/${tmdbId}`,
+  [CLIENT_ROUTES.CLIENT_OAUTH_CREDENTIALS]: () => "/credentials",
+  [CLIENT_ROUTES.CLIENT_ERROR]: () => "/error",
+  [CLIENT_ROUTES.CLIENT_NOTIFICATIONS]: () => "/notifications",
 
   // API routes
-  "api-swagger": ({ mode }) => (mode ? `/api/swagger/${mode}` : "/api/swagger"),
-  "api-health": () => "/api/health",
+  [API_ROUTES.API_SWAGGER]: ({ mode }) =>
+    mode ? `/api/swagger/${mode}` : "/api/swagger",
+  [API_ROUTES.API_HEALTH]: () => "/api/health",
 
-  "api-auth": () => "/api/auth",
-  "api-authentification": () => "/api/authentification",
-  "api-authentification-signup": () => "/api/authentification/sign-up",
-  "api-authentification-signin": () => "/api/authentification/sign-in",
-  "api-authentification-signin-social": () =>
+  [API_ROUTES.API_AUTH]: () => "/api/auth",
+  [API_ROUTES.API_AUTHENTIFICATION]: () => "/api/authentification",
+  [API_ROUTES.API_AUTHENTIFICATION_SIGNUP]: () =>
+    "/api/authentification/sign-up",
+  [API_ROUTES.API_AUTHENTIFICATION_SIGNIN]: () =>
+    "/api/authentification/sign-in",
+  [API_ROUTES.API_AUTHENTIFICATION_SIGNIN_SOCIAL]: () =>
     "/api/authentification/sign-in-social",
-  "api-authentification-request-password-reset": () =>
+  [API_ROUTES.API_AUTHENTIFICATION_REQUEST_PASSWORD_RESET]: () =>
     "/api/authentification/request-password-reset",
-  "api-authentification-reset-password": () =>
+  [API_ROUTES.API_AUTHENTIFICATION_RESET_PASSWORD]: () =>
     "/api/authentification/reset-password",
-  "api-authentification-signout": () => "/api/authentification/sign-out",
-  "api-authentification-email-verification": () =>
+  [API_ROUTES.API_AUTHENTIFICATION_SIGNOUT]: () =>
+    "/api/authentification/sign-out",
+  [API_ROUTES.API_AUTHENTIFICATION_EMAIL_VERIFICATION]: () =>
     `/api/authentification/email-verification`,
-  "api-authentification-link": ({ providerId }) =>
+  [API_ROUTES.API_AUTHENTIFICATION_LINK]: ({ providerId }) =>
     providerId
       ? `/api/authentification/link/${providerId}`
       : "/api/authentification/link",
-  "api-oauth-credentials": ({ credentialId }) =>
+  [API_ROUTES.API_OAUTH_CREDENTIALS]: ({ credentialId }) =>
     credentialId
       ? `/api/oauth/credentials/${credentialId}`
       : "/api/oauth/credentials",
 
-  "api-users": ({ userId }) => "/api/users" + (userId ? `/${userId}` : ""),
-  "api-users-accounts": () => "/api/users/accounts",
-  "api-users-session": () => "/api/users/session",
+  [API_ROUTES.API_USERS]: ({ userId }) =>
+    "/api/users" + (userId ? `/${userId}` : ""),
+  [API_ROUTES.API_USERS_ACCOUNTS]: () => "/api/users/accounts",
+  [API_ROUTES.API_USERS_SESSION]: () => "/api/users/session",
 
-  "api-images": ({ imageId }) => "/api/images" + (imageId ? `/${imageId}` : ""),
+  [API_ROUTES.API_IMAGES]: ({ imageId }) =>
+    "/api/images" + (imageId ? `/${imageId}` : ""),
 
-  "api-movies": ({ tmdbId, resolution, subtitlesLanguage }) => {
+  [API_ROUTES.API_MOVIES]: ({ tmdbId, resolution, subtitlesLanguage }) => {
     if (resolution && subtitlesLanguage) {
       throw new Error(
         "Resolution and subtitles language cannot be provided together"
@@ -161,22 +217,22 @@ const routes: {
       return `/api/movies/${tmdbId}`;
     }
   },
-  "api-movies-subscription": ({ tmdbId }) =>
+  [API_ROUTES.API_MOVIES_SUBSCRIPTION]: ({ tmdbId }) =>
     `/api/movies/${tmdbId}/subscription`,
 
-  "api-notifications": ({ notificationId }) =>
+  [API_ROUTES.API_NOTIFICATIONS]: ({ notificationId }) =>
     `/api/notifications` + (notificationId ? `/${notificationId}` : ""),
-  "api-notifications-stats": () => "/api/notifications/stats",
-  "api-notifications-test": () => "/api/notifications/test",
+  [API_ROUTES.API_NOTIFICATIONS_STATS]: () => "/api/notifications/stats",
+  [API_ROUTES.API_NOTIFICATIONS_TEST]: () => "/api/notifications/test",
 
   // SSE routes
-  "sse-movies": ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
-  "sse-notifications": () => "/api/notifications/sse",
+  [API_ROUTES.SSE_MOVIES]: ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
+  [API_ROUTES.SSE_NOTIFICATIONS]: () => "/api/notifications/sse",
 
   // Streaming routes
-  "api-streaming-movie-resolution": ({ tmdbId, resolution }) =>
+  [API_ROUTES.API_STREAMING_MOVIE_RESOLUTION]: ({ tmdbId, resolution }) =>
     `/api/streaming/movie/${tmdbId}/resolution/${resolution}`,
-  "api-streaming-movie-subtitles": ({ tmdbId, subtitlesLanguage }) =>
+  [API_ROUTES.API_STREAMING_MOVIE_SUBTITLES]: ({ tmdbId, subtitlesLanguage }) =>
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
 
   // External routes

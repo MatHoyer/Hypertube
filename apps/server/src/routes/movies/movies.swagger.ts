@@ -1,7 +1,12 @@
-import { getMovieSchemas, getMoviesSchemas, getUrl } from "@hypertube/libs";
+import {
+  API_ROUTES,
+  getMovieSchemas,
+  getMoviesSchemas,
+  getUrl,
+} from "@hypertube/libs";
 
 export const moviesSwagger = {
-  [getUrl("api-movies")]: {
+  [getUrl(API_ROUTES.API_MOVIES)]: {
     get: {
       summary: "Get movies",
       tags: ["Movies"],
@@ -31,7 +36,7 @@ export const moviesSwagger = {
       },
     },
   },
-  [getUrl("api-movies", { tmdbId: "{tmdbId}" })]: {
+  [getUrl(API_ROUTES.API_MOVIES, { tmdbId: "{tmdbId}" })]: {
     get: {
       summary: "Get movie",
       tags: ["Movies"],
