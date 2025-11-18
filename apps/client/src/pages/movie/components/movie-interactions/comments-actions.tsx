@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   InputGroup,
   InputGroupAddon,
-  InputGroupInput,
+  InputGroupTextarea,
 } from "@/components/ui/input-group";
 import {
   Tooltip,
@@ -79,12 +79,13 @@ const BasePostComment: React.FC<{
 
   return (
     <InputGroup>
-      <InputGroupInput
+      <InputGroupTextarea
         placeholder={t("movie.comments.addComment")}
         value={newComment}
         onChange={(e) => setNewComment(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter" && newComment) {
+            e.preventDefault();
             postComment(newComment);
             setNewComment("");
           } else if (e.key === "Escape") {
@@ -163,12 +164,13 @@ export const EditCommentButton: React.FC<{
 
   return (
     <InputGroup>
-      <InputGroupInput
+      <InputGroupTextarea
         placeholder={t("movie.comments.editComment")}
         value={editedContent}
         onChange={(e) => setEditedContent(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter" && editedContent) {
+            e.preventDefault();
             patchComment(editedContent);
           } else if (e.key === "Escape") {
             handleCancel();
