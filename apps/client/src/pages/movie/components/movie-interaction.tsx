@@ -9,10 +9,10 @@ import {
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
-  API_ROUTES,
   deleteMovieSubscribeSchemas,
   getUrl,
   postMovieSubscribeSchemas,
+  ROUTES,
   type TMovieSchema,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -42,7 +42,7 @@ const SubscriptionButton: React.FC<{
           : t("movie.subscriptions.toast.subscribe")
       );
       queryClient.invalidateQueries({
-        queryKey: getQueryKey(API_ROUTES.API_MOVIES, { tmdbId }),
+        queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
       });
     },
   });

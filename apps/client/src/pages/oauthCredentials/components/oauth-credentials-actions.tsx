@@ -1,6 +1,6 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { Button } from "@/components/ui/button";
-import { API_ROUTES, getUrl } from "@hypertube/libs";
+import { getUrl, ROUTES } from "@hypertube/libs";
 import { File } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -16,7 +16,7 @@ export const OAuthCredentialsActions = () => {
       <div>
         <Button asChild>
           <Link
-            to={getUrl(API_ROUTES.API_SWAGGER, {
+            to={getUrl(ROUTES.API.SWAGGER, {
               mode: "ui",
               withUrl: "server",
             })}

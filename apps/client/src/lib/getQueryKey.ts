@@ -1,17 +1,17 @@
-import { API_ROUTES, notificationReadStatuses } from "@hypertube/libs";
+import { ROUTES, notificationReadStatuses } from "@hypertube/libs";
 import type { QueryKey } from "@tanstack/react-query";
 import z from "zod";
 
 const apiRouteQueryKeySchemas = {
-  [API_ROUTES.API_MOVIES]: z.object({
+  [ROUTES.API.MOVIES]: z.object({
     tmdbId: z.number().optional(),
   }),
-  [API_ROUTES.API_NOTIFICATIONS]: z.object({
+  [ROUTES.API.NOTIFICATIONS]: z.object({
     type: z
       .union([z.enum(notificationReadStatuses), z.literal("stats")])
       .optional(),
   }),
-  [API_ROUTES.API_OAUTH_CREDENTIALS]: z.object({}),
+  [ROUTES.API.OAUTH_CREDENTIALS]: z.object({}),
 };
 
 type TApiRouteDataRequirements = {
@@ -29,16 +29,16 @@ type TRouteDataMap<T extends TRoute> = T extends keyof TApiRouteDataRequirements
 const queryKeys: {
   [T in TRoute]: (params: TRouteDataMap<T>) => QueryKey;
 } = {
-  [API_ROUTES.API_MOVIES]: ({ tmdbId }) => {
-    return tmdbId ? [API_ROUTES.API_MOVIES, tmdbId] : [API_ROUTES.API_MOVIES];
+  [ROUTES.API.MOVIES]: ({ tmdbId }) => {
+    return tmdbId ? [ROUTES.API.MOVIES, tmdbId] : [ROUTES.API.MOVIES];
   },
-  [API_ROUTES.API_NOTIFICATIONS]: ({ type }) => {
-    if (!type) return [API_ROUTES.API_NOTIFICATIONS];
+  [ROUTES.API.NOTIFICATIONS]: ({ type }) => {
+    if (!type) return [ROUTES.API.NOTIFICATIONS];
     return type === "stats"
-      ? [API_ROUTES.API_NOTIFICATIONS, "stats"]
-      : [API_ROUTES.API_NOTIFICATIONS, type];
+      ? [ROUTES.API.NOTIFICATIONS, "stats"]
+      : [ROUTES.API.NOTIFICATIONS, type];
   },
-  [API_ROUTES.API_OAUTH_CREDENTIALS]: () => [API_ROUTES.API_OAUTH_CREDENTIALS],
+  [ROUTES.API.OAUTH_CREDENTIALS]: () => [ROUTES.API.OAUTH_CREDENTIALS],
 };
 
 export const getQueryKey = <T extends TRoute>(

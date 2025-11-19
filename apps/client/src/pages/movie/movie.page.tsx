@@ -4,12 +4,12 @@ import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
-  API_ROUTES,
   getMovieSchemas,
   getMovieSSESchemas,
   getUrl,
   groupBy,
   MOVIE_EVENTS,
+  ROUTES,
 } from "@hypertube/libs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
@@ -28,11 +28,11 @@ const MoviePage = () => {
   const queryClient = useQueryClient();
 
   const { data: movie, isLoading } = useQuery({
-    queryKey: getQueryKey(API_ROUTES.API_MOVIES, { tmdbId }),
+    queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
     queryFn: () =>
       axiosFetch({
         method: "GET",
-        url: getUrl(API_ROUTES.API_MOVIES, {
+        url: getUrl(ROUTES.API.MOVIES, {
           tmdbId,
         }),
         schemas: getMovieSchemas,
@@ -73,7 +73,7 @@ const MoviePage = () => {
       }
       console.log("downloadStateChange", data);
       queryClient.invalidateQueries({
-        queryKey: getQueryKey(API_ROUTES.API_MOVIES, { tmdbId }),
+        queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
       });
     };
     const handleDownloadProgress = (event: MessageEvent<string>) => {
@@ -88,7 +88,7 @@ const MoviePage = () => {
       if (data.progress === 0) {
         console.log("movie download started");
         queryClient.invalidateQueries({
-          queryKey: getQueryKey(API_ROUTES.API_MOVIES, { tmdbId }),
+          queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
         });
       }
     };

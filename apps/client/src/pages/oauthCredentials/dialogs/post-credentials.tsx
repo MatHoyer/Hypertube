@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
-import { API_ROUTES, getUrl, postCredentialsSchemas } from "@hypertube/libs";
+import { getUrl, postCredentialsSchemas, ROUTES } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -28,13 +28,13 @@ export const PostCredentialsDialog = () => {
     mutationFn: (name: string) =>
       axiosFetch({
         method: "POST",
-        url: getUrl(API_ROUTES.API_OAUTH_CREDENTIALS),
+        url: getUrl(ROUTES.API.OAUTH_CREDENTIALS),
         schemas: postCredentialsSchemas,
         data: { name },
       }),
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: getQueryKey(API_ROUTES.API_OAUTH_CREDENTIALS),
+        queryKey: getQueryKey(ROUTES.API.OAUTH_CREDENTIALS),
       });
       openDialog("newCredential", {
         clientId: data.clientId,

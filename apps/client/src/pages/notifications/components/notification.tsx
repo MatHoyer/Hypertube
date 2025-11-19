@@ -7,10 +7,10 @@ import { getQueryKey } from "@/lib/getQueryKey";
 import { cn, getNearDateWithLocale } from "@/lib/utils";
 import type { TNotification, TNotificationSchema } from "@hypertube/libs";
 import {
-  API_ROUTES,
   getUrl,
   notifications,
   patchNotificationsSchemas,
+  ROUTES,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -47,7 +47,7 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: getQueryKey(API_ROUTES.API_NOTIFICATIONS),
+        queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS),
       });
       toast.success(t("notifications.markedAsRead"));
     },

@@ -16,11 +16,10 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { NotificationBell } from "@/pages/notifications/components/notification-bell";
 import {
-  API_ROUTES,
-  CLIENT_ROUTES,
   getNotificationsSSESchemas,
   getUrl,
   NOTIFICATIONS_EVENTS,
+  ROUTES,
   signOutAuthentificationSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -81,7 +80,7 @@ export const UserDropdown = () => {
         playBeep();
       }
       queryClient.invalidateQueries({
-        queryKey: getQueryKey(API_ROUTES.API_NOTIFICATIONS),
+        queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS),
       });
     };
 
@@ -118,7 +117,7 @@ export const UserDropdown = () => {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to={getUrl(CLIENT_ROUTES.CLIENT_NOTIFICATIONS)}>
+            <Link to={getUrl(ROUTES.CLIENT.NOTIFICATIONS)}>
               <NotificationBell /> {t("navbar.notifications")}
             </Link>
           </DropdownMenuItem>
@@ -130,7 +129,7 @@ export const UserDropdown = () => {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to={getUrl(CLIENT_ROUTES.CLIENT_OAUTH_CREDENTIALS)}>
+          <Link to={getUrl(ROUTES.CLIENT.OAUTH_CREDENTIALS)}>
             <File /> API
           </Link>
         </DropdownMenuItem>

@@ -20,12 +20,12 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import {
-  API_ROUTES,
   DownloadStates,
   getUrl,
   languageCodes,
   postMovieDownloadResolutionSchemas,
   postMovieDownloadSubtitlesSchemas,
+  ROUTES,
   ytsQualities,
   type DownloadState,
   type TGetMovieSchemas,
@@ -107,7 +107,7 @@ export const DownloadsSelector: React.FC<{
     mutationFn: (resolution: (typeof ytsQualities)[number]) => {
       return axiosFetch({
         method: "POST",
-        url: getUrl(API_ROUTES.API_MOVIES, {
+        url: getUrl(ROUTES.API.MOVIES, {
           tmdbId,
           resolution,
         }),
@@ -115,7 +115,7 @@ export const DownloadsSelector: React.FC<{
         handleEnding: {
           cb: () => {
             queryClient.invalidateQueries({
-              queryKey: getQueryKey(API_ROUTES.API_MOVIES, { tmdbId }),
+              queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
             });
             setSelectedResolution(null);
           },
@@ -128,7 +128,7 @@ export const DownloadsSelector: React.FC<{
     mutationFn: (subtitlesLanguage: keyof typeof languageCodes) => {
       return axiosFetch({
         method: "POST",
-        url: getUrl(API_ROUTES.API_MOVIES, {
+        url: getUrl(ROUTES.API.MOVIES, {
           tmdbId,
           subtitlesLanguage,
         }),
@@ -136,7 +136,7 @@ export const DownloadsSelector: React.FC<{
         handleEnding: {
           cb: () => {
             queryClient.invalidateQueries({
-              queryKey: getQueryKey(API_ROUTES.API_MOVIES, { tmdbId }),
+              queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
             });
             setSelectedSubtitlesLanguage(null);
           },
