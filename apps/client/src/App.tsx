@@ -1,7 +1,7 @@
 import { SignInPage } from "@/pages/auth/signIn/SignIn.page";
 import { SignUpPage } from "@/pages/auth/signUp/SignUp.page";
 import { NotFoundPage } from "@/pages/notFound/NotFound.page";
-import { CLIENT_ROUTES, getUrl } from "@hypertube/libs";
+import { ROUTES, getUrl } from "@hypertube/libs";
 import { Route, Routes } from "react-router-dom";
 import { ForgetPasswordPage } from "./pages/auth/forgetPassword/ForgetPasswordPage";
 import { ResetPasswordPage } from "./pages/auth/resetPassword/ResetPasswordPage";
@@ -44,17 +44,17 @@ const App = () => {
         {/* Private only routes */}
         <Route element={<PrivateOnlyRoute />}>
           <Route
-            path={getUrl(CLIENT_ROUTES.CLIENT_NOTIFICATIONS)}
+            path={getUrl(ROUTES.CLIENT.NOTIFICATIONS)}
             element={<NotificationsPage />}
           />
           <Route path={getUrl("client-settings")} element={<SettingsPage />} />
           <Route
-            path={getUrl(CLIENT_ROUTES.CLIENT_OAUTH_CREDENTIALS)}
+            path={getUrl(ROUTES.CLIENT.OAUTH_CREDENTIALS)}
             element={<OAuthCredentialsPage />}
           />
           <Route element={<ProtectedUrlRoute schema={MoviePageParamsSchema} />}>
             <Route
-              path={getUrl(CLIENT_ROUTES.CLIENT_MOVIE, {
+              path={getUrl(ROUTES.CLIENT.MOVIE, {
                 tmdbId: ":tmdbId",
               })}
               element={<MoviePage />}

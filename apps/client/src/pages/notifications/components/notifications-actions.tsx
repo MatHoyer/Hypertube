@@ -5,11 +5,11 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import {
-  API_ROUTES,
   getUrl,
   notificationReadStatuses,
   patchNotificationsSchemas,
   postSendTestNotificationSchemas,
+  ROUTES,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Volume2Icon, VolumeOffIcon } from "lucide-react";
@@ -40,7 +40,7 @@ export const NotificationsActions: React.FC<{
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: getQueryKey(API_ROUTES.API_NOTIFICATIONS),
+        queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS),
       });
       toast.success(t("notifications.markedAllAsRead"));
     },
@@ -56,7 +56,7 @@ export const NotificationsActions: React.FC<{
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: getQueryKey(API_ROUTES.API_NOTIFICATIONS),
+        queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS),
       });
     },
   });

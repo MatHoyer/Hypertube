@@ -8,7 +8,7 @@ import {
 } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
-import { API_ROUTES, getCredentialsSchemas, getUrl } from "@hypertube/libs";
+import { getCredentialsSchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { OathCredential } from "./components/oath-credential";
@@ -19,11 +19,11 @@ export const OAuthCredentialsPage = () => {
   const { t } = useTranslation();
 
   const { data: credentials } = useQuery({
-    queryKey: getQueryKey(API_ROUTES.API_OAUTH_CREDENTIALS),
+    queryKey: getQueryKey(ROUTES.API.OAUTH_CREDENTIALS),
     queryFn: () =>
       axiosFetch({
         method: "GET",
-        url: getUrl(API_ROUTES.API_OAUTH_CREDENTIALS),
+        url: getUrl(ROUTES.API.OAUTH_CREDENTIALS),
         schemas: getCredentialsSchemas,
       }),
   });

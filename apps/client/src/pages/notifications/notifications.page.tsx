@@ -15,10 +15,10 @@ import {
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
-  API_ROUTES,
   getNotificationsSchemas,
   getUrl,
   notificationReadStatuses,
+  ROUTES,
   type NotificationReadStatus,
 } from "@hypertube/libs";
 import { useInfiniteQuery } from "@tanstack/react-query";
@@ -46,7 +46,7 @@ export const NotificationsPage = () => {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: getQueryKey(API_ROUTES.API_NOTIFICATIONS, { type: readStatus }),
+      queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS, { type: readStatus }),
       queryFn: ({ pageParam }) => {
         return axiosFetch({
           method: "GET",

@@ -12,187 +12,181 @@ import { userSchema } from "../../schemas/database/user.schema.js";
 import { getClientUrl } from "./getClientUrl.js";
 import { getServerUrl } from "./getServerUrl.js";
 
-// Use z.object({}) to make undefined
-
-export const CLIENT_ROUTES = {
-  CLIENT_HOME: "client-home",
-  CLIENT_SIGNIN: "client-signin",
-  CLIENT_SIGNUP: "client-signup",
-  CLIENT_FORGET_PASSWORD: "client-forget-password",
-  CLIENT_RESET_PASSWORD: "client-reset-password",
-  CLIENT_SETTINGS: "client-settings",
-  CLIENT_MOVIE: "client-movie",
-  CLIENT_OAUTH_CREDENTIALS: "client-oauth-credentials",
-  CLIENT_ERROR: "client-error",
-  CLIENT_NOTIFICATIONS: "client-notifications",
+export const ROUTES = {
+  CLIENT: {
+    HOME: "client-home",
+    SIGNIN: "client-signin",
+    SIGNUP: "client-signup",
+    FORGET_PASSWORD: "client-forget-password",
+    RESET_PASSWORD: "client-reset-password",
+    SETTINGS: "client-settings",
+    MOVIE: "client-movie",
+    OAUTH_CREDENTIALS: "client-oauth-credentials",
+    ERROR: "client-error",
+    NOTIFICATIONS: "client-notifications",
+  },
+  API: {
+    SWAGGER: "api-swagger",
+    HEALTH: "api-health",
+    AUTH: "api-auth",
+    AUTHENTIFICATION: "api-authentification",
+    AUTHENTIFICATION_SIGNUP: "api-authentification-signup",
+    AUTHENTIFICATION_SIGNIN: "api-authentification-signin",
+    AUTHENTIFICATION_SIGNIN_SOCIAL: "api-authentification-signin-social",
+    AUTHENTIFICATION_REQUEST_PASSWORD_RESET:
+      "api-authentification-request-password-reset",
+    AUTHENTIFICATION_RESET_PASSWORD: "api-authentification-reset-password",
+    AUTHENTIFICATION_SIGNOUT: "api-authentification-signout",
+    AUTHENTIFICATION_EMAIL_VERIFICATION:
+      "api-authentification-email-verification",
+    AUTHENTIFICATION_LINK: "api-authentification-link",
+    OAUTH_CREDENTIALS: "api-oauth-credentials",
+    USERS: "api-users",
+    USERS_ACCOUNTS: "api-users-accounts",
+    USERS_SESSION: "api-users-session",
+    IMAGES: "api-images",
+    MOVIES: "api-movies",
+    MOVIES_SUBSCRIPTION: "api-movies-subscription",
+    NOTIFICATIONS: "api-notifications",
+    NOTIFICATIONS_STATS: "api-notifications-stats",
+    NOTIFICATIONS_TEST: "api-notifications-test",
+    STREAMING_MOVIE_RESOLUTION: "api-streaming-movie-resolution",
+    STREAMING_MOVIE_SUBTITLES: "api-streaming-movie-subtitles",
+    SSE_MOVIES: "sse-movies",
+    SSE_NOTIFICATIONS: "sse-notifications",
+  },
+  EXTERNAL: {
+    IMDB_MOVIE: "external-imdb-movie",
+    IMDB_ACTOR: "external-imdb-actor",
+  },
 } as const;
 
-export type TClientRoute = (typeof CLIENT_ROUTES)[keyof typeof CLIENT_ROUTES];
+type TRoutes = typeof ROUTES;
+export type TClientRoute = TRoutes["CLIENT"][keyof TRoutes["CLIENT"]];
+export type TAPIRoute = TRoutes["API"][keyof TRoutes["API"]];
+export type TExternalRoute = TRoutes["EXTERNAL"][keyof TRoutes["EXTERNAL"]];
 
-const clientRouteSchemas = {
-  [CLIENT_ROUTES.CLIENT_HOME]: z.object({}),
-  [CLIENT_ROUTES.CLIENT_SIGNIN]: z.object({}),
-  [CLIENT_ROUTES.CLIENT_SIGNUP]: z.object({}),
-  [CLIENT_ROUTES.CLIENT_FORGET_PASSWORD]: z.object({}),
-  [CLIENT_ROUTES.CLIENT_RESET_PASSWORD]: z.object({}),
-  [CLIENT_ROUTES.CLIENT_SETTINGS]: z.object({}),
-  [CLIENT_ROUTES.CLIENT_MOVIE]: z.object({
-    tmdbId: z.union([movieSchema.shape.tmdbId, z.literal(":tmdbId")]),
-  }),
-  [CLIENT_ROUTES.CLIENT_OAUTH_CREDENTIALS]: z.object({}),
-  [CLIENT_ROUTES.CLIENT_ERROR]: z.object({}),
-  [CLIENT_ROUTES.CLIENT_NOTIFICATIONS]: z.object({}),
+// Use z.object({}) to make undefined
+
+const routeSchemas = {
+  CLIENT: {
+    [ROUTES.CLIENT.HOME]: z.object({}),
+    [ROUTES.CLIENT.SIGNIN]: z.object({}),
+    [ROUTES.CLIENT.SIGNUP]: z.object({}),
+    [ROUTES.CLIENT.FORGET_PASSWORD]: z.object({}),
+    [ROUTES.CLIENT.RESET_PASSWORD]: z.object({}),
+    [ROUTES.CLIENT.SETTINGS]: z.object({}),
+    [ROUTES.CLIENT.MOVIE]: z.object({
+      tmdbId: z.union([movieSchema.shape.tmdbId, z.literal(":tmdbId")]),
+    }),
+    [ROUTES.CLIENT.OAUTH_CREDENTIALS]: z.object({}),
+    [ROUTES.CLIENT.ERROR]: z.object({}),
+    [ROUTES.CLIENT.NOTIFICATIONS]: z.object({}),
+  },
+  API: {
+    [ROUTES.API.SWAGGER]: z.object({
+      mode: z.union([z.literal("doc"), z.literal("ui")]).optional(),
+    }),
+    [ROUTES.API.HEALTH]: z.object({}),
+    [ROUTES.API.AUTH]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_SIGNUP]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_SIGNIN]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_SIGNIN_SOCIAL]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_REQUEST_PASSWORD_RESET]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_RESET_PASSWORD]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_SIGNOUT]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_EMAIL_VERIFICATION]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_LINK]: z.object({
+      providerId: z
+        .union([z.enum(betterAuthProviders), z.literal("{providerId}")])
+        .optional(),
+    }),
+    [ROUTES.API.OAUTH_CREDENTIALS]: z.object({
+      credentialId: z
+        .union([credentialSchema.shape.id, z.literal("{credentialId}")])
+        .optional(),
+    }),
+    [ROUTES.API.USERS]: z.object({
+      userId: z.union([userSchema.shape.id, z.literal("{userId}")]).optional(),
+    }),
+    [ROUTES.API.USERS_ACCOUNTS]: z.object({}),
+    [ROUTES.API.USERS_SESSION]: z.object({}),
+    [ROUTES.API.IMAGES]: z.object({
+      imageId: z
+        .union([imageSchema.shape.id, z.literal("{imageId}")])
+        .optional(),
+    }),
+    [ROUTES.API.MOVIES]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+      resolution: z
+        .union([z.enum(ytsQualities), z.literal("{resolution}")])
+        .optional(),
+      subtitlesLanguage: z
+        .union([z.enum(languageCodes), z.literal("{subtitlesLanguage}")])
+        .optional(),
+    }),
+    [ROUTES.API.MOVIES_SUBSCRIPTION]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+    }),
+    [ROUTES.API.NOTIFICATIONS]: z.object({
+      notificationId: z
+        .union([notificationSchema.shape.id, z.literal("{notificationId}")])
+        .optional(),
+    }),
+    [ROUTES.API.NOTIFICATIONS_STATS]: z.object({}),
+    [ROUTES.API.NOTIFICATIONS_TEST]: z.object({}),
+    [ROUTES.API.SSE_MOVIES]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+    }),
+    [ROUTES.API.SSE_NOTIFICATIONS]: z.object({}),
+    [ROUTES.API.STREAMING_MOVIE_RESOLUTION]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+      resolution: z
+        .union([z.enum(ytsQualities), z.literal("{resolution}")])
+        .optional(),
+    }),
+    [ROUTES.API.STREAMING_MOVIE_SUBTITLES]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+      subtitlesLanguage: z
+        .union([z.enum(languageCodes), z.literal("{subtitlesLanguage}")])
+        .optional(),
+    }),
+  },
+  EXTERNAL: {
+    [ROUTES.EXTERNAL.IMDB_MOVIE]: z.object({
+      imdbId: z.string(),
+    }),
+    [ROUTES.EXTERNAL.IMDB_ACTOR]: z.object({
+      imdbId: z.string(),
+    }),
+  },
 };
 
 type TClientRouteDataRequirements = {
-  [T in keyof typeof clientRouteSchemas]: z.infer<
-    (typeof clientRouteSchemas)[T]
+  [T in keyof typeof routeSchemas.CLIENT]: z.infer<
+    (typeof routeSchemas.CLIENT)[T]
   >;
-};
-
-export const API_ROUTES = {
-  API_SWAGGER: "api-swagger",
-  API_HEALTH: "api-health",
-  API_AUTH: "api-auth",
-  API_AUTHENTIFICATION: "api-authentification",
-  API_AUTHENTIFICATION_SIGNUP: "api-authentification-signup",
-  API_AUTHENTIFICATION_SIGNIN: "api-authentification-signin",
-  API_AUTHENTIFICATION_SIGNIN_SOCIAL: "api-authentification-signin-social",
-  API_AUTHENTIFICATION_REQUEST_PASSWORD_RESET:
-    "api-authentification-request-password-reset",
-  API_AUTHENTIFICATION_RESET_PASSWORD: "api-authentification-reset-password",
-  API_AUTHENTIFICATION_SIGNOUT: "api-authentification-signout",
-  API_AUTHENTIFICATION_EMAIL_VERIFICATION:
-    "api-authentification-email-verification",
-  API_AUTHENTIFICATION_LINK: "api-authentification-link",
-  API_OAUTH_CREDENTIALS: "api-oauth-credentials",
-  API_USERS: "api-users",
-  API_USERS_ACCOUNTS: "api-users-accounts",
-  API_USERS_SESSION: "api-users-session",
-  API_IMAGES: "api-images",
-  API_MOVIES: "api-movies",
-  API_MOVIES_SUBSCRIPTION: "api-movies-subscription",
-  API_NOTIFICATIONS: "api-notifications",
-  API_NOTIFICATIONS_STATS: "api-notifications-stats",
-  API_NOTIFICATIONS_TEST: "api-notifications-test",
-  API_STREAMING_MOVIE_RESOLUTION: "api-streaming-movie-resolution",
-  API_STREAMING_MOVIE_SUBTITLES: "api-streaming-movie-subtitles",
-  SSE_MOVIES: "sse-movies",
-  SSE_NOTIFICATIONS: "sse-notifications",
-} as const;
-
-export type TApiRoute = (typeof API_ROUTES)[keyof typeof API_ROUTES];
-
-const apiRouteSchemas = {
-  [API_ROUTES.API_SWAGGER]: z.object({
-    mode: z.union([z.literal("doc"), z.literal("ui")]).optional(),
-  }),
-  [API_ROUTES.API_HEALTH]: z.object({}),
-  [API_ROUTES.API_AUTH]: z.object({}),
-  [API_ROUTES.API_AUTHENTIFICATION]: z.object({}),
-  [API_ROUTES.API_AUTHENTIFICATION_SIGNUP]: z.object({}),
-  [API_ROUTES.API_AUTHENTIFICATION_SIGNIN]: z.object({}),
-  [API_ROUTES.API_AUTHENTIFICATION_SIGNIN_SOCIAL]: z.object({}),
-  [API_ROUTES.API_AUTHENTIFICATION_REQUEST_PASSWORD_RESET]: z.object({}),
-  [API_ROUTES.API_AUTHENTIFICATION_RESET_PASSWORD]: z.object({}),
-  [API_ROUTES.API_AUTHENTIFICATION_SIGNOUT]: z.object({}),
-  [API_ROUTES.API_AUTHENTIFICATION_EMAIL_VERIFICATION]: z.object({}),
-  [API_ROUTES.API_AUTHENTIFICATION_LINK]: z.object({
-    providerId: z
-      .union([z.enum(betterAuthProviders), z.literal("{providerId}")])
-      .optional(),
-  }),
-  [API_ROUTES.API_OAUTH_CREDENTIALS]: z.object({
-    credentialId: z
-      .union([credentialSchema.shape.id, z.literal("{credentialId}")])
-      .optional(),
-  }),
-  [API_ROUTES.API_USERS]: z.object({
-    userId: z.union([userSchema.shape.id, z.literal("{userId}")]).optional(),
-  }),
-  [API_ROUTES.API_USERS_ACCOUNTS]: z.object({}),
-  [API_ROUTES.API_USERS_SESSION]: z.object({}),
-  [API_ROUTES.API_IMAGES]: z.object({
-    imageId: z.union([imageSchema.shape.id, z.literal("{imageId}")]).optional(),
-  }),
-  [API_ROUTES.API_MOVIES]: z.object({
-    tmdbId: z
-      .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
-      .optional(),
-    resolution: z
-      .union([z.enum(ytsQualities), z.literal("{resolution}")])
-      .optional(),
-    subtitlesLanguage: z
-      .union([z.enum(languageCodes), z.literal("{subtitlesLanguage}")])
-      .optional(),
-  }),
-  [API_ROUTES.API_MOVIES_SUBSCRIPTION]: z.object({
-    tmdbId: z
-      .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
-      .optional(),
-  }),
-  [API_ROUTES.API_NOTIFICATIONS]: z.object({
-    notificationId: z
-      .union([notificationSchema.shape.id, z.literal("{notificationId}")])
-      .optional(),
-  }),
-  [API_ROUTES.API_NOTIFICATIONS_STATS]: z.object({}),
-  [API_ROUTES.API_NOTIFICATIONS_TEST]: z.object({}),
-  [API_ROUTES.SSE_MOVIES]: z.object({
-    tmdbId: z
-      .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
-      .optional(),
-  }),
-  [API_ROUTES.SSE_NOTIFICATIONS]: z.object({}),
-  [API_ROUTES.API_STREAMING_MOVIE_RESOLUTION]: z.object({
-    tmdbId: z
-      .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
-      .optional(),
-    resolution: z
-      .union([z.enum(ytsQualities), z.literal("{resolution}")])
-      .optional(),
-  }),
-  [API_ROUTES.API_STREAMING_MOVIE_SUBTITLES]: z.object({
-    tmdbId: z
-      .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
-      .optional(),
-    subtitlesLanguage: z
-      .union([z.enum(languageCodes), z.literal("{subtitlesLanguage}")])
-      .optional(),
-  }),
 };
 
 type TApiRouteDataRequirements = {
-  [T in keyof typeof apiRouteSchemas]: z.infer<(typeof apiRouteSchemas)[T]>;
+  [T in keyof typeof routeSchemas.API]: z.infer<(typeof routeSchemas.API)[T]>;
 };
 
-export const EXTERNAL_ROUTES = {
-  EXTERNAL_IMDB_MOVIE: "external-imdb-movie",
-  EXTERNAL_IMDB_ACTOR: "external-imdb-actor",
-} as const;
-
-export type TExternalRoute =
-  (typeof EXTERNAL_ROUTES)[keyof typeof EXTERNAL_ROUTES];
-
-const externalRouteSchemas = {
-  [EXTERNAL_ROUTES.EXTERNAL_IMDB_MOVIE]: z.object({
-    imdbId: z.string(),
-  }),
-  [EXTERNAL_ROUTES.EXTERNAL_IMDB_ACTOR]: z.object({
-    imdbId: z.string(),
-  }),
-};
-
-export type TExternalRouteDataRequirements = {
-  [T in keyof typeof externalRouteSchemas]: z.infer<
-    (typeof externalRouteSchemas)[T]
+type TExternalRouteDataRequirements = {
+  [T in keyof typeof routeSchemas.EXTERNAL]: z.infer<
+    (typeof routeSchemas.EXTERNAL)[T]
   >;
-};
-
-const routeSchemas = {
-  ...clientRouteSchemas,
-  ...apiRouteSchemas,
-  ...externalRouteSchemas,
 };
 
 type TRouteDataRequirements = TClientRouteDataRequirements &
@@ -209,56 +203,53 @@ const routes: {
   [T in TRoute]: (params: TRouteDataMap<T>) => string;
 } = {
   // Client routes
-  [CLIENT_ROUTES.CLIENT_HOME]: () => "/",
-  [CLIENT_ROUTES.CLIENT_SIGNIN]: () => "/sign-in",
-  [CLIENT_ROUTES.CLIENT_SIGNUP]: () => "/sign-up",
-  [CLIENT_ROUTES.CLIENT_FORGET_PASSWORD]: () => "/forget-password",
-  [CLIENT_ROUTES.CLIENT_RESET_PASSWORD]: () => "/reset-password",
-  [CLIENT_ROUTES.CLIENT_SETTINGS]: () => "/settings",
-  [CLIENT_ROUTES.CLIENT_MOVIE]: ({ tmdbId }) => `/movie/${tmdbId}`,
-  [CLIENT_ROUTES.CLIENT_OAUTH_CREDENTIALS]: () => "/credentials",
-  [CLIENT_ROUTES.CLIENT_ERROR]: () => "/error",
-  [CLIENT_ROUTES.CLIENT_NOTIFICATIONS]: () => "/notifications",
+  [ROUTES.CLIENT.HOME]: () => "/",
+  [ROUTES.CLIENT.SIGNIN]: () => "/sign-in",
+  [ROUTES.CLIENT.SIGNUP]: () => "/sign-up",
+  [ROUTES.CLIENT.FORGET_PASSWORD]: () => "/forget-password",
+  [ROUTES.CLIENT.RESET_PASSWORD]: () => "/reset-password",
+  [ROUTES.CLIENT.SETTINGS]: () => "/settings",
+  [ROUTES.CLIENT.MOVIE]: ({ tmdbId }) => `/movie/${tmdbId}`,
+  [ROUTES.CLIENT.OAUTH_CREDENTIALS]: () => "/credentials",
+  [ROUTES.CLIENT.ERROR]: () => "/error",
+  [ROUTES.CLIENT.NOTIFICATIONS]: () => "/notifications",
 
   // API routes
-  [API_ROUTES.API_SWAGGER]: ({ mode }) =>
+  [ROUTES.API.SWAGGER]: ({ mode }) =>
     mode ? `/api/swagger/${mode}` : "/api/swagger",
-  [API_ROUTES.API_HEALTH]: () => "/api/health",
+  [ROUTES.API.HEALTH]: () => "/api/health",
 
-  [API_ROUTES.API_AUTH]: () => "/api/auth",
-  [API_ROUTES.API_AUTHENTIFICATION]: () => "/api/authentification",
-  [API_ROUTES.API_AUTHENTIFICATION_SIGNUP]: () =>
-    "/api/authentification/sign-up",
-  [API_ROUTES.API_AUTHENTIFICATION_SIGNIN]: () =>
-    "/api/authentification/sign-in",
-  [API_ROUTES.API_AUTHENTIFICATION_SIGNIN_SOCIAL]: () =>
+  [ROUTES.API.AUTH]: () => "/api/auth",
+  [ROUTES.API.AUTHENTIFICATION]: () => "/api/authentification",
+  [ROUTES.API.AUTHENTIFICATION_SIGNUP]: () => "/api/authentification/sign-up",
+  [ROUTES.API.AUTHENTIFICATION_SIGNIN]: () => "/api/authentification/sign-in",
+  [ROUTES.API.AUTHENTIFICATION_SIGNIN_SOCIAL]: () =>
     "/api/authentification/sign-in-social",
-  [API_ROUTES.API_AUTHENTIFICATION_REQUEST_PASSWORD_RESET]: () =>
+  [ROUTES.API.AUTHENTIFICATION_REQUEST_PASSWORD_RESET]: () =>
     "/api/authentification/request-password-reset",
-  [API_ROUTES.API_AUTHENTIFICATION_RESET_PASSWORD]: () =>
+  [ROUTES.API.AUTHENTIFICATION_RESET_PASSWORD]: () =>
     "/api/authentification/reset-password",
-  [API_ROUTES.API_AUTHENTIFICATION_SIGNOUT]: () =>
-    "/api/authentification/sign-out",
-  [API_ROUTES.API_AUTHENTIFICATION_EMAIL_VERIFICATION]: () =>
+  [ROUTES.API.AUTHENTIFICATION_SIGNOUT]: () => "/api/authentification/sign-out",
+  [ROUTES.API.AUTHENTIFICATION_EMAIL_VERIFICATION]: () =>
     `/api/authentification/email-verification`,
-  [API_ROUTES.API_AUTHENTIFICATION_LINK]: ({ providerId }) =>
+  [ROUTES.API.AUTHENTIFICATION_LINK]: ({ providerId }) =>
     providerId
       ? `/api/authentification/link/${providerId}`
       : "/api/authentification/link",
-  [API_ROUTES.API_OAUTH_CREDENTIALS]: ({ credentialId }) =>
+  [ROUTES.API.OAUTH_CREDENTIALS]: ({ credentialId }) =>
     credentialId
       ? `/api/oauth/credentials/${credentialId}`
       : "/api/oauth/credentials",
 
-  [API_ROUTES.API_USERS]: ({ userId }) =>
+  [ROUTES.API.USERS]: ({ userId }) =>
     "/api/users" + (userId ? `/${userId}` : ""),
-  [API_ROUTES.API_USERS_ACCOUNTS]: () => "/api/users/accounts",
-  [API_ROUTES.API_USERS_SESSION]: () => "/api/users/session",
+  [ROUTES.API.USERS_ACCOUNTS]: () => "/api/users/accounts",
+  [ROUTES.API.USERS_SESSION]: () => "/api/users/session",
 
-  [API_ROUTES.API_IMAGES]: ({ imageId }) =>
+  [ROUTES.API.IMAGES]: ({ imageId }) =>
     "/api/images" + (imageId ? `/${imageId}` : ""),
 
-  [API_ROUTES.API_MOVIES]: ({ tmdbId, resolution, subtitlesLanguage }) => {
+  [ROUTES.API.MOVIES]: ({ tmdbId, resolution, subtitlesLanguage }) => {
     if (resolution && subtitlesLanguage) {
       throw new Error(
         "Resolution and subtitles language cannot be provided together"
@@ -274,27 +265,28 @@ const routes: {
       return `/api/movies/${tmdbId}`;
     }
   },
-  [API_ROUTES.API_MOVIES_SUBSCRIPTION]: ({ tmdbId }) =>
+  [ROUTES.API.MOVIES_SUBSCRIPTION]: ({ tmdbId }) =>
     `/api/movies/${tmdbId}/subscription`,
 
-  [API_ROUTES.API_NOTIFICATIONS]: ({ notificationId }) =>
+  [ROUTES.API.NOTIFICATIONS]: ({ notificationId }) =>
     `/api/notifications` + (notificationId ? `/${notificationId}` : ""),
-  [API_ROUTES.API_NOTIFICATIONS_STATS]: () => "/api/notifications/stats",
-  [API_ROUTES.API_NOTIFICATIONS_TEST]: () => "/api/notifications/test",
+  [ROUTES.API.NOTIFICATIONS_STATS]: () => "/api/notifications/stats",
+  [ROUTES.API.NOTIFICATIONS_TEST]: () => "/api/notifications/test",
 
   // SSE routes
-  [API_ROUTES.SSE_MOVIES]: ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
-  [API_ROUTES.SSE_NOTIFICATIONS]: () => "/api/notifications/sse",
+  [ROUTES.API.SSE_MOVIES]: ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
+  [ROUTES.API.SSE_NOTIFICATIONS]: () => "/api/notifications/sse",
 
   // Streaming routes
-  [API_ROUTES.API_STREAMING_MOVIE_RESOLUTION]: ({ tmdbId, resolution }) =>
+  [ROUTES.API.STREAMING_MOVIE_RESOLUTION]: ({ tmdbId, resolution }) =>
     `/api/streaming/movie/${tmdbId}/resolution/${resolution}`,
-  [API_ROUTES.API_STREAMING_MOVIE_SUBTITLES]: ({ tmdbId, subtitlesLanguage }) =>
+  [ROUTES.API.STREAMING_MOVIE_SUBTITLES]: ({ tmdbId, subtitlesLanguage }) =>
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
 
   // External routes
-  "external-imdb-movie": ({ imdbId }) => `https://www.imdb.com/title/${imdbId}`,
-  "external-imdb-actor": ({ imdbId }) =>
+  [ROUTES.EXTERNAL.IMDB_MOVIE]: ({ imdbId }) =>
+    `https://www.imdb.com/title/${imdbId}`,
+  [ROUTES.EXTERNAL.IMDB_ACTOR]: ({ imdbId }) =>
     `https://www.imdb.com/name/nm${imdbId}`,
 };
 
@@ -319,13 +311,30 @@ type TGetUrlArgs<T extends TRoute> = TRouteDataMap<T> extends undefined
       searchParams?: TSearchParams;
     };
 
+const isClientRoute = (route: any): route is TClientRoute =>
+  Object.values(ROUTES.CLIENT).includes(route as TClientRoute);
+
+const isAPIRoute = (route: any): route is TAPIRoute =>
+  Object.values(ROUTES.API).includes(route as TAPIRoute);
+
+const isExternalRoute = (route: any): route is TExternalRoute =>
+  Object.values(ROUTES.EXTERNAL).includes(route as TExternalRoute);
+
+const getSchema = <T extends TRoute>(route: T) => {
+  if (isClientRoute(route)) return routeSchemas.CLIENT[route];
+  if (isAPIRoute(route)) return routeSchemas.API[route];
+  if (isExternalRoute(route)) return routeSchemas.EXTERNAL[route];
+
+  throw new Error("No schema found with this route");
+};
+
 export const getUrl = <T extends TRoute>(
   route: T,
   params?: TGetUrlArgs<T>
 ): string => {
   const { withUrl, searchParams, ...rawParams } = params || {};
 
-  const schema = routeSchemas[route];
+  const schema = getSchema(route);
   const routeParams = schema.parse(rawParams ?? {}) as TRouteDataMap<T>;
   const routeFn = routes[route];
 

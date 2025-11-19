@@ -5,9 +5,9 @@ import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
-  API_ROUTES,
   deleteCredentialsSchemas,
   getUrl,
+  ROUTES,
   type TGetCredentialsSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -30,14 +30,14 @@ export const OathCredential: React.FC<{
     mutationFn: () =>
       axiosFetch({
         method: "DELETE",
-        url: getUrl(API_ROUTES.API_OAUTH_CREDENTIALS, {
+        url: getUrl(ROUTES.API.OAUTH_CREDENTIALS, {
           credentialId: credential.id,
         }),
         schemas: deleteCredentialsSchemas,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: getQueryKey(API_ROUTES.API_OAUTH_CREDENTIALS),
+        queryKey: getQueryKey(ROUTES.API.OAUTH_CREDENTIALS),
       });
       toast.success(t("oauthCredentials.deleteCredentialSuccess"));
     },
