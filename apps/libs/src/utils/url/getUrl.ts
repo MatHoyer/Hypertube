@@ -320,16 +320,12 @@ const isAPIRoute = (route: any): route is TAPIRoute =>
 const isExternalRoute = (route: any): route is TExternalRoute =>
   Object.values(ROUTES.EXTERNAL).includes(route as TExternalRoute);
 
-const getSchemaOfRoute = <T extends TRoute>(route: T) => {
-  if (isClientRoute(route)) {
-    return routeSchemas.CLIENT[route];
-  } else if (isAPIRoute(route)) {
-    return routeSchemas.API[route];
-  } else if (isExternalRoute(route)) {
-    return routeSchemas.EXTERNAL[route];
-  } else {
-    throw new Error("?");
-  }
+const getSchema = <T extends TRoute>(route: T) => {
+  if (isClientRoute(route)) return routeSchemas.CLIENT[route];
+  if (isAPIRoute(route)) return routeSchemas.API[route];
+  if (isExternalRoute(route)) return routeSchemas.EXTERNAL[route];
+
+  throw new Error("No schema found with this route");
 };
 
 export const getUrl = <T extends TRoute>(
@@ -338,7 +334,7 @@ export const getUrl = <T extends TRoute>(
 ): string => {
   const { withUrl, searchParams, ...rawParams } = params || {};
 
-  const schema = getSchemaOfRoute(route);
+  const schema = getSchema(route);
   const routeParams = schema.parse(rawParams ?? {}) as TRouteDataMap<T>;
   const routeFn = routes[route];
 
