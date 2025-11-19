@@ -8,6 +8,7 @@ import {
   getUrl,
   patchUsersSchemas,
   postImageSchemas,
+  ROUTES,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -27,7 +28,7 @@ export const ProfilePictureUpdate = () => {
 
       const res = await axiosFetch({
         method: "POST",
-        url: getUrl("api-images"),
+        url: getUrl(ROUTES.API.IMAGES),
         schemas: {
           requirements: z.instanceof(FormData),
           response: postImageSchemas.response,
@@ -42,13 +43,13 @@ export const ProfilePictureUpdate = () => {
       if (user.imageId)
         await axiosFetch({
           method: "DELETE",
-          url: getUrl("api-images", { imageId: user.imageId }),
+          url: getUrl(ROUTES.API.IMAGES, { imageId: user.imageId }),
           schemas: deleteImageSchemas,
         });
 
       await axiosFetch({
         method: "PATCH",
-        url: getUrl("api-users", { userId: user.id }),
+        url: getUrl(ROUTES.API.USERS, { userId: user.id }),
         schemas: patchUsersSchemas,
         data: { image: res.data.path, imageId: res.data.id },
       });
@@ -73,13 +74,13 @@ export const ProfilePictureUpdate = () => {
       if (user.imageId)
         await axiosFetch({
           method: "DELETE",
-          url: getUrl("api-images", { imageId: user.imageId }),
+          url: getUrl(ROUTES.API.IMAGES, { imageId: user.imageId }),
           schemas: deleteImageSchemas,
         });
 
       await axiosFetch({
         method: "PATCH",
-        url: getUrl("api-users", { userId: user.id }),
+        url: getUrl(ROUTES.API.USERS, { userId: user.id }),
         schemas: patchUsersSchemas,
         data: { image: null, imageId: null },
       });

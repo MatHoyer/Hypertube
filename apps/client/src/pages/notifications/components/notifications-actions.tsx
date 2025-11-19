@@ -31,7 +31,7 @@ export const NotificationsActions: React.FC<{
     mutationFn: async () => {
       await axiosFetch({
         method: "PATCH",
-        url: getUrl("api-notifications"),
+        url: getUrl(ROUTES.API.NOTIFICATIONS),
         schemas: patchNotificationsSchemas,
         data: {
           read: true,
@@ -50,7 +50,7 @@ export const NotificationsActions: React.FC<{
     mutationFn: async () => {
       await axiosFetch({
         method: "POST",
-        url: getUrl("api-notifications-test"),
+        url: getUrl(ROUTES.API.NOTIFICATIONS_TEST),
         schemas: postSendTestNotificationSchemas,
       });
     },

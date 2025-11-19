@@ -1,4 +1,9 @@
-import { getUrl, newUTCDate, TPatchUsersSchemas } from "@hypertube/libs";
+import {
+  getUrl,
+  newUTCDate,
+  ROUTES,
+  TPatchUsersSchemas,
+} from "@hypertube/libs";
 import { env, prisma } from "@hypertube/server-core";
 import { APIError } from "better-auth/api";
 import { addHours, getTime } from "date-fns";
@@ -79,7 +84,7 @@ export const patchUser = async (
       },
       env.BETTER_AUTH_SECRET
     );
-    const url = getUrl("api-authentification-email-verification", {
+    const url = getUrl(ROUTES.API.AUTHENTIFICATION_EMAIL_VERIFICATION, {
       withUrl: "client",
       searchParams: { token },
     });
@@ -88,7 +93,7 @@ export const patchUser = async (
       await sendVerificationEmail({
         user,
         url,
-        callbackURL: getUrl("client-settings", { withUrl: "client" }),
+        callbackURL: getUrl(ROUTES.CLIENT.SETTINGS, { withUrl: "client" }),
       });
     } catch (e) {
       if (e instanceof APIError) {

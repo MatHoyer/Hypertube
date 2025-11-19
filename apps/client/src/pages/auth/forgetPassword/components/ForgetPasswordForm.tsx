@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   getUrl,
   requestPasswordResetAuthentificationSchemas,
+  ROUTES,
 } from "@hypertube/libs";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -37,7 +38,7 @@ export const ForgetPasswordForm = () => {
     mutationFn: (data: TFormSchema) =>
       axiosFetch({
         method: "POST",
-        url: getUrl("api-authentification-request-password-reset"),
+        url: getUrl(ROUTES.API.AUTHENTIFICATION_REQUEST_PASSWORD_RESET),
         schemas: requestPasswordResetAuthentificationSchemas,
         data,
       }),

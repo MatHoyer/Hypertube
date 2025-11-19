@@ -1,5 +1,5 @@
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
-import { getSessionUsersSchemas, getUrl } from "@hypertube/libs";
+import { getSessionUsersSchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 
 export const useAuth = () => {
@@ -8,7 +8,7 @@ export const useAuth = () => {
     queryFn: () =>
       axiosFetch({
         method: "GET",
-        url: getUrl("api-users-session"),
+        url: getUrl(ROUTES.API.USERS_SESSION),
         schemas: getSessionUsersSchemas,
       }),
     retry: false,

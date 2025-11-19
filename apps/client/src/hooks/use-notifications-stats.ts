@@ -10,7 +10,7 @@ export const useNotificationsStats = () => {
     queryFn: async () => {
       return axiosFetch({
         method: "GET",
-        url: getUrl("api-notifications-stats"),
+        url: getUrl(ROUTES.API.NOTIFICATIONS_STATS),
         schemas: getNotificationsStatsSchemas,
       });
     },

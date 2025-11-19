@@ -1,6 +1,7 @@
 import {
   getUrl,
   newUTCDate,
+  ROUTES,
   TEmailVerificationAuthentificationSchemas,
   TLinkProviderAuthentificationSchemas,
   TRequestPasswordResetAuthentificationSchemas,
@@ -89,7 +90,7 @@ export const signInSocial = async (
     const { url } = await auth.api.signInSocial({
       body: {
         provider: providerId,
-        callbackURL: getUrl("client-home", { withUrl: "client" }),
+        callbackURL: getUrl(ROUTES.CLIENT.HOME, { withUrl: "client" }),
       },
       headers: c.req.raw.headers,
     });
@@ -196,7 +197,7 @@ export const linkProvider = async (
     const { url } = await auth.api.linkSocialAccount({
       body: {
         provider: providerId,
-        callbackURL: getUrl("client-settings", { withUrl: "client" }),
+        callbackURL: getUrl(ROUTES.CLIENT.SETTINGS, { withUrl: "client" }),
       },
       headers: c.req.raw.headers,
     });

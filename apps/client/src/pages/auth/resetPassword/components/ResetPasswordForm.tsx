@@ -10,7 +10,11 @@ import {
 import InputPassword from "@/components/ui/input-password";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUrl, resetPasswordAuthentificationSchemas } from "@hypertube/libs";
+import {
+  getUrl,
+  resetPasswordAuthentificationSchemas,
+  ROUTES,
+} from "@hypertube/libs";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryState } from "nuqs";
 import { useForm } from "react-hook-form";
@@ -38,7 +42,7 @@ export const ResetPasswordForm = () => {
     mutationFn: (data: TFormSchema) =>
       axiosFetch({
         method: "POST",
-        url: getUrl("api-authentification-reset-password"),
+        url: getUrl(ROUTES.API.AUTHENTIFICATION_RESET_PASSWORD),
         schemas: resetPasswordAuthentificationSchemas,
         data: {
           ...data,
@@ -47,7 +51,7 @@ export const ResetPasswordForm = () => {
       }),
     onSuccess: () => {
       toast.success(t("sign.resetSuccessMessage"));
-      navigate(getUrl("client-signin"));
+      navigate(getUrl(ROUTES.CLIENT.SIGNIN));
     },
     onError: (e) => {
       toast.error(e.message);

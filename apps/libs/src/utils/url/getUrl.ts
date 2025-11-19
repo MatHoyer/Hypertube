@@ -325,7 +325,7 @@ const getSchema = <T extends TRoute>(route: T) => {
   if (isAPIRoute(route)) return routeSchemas.API[route];
   if (isExternalRoute(route)) return routeSchemas.EXTERNAL[route];
 
-  throw new Error("No schema found with this route");
+  throw new Error(`No schema found for route: ${route}`);
 };
 
 export const getUrl = <T extends TRoute>(

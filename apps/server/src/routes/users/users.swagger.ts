@@ -3,6 +3,7 @@ import {
   getSessionUsersSchemas,
   getUrl,
   patchUsersSchemas,
+  ROUTES,
 } from "@hypertube/libs";
 
 const usersPathParam = {
@@ -13,7 +14,7 @@ const usersPathParam = {
 };
 
 export const usersSwagger = {
-  [getUrl("api-users", { userId: "{userId}" })]: {
+  [getUrl(ROUTES.API.USERS, { userId: "{userId}" })]: {
     patch: {
       summary: "Update user information",
       tags: ["Users"],
@@ -49,7 +50,7 @@ export const usersSwagger = {
       },
     },
   },
-  [getUrl("api-users-accounts")]: {
+  [getUrl(ROUTES.API.USERS_ACCOUNTS)]: {
     get: {
       summary: "Get accounts of user",
       tags: ["Users"],
@@ -65,7 +66,7 @@ export const usersSwagger = {
       },
     },
   },
-  [getUrl("api-users-session")]: {
+  [getUrl(ROUTES.API.USERS_SESSION)]: {
     get: {
       summary: "Get session of user",
       tags: ["Users"],

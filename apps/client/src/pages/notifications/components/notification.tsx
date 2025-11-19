@@ -38,7 +38,9 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
     mutationFn: async () => {
       await axiosFetch({
         method: "PATCH",
-        url: getUrl("api-notifications", { notificationId: notification.id }),
+        url: getUrl(ROUTES.API.NOTIFICATIONS, {
+          notificationId: notification.id,
+        }),
         schemas: patchNotificationsSchemas,
         data: {
           read: true,

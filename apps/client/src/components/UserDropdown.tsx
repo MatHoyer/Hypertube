@@ -44,7 +44,7 @@ export const UserDropdown = () => {
     mutationFn: () =>
       axiosFetch({
         method: "POST",
-        url: getUrl("api-authentification-signout"),
+        url: getUrl(ROUTES.API.AUTHENTIFICATION_SIGNOUT),
         schemas: signOutAuthentificationSchemas,
       }),
     onSuccess: () => {
@@ -122,7 +122,7 @@ export const UserDropdown = () => {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to={getUrl("client-settings")}>
+            <Link to={getUrl(ROUTES.CLIENT.SETTINGS)}>
               <Settings /> {t("navbar.settings")}
             </Link>
           </DropdownMenuItem>

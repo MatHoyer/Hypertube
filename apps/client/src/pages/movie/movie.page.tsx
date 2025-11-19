@@ -51,7 +51,7 @@ const MoviePage = () => {
 
   useEffect(() => {
     const eventSource = new EventSource(
-      getUrl("sse-movies", {
+      getUrl(ROUTES.API.SSE_MOVIES, {
         tmdbId,
       })
     );

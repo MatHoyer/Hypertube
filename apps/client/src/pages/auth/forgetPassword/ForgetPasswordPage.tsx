@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 import { Layout, LayoutContent } from "@/layouts/PageLayout";
-import { getUrl } from "@hypertube/libs";
+import { getUrl, ROUTES } from "@hypertube/libs";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { AuthLayout } from "../AuthLayout";
@@ -19,7 +19,9 @@ export const ForgetPasswordPage = () => {
               {t("sign.rememberPassword")}
             </Typography>
             <Button type="button" variant={"link"} asChild>
-              <Link to={getUrl("client-signin")}>{t("sign.backToSignin")}</Link>
+              <Link to={getUrl(ROUTES.CLIENT.SIGNIN)}>
+                {t("sign.backToSignin")}
+              </Link>
             </Button>
           </div>
         </AuthLayout>

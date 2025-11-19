@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { Layout, LayoutContent } from "@/layouts/PageLayout";
 import { keyErrorCodes } from "@/lib/better-auth/constants";
-import { getUrl } from "@hypertube/libs";
+import { getUrl, ROUTES } from "@hypertube/libs";
 import { TriangleAlert } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useTranslation } from "react-i18next";
@@ -28,7 +28,7 @@ export const ErrorPage = () => {
             </Typography>
             <Button
               variant={"secondary"}
-              onClick={() => navigate(getUrl("client-home"))}
+              onClick={() => navigate(getUrl(ROUTES.CLIENT.HOME))}
             >
               {t("global.homepage")}
             </Button>

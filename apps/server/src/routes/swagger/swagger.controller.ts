@@ -1,4 +1,4 @@
-import { getUrl } from "@hypertube/libs";
+import { getUrl, ROUTES } from "@hypertube/libs";
 import { authentificationSwagger } from "../authentification/authentification.swagger";
 import { imagesSwagger } from "../images/images.swagger";
 import { moviesSwagger } from "../movies/movies.swagger";
@@ -44,7 +44,7 @@ const openApiDoc = {
     },
   ],
   paths: {
-    [getUrl("api-health")]: {
+    [getUrl(ROUTES.API.HEALTH)]: {
       get: {
         summary: "Health check",
         tags: ["Health"],

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import InputPassword from "@/components/ui/input-password";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUrl, signInAuthentificationSchemas } from "@hypertube/libs";
+import { getUrl, ROUTES, signInAuthentificationSchemas } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -39,7 +39,7 @@ export const SignInForm = () => {
     mutationFn: (data: TFormSchema) =>
       axiosFetch({
         method: "POST",
-        url: getUrl("api-authentification-signin"),
+        url: getUrl(ROUTES.API.AUTHENTIFICATION_SIGNIN),
         schemas: signInAuthentificationSchemas,
         data,
       }),

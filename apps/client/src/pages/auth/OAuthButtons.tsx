@@ -2,7 +2,11 @@ import { Button } from "@/components/ui/button";
 import { supportedOAuths } from "@/lib/better-auth/constants";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import type { TBetterAuthProviders } from "@hypertube/libs";
-import { getUrl, signInSocialAuthentificationSchemas } from "@hypertube/libs";
+import {
+  getUrl,
+  ROUTES,
+  signInSocialAuthentificationSchemas,
+} from "@hypertube/libs";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -11,7 +15,7 @@ export const OAuthButtons = () => {
     mutationFn: (provider: { id: TBetterAuthProviders }) =>
       axiosFetch({
         method: "POST",
-        url: getUrl("api-authentification-signin-social"),
+        url: getUrl(ROUTES.API.AUTHENTIFICATION_SIGNIN_SOCIAL),
         schemas: signInSocialAuthentificationSchemas,
         data: {
           providerId: provider.id,

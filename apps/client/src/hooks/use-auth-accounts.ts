@@ -1,5 +1,5 @@
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
-import { getAccountsUsersSchemas, getUrl } from "@hypertube/libs";
+import { getAccountsUsersSchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 
 export const useAuthAccounts = () => {
@@ -8,7 +8,7 @@ export const useAuthAccounts = () => {
     queryFn: () =>
       axiosFetch({
         method: "GET",
-        url: getUrl("api-users-accounts"),
+        url: getUrl(ROUTES.API.USERS_ACCOUNTS),
         schemas: getAccountsUsersSchemas,
       }),
     retry: false,

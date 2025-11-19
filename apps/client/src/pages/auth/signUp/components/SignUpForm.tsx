@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import InputPassword from "@/components/ui/input-password";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUrl, signUpAuthentificationSchemas } from "@hypertube/libs";
+import { getUrl, ROUTES, signUpAuthentificationSchemas } from "@hypertube/libs";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -46,7 +46,7 @@ export const SignUpForm = () => {
     mutationFn: (data: TFormSchema) =>
       axiosFetch({
         method: "POST",
-        url: getUrl("api-authentification-signup"),
+        url: getUrl(ROUTES.API.AUTHENTIFICATION_SIGNUP),
         schemas: signUpAuthentificationSchemas,
         data: {
           ...data,
@@ -55,7 +55,7 @@ export const SignUpForm = () => {
       }),
     onSuccess: () => {
       toast.success(t("sign.emailVerification"));
-      navigate(getUrl("client-signin"));
+      navigate(getUrl(ROUTES.CLIENT.SIGNIN));
     },
     onError: (e) => {
       toast.error(e.message);

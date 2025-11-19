@@ -30,7 +30,7 @@ const SubscriptionButton: React.FC<{
     mutationFn: () =>
       axiosFetch({
         method: isSubscribed ? "DELETE" : "POST",
-        url: getUrl("api-movies-subscription", { tmdbId }),
+        url: getUrl(ROUTES.API.MOVIES_SUBSCRIPTION, { tmdbId }),
         schemas: isSubscribed
           ? deleteMovieSubscribeSchemas
           : postMovieSubscribeSchemas,

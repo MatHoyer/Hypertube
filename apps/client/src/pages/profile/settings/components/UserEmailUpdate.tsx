@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { useRequiredUser } from "@/hooks/use-required-user";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUrl, patchUsersSchemas } from "@hypertube/libs";
+import { getUrl, patchUsersSchemas, ROUTES } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -45,7 +45,7 @@ export const UserEmailUpdate = () => {
     mutationFn: (data: TFormSchema) =>
       axiosFetch({
         method: "PATCH",
-        url: getUrl("api-users", { userId: user.id }),
+        url: getUrl(ROUTES.API.USERS, { userId: user.id }),
         schemas: patchUsersSchemas,
         data,
       }),

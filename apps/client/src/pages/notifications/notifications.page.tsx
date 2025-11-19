@@ -50,7 +50,7 @@ export const NotificationsPage = () => {
       queryFn: ({ pageParam }) => {
         return axiosFetch({
           method: "GET",
-          url: getUrl("api-notifications", {
+          url: getUrl(ROUTES.API.NOTIFICATIONS, {
             searchParams: { readStatus, page: `${pageParam}` },
           }),
           schemas: getNotificationsSchemas,

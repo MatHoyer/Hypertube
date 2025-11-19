@@ -1,7 +1,7 @@
 import { Typography } from "@/components/ui/typography";
 import { useMouse } from "@/hooks/use-mouse";
 import { cn } from "@/lib/utils";
-import { getUrl } from "@hypertube/libs";
+import { getUrl, ROUTES } from "@hypertube/libs";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -18,7 +18,7 @@ export const NotFoundPage = () => {
         <div
           className="z-10 size-52 rounded-full text-center content-center select-none bg-primary/60 backdrop-blur-sm"
           ref={ref}
-          onClick={() => navigate(getUrl("client-home"))}
+          onClick={() => navigate(getUrl(ROUTES.CLIENT.HOME))}
         >
           <Typography variant="h1">404</Typography>
           <Typography variant="h3">{t("global.homepage")}</Typography>
