@@ -41,8 +41,6 @@ export const SearchBar = () => {
     enabled: !!inputDebounced,
   });
 
-  console.log("allo : ", data, isPending, isSuccess);
-
   return (
     <div className="relative">
       <Command
