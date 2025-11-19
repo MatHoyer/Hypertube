@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { getUrl, type TTmdbMovieSchema } from "@hypertube/libs";
+import { getUrl, ROUTES, type TTmdbMovieSchema } from "@hypertube/libs";
 import { ExternalLink } from "lucide-react";
 import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
@@ -93,7 +93,7 @@ export const MovieBaseInfo: React.FC<
             </Badge>
             {movie.imdb_id && (
               <Link
-                to={getUrl("external-imdb-movie", {
+                to={getUrl(ROUTES.EXTERNAL.IMDB_MOVIE, {
                   imdbId: movie.imdb_id,
                 })}
                 target="_blank"

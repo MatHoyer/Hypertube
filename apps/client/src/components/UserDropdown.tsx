@@ -58,7 +58,7 @@ export const UserDropdown = () => {
   });
 
   useEffect(() => {
-    const eventSource = new EventSource(getUrl("sse-notifications"));
+    const eventSource = new EventSource(getUrl(ROUTES.API.SSE_NOTIFICATIONS));
     eventSource.onopen = () => {
       console.log("notifications SSE opened");
     };

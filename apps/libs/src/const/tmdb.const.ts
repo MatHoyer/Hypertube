@@ -31,7 +31,7 @@ export const tmdbCategories = [
   "upcoming",
 ] as const;
 
-export type TTmdbCategory = (typeof tmdbCategories)[number] | null;
+export type TTmdbCategory = (typeof tmdbCategories)[number];
 
 export const tmdbSorts = [
   "popularity.desc",
@@ -44,6 +44,6 @@ export const tmdbSorts = [
   "vote_count.asc",
 ] as const;
 
-export type TTmdbSort = (typeof tmdbSorts)[number] | null;
+export type TTmdbSort = (typeof tmdbSorts)[number];
 
 export const tmdbDefaultSort = tmdbSorts[0];

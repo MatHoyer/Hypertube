@@ -11,8 +11,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Typography } from "@/components/ui/typography";
 import useDebounce from "@/hooks/use-debounce";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
-import { getMoviesSchemas, getUrl } from "@hypertube/libs";
+import { getMoviesSchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -21,7 +22,7 @@ import { useLibrary } from "./LibraryProvider";
 
 export const SearchBar = () => {
   const { t } = useTranslation();
-  const [input, setInput] = useState<string | null>(null);
+  const [input, setInput] = useState<string>("");
   const searchBarRef = useRef<HTMLDivElement>(null);
   const { query, setQuery } = useLibrary();
   const inputDebounced = useDebounce(input, 200);
@@ -29,12 +30,16 @@ export const SearchBar = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { data, isPending, isSuccess } = useQuery({
-    queryKey: ["searchMovies", inputDebounced],
+    queryKey: [
+      getQueryKey(ROUTES.API.MOVIES, {
+        searchParams: { input: inputDebounced },
+      }),
+    ],
     queryFn: async () =>
       await axiosFetch({
         method: "GET",
         schemas: getMoviesSchemas,
-        url: getUrl("api-movies", {
+        url: getUrl(ROUTES.API.MOVIES, {
           searchParams: { page: "1", query: inputDebounced ?? "" },
         }),
       }),
@@ -45,7 +50,7 @@ export const SearchBar = () => {
     <div className="relative">
       <Command
         ref={searchBarRef}
-        className={cn(isOpen && "rounded-b-none")}
+        className={cn(isOpen && inputDebounced && "rounded-b-none")}
         filter={() => 1}
       >
         <CommandInput
@@ -54,7 +59,7 @@ export const SearchBar = () => {
           onKeyDown={({ code, currentTarget }) => {
             if (code === "Enter") {
               setQuery(input ?? currentTarget.value);
-              setInput(null);
+              setInput("");
               inputRef.current?.blur();
             }
           }}
@@ -92,7 +97,7 @@ export const SearchBar = () => {
                     >
                       <Link
                         className="w-full"
-                        to={getUrl("client-movie", { tmdbId: movie!.id })}
+                        to={getUrl(ROUTES.CLIENT.MOVIE, { tmdbId: movie!.id })}
                       >
                         <MovieBaseInfo
                           className="flex flex-col sm:grid sm:grid-cols-[1fr_4fr_1fr_1fr] items-center w-full gap-2"

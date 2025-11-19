@@ -7,7 +7,7 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getUrl, type TTmdbMovieSchema } from "@hypertube/libs";
+import { getUrl, ROUTES, type TTmdbMovieSchema } from "@hypertube/libs";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { PlayCircle } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -25,7 +25,7 @@ export const MovieDialog: React.FC<{ movie: TTmdbMovieSchema }> = ({
       <DialogFooter className="w-full">
         <DialogClose asChild>
           <Button variant={"outline"} className="w-full" asChild>
-            <Link to={getUrl("client-movie", { tmdbId: movie.id })}>
+            <Link to={getUrl(ROUTES.CLIENT.MOVIE, { tmdbId: movie.id })}>
               <PlayCircle />
             </Link>
           </Button>

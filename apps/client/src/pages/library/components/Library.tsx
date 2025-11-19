@@ -4,9 +4,11 @@ import { Typography } from "@/components/ui/typography";
 import useDebounce from "@/hooks/use-debounce";
 import { useMainScrollElement } from "@/layouts/BaseLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import {
   getMoviesSchemas,
   getUrl,
+  ROUTES,
   type TTmdbCategory,
   type TTmdbGenresKey,
   type TTmdbSort,
@@ -34,7 +36,7 @@ const fetchMovies = async ({
   const res = await axiosFetch({
     method: "GET",
     schemas: getMoviesSchemas,
-    url: getUrl("api-movies", {
+    url: getUrl(ROUTES.API.MOVIES, {
       searchParams: {
         page: pageParam.toString(),
         query,
@@ -67,19 +69,20 @@ export const Library = () => {
     isPending,
     isError,
   } = useInfiniteQuery({
-    queryKey: [
-      "movies",
-      queryDebounced,
-      categoryDebounced,
-      sortDebounced,
-      genresDebounced,
-    ],
+    queryKey: getQueryKey(ROUTES.API.MOVIES, {
+      searchParams: {
+        query: queryDebounced,
+        category: categoryDebounced ?? undefined,
+        sort: sortDebounced ?? undefined,
+        genres: genresDebounced,
+      },
+    }),
     queryFn: ({ pageParam }) =>
       fetchMovies({
         pageParam,
         query: queryDebounced,
-        category: categoryDebounced,
-        sort: sortDebounced,
+        category: categoryDebounced ?? undefined,
+        sort: sortDebounced ?? undefined,
         genres: genresDebounced,
       }),
     initialPageParam: 1,
@@ -160,6 +163,10 @@ export const Library = () => {
             {Array.from({ length: columns }, (_, colIndex) => {
               const itemIndex = virtualRow.index * columns + colIndex;
               const movie = allMovies[itemIndex];
+
+              if (itemIndex >= data.pages[0].totalResults) {
+                return <div key={`${virtualRow.index}-${colIndex}`}></div>;
+              }
 
               return (
                 <Thumbnail

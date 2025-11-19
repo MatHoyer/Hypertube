@@ -41,7 +41,7 @@ const CategoriesFilter = () => {
           variant={"icon"}
           className="grid grid-cols-1 sm:grid-cols-2"
           value={categoryState ?? "none"}
-          onValueChange={(value: NonNullable<TTmdbCategory>) => {
+          onValueChange={(value: TTmdbCategory) => {
             setCategory(value);
           }}
         >
@@ -76,7 +76,7 @@ const SortsFilter = () => {
           variant={"icon"}
           className="grid grid-cols-1 sm:grid-cols-2"
           value={sortState ? sortState : "none"}
-          onValueChange={(value: NonNullable<TTmdbSort>) => setSort(value)}
+          onValueChange={(value: TTmdbSort) => setSort(value)}
         >
           {tmdbSorts.map((sort) => (
             <ToggleGroupItem

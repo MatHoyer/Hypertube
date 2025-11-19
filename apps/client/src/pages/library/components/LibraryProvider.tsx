@@ -15,10 +15,10 @@ import {
 type TLibraryContext = {
   query: string;
   setQuery: (value: string) => void;
-  category: TTmdbCategory;
-  setCategory: (value: TTmdbCategory) => void;
-  sort: TTmdbSort;
-  setSort: (value: TTmdbSort) => void;
+  category: TTmdbCategory | null;
+  setCategory: (value: TTmdbCategory | null) => void;
+  sort: TTmdbSort | null;
+  setSort: (value: TTmdbSort | null) => void;
   genres: TTmdbGenresKey[];
   setGenres: (value: TTmdbGenresKey[]) => void;
   reset: () => void;
@@ -30,11 +30,11 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [query, setQueryState] = useQueryState("query", { defaultValue: "" });
-  const [category, setCategoryState] = useQueryState<TTmdbCategory>(
+  const [category, setCategoryState] = useQueryState<TTmdbCategory | null>(
     "category",
     parseAsTmdbCategory
   );
-  const [sort, setSortState] = useQueryState<TTmdbSort>(
+  const [sort, setSortState] = useQueryState<TTmdbSort | null>(
     "sort",
     parseAsTmdbSort
   );
@@ -54,7 +54,7 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   const setCategory = useCallback(
-    (value: TTmdbCategory) => {
+    (value: TTmdbCategory | null) => {
       setCategoryState(value);
       setQueryState("");
       setSortState(null);
@@ -64,7 +64,7 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 
   const setSort = useCallback(
-    (value: TTmdbSort) => {
+    (value: TTmdbSort | null) => {
       setQueryState("");
       setCategoryState(null);
       setSortState(value);

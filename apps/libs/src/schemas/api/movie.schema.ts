@@ -1,6 +1,11 @@
 import z from "zod";
 import { DownloadStates } from "../../const/global.const.js";
-import { tmdbCategories, tmdbSorts } from "../../const/tmdb.const.js";
+import {
+  tmdbCategories,
+  tmdbGenres,
+  tmdbSorts,
+} from "../../const/tmdb.const.js";
+import { typedKeys } from "../../utils/object.utils.js";
 import {
   movieSchema,
   resolutionSchema,
@@ -42,7 +47,16 @@ export const getMoviesSchemas = {
     query: z.string().optional(),
     category: z.enum(tmdbCategories).optional(),
     sort: z.enum(tmdbSorts).optional(),
-    genres: z.string().optional(),
+    genres: z
+      .string()
+      .regex(
+        new RegExp(
+          `^(${typedKeys(tmdbGenres).join("|")})(\\+(${typedKeys(
+            tmdbGenres
+          ).join("|")}))*$`
+        )
+      )
+      .optional(),
   }),
   response: z.object({
     movies: z.array(
