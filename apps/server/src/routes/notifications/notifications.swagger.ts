@@ -3,6 +3,7 @@ import {
   getUrl,
   patchNotificationSchemas,
   patchNotificationsSchemas,
+  ROUTES,
 } from "@hypertube/libs";
 
 const notificationsPathParam = {
@@ -13,7 +14,7 @@ const notificationsPathParam = {
 };
 
 export const notificationsSwagger = {
-  [getUrl("api-notifications")]: {
+  [getUrl(ROUTES.API.NOTIFICATIONS)]: {
     get: {
       summary: "Get notifications",
       tags: ["Notifications"],
@@ -75,7 +76,7 @@ export const notificationsSwagger = {
       },
     },
   },
-  [getUrl("api-notifications", { notificationId: "{notificationId}" })]: {
+  [getUrl(ROUTES.API.NOTIFICATIONS, { notificationId: "{notificationId}" })]: {
     patch: {
       summary: "Update notification",
       tags: ["Notifications"],

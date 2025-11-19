@@ -13,11 +13,13 @@ import { useNotificationsStats } from "@/hooks/use-notifications-stats";
 import { playBeep } from "@/lib/audio";
 import { LOCAL_STORAGE_KEYS } from "@/lib/const";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { NotificationBell } from "@/pages/notifications/components/notification-bell";
 import {
   getNotificationsSSESchemas,
   getUrl,
   NOTIFICATIONS_EVENTS,
+  ROUTES,
   signOutAuthentificationSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -42,7 +44,7 @@ export const UserDropdown = () => {
     mutationFn: () =>
       axiosFetch({
         method: "POST",
-        url: getUrl("api-authentification-signout"),
+        url: getUrl(ROUTES.API.AUTHENTIFICATION_SIGNOUT),
         schemas: signOutAuthentificationSchemas,
       }),
     onSuccess: () => {
@@ -77,7 +79,9 @@ export const UserDropdown = () => {
       if (!mutedNotifications) {
         playBeep();
       }
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS),
+      });
     };
 
     eventSource.addEventListener(
@@ -113,19 +117,19 @@ export const UserDropdown = () => {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to={getUrl("client-notifications")}>
+            <Link to={getUrl(ROUTES.CLIENT.NOTIFICATIONS)}>
               <NotificationBell /> {t("navbar.notifications")}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to={getUrl("client-settings")}>
+            <Link to={getUrl(ROUTES.CLIENT.SETTINGS)}>
               <Settings /> {t("navbar.settings")}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to={getUrl("client-oauth-credentials")}>
+          <Link to={getUrl(ROUTES.CLIENT.OAUTH_CREDENTIALS)}>
             <File /> API
           </Link>
         </DropdownMenuItem>

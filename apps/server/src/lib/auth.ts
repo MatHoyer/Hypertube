@@ -1,4 +1,4 @@
-import { getUrl, newUTCDate, TUserSchema } from "@hypertube/libs";
+import { getUrl, newUTCDate, ROUTES, TUserSchema } from "@hypertube/libs";
 import { env, prisma } from "@hypertube/server-core";
 import {
   AuthContext,
@@ -91,7 +91,7 @@ const handleBetterAuthError = (
   >
 ) => {
   throw ctx.redirect(
-    getUrl("client-error", {
+    getUrl(ROUTES.CLIENT.ERROR, {
       withUrl: "client",
       searchParams: {
         error: ctx.query
@@ -128,7 +128,7 @@ export const auth = betterAuth({
         });
       }
 
-      const newUrl = getUrl("client-reset-password", {
+      const newUrl = getUrl(ROUTES.CLIENT.RESET_PASSWORD, {
         withUrl: "client",
         searchParams: { token },
       });
@@ -158,7 +158,7 @@ export const auth = betterAuth({
       await sendVerificationEmail({
         user: data.user as TUserSchema,
         url: data.url,
-        callbackURL: getUrl("client-signin", { withUrl: "client" }),
+        callbackURL: getUrl(ROUTES.CLIENT.SIGNIN, { withUrl: "client" }),
       }),
     autoSignInAfterVerification: true,
   },

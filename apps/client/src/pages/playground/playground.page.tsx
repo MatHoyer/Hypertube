@@ -5,7 +5,7 @@ import {
   LayoutHeader,
   LayoutTitle,
 } from "@/layouts/PageLayout";
-import { getUrl } from "@hypertube/libs";
+import { getUrl, ROUTES } from "@hypertube/libs";
 import { useNavigate } from "react-router-dom";
 
 export const PlaygroundPage = () => {
@@ -21,7 +21,7 @@ export const PlaygroundPage = () => {
           <Button
             onClick={() => {
               navigate(
-                getUrl("client-movie", {
+                getUrl(ROUTES.CLIENT.MOVIE, {
                   tmdbId: 0,
                 })
               );

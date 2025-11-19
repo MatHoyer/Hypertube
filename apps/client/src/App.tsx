@@ -1,7 +1,7 @@
 import { SignInPage } from "@/pages/auth/signIn/SignIn.page";
 import { SignUpPage } from "@/pages/auth/signUp/SignUp.page";
 import { NotFoundPage } from "@/pages/notFound/NotFound.page";
-import { getUrl } from "@hypertube/libs";
+import { ROUTES, getUrl } from "@hypertube/libs";
 import { Route, Routes } from "react-router-dom";
 import { ForgetPasswordPage } from "./pages/auth/forgetPassword/ForgetPasswordPage";
 import { ResetPasswordPage } from "./pages/auth/resetPassword/ResetPasswordPage";
@@ -29,14 +29,14 @@ const App = () => {
 
         {/* Public only routes */}
         <Route element={<PublicOnlyRoute />}>
-          <Route path={getUrl("client-signin")} element={<SignInPage />} />
-          <Route path={getUrl("client-signup")} element={<SignUpPage />} />
+          <Route path={getUrl(ROUTES.CLIENT.SIGNIN)} element={<SignInPage />} />
+          <Route path={getUrl(ROUTES.CLIENT.SIGNUP)} element={<SignUpPage />} />
           <Route
-            path={getUrl("client-forget-password")}
+            path={getUrl(ROUTES.CLIENT.FORGET_PASSWORD)}
             element={<ForgetPasswordPage />}
           />
           <Route
-            path={getUrl("client-reset-password")}
+            path={getUrl(ROUTES.CLIENT.RESET_PASSWORD)}
             element={<ResetPasswordPage />}
           />
         </Route>
@@ -44,17 +44,20 @@ const App = () => {
         {/* Private only routes */}
         <Route element={<PrivateOnlyRoute />}>
           <Route
-            path={getUrl("client-notifications")}
+            path={getUrl(ROUTES.CLIENT.NOTIFICATIONS)}
             element={<NotificationsPage />}
           />
-          <Route path={getUrl("client-settings")} element={<SettingsPage />} />
           <Route
-            path={getUrl("client-oauth-credentials")}
+            path={getUrl(ROUTES.CLIENT.SETTINGS)}
+            element={<SettingsPage />}
+          />
+          <Route
+            path={getUrl(ROUTES.CLIENT.OAUTH_CREDENTIALS)}
             element={<OAuthCredentialsPage />}
           />
           <Route element={<ProtectedUrlRoute schema={MoviePageParamsSchema} />}>
             <Route
-              path={getUrl("client-movie", {
+              path={getUrl(ROUTES.CLIENT.MOVIE, {
                 tmdbId: ":tmdbId",
               })}
               element={<MoviePage />}

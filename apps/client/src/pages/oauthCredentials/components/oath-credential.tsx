@@ -3,9 +3,11 @@ import { LoadingButton } from "@/components/LoadingButton";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import {
   deleteCredentialsSchemas,
   getUrl,
+  ROUTES,
   type TGetCredentialsSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -28,11 +30,15 @@ export const OathCredential: React.FC<{
     mutationFn: () =>
       axiosFetch({
         method: "DELETE",
-        url: getUrl("api-oauth-credentials", { credentialId: credential.id }),
+        url: getUrl(ROUTES.API.OAUTH_CREDENTIALS, {
+          credentialId: credential.id,
+        }),
         schemas: deleteCredentialsSchemas,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["credentials"] });
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.OAUTH_CREDENTIALS),
+      });
       toast.success(t("oauthCredentials.deleteCredentialSuccess"));
     },
   });

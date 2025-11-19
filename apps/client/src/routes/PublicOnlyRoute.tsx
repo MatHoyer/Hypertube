@@ -1,6 +1,6 @@
 import { LoadingPage } from "@/components/LoadingPage";
 import { useAuth } from "@/hooks/use-auth";
-import { getUrl } from "@hypertube/libs";
+import { getUrl, ROUTES } from "@hypertube/libs";
 import { Navigate, Outlet } from "react-router-dom";
 
 export const PublicOnlyRoute = () => {
@@ -8,7 +8,8 @@ export const PublicOnlyRoute = () => {
 
   if (isLoading) return <LoadingPage resource="global" />;
 
-  if (!isError && user) return <Navigate to={getUrl("client-home")} replace />;
-
+  if (!isError && user) {
+    return <Navigate to={getUrl(ROUTES.CLIENT.HOME)} replace />;
+  }
   return <Outlet />;
 };

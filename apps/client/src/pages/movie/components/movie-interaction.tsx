@@ -7,10 +7,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import {
   deleteMovieSubscribeSchemas,
   getUrl,
   postMovieSubscribeSchemas,
+  ROUTES,
   type TMovieSchema,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -28,7 +30,7 @@ const SubscriptionButton: React.FC<{
     mutationFn: () =>
       axiosFetch({
         method: isSubscribed ? "DELETE" : "POST",
-        url: getUrl("api-movies-subscription", { tmdbId }),
+        url: getUrl(ROUTES.API.MOVIES_SUBSCRIPTION, { tmdbId }),
         schemas: isSubscribed
           ? deleteMovieSubscribeSchemas
           : postMovieSubscribeSchemas,
@@ -39,7 +41,9 @@ const SubscriptionButton: React.FC<{
           ? t("movie.subscriptions.toast.unsubscribe")
           : t("movie.subscriptions.toast.subscribe")
       );
-      queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
+      });
     },
   });
 

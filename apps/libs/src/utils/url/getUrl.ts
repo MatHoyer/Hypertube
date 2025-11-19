@@ -1,91 +1,192 @@
-import type { TBetterAuthProviders } from "../../const/global.const.js";
-import { languageCodes } from "../../const/global.const.js";
+import z from "zod";
+import {
+  betterAuthProviders,
+  languageCodes,
+} from "../../const/global.const.js";
 import { ytsQualities } from "../../const/yts.const.js";
-import type { TCredentialSchema } from "../../schemas/database/credential.schema.js";
-import type { TMovieSchema } from "../../schemas/database/movie.schema.js";
+import { credentialSchema } from "../../schemas/database/credential.schema.js";
+import { imageSchema } from "../../schemas/database/image.schema.js";
+import { movieSchema } from "../../schemas/database/movie.schema.js";
+import { notificationSchema } from "../../schemas/database/notifications.schema.js";
+import { userSchema } from "../../schemas/database/user.schema.js";
 import { getClientUrl } from "./getClientUrl.js";
 import { getServerUrl } from "./getServerUrl.js";
 
-export type TClientRouteDataRequirements = {
-  "client-home": undefined;
-  "client-signin": undefined;
-  "client-signup": undefined;
-  "client-forget-password": undefined;
-  "client-reset-password": undefined;
-  "client-settings": undefined;
-  "client-movie": {
-    tmdbId: TMovieSchema["tmdbId"] | ":tmdbId";
-  };
-  "client-oauth-credentials": undefined;
-  "client-error": undefined;
-  "client-notifications": undefined;
+export const ROUTES = {
+  CLIENT: {
+    HOME: "client-home",
+    SIGNIN: "client-signin",
+    SIGNUP: "client-signup",
+    FORGET_PASSWORD: "client-forget-password",
+    RESET_PASSWORD: "client-reset-password",
+    SETTINGS: "client-settings",
+    MOVIE: "client-movie",
+    OAUTH_CREDENTIALS: "client-oauth-credentials",
+    ERROR: "client-error",
+    NOTIFICATIONS: "client-notifications",
+  },
+  API: {
+    SWAGGER: "api-swagger",
+    HEALTH: "api-health",
+    AUTH: "api-auth",
+    AUTHENTIFICATION: "api-authentification",
+    AUTHENTIFICATION_SIGNUP: "api-authentification-signup",
+    AUTHENTIFICATION_SIGNIN: "api-authentification-signin",
+    AUTHENTIFICATION_SIGNIN_SOCIAL: "api-authentification-signin-social",
+    AUTHENTIFICATION_REQUEST_PASSWORD_RESET:
+      "api-authentification-request-password-reset",
+    AUTHENTIFICATION_RESET_PASSWORD: "api-authentification-reset-password",
+    AUTHENTIFICATION_SIGNOUT: "api-authentification-signout",
+    AUTHENTIFICATION_EMAIL_VERIFICATION:
+      "api-authentification-email-verification",
+    AUTHENTIFICATION_LINK: "api-authentification-link",
+    OAUTH_CREDENTIALS: "api-oauth-credentials",
+    USERS: "api-users",
+    USERS_ACCOUNTS: "api-users-accounts",
+    USERS_SESSION: "api-users-session",
+    IMAGES: "api-images",
+    MOVIES: "api-movies",
+    MOVIES_SUBSCRIPTION: "api-movies-subscription",
+    NOTIFICATIONS: "api-notifications",
+    NOTIFICATIONS_STATS: "api-notifications-stats",
+    NOTIFICATIONS_TEST: "api-notifications-test",
+    STREAMING_MOVIE_RESOLUTION: "api-streaming-movie-resolution",
+    STREAMING_MOVIE_SUBTITLES: "api-streaming-movie-subtitles",
+    SSE_MOVIES: "sse-movies",
+    SSE_NOTIFICATIONS: "sse-notifications",
+  },
+  EXTERNAL: {
+    IMDB_MOVIE: "external-imdb-movie",
+    IMDB_ACTOR: "external-imdb-actor",
+  },
+} as const;
+
+type TRoutes = typeof ROUTES;
+export type TClientRoute = TRoutes["CLIENT"][keyof TRoutes["CLIENT"]];
+export type TAPIRoute = TRoutes["API"][keyof TRoutes["API"]];
+export type TExternalRoute = TRoutes["EXTERNAL"][keyof TRoutes["EXTERNAL"]];
+
+// Use z.object({}) to make undefined
+
+const routeSchemas = {
+  CLIENT: {
+    [ROUTES.CLIENT.HOME]: z.object({}),
+    [ROUTES.CLIENT.SIGNIN]: z.object({}),
+    [ROUTES.CLIENT.SIGNUP]: z.object({}),
+    [ROUTES.CLIENT.FORGET_PASSWORD]: z.object({}),
+    [ROUTES.CLIENT.RESET_PASSWORD]: z.object({}),
+    [ROUTES.CLIENT.SETTINGS]: z.object({}),
+    [ROUTES.CLIENT.MOVIE]: z.object({
+      tmdbId: z.union([movieSchema.shape.tmdbId, z.literal(":tmdbId")]),
+    }),
+    [ROUTES.CLIENT.OAUTH_CREDENTIALS]: z.object({}),
+    [ROUTES.CLIENT.ERROR]: z.object({}),
+    [ROUTES.CLIENT.NOTIFICATIONS]: z.object({}),
+  },
+  API: {
+    [ROUTES.API.SWAGGER]: z.object({
+      mode: z.union([z.literal("doc"), z.literal("ui")]).optional(),
+    }),
+    [ROUTES.API.HEALTH]: z.object({}),
+    [ROUTES.API.AUTH]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_SIGNUP]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_SIGNIN]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_SIGNIN_SOCIAL]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_REQUEST_PASSWORD_RESET]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_RESET_PASSWORD]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_SIGNOUT]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_EMAIL_VERIFICATION]: z.object({}),
+    [ROUTES.API.AUTHENTIFICATION_LINK]: z.object({
+      providerId: z
+        .union([z.enum(betterAuthProviders), z.literal("{providerId}")])
+        .optional(),
+    }),
+    [ROUTES.API.OAUTH_CREDENTIALS]: z.object({
+      credentialId: z
+        .union([credentialSchema.shape.id, z.literal("{credentialId}")])
+        .optional(),
+    }),
+    [ROUTES.API.USERS]: z.object({
+      userId: z.union([userSchema.shape.id, z.literal("{userId}")]).optional(),
+    }),
+    [ROUTES.API.USERS_ACCOUNTS]: z.object({}),
+    [ROUTES.API.USERS_SESSION]: z.object({}),
+    [ROUTES.API.IMAGES]: z.object({
+      imageId: z
+        .union([imageSchema.shape.id, z.literal("{imageId}")])
+        .optional(),
+    }),
+    [ROUTES.API.MOVIES]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+      resolution: z
+        .union([z.enum(ytsQualities), z.literal("{resolution}")])
+        .optional(),
+      subtitlesLanguage: z
+        .union([z.enum(languageCodes), z.literal("{subtitlesLanguage}")])
+        .optional(),
+    }),
+    [ROUTES.API.MOVIES_SUBSCRIPTION]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+    }),
+    [ROUTES.API.NOTIFICATIONS]: z.object({
+      notificationId: z
+        .union([notificationSchema.shape.id, z.literal("{notificationId}")])
+        .optional(),
+    }),
+    [ROUTES.API.NOTIFICATIONS_STATS]: z.object({}),
+    [ROUTES.API.NOTIFICATIONS_TEST]: z.object({}),
+    [ROUTES.API.SSE_MOVIES]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+    }),
+    [ROUTES.API.SSE_NOTIFICATIONS]: z.object({}),
+    [ROUTES.API.STREAMING_MOVIE_RESOLUTION]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+      resolution: z
+        .union([z.enum(ytsQualities), z.literal("{resolution}")])
+        .optional(),
+    }),
+    [ROUTES.API.STREAMING_MOVIE_SUBTITLES]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+      subtitlesLanguage: z
+        .union([z.enum(languageCodes), z.literal("{subtitlesLanguage}")])
+        .optional(),
+    }),
+  },
+  EXTERNAL: {
+    [ROUTES.EXTERNAL.IMDB_MOVIE]: z.object({
+      imdbId: z.string(),
+    }),
+    [ROUTES.EXTERNAL.IMDB_ACTOR]: z.object({
+      imdbId: z.string(),
+    }),
+  },
 };
 
-export type TApiRouteDataRequirements = {
-  "api-swagger": {
-    mode?: "doc" | "ui";
-  };
-  "api-health": undefined;
-
-  "api-auth": undefined;
-  "api-authentification": undefined;
-  "api-authentification-signup": undefined;
-  "api-authentification-signin": undefined;
-  "api-authentification-signin-social": undefined;
-  "api-authentification-request-password-reset": undefined;
-  "api-authentification-reset-password": undefined;
-  "api-authentification-signout": undefined;
-  "api-authentification-email-verification": undefined;
-  "api-authentification-link": {
-    providerId?: TBetterAuthProviders | "{providerId}";
-  };
-  "api-oauth-credentials": {
-    credentialId?: TCredentialSchema["id"] | "{credentialId}";
-  };
-
-  "api-users": { userId?: string };
-  "api-users-accounts": undefined;
-  "api-users-session": undefined;
-
-  "api-images": { imageId?: string | null };
-
-  "api-movies": {
-    tmdbId: "{tmdbId}" | number | undefined;
-    resolution?: (typeof ytsQualities)[number] | "{resolution}";
-    subtitlesLanguage?: keyof typeof languageCodes | "{subtitlesLanguage}";
-  };
-  "api-movies-subscription": { tmdbId: TMovieSchema["tmdbId"] | "{tmdbId}" };
-
-  "api-notifications": {
-    notificationId?: string | "{notificationId}";
-  };
-  "api-notifications-stats": undefined;
-  "api-notifications-test": undefined;
-
-  // sse routes
-  "sse-movies": {
-    tmdbId: "{tmdbId}" | number;
-  };
-  "sse-notifications": undefined;
-
-  // Streaming routes
-  "api-streaming-movie-resolution": {
-    tmdbId: TMovieSchema["tmdbId"];
-    resolution: (typeof ytsQualities)[number] | "{resolution}";
-  };
-  "api-streaming-movie-subtitles": {
-    tmdbId: TMovieSchema["tmdbId"];
-    subtitlesLanguage: keyof typeof languageCodes | "{subtitlesLanguage}";
-  };
+type TClientRouteDataRequirements = {
+  [T in keyof typeof routeSchemas.CLIENT]: z.infer<
+    (typeof routeSchemas.CLIENT)[T]
+  >;
 };
 
-export type TExternalRouteDataRequirements = {
-  "external-imdb-movie": {
-    imdbId: string;
-  };
-  "external-imdb-actor": {
-    imdbId: string;
-  };
+type TApiRouteDataRequirements = {
+  [T in keyof typeof routeSchemas.API]: z.infer<(typeof routeSchemas.API)[T]>;
+};
+
+type TExternalRouteDataRequirements = {
+  [T in keyof typeof routeSchemas.EXTERNAL]: z.infer<
+    (typeof routeSchemas.EXTERNAL)[T]
+  >;
 };
 
 type TRouteDataRequirements = TClientRouteDataRequirements &
@@ -102,50 +203,53 @@ const routes: {
   [T in TRoute]: (params: TRouteDataMap<T>) => string;
 } = {
   // Client routes
-  "client-home": () => "/",
-  "client-signin": () => "/sign-in",
-  "client-signup": () => "/sign-up",
-  "client-forget-password": () => "/forget-password",
-  "client-reset-password": () => "/reset-password",
-  "client-settings": () => "/settings",
-  "client-movie": ({ tmdbId }) => `/movie/${tmdbId}`,
-  "client-oauth-credentials": () => "/credentials",
-  "client-error": () => "/error",
-  "client-notifications": () => "/notifications",
+  [ROUTES.CLIENT.HOME]: () => "/",
+  [ROUTES.CLIENT.SIGNIN]: () => "/sign-in",
+  [ROUTES.CLIENT.SIGNUP]: () => "/sign-up",
+  [ROUTES.CLIENT.FORGET_PASSWORD]: () => "/forget-password",
+  [ROUTES.CLIENT.RESET_PASSWORD]: () => "/reset-password",
+  [ROUTES.CLIENT.SETTINGS]: () => "/settings",
+  [ROUTES.CLIENT.MOVIE]: ({ tmdbId }) => `/movie/${tmdbId}`,
+  [ROUTES.CLIENT.OAUTH_CREDENTIALS]: () => "/credentials",
+  [ROUTES.CLIENT.ERROR]: () => "/error",
+  [ROUTES.CLIENT.NOTIFICATIONS]: () => "/notifications",
 
   // API routes
-  "api-swagger": ({ mode }) => (mode ? `/api/swagger/${mode}` : "/api/swagger"),
-  "api-health": () => "/api/health",
+  [ROUTES.API.SWAGGER]: ({ mode }) =>
+    mode ? `/api/swagger/${mode}` : "/api/swagger",
+  [ROUTES.API.HEALTH]: () => "/api/health",
 
-  "api-auth": () => "/api/auth",
-  "api-authentification": () => "/api/authentification",
-  "api-authentification-signup": () => "/api/authentification/sign-up",
-  "api-authentification-signin": () => "/api/authentification/sign-in",
-  "api-authentification-signin-social": () =>
+  [ROUTES.API.AUTH]: () => "/api/auth",
+  [ROUTES.API.AUTHENTIFICATION]: () => "/api/authentification",
+  [ROUTES.API.AUTHENTIFICATION_SIGNUP]: () => "/api/authentification/sign-up",
+  [ROUTES.API.AUTHENTIFICATION_SIGNIN]: () => "/api/authentification/sign-in",
+  [ROUTES.API.AUTHENTIFICATION_SIGNIN_SOCIAL]: () =>
     "/api/authentification/sign-in-social",
-  "api-authentification-request-password-reset": () =>
+  [ROUTES.API.AUTHENTIFICATION_REQUEST_PASSWORD_RESET]: () =>
     "/api/authentification/request-password-reset",
-  "api-authentification-reset-password": () =>
+  [ROUTES.API.AUTHENTIFICATION_RESET_PASSWORD]: () =>
     "/api/authentification/reset-password",
-  "api-authentification-signout": () => "/api/authentification/sign-out",
-  "api-authentification-email-verification": () =>
+  [ROUTES.API.AUTHENTIFICATION_SIGNOUT]: () => "/api/authentification/sign-out",
+  [ROUTES.API.AUTHENTIFICATION_EMAIL_VERIFICATION]: () =>
     `/api/authentification/email-verification`,
-  "api-authentification-link": ({ providerId }) =>
+  [ROUTES.API.AUTHENTIFICATION_LINK]: ({ providerId }) =>
     providerId
       ? `/api/authentification/link/${providerId}`
       : "/api/authentification/link",
-  "api-oauth-credentials": ({ credentialId }) =>
+  [ROUTES.API.OAUTH_CREDENTIALS]: ({ credentialId }) =>
     credentialId
       ? `/api/oauth/credentials/${credentialId}`
       : "/api/oauth/credentials",
 
-  "api-users": ({ userId }) => "/api/users" + (userId ? `/${userId}` : ""),
-  "api-users-accounts": () => "/api/users/accounts",
-  "api-users-session": () => "/api/users/session",
+  [ROUTES.API.USERS]: ({ userId }) =>
+    "/api/users" + (userId ? `/${userId}` : ""),
+  [ROUTES.API.USERS_ACCOUNTS]: () => "/api/users/accounts",
+  [ROUTES.API.USERS_SESSION]: () => "/api/users/session",
 
-  "api-images": ({ imageId }) => "/api/images" + (imageId ? `/${imageId}` : ""),
+  [ROUTES.API.IMAGES]: ({ imageId }) =>
+    "/api/images" + (imageId ? `/${imageId}` : ""),
 
-  "api-movies": ({ tmdbId, resolution, subtitlesLanguage }) => {
+  [ROUTES.API.MOVIES]: ({ tmdbId, resolution, subtitlesLanguage }) => {
     if (resolution && subtitlesLanguage) {
       throw new Error(
         "Resolution and subtitles language cannot be provided together"
@@ -161,27 +265,28 @@ const routes: {
       return `/api/movies/${tmdbId}`;
     }
   },
-  "api-movies-subscription": ({ tmdbId }) =>
+  [ROUTES.API.MOVIES_SUBSCRIPTION]: ({ tmdbId }) =>
     `/api/movies/${tmdbId}/subscription`,
 
-  "api-notifications": ({ notificationId }) =>
+  [ROUTES.API.NOTIFICATIONS]: ({ notificationId }) =>
     `/api/notifications` + (notificationId ? `/${notificationId}` : ""),
-  "api-notifications-stats": () => "/api/notifications/stats",
-  "api-notifications-test": () => "/api/notifications/test",
+  [ROUTES.API.NOTIFICATIONS_STATS]: () => "/api/notifications/stats",
+  [ROUTES.API.NOTIFICATIONS_TEST]: () => "/api/notifications/test",
 
   // SSE routes
-  "sse-movies": ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
-  "sse-notifications": () => "/api/notifications/sse",
+  [ROUTES.API.SSE_MOVIES]: ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
+  [ROUTES.API.SSE_NOTIFICATIONS]: () => "/api/notifications/sse",
 
   // Streaming routes
-  "api-streaming-movie-resolution": ({ tmdbId, resolution }) =>
+  [ROUTES.API.STREAMING_MOVIE_RESOLUTION]: ({ tmdbId, resolution }) =>
     `/api/streaming/movie/${tmdbId}/resolution/${resolution}`,
-  "api-streaming-movie-subtitles": ({ tmdbId, subtitlesLanguage }) =>
+  [ROUTES.API.STREAMING_MOVIE_SUBTITLES]: ({ tmdbId, subtitlesLanguage }) =>
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
 
   // External routes
-  "external-imdb-movie": ({ imdbId }) => `https://www.imdb.com/title/${imdbId}`,
-  "external-imdb-actor": ({ imdbId }) =>
+  [ROUTES.EXTERNAL.IMDB_MOVIE]: ({ imdbId }) =>
+    `https://www.imdb.com/title/${imdbId}`,
+  [ROUTES.EXTERNAL.IMDB_ACTOR]: ({ imdbId }) =>
     `https://www.imdb.com/name/nm${imdbId}`,
 };
 
@@ -195,13 +300,33 @@ type TGetUrlArgs<T extends TRoute> = TRouteDataMap<T> extends undefined
   ? {
       withUrl?: "server" | "client";
       searchParams?: TSearchParams;
-      removeForwardSlash?: boolean;
+    }
+  : TRouteDataMap<T> extends Record<string, never>
+  ? {
+      withUrl?: "server" | "client";
+      searchParams?: TSearchParams;
     }
   : TRouteDataMap<T> & {
       withUrl?: "server" | "client";
       searchParams?: TSearchParams;
-      removeForwardSlash?: boolean;
     };
+
+const isClientRoute = (route: any): route is TClientRoute =>
+  Object.values(ROUTES.CLIENT).includes(route as TClientRoute);
+
+const isAPIRoute = (route: any): route is TAPIRoute =>
+  Object.values(ROUTES.API).includes(route as TAPIRoute);
+
+const isExternalRoute = (route: any): route is TExternalRoute =>
+  Object.values(ROUTES.EXTERNAL).includes(route as TExternalRoute);
+
+const getSchema = <T extends TRoute>(route: T) => {
+  if (isClientRoute(route)) return routeSchemas.CLIENT[route];
+  if (isAPIRoute(route)) return routeSchemas.API[route];
+  if (isExternalRoute(route)) return routeSchemas.EXTERNAL[route];
+
+  throw new Error(`No schema found for route: ${route}`);
+};
 
 export const getUrl = <T extends TRoute>(
   route: T,
@@ -209,7 +334,8 @@ export const getUrl = <T extends TRoute>(
 ): string => {
   const { withUrl, searchParams, ...rawParams } = params || {};
 
-  const routeParams = rawParams as TRouteDataMap<T>;
+  const schema = getSchema(route);
+  const routeParams = schema.parse(rawParams ?? {}) as TRouteDataMap<T>;
   const routeFn = routes[route];
 
   const computedUrl = routeFn(routeParams);

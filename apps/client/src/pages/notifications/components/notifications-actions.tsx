@@ -2,12 +2,14 @@ import { Button } from "@/components/ui/button";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { LOCAL_STORAGE_KEYS } from "@/lib/const";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import {
   getUrl,
   notificationReadStatuses,
   patchNotificationsSchemas,
   postSendTestNotificationSchemas,
+  ROUTES,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Volume2Icon, VolumeOffIcon } from "lucide-react";
@@ -29,7 +31,7 @@ export const NotificationsActions: React.FC<{
     mutationFn: async () => {
       await axiosFetch({
         method: "PATCH",
-        url: getUrl("api-notifications"),
+        url: getUrl(ROUTES.API.NOTIFICATIONS),
         schemas: patchNotificationsSchemas,
         data: {
           read: true,
@@ -38,7 +40,7 @@ export const NotificationsActions: React.FC<{
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["notifications"],
+        queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS),
       });
       toast.success(t("notifications.markedAllAsRead"));
     },
@@ -48,8 +50,13 @@ export const NotificationsActions: React.FC<{
     mutationFn: async () => {
       await axiosFetch({
         method: "POST",
-        url: getUrl("api-notifications-test"),
+        url: getUrl(ROUTES.API.NOTIFICATIONS_TEST),
         schemas: postSendTestNotificationSchemas,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS),
       });
     },
   });

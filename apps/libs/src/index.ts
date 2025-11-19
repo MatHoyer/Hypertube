@@ -12,10 +12,11 @@ export { groupBy, pick } from "./utils/object.utils.js";
 export { capitalize, capitalizeAllWords } from "./utils/string.utils.js";
 export { getClientUrl } from "./utils/url/getClientUrl.js";
 export { getServerUrl } from "./utils/url/getServerUrl.js";
-export { getUrl } from "./utils/url/getUrl.js";
+export { getUrl, ROUTES } from "./utils/url/getUrl.js";
 export type {
-  TApiRouteDataRequirements,
-  TClientRouteDataRequirements,
+  TAPIRoute,
+  TClientRoute,
+  TExternalRoute,
 } from "./utils/url/getUrl.js";
 export { convertObjectToSearchParams } from "./utils/url/searchParams.js";
 

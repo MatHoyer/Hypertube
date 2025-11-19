@@ -3,12 +3,14 @@ import { LoadingPage } from "@/components/LoadingPage";
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import {
   getMovieSchemas,
   getMovieSSESchemas,
   getUrl,
   groupBy,
   MOVIE_EVENTS,
+  ROUTES,
 } from "@hypertube/libs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
@@ -35,11 +37,11 @@ const MoviePage = () => {
   const queryClient = useQueryClient();
 
   const { data: movie, isLoading } = useQuery({
-    queryKey: ["movie", tmdbId],
+    queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
     queryFn: () =>
       axiosFetch({
         method: "GET",
-        url: getUrl("api-movies", {
+        url: getUrl(ROUTES.API.MOVIES, {
           tmdbId,
         }),
         schemas: getMovieSchemas,
@@ -68,7 +70,7 @@ const MoviePage = () => {
 
   useEffect(() => {
     const eventSource = new EventSource(
-      getUrl("sse-movies", {
+      getUrl(ROUTES.API.SSE_MOVIES, {
         tmdbId,
       })
     );
@@ -89,7 +91,9 @@ const MoviePage = () => {
         return;
       }
       console.log("downloadStateChange", data);
-      queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
+      });
     };
     const handleDownloadProgress = (event: MessageEvent<string>) => {
       const { success, data } =
@@ -102,7 +106,9 @@ const MoviePage = () => {
       }
       if (data.progress === 0) {
         console.log("movie download started");
-        queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
+        queryClient.invalidateQueries({
+          queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
+        });
       }
     };
     eventSource.addEventListener(

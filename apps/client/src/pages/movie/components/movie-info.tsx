@@ -1,7 +1,7 @@
 import { ImageContainer } from "@/components/images/ImageContainer";
 import { Badge } from "@/components/ui/badge";
 import { Typography } from "@/components/ui/typography";
-import { getUrl, type TGetMovieSchemas } from "@hypertube/libs";
+import { getUrl, ROUTES, type TGetMovieSchemas } from "@hypertube/libs";
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -21,7 +21,7 @@ const MovieInfo: React.FC<{
       </div>
       <div className="flex flex-col gap-2">
         <Link
-          to={getUrl("external-imdb-movie", {
+          to={getUrl(ROUTES.EXTERNAL.IMDB_MOVIE, {
             imdbId: movie.imdbId ?? "",
           })}
           target="_blank"

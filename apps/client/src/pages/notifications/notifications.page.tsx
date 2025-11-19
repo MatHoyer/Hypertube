@@ -13,10 +13,13 @@ import {
   LayoutTitle,
 } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import {
   getNotificationsSchemas,
   getUrl,
   notificationReadStatuses,
+  ROUTES,
+  type NotificationReadStatus,
 } from "@hypertube/libs";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { ChevronUp } from "lucide-react";
@@ -35,7 +38,7 @@ export const NotificationsPage = () => {
   const filterRef = useRef<HTMLDivElement>(null);
   const [showScrollToTopButton, setShowScrollToTopButton] =
     useState<boolean>(false);
-  const [readStatus, setReadStatus] = useState<string>(
+  const [readStatus, setReadStatus] = useState<NotificationReadStatus>(
     notificationReadStatuses.UNREAD
   );
 
@@ -43,11 +46,11 @@ export const NotificationsPage = () => {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["notifications", readStatus],
+      queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS, { type: readStatus }),
       queryFn: ({ pageParam }) => {
         return axiosFetch({
           method: "GET",
-          url: getUrl("api-notifications", {
+          url: getUrl(ROUTES.API.NOTIFICATIONS, {
             searchParams: { readStatus, page: `${pageParam}` },
           }),
           schemas: getNotificationsSchemas,
@@ -110,7 +113,7 @@ export const NotificationsPage = () => {
             value={readStatus}
             onChange={(value) => {
               topRef.current?.scrollIntoView({ behavior: "instant" });
-              setReadStatus(value);
+              setReadStatus(value as NotificationReadStatus);
             }}
             values={{
               [notificationReadStatuses.UNREAD]: t(

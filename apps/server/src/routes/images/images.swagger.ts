@@ -1,4 +1,9 @@
-import { deleteImageSchemas, getUrl, postImageSchemas } from "@hypertube/libs";
+import {
+  deleteImageSchemas,
+  getUrl,
+  postImageSchemas,
+  ROUTES,
+} from "@hypertube/libs";
 
 const imagePathParam = {
   in: "path",
@@ -7,7 +12,7 @@ const imagePathParam = {
 };
 
 export const imagesSwagger = {
-  [getUrl("api-images")]: {
+  [getUrl(ROUTES.API.IMAGES)]: {
     post: {
       summary: "Upload image",
       tags: ["Images"],
@@ -42,7 +47,7 @@ export const imagesSwagger = {
       },
     },
   },
-  [getUrl("api-images", { imageId: "{imageId}" })]: {
+  [getUrl(ROUTES.API.IMAGES, { imageId: "{imageId}" })]: {
     delete: {
       summary: "Delete image",
       tags: ["Images"],

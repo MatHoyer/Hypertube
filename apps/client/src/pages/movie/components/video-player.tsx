@@ -10,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
-import { getUrl, languageCodes, ytsQualities } from "@hypertube/libs";
+import { getUrl, languageCodes, ROUTES, ytsQualities } from "@hypertube/libs";
 import { intervalToDuration } from "date-fns";
 import { Expand, Pause, Play, Shrink, Volume2, VolumeX } from "lucide-react";
 import {
@@ -348,7 +348,7 @@ const VideoPlayer = () => {
             controls={false}
           >
             <source
-              src={getUrl("api-streaming-movie-resolution", {
+              src={getUrl(ROUTES.API.STREAMING_MOVIE_RESOLUTION, {
                 tmdbId,
                 resolution:
                   selectedResolution.resolution as (typeof ytsQualities)[number],
@@ -357,7 +357,7 @@ const VideoPlayer = () => {
             />
             {selectedSubtitlesLanguage && (
               <track
-                src={getUrl("api-streaming-movie-subtitles", {
+                src={getUrl(ROUTES.API.STREAMING_MOVIE_SUBTITLES, {
                   tmdbId,
                   subtitlesLanguage:
                     selectedSubtitlesLanguage as keyof typeof languageCodes,

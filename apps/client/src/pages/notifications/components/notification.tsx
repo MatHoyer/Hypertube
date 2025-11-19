@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { cn, getNearDateWithLocale } from "@/lib/utils";
 import type { TNotification, TNotificationSchema } from "@hypertube/libs";
 import {
   getUrl,
   notifications,
   patchNotificationsSchemas,
+  ROUTES,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -36,7 +38,9 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
     mutationFn: async () => {
       await axiosFetch({
         method: "PATCH",
-        url: getUrl("api-notifications", { notificationId: notification.id }),
+        url: getUrl(ROUTES.API.NOTIFICATIONS, {
+          notificationId: notification.id,
+        }),
         schemas: patchNotificationsSchemas,
         data: {
           read: true,
@@ -45,7 +49,7 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["notifications"],
+        queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS),
       });
       toast.success(t("notifications.markedAsRead"));
     },

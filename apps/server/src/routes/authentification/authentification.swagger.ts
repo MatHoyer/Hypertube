@@ -3,6 +3,7 @@ import {
   linkProviderAuthentificationSchemas,
   requestPasswordResetAuthentificationSchemas,
   resetPasswordAuthentificationSchemas,
+  ROUTES,
   signInAuthentificationSchemas,
   signInSocialAuthentificationSchemas,
   signOutAuthentificationSchemas,
@@ -18,7 +19,7 @@ const unlinkPathParam = {
 };
 
 export const authentificationSwagger = {
-  [getUrl("api-authentification-signup")]: {
+  [getUrl(ROUTES.API.AUTHENTIFICATION_SIGNUP)]: {
     post: {
       summary: "Sign up",
       tags: ["Auth"],
@@ -50,7 +51,7 @@ export const authentificationSwagger = {
       },
     },
   },
-  [getUrl("api-authentification-signin")]: {
+  [getUrl(ROUTES.API.AUTHENTIFICATION_SIGNIN)]: {
     post: {
       summary: "Sign in",
       tags: ["Auth"],
@@ -78,7 +79,7 @@ export const authentificationSwagger = {
       },
     },
   },
-  [getUrl("api-authentification-signin-social")]: {
+  [getUrl(ROUTES.API.AUTHENTIFICATION_SIGNIN_SOCIAL)]: {
     post: {
       summary: "Sign in with social provider",
       tags: ["Auth"],
@@ -105,7 +106,7 @@ export const authentificationSwagger = {
       },
     },
   },
-  [getUrl("api-authentification-request-password-reset")]: {
+  [getUrl(ROUTES.API.AUTHENTIFICATION_REQUEST_PASSWORD_RESET)]: {
     post: {
       summary: "Request password reset",
       tags: ["Auth"],
@@ -132,7 +133,7 @@ export const authentificationSwagger = {
       },
     },
   },
-  [getUrl("api-authentification-reset-password")]: {
+  [getUrl(ROUTES.API.AUTHENTIFICATION_RESET_PASSWORD)]: {
     post: {
       summary: "Reset password",
       tags: ["Auth"],
@@ -160,7 +161,7 @@ export const authentificationSwagger = {
       },
     },
   },
-  [getUrl("api-authentification-signout")]: {
+  [getUrl(ROUTES.API.AUTHENTIFICATION_SIGNOUT)]: {
     post: {
       summary: "Sign out",
       tags: ["Auth"],
@@ -176,7 +177,7 @@ export const authentificationSwagger = {
       },
     },
   },
-  [getUrl("api-authentification-link")]: {
+  [getUrl(ROUTES.API.AUTHENTIFICATION_LINK)]: {
     post: {
       summary: "Link provider",
       tags: ["Auth"],
@@ -203,7 +204,7 @@ export const authentificationSwagger = {
       },
     },
   },
-  [getUrl("api-authentification-link", { providerId: "{providerId}" })]: {
+  [getUrl(ROUTES.API.AUTHENTIFICATION_LINK, { providerId: "{providerId}" })]: {
     delete: {
       summary: "Unlink provider",
       tags: ["Auth"],

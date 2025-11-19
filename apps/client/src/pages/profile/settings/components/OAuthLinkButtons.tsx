@@ -8,6 +8,7 @@ import {
   betterAuthProviders,
   getUrl,
   linkProviderAuthentificationSchemas,
+  ROUTES,
   unlinkProviderAuthentificationSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -24,7 +25,7 @@ export const OAuthLinkButtons = () => {
     mutationFn: (provider: { id: (typeof betterAuthProviders)[number] }) =>
       axiosFetch({
         method: "POST",
-        url: getUrl("api-authentification-link"),
+        url: getUrl(ROUTES.API.AUTHENTIFICATION_LINK),
         schemas: linkProviderAuthentificationSchemas,
         data: {
           providerId: provider.id,
@@ -44,7 +45,9 @@ export const OAuthLinkButtons = () => {
     }) =>
       axiosFetch({
         method: "DELETE",
-        url: getUrl("api-authentification-link", { providerId: provider.id }),
+        url: getUrl(ROUTES.API.AUTHENTIFICATION_LINK, {
+          providerId: provider.id,
+        }),
         schemas: unlinkProviderAuthentificationSchemas,
         data: {
           providerId: provider.id,

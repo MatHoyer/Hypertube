@@ -1,15 +1,16 @@
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
-import { getNotificationsStatsSchemas, getUrl } from "@hypertube/libs";
+import { getQueryKey } from "@/lib/getQueryKey";
+import { getNotificationsStatsSchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 export const useNotificationsStats = () => {
   const { data: stats } = useQuery({
-    queryKey: ["notifications", "stats"],
+    queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS, { type: "stats" }),
     queryFn: async () => {
       return axiosFetch({
         method: "GET",
-        url: getUrl("api-notifications-stats"),
+        url: getUrl(ROUTES.API.NOTIFICATIONS_STATS),
         schemas: getNotificationsStatsSchemas,
       });
     },
