@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/LoadingButton";
 import {
   Tooltip,
   TooltipContent,
@@ -27,7 +27,9 @@ export const BaseLikeButton: React.FC<{
   likesNumber?: number;
   onToggle: () => void;
   likeType: TParentType;
-}> = ({ isLiked, likesNumber, onToggle, likeType }) => {
+  isPending: boolean;
+  isSuccess: boolean;
+}> = ({ isLiked, likesNumber, onToggle, likeType, isPending, isSuccess }) => {
   const tooltipText = () => {
     if (likeType === ParentTypes.MOVIE) {
       return isLiked
@@ -43,14 +45,19 @@ export const BaseLikeButton: React.FC<{
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" onClick={onToggle}>
+          <LoadingButton
+            variant="ghost"
+            onClick={onToggle}
+            loading={isPending}
+            success={isSuccess}
+          >
             <ThumbsUp
               className={`transition-colors ${
                 isLiked ? "text-primary fill-primary" : "text-gray-500"
               }`}
             />
             {likesNumber}
-          </Button>
+          </LoadingButton>
         </TooltipTrigger>
         <TooltipContent>{tooltipText()}</TooltipContent>
       </Tooltip>
@@ -65,7 +72,7 @@ export const MovieLikeButton: React.FC<{
 }> = ({ tmdbId, isLiked, likesNumber }) => {
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
+  const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: () =>
       axiosFetch({
         method: isLiked ? "DELETE" : "POST",
@@ -83,6 +90,8 @@ export const MovieLikeButton: React.FC<{
       likesNumber={likesNumber}
       onToggle={() => mutate()}
       likeType={ParentTypes.MOVIE}
+      isPending={isPending}
+      isSuccess={isSuccess}
     />
   );
 };
@@ -95,7 +104,7 @@ export const CommentLikeButton: React.FC<{
 }> = ({ commentId, isLiked, likesNumber, parent }) => {
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
+  const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: () =>
       axiosFetch({
         method: isLiked ? "DELETE" : "POST",
@@ -114,6 +123,8 @@ export const CommentLikeButton: React.FC<{
       likesNumber={likesNumber}
       onToggle={() => mutate()}
       likeType={parent.type}
+      isPending={isPending}
+      isSuccess={isSuccess}
     />
   );
 };

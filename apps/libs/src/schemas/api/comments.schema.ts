@@ -1,8 +1,9 @@
 import z from "zod";
-import { commentSchema } from "../database/comments.schema.js";
-import { userSchema } from "../database/user.schema.js";
+import {
+  commentResponseSchema,
+  commentSchema,
+} from "../database/comments.schema.js";
 
-//TODO create commentSchema override
 export const getCommentRepliesSchemas = {
   urlParams: z.object({
     commentId: commentSchema.shape.parentId,
@@ -12,25 +13,7 @@ export const getCommentRepliesSchemas = {
     pageSize: z.coerce.number().int().positive().max(100).default(10),
   }),
   response: z.object({
-    comments: z.array(
-      commentSchema
-        .pick({
-          id: true,
-          content: true,
-          userId: true,
-          createdAt: true,
-          updatedAt: true,
-        })
-        .extend({
-          user: userSchema.pick({
-            id: true,
-            name: true,
-          }),
-          likesNumber: z.number(),
-          isLikedByUser: z.boolean(),
-          isOwnComment: z.boolean(),
-        })
-    ),
+    comments: z.array(commentResponseSchema),
     page: z.number(),
     pageSize: z.number(),
     totalComments: z.number(),

@@ -1,15 +1,10 @@
+import { LoadingButton } from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupTextarea,
 } from "@/components/ui/input-group";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import {
   getUrl,
@@ -30,7 +25,11 @@ export const PostMovieComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
 }) => {
   const queryClient = useQueryClient();
 
-  const { mutate: postComment } = useMutation({
+  const {
+    mutate: postComment,
+    isPending,
+    isSuccess,
+  } = useMutation({
     mutationFn: (content: string) =>
       axiosFetch({
         method: "POST",
@@ -42,7 +41,13 @@ export const PostMovieComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
       queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] }),
   });
 
-  return <BasePostComment postComment={postComment} />;
+  return (
+    <BasePostComment
+      postComment={postComment}
+      isPending={isPending}
+      isSuccess={isSuccess}
+    />
+  );
 };
 
 export const PostReplyComment: React.FC<{
@@ -51,7 +56,11 @@ export const PostReplyComment: React.FC<{
 }> = ({ commentId, setIsReplying }) => {
   const queryClient = useQueryClient();
 
-  const { mutate: postReply } = useMutation({
+  const {
+    mutate: postReply,
+    isPending,
+    isSuccess,
+  } = useMutation({
     mutationFn: (content: string) =>
       axiosFetch({
         method: "POST",
@@ -67,12 +76,20 @@ export const PostReplyComment: React.FC<{
     },
   });
 
-  return <BasePostComment postComment={postReply} />;
+  return (
+    <BasePostComment
+      postComment={postReply}
+      isPending={isPending}
+      isSuccess={isSuccess}
+    />
+  );
 };
 
 const BasePostComment: React.FC<{
   postComment: (content: string) => void;
-}> = ({ postComment }) => {
+  isPending: boolean;
+  isSuccess: boolean;
+}> = ({ postComment, isPending, isSuccess }) => {
   const [newComment, setNewComment] = useState("");
 
   const handleCancel = () => setNewComment("");
@@ -95,37 +112,21 @@ const BasePostComment: React.FC<{
       />
       <InputGroupAddon align="inline-end">
         {newComment && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button disabled={!newComment} onClick={handleCancel}>
-                  {t("movie.comments.cancel")}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {t("movie.comments.tooltip.cancel")}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Button disabled={!newComment} onClick={handleCancel}>
+            {t("movie.comments.cancel")}
+          </Button>
         )}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={() => {
-                  postComment(newComment);
-                  setNewComment("");
-                }}
-              >
-                {t("movie.comments.sendComment")}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {t("movie.comments.tooltip.sendComment")}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </InputGroupAddon>{" "}
+        <LoadingButton
+          loading={isPending}
+          success={isSuccess}
+          onClick={() => {
+            postComment(newComment);
+            setNewComment("");
+          }}
+        >
+          {t("movie.comments.sendComment")}
+        </LoadingButton>
+      </InputGroupAddon>
     </InputGroup>
   );
 };
@@ -139,7 +140,11 @@ export const EditCommentButton: React.FC<{
   const queryClient = useQueryClient();
   const [editedContent, setEditedContent] = useState(initialContent);
 
-  const { mutate: patchComment, isPending } = useMutation({
+  const {
+    mutate: patchComment,
+    isPending,
+    isSuccess,
+  } = useMutation({
     mutationFn: (content: string) =>
       axiosFetch({
         method: "PATCH",
@@ -148,12 +153,12 @@ export const EditCommentButton: React.FC<{
         schemas: patchCommentSchemas,
       }),
     onSuccess: () => {
-      toast.success("Comment updated successfully");
+      toast.success(t("movie.comments.toast.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: getParentQueryKey(parent) });
       setIsEditing(false);
     },
     onError: () => {
-      toast.error("Comment updating error");
+      toast.error(t("movie.comments.toast.updateError"));
     },
   });
 
@@ -179,32 +184,17 @@ export const EditCommentButton: React.FC<{
         disabled={isPending}
       />
       <InputGroupAddon align="inline-end">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button disabled={isPending} onClick={() => handleCancel()}>
-                {t("movie.comments.cancel")}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {t("movie.comments.tooltip.cancel")}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                disabled={isPending}
-                onClick={() => patchComment(editedContent)}
-              >
-                {t("movie.comments.save")}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{t("movie.comments.tooltip.edit")}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </InputGroupAddon>{" "}
+        <Button disabled={isPending} onClick={() => handleCancel()}>
+          {t("movie.comments.cancel")}
+        </Button>
+        <LoadingButton
+          success={isSuccess}
+          loading={isPending}
+          onClick={() => patchComment(editedContent)}
+        >
+          {t("movie.comments.save")}
+        </LoadingButton>
+      </InputGroupAddon>
     </InputGroup>
   );
 };

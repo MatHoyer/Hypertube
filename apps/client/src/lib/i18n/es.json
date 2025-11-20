@@ -200,19 +200,16 @@
       "editComment": "Cambiar el comentario",
       "cancel": "Cancel",
       "save": "Save",
-      "tooltip": {
-        "deleteComment": "Eliminar el comentario",
-        "sendComment": "Enviar el comentario",
-        "cancel": "Eliminar",
-        "edit": "Cambiar el comentario"
-      },
+      "reply": "Responder",
       "likes": {
         "likeComment": "Me gusta este comentario",
         "unlikeComment": "Ya no me gusta este comentario"
       },
       "toast": {
         "deleteSuccess": "El comentario se eliminó correctamente",
-        "deleteError": "No se pudo eliminar el comentario"
+        "deleteError": "No se ha podido eliminar el comentario",
+        "updateSuccess": "El comentario se ha actualizado correctamente.",
+        "updateError": "No se ha podido actualizar el comentario."
       }
     }
   },

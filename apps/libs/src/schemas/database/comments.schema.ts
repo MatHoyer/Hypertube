@@ -14,4 +14,20 @@ export const commentSchema = z.object({
   updatedAt: z.coerce.date(),
 });
 
+export const commentResponseSchema = commentSchema
+  .pick({
+    id: true,
+    content: true,
+    userId: true,
+    createdAt: true,
+    updatedAt: true,
+  })
+  .extend({
+    user: userSchema.pick({ id: true, name: true }),
+    likesNumber: z.number(),
+    isLikedByUser: z.boolean(),
+    isOwnComment: z.boolean(),
+  });
+
 export type TCommentSchema = z.infer<typeof commentSchema>;
+export type TCommentResponseSchema = z.infer<typeof commentResponseSchema>;

@@ -1,3 +1,4 @@
+import { LoadingButton } from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,6 +22,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import { t } from "i18next";
 import { ChevronDown, MoreVertical } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -38,7 +40,11 @@ export const CommentActionsDropdown: React.FC<{
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
 
-  const { mutate: deleteComment, isPending: isDeleting } = useMutation({
+  const {
+    mutate: deleteComment,
+    isPending: isDeleting,
+    isSuccess,
+  } = useMutation({
     mutationFn: () =>
       axiosFetch({
         method: "DELETE",
@@ -69,19 +75,27 @@ export const CommentActionsDropdown: React.FC<{
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="relative w-60">
         <Button className="rounded-full size-fit p-0">
-          <MoreVertical />{" "}
+          <MoreVertical />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => setIsEditing(true)}>
-            {t("movie.comments.editComment")}
+            <Typography variant="small">
+              {t("movie.comments.editComment")}
+            </Typography>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => deleteComment()}
-            disabled={isDeleting}
-          >
-            {t("movie.comments.deleteComment")}
+          <DropdownMenuItem asChild>
+            <LoadingButton
+              variant="ghost"
+              onClick={() => deleteComment()}
+              loading={isDeleting}
+              success={isSuccess}
+            >
+              <Typography variant="small">
+                {t("movie.comments.deleteComment")}
+              </Typography>
+            </LoadingButton>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
@@ -154,7 +168,9 @@ export const CommentComponent: React.FC<{
           likesNumber={comment.likesNumber}
           parent={parent}
         />
-        <Button onClick={() => setIsReplying((prev) => !prev)}>Répondre</Button>
+        <Button onClick={() => setIsReplying((prev) => !prev)}>
+          {t("movie.comments.reply")}
+        </Button>
         {isReplying && (
           <PostReplyComment
             commentId={comment.id}
@@ -178,13 +194,14 @@ export const CommentComponent: React.FC<{
           ))
         )}
       </div>
-      <button
-        className="cursor-pointer"
+      <LoadingButton
+        variant="ghost"
+        loading={isFetchingNextPage}
         disabled={!hasNextPage || isFetchingNextPage}
         onClick={() => fetchNextPage()}
       >
-        {isFetchingNextPage ? "..." : hasNextPage ? <ChevronDown /> : null}
-      </button>
+        {hasNextPage ? <ChevronDown /> : null}
+      </LoadingButton>
     </div>
   );
 };

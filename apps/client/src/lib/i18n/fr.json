@@ -200,19 +200,16 @@
       "editComment": "Modifier le commentaire",
       "cancel": "Annuler",
       "save": "Sauvegarder",
-      "tooltip": {
-        "deleteComment": "Supprimer le commentaire",
-        "sendComment": "Envoyer le commentaire",
-        "cancel": "Annuler",
-        "edit": "Modifier le commentaire"
-      },
+      "reply": "Répondre",
       "likes": {
         "likeComment": "J'aime ce commentaire",
         "unlikeComment": "Je n'aime plus ce commentaire"
       },
       "toast": {
         "deleteSuccess": "Le commentaire a bien été supprimé.",
-        "deleteError": "Le commentaire n'a pas pu être supprimé."
+        "deleteError": "Le commentaire n'a pas pu être supprimé.",
+        "updateSuccess": "Le commentaire a bien été mis à jour.",
+        "updateError": "Le commentaire n'a pas pu être mis à jour."
       }
     }
   },

@@ -1,3 +1,4 @@
+import { LoadingButton } from "@/components/LoadingButton";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
@@ -130,7 +131,6 @@ export const MovieInteraction = ({
           {data?.pages?.[0]?.totalComments} {t("movie.comments.comments")}
         </Typography>
         <Typography variant="large">
-          {" "}
           {movie.likesNumber} {t("movie.likes.likes")}
         </Typography>
         <MovieLikeButton
@@ -153,13 +153,14 @@ export const MovieInteraction = ({
           ))
         )}
       </div>
-      <button
-        className="cursor-pointer"
+      <LoadingButton
+        variant="ghost"
+        loading={isFetchingNextPage}
         disabled={!hasNextPage || isFetchingNextPage}
         onClick={() => fetchNextPage()}
       >
-        {isFetchingNextPage ? "..." : hasNextPage ? <ChevronDown /> : null}
-      </button>
+        {hasNextPage ? <ChevronDown /> : null}
+      </LoadingButton>
     </div>
   );
 };

@@ -6,13 +6,15 @@ import {
   tmdbSorts,
 } from "../../const/tmdb.const.js";
 import { typedKeys } from "../../utils/object.utils.js";
-import { commentSchema } from "../database/comments.schema.js";
+import {
+  commentResponseSchema,
+  commentSchema,
+} from "../database/comments.schema.js";
 import {
   movieSchema,
   resolutionSchema,
   subtitleSchema,
 } from "../database/movie.schema.js";
-import { userSchema } from "../database/user.schema.js";
 
 export const tmdbMovieSchema = z.object({
   id: z.coerce.number().int().nonnegative(),
@@ -200,25 +202,7 @@ export const getMovieCommentSchemas = {
     pageSize: z.coerce.number().int().positive().max(100).default(10),
   }),
   response: z.object({
-    comments: z.array(
-      commentSchema
-        .pick({
-          id: true,
-          content: true,
-          userId: true,
-          createdAt: true,
-          updatedAt: true,
-        })
-        .extend({
-          user: userSchema.pick({
-            id: true,
-            name: true,
-          }),
-          likesNumber: z.number(),
-          isLikedByUser: z.boolean(),
-          isOwnComment: z.boolean(),
-        })
-    ),
+    comments: z.array(commentResponseSchema),
     page: z.number(),
     pageSize: z.number(),
     totalComments: z.number(),
