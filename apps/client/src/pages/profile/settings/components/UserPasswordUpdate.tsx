@@ -19,6 +19,7 @@ import { useAuthAccounts } from "@/hooks/use-auth-accounts";
 import { useRequiredUser } from "@/hooks/use-required-user";
 import { credentialId } from "@/lib/better-auth/constants";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getUrl, patchUsersSchemas, ROUTES } from "@hypertube/libs";
@@ -66,10 +67,10 @@ export const UserPasswordUpdate = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["session"],
+        queryKey: getQueryKey(ROUTES.API.USERS_SESSION),
       });
       queryClient.invalidateQueries({
-        queryKey: ["accounts"],
+        queryKey: getQueryKey(ROUTES.API.USERS_ACCOUNTS),
       });
       form.reset();
       toast.success(t("settings.updateInfo"));

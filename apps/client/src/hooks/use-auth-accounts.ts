@@ -1,10 +1,11 @@
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { getAccountsUsersSchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 
 export const useAuthAccounts = () => {
   const query = useQuery({
-    queryKey: ["accounts"],
+    queryKey: getQueryKey(ROUTES.API.USERS_ACCOUNTS),
     queryFn: () =>
       axiosFetch({
         method: "GET",

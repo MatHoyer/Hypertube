@@ -3,6 +3,7 @@ import { LoadingButton } from "@/components/LoadingButton";
 import { Input } from "@/components/ui/input";
 import { useRequiredUser } from "@/hooks/use-required-user";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import {
   deleteImageSchemas,
   getUrl,
@@ -56,7 +57,7 @@ export const ProfilePictureUpdate = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["session"],
+        queryKey: getQueryKey(ROUTES.API.USERS_SESSION),
       });
       toast.success(t("settings.updatePicture"));
     },
@@ -87,7 +88,7 @@ export const ProfilePictureUpdate = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["session"],
+        queryKey: getQueryKey(ROUTES.API.USERS_SESSION),
       });
       toast.success(t("settings.updatePicture"));
     },

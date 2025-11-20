@@ -48,7 +48,9 @@ export const UserDropdown = () => {
         schemas: signOutAuthentificationSchemas,
       }),
     onSuccess: () => {
-      queryClient.resetQueries({ queryKey: ["session"] });
+      queryClient.resetQueries({
+        queryKey: getQueryKey(ROUTES.API.USERS_SESSION),
+      });
     },
     onError: (e) => {
       toast.error(e.message);
