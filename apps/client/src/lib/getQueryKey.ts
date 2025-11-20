@@ -3,6 +3,8 @@ import type { QueryKey } from "@tanstack/react-query";
 import z from "zod";
 
 const apiRouteQueryKeySchemas = {
+  [ROUTES.API.USERS_SESSION]: z.object({}),
+  [ROUTES.API.USERS_ACCOUNTS]: z.object({}),
   [ROUTES.API.MOVIES]: z.object({
     tmdbId: z.number().optional(),
   }),
@@ -29,6 +31,8 @@ type TRouteDataMap<T extends TRoute> = T extends keyof TApiRouteDataRequirements
 const queryKeys: {
   [T in TRoute]: (params: TRouteDataMap<T>) => QueryKey;
 } = {
+  [ROUTES.API.USERS_SESSION]: () => [ROUTES.API.USERS_SESSION],
+  [ROUTES.API.USERS_ACCOUNTS]: () => [ROUTES.API.USERS_ACCOUNTS],
   [ROUTES.API.MOVIES]: ({ tmdbId }) => {
     return tmdbId ? [ROUTES.API.MOVIES, tmdbId] : [ROUTES.API.MOVIES];
   },

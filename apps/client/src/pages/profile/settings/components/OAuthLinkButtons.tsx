@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useAuthAccounts } from "@/hooks/use-auth-accounts";
 import { supportedOAuths } from "@/lib/better-auth/constants";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import type { TBetterAuthProviders } from "@hypertube/libs";
 import {
   betterAuthProviders,
@@ -55,7 +56,9 @@ export const OAuthLinkButtons = () => {
       }),
     onSuccess: () => {
       toast.success(t("settings.unlinkMessage"));
-      queryClient.invalidateQueries({ queryKey: ["accounts"] });
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.USERS_ACCOUNTS),
+      });
     },
     onError: (e) => {
       toast.error(e.message);

@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import InputPassword from "@/components/ui/input-password";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getUrl, ROUTES, signInAuthentificationSchemas } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -45,7 +46,9 @@ export const SignInForm = () => {
       }),
     onSuccess: () => {
       toast.success(t("sign.connexion"));
-      queryClient.invalidateQueries({ queryKey: ["session"] });
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.USERS_SESSION),
+      });
     },
     onError: (e) => {
       toast.error(e.message);

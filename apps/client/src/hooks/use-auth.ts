@@ -1,10 +1,11 @@
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { getSessionUsersSchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 
 export const useAuth = () => {
   const query = useQuery({
-    queryKey: ["session"],
+    queryKey: getQueryKey(ROUTES.API.USERS_SESSION),
     queryFn: () =>
       axiosFetch({
         method: "GET",

@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useRequiredUser } from "@/hooks/use-required-user";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getUrl, patchUsersSchemas, pick, ROUTES } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -63,7 +64,7 @@ export const UserInfoUpdate = () => {
       }),
     onSuccess: (_, newData) => {
       queryClient.invalidateQueries({
-        queryKey: ["session"],
+        queryKey: getQueryKey(ROUTES.API.USERS_SESSION),
       });
       form.reset(newData);
       toast.success(t("settings.updateInfo"));
