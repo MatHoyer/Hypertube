@@ -28,6 +28,12 @@ const apiRouteQueryKeySchemas = {
       .optional(),
   }),
   [ROUTES.API.OAUTH_CREDENTIALS]: z.object({}),
+  [ROUTES.API.MOVIES_COMMENT]: z.object({
+    tmdbId: z.number(),
+  }),
+  [ROUTES.API.COMMENTS_REPLIES]: z.object({
+    commentId: z.string(),
+  }),
 };
 
 type TApiRouteDataRequirements = {
@@ -62,6 +68,12 @@ const queryKeys: {
       : [ROUTES.API.NOTIFICATIONS, type];
   },
   [ROUTES.API.OAUTH_CREDENTIALS]: () => [ROUTES.API.OAUTH_CREDENTIALS],
+  [ROUTES.API.MOVIES_COMMENT]: ({ tmdbId }) => {
+    return ["movie-comments", tmdbId];
+  },
+  [ROUTES.API.COMMENTS_REPLIES]: ({ commentId }) => {
+    return ["comment-replies", commentId];
+  },
 };
 
 export const getQueryKey = <T extends TRoute>(

@@ -6,6 +6,7 @@ import {
   patchCommentSchemas,
   postCommentLikeSchemas,
   postCommentReplySchemas,
+  ROUTES,
 } from "@hypertube/libs";
 
 const commentIdPathParam = {
@@ -16,7 +17,7 @@ const commentIdPathParam = {
 };
 
 export const commentsSwagger = {
-  [getUrl("api-comments-replies", { commentId: "{commentId}" })]: {
+  [getUrl(ROUTES.API.COMMENTS_REPLIES, { commentId: "{commentId}" })]: {
     get: {
       summary: "Get comment replies",
       tags: ["Comments"],
@@ -80,7 +81,7 @@ export const commentsSwagger = {
     },
   },
 
-  [getUrl("api-comments-like", { commentId: "{commentId}" })]: {
+  [getUrl(ROUTES.API.COMMENTS_LIKES, { commentId: "{commentId}" })]: {
     post: {
       summary: "Like a comment",
       tags: ["Comments"],
@@ -122,7 +123,7 @@ export const commentsSwagger = {
     },
   },
 
-  [getUrl("api-comments", { commentId: "{commentId}" })]: {
+  [getUrl(ROUTES.API.COMMENTS, { commentId: "{commentId}" })]: {
     patch: {
       summary: "Update a comment",
       tags: ["Comments"],

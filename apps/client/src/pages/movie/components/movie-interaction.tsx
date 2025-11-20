@@ -94,7 +94,7 @@ export const MovieInteraction = ({
     isFetchingNextPage,
     status: _,
   } = useInfiniteQuery({
-    queryKey: ["movie-comments", movie.tmdbId],
+    queryKey: getQueryKey(ROUTES.API.MOVIES_COMMENT, { tmdbId: movie.tmdbId }),
     queryFn: async ({ pageParam }) =>
       axiosFetch({
         method: "GET",

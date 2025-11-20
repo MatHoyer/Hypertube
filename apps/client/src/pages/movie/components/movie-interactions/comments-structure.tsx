@@ -9,11 +9,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import {
   deleteCommentSchemas,
   getCommentRepliesSchemas,
   getUrl,
   ParentTypes,
+  ROUTES,
   type TGetMovieCommentsSchemas,
 } from "@hypertube/libs";
 import type { TCommentSchema } from "@hypertube/libs/src/schemas/database/comments.schema";
@@ -48,7 +50,7 @@ export const CommentActionsDropdown: React.FC<{
     mutationFn: () =>
       axiosFetch({
         method: "DELETE",
-        url: getUrl("api-comments", { commentId }),
+        url: getUrl(ROUTES.API.COMMENTS, { commentId }),
         schemas: deleteCommentSchemas,
       }),
     onSuccess: () => {
@@ -118,11 +120,13 @@ export const CommentComponent: React.FC<{
     isFetchingNextPage,
     status: _,
   } = useInfiniteQuery({
-    queryKey: ["comment-replies", comment.id],
+    queryKey: getQueryKey(ROUTES.API.COMMENTS_REPLIES, {
+      commentId: comment.id,
+    }),
     queryFn: async ({ pageParam }) =>
       axiosFetch({
         method: "GET",
-        url: getUrl("api-comments-replies", {
+        url: getUrl(ROUTES.API.COMMENTS_REPLIES, {
           commentId: comment.id,
           searchParams: { page: pageParam.toString(), pageSize: "10" },
         }),

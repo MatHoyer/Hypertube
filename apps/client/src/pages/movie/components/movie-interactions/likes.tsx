@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import {
   deleteCommentLikeSchemas,
   deleteMovieLikeSchemas,
@@ -13,6 +14,7 @@ import {
   ParentTypes,
   postCommentLikeSchemas,
   postMovieLikeSchemas,
+  ROUTES,
   type TMovieSchema,
   type TParentType,
 } from "@hypertube/libs";
@@ -76,11 +78,13 @@ export const MovieLikeButton: React.FC<{
     mutationFn: () =>
       axiosFetch({
         method: isLiked ? "DELETE" : "POST",
-        url: getUrl("api-movies-like", { tmdbId }),
+        url: getUrl(ROUTES.API.MOVIES_LIKE, { tmdbId }),
         schemas: isLiked ? deleteMovieLikeSchemas : postMovieLikeSchemas,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["movie", tmdbId] });
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
+      });
     },
   });
 
@@ -108,11 +112,10 @@ export const CommentLikeButton: React.FC<{
     mutationFn: () =>
       axiosFetch({
         method: isLiked ? "DELETE" : "POST",
-        url: getUrl("api-comments-like", { commentId }),
+        url: getUrl(ROUTES.API.COMMENTS_LIKES, { commentId }),
         schemas: isLiked ? deleteCommentLikeSchemas : postCommentLikeSchemas,
       }),
     onSuccess: () => {
-      console.log("invalidating query key", getParentQueryKey(parent));
       queryClient.invalidateQueries({ queryKey: getParentQueryKey(parent) });
     },
   });

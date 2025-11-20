@@ -6,11 +6,13 @@ import {
   InputGroupTextarea,
 } from "@/components/ui/input-group";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import {
   getUrl,
   patchCommentSchemas,
   postCommentReplySchemas,
   postMovieCommentSchemas,
+  ROUTES,
   type TMovieSchema,
 } from "@hypertube/libs";
 import type { TCommentSchema } from "@hypertube/libs/src/schemas/database/comments.schema";
@@ -33,12 +35,14 @@ export const PostMovieComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
     mutationFn: (content: string) =>
       axiosFetch({
         method: "POST",
-        url: getUrl("api-movies-comment", { tmdbId }),
+        url: getUrl(ROUTES.API.MOVIES_COMMENT, { tmdbId }),
         data: { content },
         schemas: postMovieCommentSchemas,
       }),
     onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["movie-comments", tmdbId] }),
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.MOVIES_COMMENT, { tmdbId }),
+      }),
   });
 
   return (
@@ -64,13 +68,13 @@ export const PostReplyComment: React.FC<{
     mutationFn: (content: string) =>
       axiosFetch({
         method: "POST",
-        url: getUrl("api-comments-replies", { commentId }),
+        url: getUrl(ROUTES.API.COMMENTS_REPLIES, { commentId }),
         data: { content },
         schemas: postCommentReplySchemas,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["comment-replies", commentId],
+        queryKey: getQueryKey(ROUTES.API.COMMENTS_REPLIES, { commentId }),
       });
       setIsReplying(false);
     },
@@ -148,7 +152,7 @@ export const EditCommentButton: React.FC<{
     mutationFn: (content: string) =>
       axiosFetch({
         method: "PATCH",
-        url: getUrl("api-comments", { commentId }),
+        url: getUrl(ROUTES.API.COMMENTS, { commentId }),
         data: { content },
         schemas: patchCommentSchemas,
       }),
