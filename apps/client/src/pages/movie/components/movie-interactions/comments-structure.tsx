@@ -194,14 +194,16 @@ export const CommentComponent: React.FC<{
           ))
         )}
       </div>
-      <LoadingButton
-        variant="ghost"
-        loading={isFetchingNextPage}
-        disabled={!hasNextPage || isFetchingNextPage}
-        onClick={() => fetchNextPage()}
-      >
-        {hasNextPage ? <ChevronDown /> : null}
-      </LoadingButton>
+      {hasNextPage && (
+        <LoadingButton
+          variant="ghost"
+          loading={isFetchingNextPage}
+          disabled={!hasNextPage || isFetchingNextPage}
+          onClick={() => fetchNextPage()}
+        >
+          <ChevronDown />
+        </LoadingButton>
+      )}
     </div>
   );
 };
