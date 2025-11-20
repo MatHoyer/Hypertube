@@ -24,8 +24,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { t } from "i18next";
-import { ChevronDown, MoreVertical } from "lucide-react";
+import { ChevronDown, MoreVertical, Reply } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -75,8 +74,8 @@ export const CommentActionsDropdown: React.FC<{
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild className="relative w-60">
-        <Button className="rounded-full size-fit p-0">
+      <DropdownMenuTrigger asChild>
+        <Button className="rounded-full" size="icon" variant="ghost">
           <MoreVertical />
         </Button>
       </DropdownMenuTrigger>
@@ -165,15 +164,19 @@ export const CommentComponent: React.FC<{
       >
         {comment.content}
       </Typography>
-      <div className="flex space-x-4">
+      <div className="flex gap-4 justify-end">
         <CommentLikeButton
           commentId={comment.id}
           isLiked={comment.isLikedByUser}
           likesNumber={comment.likesNumber}
           parent={parent}
         />
-        <Button onClick={() => setIsReplying((prev) => !prev)}>
-          {t("movie.comments.reply")}
+        <Button
+          className="rounded-full"
+          size="icon"
+          onClick={() => setIsReplying((prev) => !prev)}
+        >
+          <Reply />
         </Button>
         {isReplying && (
           <PostReplyComment

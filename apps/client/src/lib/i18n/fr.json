@@ -115,8 +115,6 @@
     },
     "cast": "Casting",
     "subscriptions": {
-      "subscribe": "S'abonner aux notifications",
-      "unsubscribe": "Se désabonner des notifications",
       "tooltip": {
         "subscribe": "S'abonner aux notifications pour recevoir des notifications lorsque quelque chose se passe lié à ce film",
         "unsubscribe": "Se désabonner des notifications pour ne plus recevoir des notifications lorsque quelque chose se passe lié à ce film"
@@ -195,12 +193,10 @@
     "comments": {
       "comments": "Commentaires",
       "addComment": "Ajouter un commentaire...",
-      "sendComment": "Envoyer",
       "deleteComment": "Supprimer",
       "editComment": "Modifier le commentaire",
       "cancel": "Annuler",
       "save": "Sauvegarder",
-      "reply": "Répondre",
       "likes": {
         "likeComment": "J'aime ce commentaire",
         "unlikeComment": "Je n'aime plus ce commentaire"

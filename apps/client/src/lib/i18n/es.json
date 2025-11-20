@@ -115,8 +115,6 @@
     },
     "cast": "Reparto",
     "subscriptions": {
-      "subscribe": "Suscribirse a notificaciones",
-      "unsubscribe": "Darse de baja",
       "tooltip": {
         "subscribe": "Activa las notificaciones para recibir actualizaciones sobre esta película",
         "unsubscribe": "Desactiva las notificaciones para dejar de recibir actualizaciones sobre esta película"
@@ -195,12 +193,10 @@
     "comments": {
       "comments": "Comentarios",
       "addComment": "Añadir un comentario...",
-      "sendComment": "Enviar",
       "deleteComment": "Eliminar",
       "editComment": "Cambiar el comentario",
       "cancel": "Cancel",
       "save": "Save",
-      "reply": "Responder",
       "likes": {
         "likeComment": "Me gusta este comentario",
         "unlikeComment": "Ya no me gusta este comentario"

@@ -1,5 +1,4 @@
 import { LoadingButton } from "@/components/LoadingButton";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -26,7 +25,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { t } from "i18next";
-import { ChevronDown } from "lucide-react";
+import { BellOff, BellRing, ChevronDown } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -66,13 +65,11 @@ const SubscriptionButton: React.FC<{
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button onClick={() => toggleSubscription()}>
-            {isSubscribed
-              ? t("movie.subscriptions.unsubscribe")
-              : t("movie.subscriptions.subscribe")}
+          <Button variant="ghost" onClick={() => toggleSubscription()}>
+            {isSubscribed ? <BellOff /> : <BellRing />}
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
+        <TooltipContent className="w-64">
           {isSubscribed
             ? t("movie.subscriptions.tooltip.unsubscribe")
             : t("movie.subscriptions.tooltip.subscribe")}
@@ -120,19 +117,16 @@ export const MovieInteraction = ({
   });
 
   return (
-    <div className="h-[1500px] border">
-      <ThemeToggle />
-      <SubscriptionButton
-        tmdbId={movie.tmdbId}
-        isSubscribed={movie.isSubscribed}
-      />
-      <div className="text-2xl font-extrabold flex justify-between">
+    <div className="flex flex-col gap-1">
+      <div className="flex">
         <Typography variant="large">
           {data?.pages?.[0]?.totalComments} {t("movie.comments.comments")}
         </Typography>
-        <Typography variant="large">
-          {movie.likesNumber} {t("movie.likes.likes")}
-        </Typography>
+        <div className="flex-1" />
+        <SubscriptionButton
+          tmdbId={movie.tmdbId}
+          isSubscribed={movie.isSubscribed}
+        />
         <MovieLikeButton
           tmdbId={movie.tmdbId}
           isLiked={movie.isLikedByUser}

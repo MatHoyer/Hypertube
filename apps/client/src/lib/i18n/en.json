@@ -115,8 +115,6 @@
     },
     "cast": "Cast",
     "subscriptions": {
-      "subscribe": "Subscribe to notifications",
-      "unsubscribe": "Unsubscribe from notifications",
       "tooltip": {
         "subscribe": "Subscribe to notifications to get notified when something happens related to this movie",
         "unsubscribe": "Unsubscribe from notifications to stop getting notified when something happens related to this movie"
@@ -195,12 +193,10 @@
     "comments": {
       "comments": "Comments",
       "addComment": "Add a comment...",
-      "sendComment": "Send",
       "deleteComment": "Delete",
       "editComment": "Edit the comment",
       "cancel": "Cancel",
       "save": "Save",
-      "reply": "Reply",
       "likes": {
         "likeComment": "I like this comment",
         "unlikeComment": "I don't like this comment anymore"

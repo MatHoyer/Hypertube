@@ -18,6 +18,7 @@ import {
 import type { TCommentSchema } from "@hypertube/libs/src/schemas/database/comments.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { t } from "i18next";
+import { Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { getParentQueryKey, type TQueryParent } from "./utils";
@@ -114,13 +115,17 @@ const BasePostComment: React.FC<{
           }
         }}
       />
-      <InputGroupAddon align="inline-end">
+      <InputGroupAddon align="block-end">
+        <div className="flex-1" />
         {newComment && (
-          <Button disabled={!newComment} onClick={handleCancel}>
+          <Button variant="ghost" disabled={!newComment} onClick={handleCancel}>
             {t("movie.comments.cancel")}
           </Button>
         )}
+
         <LoadingButton
+          className="rounded-full"
+          size="icon"
           loading={isPending}
           success={isSuccess}
           onClick={() => {
@@ -128,7 +133,7 @@ const BasePostComment: React.FC<{
             setNewComment("");
           }}
         >
-          {t("movie.comments.sendComment")}
+          <Send />
         </LoadingButton>
       </InputGroupAddon>
     </InputGroup>
