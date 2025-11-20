@@ -3,34 +3,34 @@
     "hello": "Hola"
   },
   "images": {
-    "notFound": "",
-    "invalidFile": "",
-    "deleteFail": ""
+    "notFound": "Imagen no encontrada",
+    "invalidFile": "Archivo inválido",
+    "deleteFail": "No se pudo eliminar la imagen"
   },
   "email": {
-    "ignoreEmail": "",
-    "allRightsReserved": "",
+    "ignoreEmail": "Si no solicitaste este correo, puedes ignorarlo.",
+    "allRightsReserved": "Todos los derechos reservados.",
     "verification": {
-      "confirmEmail": "",
-      "confirm": ""
+      "confirmEmail": "Confirmar correo electrónico",
+      "confirm": "Confirmar"
     },
     "password": {
-      "resetPassword": "",
-      "reset": ""
+      "resetPassword": "Restablecer contraseña",
+      "reset": "Restablecer"
     },
     "error": {
-      "invalidToken": "",
-      "userNotFound": "",
-      "expirationTime": ""
+      "invalidToken": "Token inválido",
+      "userNotFound": "Usuario no encontrado",
+      "expirationTime": "Este enlace ha expirado"
     }
   },
   "httpCode": {
-    "400": "",
-    "401": ""
+    "400": "Solicitud incorrecta",
+    "401": "No autorizado"
   },
   "betterAuthError": {
     "INVALID_USERNAME_OR_PASSWORD": "Nombre de usuario o contraseña inválidos",
-    "EMAIL_NOT_VERIFIED": "Correo electrónico no verificado. Enviando correo electrónico ...",
+    "EMAIL_NOT_VERIFIED": "Correo electrónico no verificado. Enviando correo electrónico...",
     "UNEXPECTED_ERROR": "Error inesperado",
     "USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER": "El nombre de usuario ya está en uso. Por favor, prueba con otro.",
     "USERNAME_IS_TOO_SHORT": "El nombre de usuario es demasiado corto",
@@ -61,26 +61,26 @@
     "ACCOUNT_NOT_FOUND": "Cuenta no encontrada",
     "USER_ALREADY_HAS_A_PASSWORD_PROVIDE_THAT_TO_DELETE_THE_ACCOUNT": "El usuario ya tiene una contraseña. Proporciónala para eliminar la cuenta.",
     "PASSWORD_POLICY": "La contraseña debe contener al menos 1 letra minúscula, 1 letra mayúscula, 1 número y 1 carácter especial.",
-    "EMAIL_IS_THE_SAME": "",
-    "COULDNT_UPDATE_YOUR_EMAIL": "",
-    "FAILED_TO_UPDATE_PASSWORD": "",
-    "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "",
-    "USER_ALREADY_HAS_A_PASSWORD": "",
-    "TOO_MANY_EMAILS_SENT": "",
-    "OAUTH_CODE_VERIFICATION_FAILED": ""
+    "EMAIL_IS_THE_SAME": "El correo electrónico es el mismo que el actual",
+    "COULDNT_UPDATE_YOUR_EMAIL": "No se pudo actualizar tu correo electrónico",
+    "FAILED_TO_UPDATE_PASSWORD": "No se pudo actualizar la contraseña",
+    "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "La cuenta ya está vinculada a un usuario diferente",
+    "USER_ALREADY_HAS_A_PASSWORD": "El usuario ya tiene una contraseña",
+    "TOO_MANY_EMAILS_SENT": "Se han enviado demasiados correos electrónicos",
+    "OAUTH_CODE_VERIFICATION_FAILED": "Error al verificar el código OAuth"
   },
   "notifications": {
     "test": {
-      "title": "",
-      "message": ""
+      "title": "Notificación de prueba",
+      "message": "Esta es una notificación de prueba"
     },
     "movieDownloaded": {
-      "title": "",
-      "message": ""
+      "title": "Película descargada",
+      "message": "Tu película ha sido descargada"
     },
     "movieDownloading": {
-      "title": "",
-      "message": ""
+      "title": "Descarga en curso",
+      "message": "Tu película se está descargando"
     }
   }
 }
