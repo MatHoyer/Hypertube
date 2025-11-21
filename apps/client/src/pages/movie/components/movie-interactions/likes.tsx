@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/tooltip";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
+import { cn } from "@/lib/utils";
 import {
   deleteCommentLikeSchemas,
   deleteMovieLikeSchemas,
@@ -54,9 +55,10 @@ export const BaseLikeButton: React.FC<{
             success={isSuccess}
           >
             <ThumbsUp
-              className={`transition-colors ${
+              className={cn(
+                "transition-colors",
                 isLiked ? "text-primary fill-primary" : "text-gray-500"
-              }`}
+              )}
             />
             {likesNumber}
           </LoadingButton>
@@ -92,7 +94,7 @@ export const MovieLikeButton: React.FC<{
     <BaseLikeButton
       isLiked={isLiked}
       likesNumber={likesNumber}
-      onToggle={() => mutate()}
+      onToggle={mutate}
       likeType={ParentTypes.MOVIE}
       isPending={isPending}
       isSuccess={isSuccess}
@@ -125,7 +127,7 @@ export const CommentLikeButton: React.FC<{
       isLiked={isLiked}
       likesNumber={likesNumber}
       onToggle={() => mutate()}
-      likeType={parent.type}
+      likeType={ParentTypes.COMMENT}
       isPending={isPending}
       isSuccess={isSuccess}
     />

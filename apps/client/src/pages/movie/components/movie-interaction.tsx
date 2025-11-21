@@ -30,7 +30,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { PostMovieComment } from "./movie-interactions/comments-actions";
-import { CommentComponent } from "./movie-interactions/comments-structure";
+import { Comment } from "./movie-interactions/comments-structure";
 import { MovieLikeButton } from "./movie-interactions/likes";
 
 const SubscriptionButton: React.FC<{
@@ -92,7 +92,7 @@ export const MovieInteraction = ({
     status: _,
   } = useInfiniteQuery({
     queryKey: getQueryKey(ROUTES.API.MOVIES_COMMENT, { tmdbId: movie.tmdbId }),
-    queryFn: async ({ pageParam }) =>
+    queryFn: ({ pageParam }) =>
       axiosFetch({
         method: "GET",
         url: getUrl(ROUTES.API.MOVIES_COMMENT, {
@@ -104,12 +104,6 @@ export const MovieInteraction = ({
     getNextPageParam: (lastPage) => {
       if (lastPage.page < lastPage.totalPages) {
         return lastPage.page + 1;
-      }
-      return undefined;
-    },
-    getPreviousPageParam: (lastPage) => {
-      if (lastPage.page > 1) {
-        return lastPage.page - 1;
       }
       return undefined;
     },
@@ -139,7 +133,7 @@ export const MovieInteraction = ({
       <div>
         {data?.pages.map((page) =>
           page.comments.map((comment) => (
-            <CommentComponent
+            <Comment
               key={comment.id}
               comment={comment}
               parent={{ id: movie.tmdbId, type: ParentTypes.MOVIE }}

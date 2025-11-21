@@ -30,7 +30,6 @@ export const getCommentReplies = async (
   const { commentId } = c.get("validatedUrlParams");
   const { page, pageSize } = c.get("validatedSearchParams");
   const user = c.get("user");
-  const userId = user?.id;
 
   const comment = await prisma.comment.findUnique({ where: { id: commentId } });
   if (!comment) {
@@ -40,7 +39,7 @@ export const getCommentReplies = async (
   const result = await getParentComments(
     commentId,
     ParentTypes.COMMENT,
-    userId,
+    user.id,
     page,
     pageSize
   );
@@ -83,6 +82,10 @@ export const replyToComment = async (
   });
   if (!parentComment) {
     return c.json({ message: "Comment not found" }, 404);
+  }
+
+  if (parentComment.parentType !== ParentTypes.MOVIE) {
+    return c.json({ message: "You cannot reply to a subcomment" }, 400);
   }
 
   const result = await commentParent(
@@ -158,10 +161,7 @@ export const patchComment = async (
   }
 
   if (comment.userId !== id) {
-    return c.json(
-      { message: "Unauthorized: you can only edit your own comment" },
-      403
-    );
+    return c.json({ message: "You can only edit your own comment" }, 401);
   }
 
   const updatedComment = await prisma.comment.update({

@@ -160,15 +160,13 @@ export const getMovie = async (
     },
   });
 
-  const userId = user?.id;
-
   let isLikedByUser = false;
 
-  if (userId) {
+  if (user.id) {
     const existingLike = await prisma.like.findUnique({
       where: {
         userId_parentId: {
-          userId: userId,
+          userId: user.id,
           parentId: dbMovie.id,
         },
       },

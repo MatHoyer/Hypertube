@@ -86,6 +86,7 @@ export const PostReplyComment: React.FC<{
       postComment={postReply}
       isPending={isPending}
       isSuccess={isSuccess}
+      autoFocus
     />
   );
 };
@@ -94,7 +95,8 @@ const BasePostComment: React.FC<{
   postComment: (content: string) => void;
   isPending: boolean;
   isSuccess: boolean;
-}> = ({ postComment, isPending, isSuccess }) => {
+  autoFocus?: boolean;
+}> = ({ postComment, isPending, isSuccess, autoFocus }) => {
   const [newComment, setNewComment] = useState("");
 
   const handleCancel = () => setNewComment("");
@@ -102,6 +104,7 @@ const BasePostComment: React.FC<{
   return (
     <InputGroup>
       <InputGroupTextarea
+        autoFocus={autoFocus}
         placeholder={t("movie.comments.addComment")}
         value={newComment}
         onChange={(e) => setNewComment(e.target.value)}
@@ -116,31 +119,37 @@ const BasePostComment: React.FC<{
         }}
       />
       <InputGroupAddon align="block-end">
-        <div className="flex-1" />
-        {newComment && (
-          <Button variant="ghost" disabled={!newComment} onClick={handleCancel}>
-            {t("movie.comments.cancel")}
-          </Button>
-        )}
+        <div className="flex w-full justify-end">
+          {newComment && (
+            <Button
+              variant="ghost"
+              disabled={!newComment}
+              onClick={handleCancel}
+            >
+              {t("movie.comments.cancel")}
+            </Button>
+          )}
 
-        <LoadingButton
-          className="rounded-full"
-          size="icon"
-          loading={isPending}
-          success={isSuccess}
-          onClick={() => {
-            postComment(newComment);
-            setNewComment("");
-          }}
-        >
-          <Send />
-        </LoadingButton>
+          <LoadingButton
+            disabled={!newComment}
+            className="rounded-full"
+            size="icon"
+            loading={isPending}
+            success={isSuccess}
+            onClick={() => {
+              postComment(newComment);
+              setNewComment("");
+            }}
+          >
+            <Send />
+          </LoadingButton>
+        </div>
       </InputGroupAddon>
     </InputGroup>
   );
 };
 
-export const EditCommentButton: React.FC<{
+export const EditCommentInput: React.FC<{
   commentId: TCommentSchema["id"];
   parent: TQueryParent;
   initialContent: TCommentSchema["content"];
@@ -193,10 +202,15 @@ export const EditCommentButton: React.FC<{
         disabled={isPending}
       />
       <InputGroupAddon align="inline-end">
-        <Button disabled={isPending} onClick={() => handleCancel()}>
+        <Button
+          variant="ghost"
+          disabled={isPending}
+          onClick={() => handleCancel()}
+        >
           {t("movie.comments.cancel")}
         </Button>
         <LoadingButton
+          variant="ghost"
           success={isSuccess}
           loading={isPending}
           onClick={() => patchComment(editedContent)}

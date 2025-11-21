@@ -10,6 +10,7 @@ import {
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
+import { cn } from "@/lib/utils";
 import {
   deleteCommentSchemas,
   getCommentRepliesSchemas,
@@ -24,28 +25,23 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { ChevronDown, MoreVertical, Reply } from "lucide-react";
+import { ChevronDown, EllipsisVertical, Reply } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { EditCommentButton, PostReplyComment } from "./comments-actions";
+import { EditCommentInput, PostReplyComment } from "./comments-actions";
 import { CommentLikeButton } from "./likes";
 import { getParentQueryKey, type TQueryParent } from "./utils";
 
 export const CommentActionsDropdown: React.FC<{
   commentId: TCommentSchema["id"];
   parent: TQueryParent;
-  initialContent: TCommentSchema["content"];
-}> = ({ commentId, parent, initialContent }) => {
+  setIsEditing: (value: boolean) => void;
+}> = ({ commentId, parent, setIsEditing }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const [isEditing, setIsEditing] = useState(false);
 
-  const {
-    mutate: deleteComment,
-    isPending: isDeleting,
-    isSuccess,
-  } = useMutation({
+  const { mutate: deleteComment } = useMutation({
     mutationFn: () =>
       axiosFetch({
         method: "DELETE",
@@ -61,22 +57,11 @@ export const CommentActionsDropdown: React.FC<{
     },
   });
 
-  if (isEditing) {
-    return (
-      <EditCommentButton
-        commentId={commentId}
-        parent={parent}
-        initialContent={initialContent}
-        setIsEditing={setIsEditing}
-      />
-    );
-  }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button className="rounded-full" size="icon" variant="ghost">
-          <MoreVertical />
+          <EllipsisVertical />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
@@ -86,17 +71,10 @@ export const CommentActionsDropdown: React.FC<{
               {t("movie.comments.editComment")}
             </Typography>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <LoadingButton
-              variant="ghost"
-              onClick={() => deleteComment()}
-              loading={isDeleting}
-              success={isSuccess}
-            >
-              <Typography variant="small">
-                {t("movie.comments.deleteComment")}
-              </Typography>
-            </LoadingButton>
+          <DropdownMenuItem onClick={() => deleteComment()}>
+            <Typography variant="small">
+              {t("movie.comments.deleteComment")}
+            </Typography>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
@@ -104,47 +82,38 @@ export const CommentActionsDropdown: React.FC<{
   );
 };
 
-export const CommentComponent: React.FC<{
+export const Comment: React.FC<{
   comment: TGetMovieCommentsSchemas["response"]["comments"][number];
   parent: TQueryParent;
   depth?: number;
 }> = ({ comment, parent, depth = 0 }) => {
   const [isReplying, setIsReplying] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const maxDepth = 3;
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    status: _,
-  } = useInfiniteQuery({
-    queryKey: getQueryKey(ROUTES.API.COMMENTS_REPLIES, {
-      commentId: comment.id,
-    }),
-    queryFn: async ({ pageParam }) =>
-      axiosFetch({
-        method: "GET",
-        url: getUrl(ROUTES.API.COMMENTS_REPLIES, {
-          commentId: comment.id,
-          searchParams: { page: pageParam.toString(), pageSize: "10" },
-        }),
-        schemas: getCommentRepliesSchemas,
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: getQueryKey(ROUTES.API.COMMENTS_REPLIES, {
+        commentId: comment.id,
       }),
-    getNextPageParam: (lastPage) => {
-      if (lastPage.page < lastPage.totalPages) {
-        return lastPage.page + 1;
-      }
-      return undefined;
-    },
-    getPreviousPageParam: (lastPage) => {
-      if (lastPage.page > 1) {
-        return lastPage.page - 1;
-      }
-      return undefined;
-    },
-    initialPageParam: 1,
-  });
+      queryFn: ({ pageParam }) =>
+        axiosFetch({
+          method: "GET",
+          url: getUrl(ROUTES.API.COMMENTS_REPLIES, {
+            commentId: comment.id,
+            searchParams: { page: pageParam.toString(), pageSize: "10" },
+          }),
+          schemas: getCommentRepliesSchemas,
+        }),
+      getNextPageParam: (lastPage) => {
+        if (lastPage.page < lastPage.totalPages) {
+          return lastPage.page + 1;
+        }
+        return undefined;
+      },
+      enabled: false,
+      initialPageParam: 1,
+    });
 
   return (
     <div className="flex-col border-b-2 py-1">
@@ -154,16 +123,26 @@ export const CommentComponent: React.FC<{
           <CommentActionsDropdown
             commentId={comment.id}
             parent={parent}
-            initialContent={comment.content}
+            setIsEditing={setIsEditing}
           />
         )}
       </div>
-      <Typography
-        variant="small"
-        className="whitespace-pre-wrap break-words mb-2"
-      >
-        {comment.content}
-      </Typography>
+      {isEditing ? (
+        <EditCommentInput
+          commentId={comment.id}
+          parent={parent}
+          initialContent={comment.content}
+          setIsEditing={setIsEditing}
+        />
+      ) : (
+        <Typography
+          variant="small"
+          className="whitespace-pre-wrap break-words mb-2"
+        >
+          {comment.content}
+        </Typography>
+      )}
+
       <div className="flex gap-4 justify-end">
         <CommentLikeButton
           commentId={comment.id}
@@ -186,13 +165,14 @@ export const CommentComponent: React.FC<{
         )}
       </div>
       <div
-        className={`flex-col mt-2 ${
-          depth < maxDepth ? "pl-6 border-l border-muted/30" : ""
-        }`}
+        className={cn(
+          "flex-col mt-2",
+          depth < maxDepth && "pl-6 border-l border-muted/30"
+        )}
       >
         {data?.pages.map((page) =>
           page.comments.map((subComment) => (
-            <CommentComponent
+            <Comment
               key={subComment.id}
               comment={subComment}
               parent={{ id: comment.id, type: ParentTypes.COMMENT }}

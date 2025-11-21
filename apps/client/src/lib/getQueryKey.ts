@@ -69,10 +69,10 @@ const queryKeys: {
   },
   [ROUTES.API.OAUTH_CREDENTIALS]: () => [ROUTES.API.OAUTH_CREDENTIALS],
   [ROUTES.API.MOVIES_COMMENT]: ({ tmdbId }) => {
-    return ["movie-comments", tmdbId];
+    return [ROUTES.API.MOVIES_COMMENT, tmdbId];
   },
   [ROUTES.API.COMMENTS_REPLIES]: ({ commentId }) => {
-    return ["comment-replies", commentId];
+    return [ROUTES.API.COMMENTS_REPLIES, commentId];
   },
 };
 

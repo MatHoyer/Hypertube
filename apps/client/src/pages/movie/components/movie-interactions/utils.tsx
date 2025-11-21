@@ -1,23 +1,36 @@
 import { getQueryKey } from "@/lib/getQueryKey";
-import {
-  ParentTypes,
-  ROUTES,
-  type TMovieSchema,
-  type TParentType,
-} from "@hypertube/libs";
+import { ParentTypes, ROUTES, type TMovieSchema } from "@hypertube/libs";
 import type { TCommentSchema } from "@hypertube/libs/src/schemas/database/comments.schema";
 
-export type TQueryParent = {
-  type: TParentType;
-  id: TCommentSchema["id"] | TMovieSchema["tmdbId"];
+type TQueryParentMovie = {
+  type: typeof ParentTypes.MOVIE;
+  id: TMovieSchema["tmdbId"];
 };
+
+type TQueryParentComment = {
+  type: typeof ParentTypes.COMMENT;
+  id: TCommentSchema["id"];
+};
+
+export type TQueryParent = TQueryParentComment | TQueryParentMovie;
+
+const isParentMovie = (parent: TQueryParent): parent is TQueryParentMovie => {
+  return parent.type === ParentTypes.MOVIE;
+};
+
+const isParentComment = (
+  parent: TQueryParent
+): parent is TQueryParentComment => {
+  return parent.type === ParentTypes.COMMENT;
+};
+
 export const getParentQueryKey = (parent: TQueryParent) => {
-  if (parent.type === ParentTypes.MOVIE) {
+  if (isParentMovie(parent)) {
     return getQueryKey(ROUTES.API.MOVIES_COMMENT, {
-      tmdbId: parent.id as number,
+      tmdbId: parent.id,
     });
   }
-  return getQueryKey(ROUTES.API.COMMENTS_REPLIES, {
-    commentId: parent.id as string,
-  });
+  if (isParentComment(parent)) {
+    return getQueryKey(ROUTES.API.COMMENTS_REPLIES, { commentId: parent.id });
+  }
 };
