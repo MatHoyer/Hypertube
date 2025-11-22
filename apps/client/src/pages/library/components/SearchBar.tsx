@@ -108,7 +108,7 @@ export const SearchBar = () => {
                       </Link>
                     </CommandItem>
                   ))}
-                {!isPending && !data?.totalResults && (
+                {!isPending && isSuccess && !data?.totalResults && (
                   <CommandItem
                     className="flex justify-center"
                     value="no_result"
