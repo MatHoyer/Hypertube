@@ -2,7 +2,13 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
 import { type TResolutionSchema, type TSubtitleSchema } from "@hypertube/libs";
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from "react";
 import { usedKeys } from "./video-player.const";
 import { VideoPlayerContext } from "./video-player.context";
 import type { Speed } from "./video-player.type";
@@ -69,14 +75,17 @@ export const VideoPlayerProvider: React.FC<{
     videoRef.current.volume = volume / 100;
   }, [videoRef, volume]);
 
-  const handleVolumeChange = (volume: number) => {
-    if (!videoRef.current) return;
-    if (volume < 0) volume = 0;
-    if (volume > 100) volume = 100;
-    if (volume === 0) setMute(true);
-    else setMute(false);
-    setVolume(volume);
-  };
+  const handleVolumeChange = useCallback(
+    (volume: number) => {
+      if (!videoRef.current) return;
+      if (volume < 0) volume = 0;
+      if (volume > 100) volume = 100;
+      if (volume === 0) setMute(true);
+      else setMute(false);
+      setVolume(volume);
+    },
+    [videoRef, setMute, setVolume]
+  );
 
   // Fullscreen
   useEffect(() => {
@@ -108,7 +117,7 @@ export const VideoPlayerProvider: React.FC<{
   }, [setIsFullscreen]);
 
   // Progress
-  const handleProgress = () => {
+  const handleProgress = useCallback(() => {
     if (!videoRef.current) return;
     const video = videoRef.current;
     const percent = (video.currentTime / video.duration) * 100;
@@ -124,64 +133,90 @@ export const VideoPlayerProvider: React.FC<{
     if (percent >= 100) {
       togglePlay();
     }
-  };
+  }, [videoRef, togglePlay, setProgress, setBufferedProgress]);
 
-  const handleSeek = (percent: number) => {
-    if (!videoRef.current) return;
-    videoRef.current.currentTime = (percent / 100) * videoRef.current.duration;
-    setProgress(percent);
-  };
+  const handleSeek = useCallback(
+    (percent: number) => {
+      if (!videoRef.current) return;
+      if (percent < 0) percent = 0;
+      if (percent > 100) percent = 100;
+      videoRef.current.currentTime =
+        (percent / 100) * videoRef.current.duration;
+      setProgress(percent);
+    },
+    [videoRef, setProgress]
+  );
 
-  const handleSetSpeed = (speed: Speed) => {
-    if (!videoRef.current) return;
-    setSpeed(speed);
-    videoRef.current.playbackRate = speed;
-  };
+  const handleSetSpeed = useCallback(
+    (speed: Speed) => {
+      if (!videoRef.current) return;
+      setSpeed(speed);
+      videoRef.current.playbackRate = speed;
+    },
+    [videoRef, setSpeed]
+  );
 
   // Code shortcuts
-  const handleJumpVideo = (seconds: number) => {
-    const currentTimeInSeconds =
-      (progress * (videoRef.current?.duration ?? 0)) / 100;
-    handleSeek(
-      ((currentTimeInSeconds + seconds) / (videoRef.current?.duration ?? 0)) *
-        100
-    );
-  };
+  const handleJumpVideo = useCallback(
+    (seconds: number) => {
+      const currentTimeInSeconds =
+        (progress * (videoRef.current?.duration ?? 0)) / 100;
+      handleSeek(
+        ((currentTimeInSeconds + seconds) / (videoRef.current?.duration ?? 0)) *
+          100
+      );
+    },
+    [videoRef, handleSeek, progress]
+  );
 
-  const handleJumpVolume = (units: number) => {
-    handleVolumeChange(volume + units);
-  };
+  const handleJumpVolume = useCallback(
+    (units: number) => {
+      handleVolumeChange(volume + units);
+    },
+    [volume, handleVolumeChange]
+  );
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (!usedKeys.includes(e.key)) return;
-    e.preventDefault();
-    triggerMouseMove();
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
+      if (!usedKeys.includes(e.key)) return;
+      e.preventDefault();
+      triggerMouseMove();
 
-    switch (e.key) {
-      case " ":
-        triggerMouseClick();
-        togglePlay();
-        break;
-      case "m":
-        toggleMute();
-        break;
-      case "f":
-        toggleFullscreen();
-        break;
-      case "ArrowRight":
-        handleJumpVideo(10);
-        break;
-      case "ArrowLeft":
-        handleJumpVideo(-10);
-        break;
-      case "ArrowUp":
-        handleJumpVolume(10);
-        break;
-      case "ArrowDown":
-        handleJumpVolume(-10);
-        break;
-    }
-  };
+      switch (e.key) {
+        case " ":
+          triggerMouseClick();
+          togglePlay();
+          break;
+        case "m":
+          toggleMute();
+          break;
+        case "f":
+          toggleFullscreen();
+          break;
+        case "ArrowRight":
+          handleJumpVideo(10);
+          break;
+        case "ArrowLeft":
+          handleJumpVideo(-10);
+          break;
+        case "ArrowUp":
+          handleJumpVolume(10);
+          break;
+        case "ArrowDown":
+          handleJumpVolume(-10);
+          break;
+      }
+    },
+    [
+      triggerMouseMove,
+      triggerMouseClick,
+      togglePlay,
+      toggleMute,
+      toggleFullscreen,
+      handleJumpVideo,
+      handleJumpVolume,
+    ]
+  );
 
   return (
     <VideoPlayerContext.Provider
