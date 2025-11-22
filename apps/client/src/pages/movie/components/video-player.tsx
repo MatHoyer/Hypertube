@@ -21,9 +21,9 @@ import {
   type ComponentProps,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { useVideoPlayer } from "../contexts/video-player/video-player.context";
 import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 import SettingsButton from "./dropdown-menu-navigating/dropdown-menu-navigating";
-import { useVideoPlayer } from "./video-player.context";
 
 const MiddleScreenInfo: React.FC<{
   type: "volume" | "play" | null;
@@ -294,6 +294,9 @@ const VideoPlayer = () => {
   const {
     videoRef,
     containerRef,
+
+    handleKeyDown,
+
     playing,
     volume,
     togglePlay,
@@ -328,8 +331,13 @@ const VideoPlayer = () => {
 
   return (
     <div
+      tabIndex={0}
       ref={containerRef}
+      onKeyDown={handleKeyDown}
       className="w-full h-[72dvh] bg-black rounded-2xl shadow-lg overflow-hidden relative"
+      style={{
+        outline: "none",
+      }}
       onClick={
         !isMobile
           ? togglePlay

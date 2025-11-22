@@ -20,7 +20,7 @@ import MovieInfo from "./components/movie-info";
 import { MovieInteraction } from "./components/movie-interaction";
 import { DownloadsSelector } from "./components/settings-selector";
 import VideoPlayer from "./components/video-player";
-import { VideoPlayerProvider } from "./components/video-player.context";
+import { VideoPlayerProvider } from "./contexts/video-player/video-player.provider";
 import { MoviePageParamsSchema } from "./schemas/urlParams.schema";
 
 const MovieTabs = {
