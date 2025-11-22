@@ -35,8 +35,8 @@ export const SearchBar = () => {
         searchParams: { input: inputDebounced },
       }),
     ],
-    queryFn: async () =>
-      await axiosFetch({
+    queryFn: () =>
+      axiosFetch({
         method: "GET",
         schemas: getMoviesSchemas,
         url: getUrl(ROUTES.API.MOVIES, {

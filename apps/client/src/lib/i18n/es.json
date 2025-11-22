@@ -8,7 +8,8 @@
     "unexpected-error": "Error inesperado",
     "homepage": "Página principal",
     "submit": "Enviar",
-    "userNotFound": "Usuario no encontrado"
+    "userNotFound": "Usuario no encontrado",
+    "close": ""
   },
   "footer": {
     "sourceCode": "Código fuente",
