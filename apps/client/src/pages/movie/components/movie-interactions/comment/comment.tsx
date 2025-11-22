@@ -1,86 +1,23 @@
 import { LoadingButton } from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import {
-  deleteCommentSchemas,
   getCommentRepliesSchemas,
   getUrl,
   ParentTypes,
   ROUTES,
   type TGetMovieCommentsSchemas,
 } from "@hypertube/libs";
-import type { TCommentSchema } from "@hypertube/libs/src/schemas/database/comments.schema";
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { ChevronDown, EllipsisVertical, Reply } from "lucide-react";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { ChevronDown, Reply } from "lucide-react";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import { EditCommentInput, PostReplyComment } from "./comments-actions";
-import { CommentLikeButton } from "./likes";
-import { getParentQueryKey, type TQueryParent } from "./utils";
-
-export const CommentActionsDropdown: React.FC<{
-  commentId: TCommentSchema["id"];
-  parent: TQueryParent;
-  setIsEditing: (value: boolean) => void;
-}> = ({ commentId, parent, setIsEditing }) => {
-  const queryClient = useQueryClient();
-  const { t } = useTranslation();
-
-  const { mutate: deleteComment } = useMutation({
-    mutationFn: () =>
-      axiosFetch({
-        method: "DELETE",
-        url: getUrl(ROUTES.API.COMMENTS, { commentId }),
-        schemas: deleteCommentSchemas,
-      }),
-    onSuccess: () => {
-      toast.success(t("movie.comments.toast.deleteSuccess"));
-      queryClient.invalidateQueries({ queryKey: getParentQueryKey(parent) });
-    },
-    onError: () => {
-      toast.error(t("movie.comments.toast.deleteError"));
-    },
-  });
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button className="rounded-full" size="icon" variant="ghost">
-          <EllipsisVertical />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => setIsEditing(true)}>
-            <Typography variant="small">
-              {t("movie.comments.editComment")}
-            </Typography>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => deleteComment()}>
-            <Typography variant="small">
-              {t("movie.comments.deleteComment")}
-            </Typography>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
+import { CommentLikeButton } from "../like/like";
+import type { TQueryParent } from "../utils";
+import { CommentActionsDropdown, EditCommentInput } from "./comment.actions";
+import { PostReplyComment } from "./post.comment";
 
 export const Comment: React.FC<{
   comment: TGetMovieCommentsSchemas["response"]["comments"][number];
@@ -143,6 +80,12 @@ export const Comment: React.FC<{
         </Typography>
       )}
 
+      {isReplying && (
+        <PostReplyComment
+          commentId={comment.id}
+          setIsReplying={setIsReplying}
+        />
+      )}
       <div className="flex gap-4 justify-end">
         <CommentLikeButton
           commentId={comment.id}
@@ -150,18 +93,14 @@ export const Comment: React.FC<{
           likesNumber={comment.likesNumber}
           parent={parent}
         />
-        <Button
-          className="rounded-full"
-          size="icon"
-          onClick={() => setIsReplying((prev) => !prev)}
-        >
-          <Reply />
-        </Button>
-        {isReplying && (
-          <PostReplyComment
-            commentId={comment.id}
-            setIsReplying={setIsReplying}
-          />
+        {!isEditing && (
+          <Button
+            className="rounded-full"
+            size="icon"
+            onClick={() => setIsReplying((prev) => !prev)}
+          >
+            <Reply />
+          </Button>
         )}
       </div>
       <div

@@ -29,9 +29,9 @@ import { BellOff, BellRing, ChevronDown } from "lucide-react";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { PostMovieComment } from "./movie-interactions/comments-actions";
-import { Comment } from "./movie-interactions/comments-structure";
-import { MovieLikeButton } from "./movie-interactions/likes";
+import { Comment } from "./movie-interactions/comment/comment";
+import { PostMovieComment } from "./movie-interactions/comment/post.comment";
+import { MovieLikeButton } from "./movie-interactions/like/like";
 
 const SubscriptionButton: React.FC<{
   tmdbId: TMovieSchema["tmdbId"];
