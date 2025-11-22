@@ -39,7 +39,7 @@ const CategoriesFilter = () => {
           type="single"
           spacing={2}
           variant={"icon"}
-          className="grid grid-cols-1 sm:grid-cols-2"
+          className="grid grid-cols-1 sm:grid-cols-2 w-full"
           value={categoryState ?? "none"}
           onValueChange={(value: TTmdbCategory) => {
             setCategory(value);
@@ -74,7 +74,7 @@ const SortsFilter = () => {
           type="single"
           spacing={2}
           variant={"icon"}
-          className="grid grid-cols-1 sm:grid-cols-2"
+          className="grid grid-cols-1 sm:grid-cols-2 w-full"
           value={sortState ? sortState : "none"}
           onValueChange={(value: TTmdbSort) => setSort(value)}
         >
@@ -107,7 +107,7 @@ const GenresFilter = () => {
           type="multiple"
           spacing={2}
           variant={"icon"}
-          className="grid grid-cols-1 sm:grid-cols-2"
+          className="grid grid-cols-1 sm:grid-cols-2 w-full"
           value={genres}
           onValueChange={(value: TTmdbGenresKey[]) => setGenres(value)}
         >
