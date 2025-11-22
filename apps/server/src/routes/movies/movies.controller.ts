@@ -13,6 +13,7 @@ import {
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
   TPostMovieSubscribeSchemas,
+  TResolutionSchema,
   typedKeys,
 } from "@hypertube/libs";
 import { env, prisma } from "@hypertube/server-core";
@@ -160,7 +161,7 @@ export const getMovie = async (
       movieId: dbMovie.id,
     },
     orderBy: {
-      resolution: "asc",
+      size: "asc",
     },
   });
   const subtitles = await prisma.subtitle.findMany({
@@ -280,7 +281,7 @@ export const downloadMovie = async (
   try {
     await downloadTorrent({
       movie: dbMovie,
-      resolution: dbResolution,
+      resolution: dbResolution as TResolutionSchema,
     });
   } catch (error) {
     await prisma.resolution.update({

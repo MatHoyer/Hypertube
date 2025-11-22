@@ -1,16 +1,24 @@
+import { openDialog } from "@/components/dialogs/dialog.store";
 import { getDownloadStateIcon } from "@/components/download-state/getDownloadStateIcon";
 import { Badge } from "@/components/ui/badge";
 import { Typography } from "@/components/ui/typography";
-import type { TGetMovieSchemas } from "@hypertube/libs";
+import { useConvertParams } from "@/hooks/use-convert-params";
+import type { TSubtitleSchema } from "@hypertube/libs";
 import { Captions } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { MoviePageParamsSchema } from "../../schemas/urlParams.schema";
 import { DownloadButton } from "./download-selector.utils";
 
 const DownloadSubtitleButton: React.FC<{
-  subtitle: TGetMovieSchemas["response"]["subtitles"][number];
+  subtitle: TSubtitleSchema;
 }> = ({ subtitle }) => {
+  const { tmdbId } = useConvertParams(MoviePageParamsSchema);
+
   return (
-    <DownloadButton downloadState={subtitle.downloadState}>
+    <DownloadButton
+      downloadState={subtitle.downloadState}
+      onClick={() => openDialog("downloadSubtitle", { tmdbId, subtitle })}
+    >
       <Typography variant="small">{subtitle.language}</Typography>
       <div className="flex items-center justify-between w-full mt-2">
         <Badge variant="secondary">VTT</Badge>
@@ -21,7 +29,7 @@ const DownloadSubtitleButton: React.FC<{
 };
 
 export const DownloadSubtitleSelector: React.FC<{
-  subtitles: TGetMovieSchemas["response"]["subtitles"];
+  subtitles: TSubtitleSchema[];
 }> = ({ subtitles }) => {
   const { t } = useTranslation();
 
@@ -35,6 +43,11 @@ export const DownloadSubtitleSelector: React.FC<{
         {subtitles.map((subtitle) => (
           <DownloadSubtitleButton key={subtitle.id} subtitle={subtitle} />
         ))}
+        {subtitles.length === 0 && (
+          <Typography textColor="muted">
+            {t("movie.downloadPage.noSubtitles")}
+          </Typography>
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,8 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { MovieDialog } from "@/pages/library/dialogs/movie-dialog";
+
+import { DownloadResolutionDialog } from "@/pages/movie/dialogs/download.resolution";
+import { DownloadSubtitleDialog } from "@/pages/movie/dialogs/download.subtitles";
 import { NewCredentialsDialog } from "@/pages/oauthCredentials/dialogs/new-credentials";
 import { PostCredentialsDialog } from "@/pages/oauthCredentials/dialogs/post-credentials";
 import { Button } from "../ui/button";
@@ -52,6 +55,23 @@ const dialogComponents: Record<TDialogType, React.FC> = {
   movie: () => {
     const movie = getDialogData("movie");
     return <MovieDialog movie={movie} />;
+  },
+  downloadResolution: () => {
+    const data = getDialogData("downloadResolution");
+
+    return (
+      <DownloadResolutionDialog
+        tmdbId={data.tmdbId}
+        resolution={data.resolution}
+      />
+    );
+  },
+  downloadSubtitle: () => {
+    const data = getDialogData("downloadSubtitle");
+
+    return (
+      <DownloadSubtitleDialog tmdbId={data.tmdbId} subtitle={data.subtitle} />
+    );
   },
 };
 

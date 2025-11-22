@@ -338,10 +338,7 @@ const VideoPlayer = () => {
       tabIndex={0}
       ref={containerRef}
       onKeyDown={handleKeyDown}
-      className="w-full h-[72dvh] bg-black rounded-2xl shadow-lg overflow-hidden relative"
-      style={{
-        outline: "none",
-      }}
+      className="w-full h-[72dvh] bg-black rounded-2xl shadow-lg overflow-hidden relative outline-none"
       onClick={
         !isMobile
           ? togglePlay

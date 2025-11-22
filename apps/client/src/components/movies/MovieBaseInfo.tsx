@@ -80,11 +80,14 @@ export const MovieBaseInfo: React.FC<
         </Typography>
       ) : (
         <>
-          <Typography variant="h1">{movie.title}</Typography>
+          <Typography variant="h1" className="text-center" functionnal={null}>
+            {movie.title}
+          </Typography>
           <div className="flex gap-2">
             <Typography
               textColor="muted"
               className={cn(truncate && "line-clamp-1")}
+              functionnal={null}
             >
               {movie.original_title}
             </Typography>
@@ -105,7 +108,10 @@ export const MovieBaseInfo: React.FC<
               </Link>
             )}
           </div>
-          <Typography className={cn(truncate && "line-clamp-5")}>
+          <Typography
+            className={cn(truncate && "line-clamp-5")}
+            functionnal={null}
+          >
             {movie.overview || t("movie.page.missing.desc")}
           </Typography>
         </>

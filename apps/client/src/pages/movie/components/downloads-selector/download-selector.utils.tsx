@@ -5,25 +5,33 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Typography } from "@/components/ui/typography";
-import type { DownloadState } from "@hypertube/libs";
-import type { PropsWithChildren } from "react";
+import { cn } from "@/lib/utils";
+import { DownloadStates, type DownloadState } from "@hypertube/libs";
+import type { ComponentProps, PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
 
 export const DownloadButton: React.FC<
-  PropsWithChildren & { downloadState: DownloadState }
-> = ({ children, downloadState }) => {
+  PropsWithChildren &
+    ComponentProps<typeof Button> & {
+      downloadState: DownloadState;
+    }
+> = ({ children, downloadState, className, ...props }) => {
   const { t } = useTranslation();
 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Button
-          layout="card"
-          variant="outline"
-          className="flex flex-col items-start w-40"
-        >
-          {children}
-        </Button>
+        <div>
+          <Button
+            layout="card"
+            variant="outline"
+            className={cn("flex flex-col items-start w-40", className)}
+            disabled={downloadState !== DownloadStates.NOT_DOWNLOADED}
+            {...props}
+          >
+            {children}
+          </Button>
+        </div>
       </TooltipTrigger>
       <TooltipContent>
         <Typography>

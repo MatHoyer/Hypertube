@@ -61,8 +61,8 @@ const MoviePage = () => {
   useEffect(() => {
     if (
       filteredResolutions &&
-      filteredResolutions?.DOWNLOADING?.length === 0 &&
-      filteredResolutions?.DOWNLOADED?.length === 0
+      !filteredResolutions?.DOWNLOADING?.length &&
+      !filteredResolutions?.DOWNLOADED?.length
     ) {
       setSelectedTab(MovieTabs.DOWNLOADS);
     }

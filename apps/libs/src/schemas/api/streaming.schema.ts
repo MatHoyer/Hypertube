@@ -1,10 +1,10 @@
 import z from "zod";
-import { movieSchema } from "../database/movie.schema.js";
+import { movieSchema, resolutionSchema } from "../database/movie.schema.js";
 
 export const getStreamingResolutionSchemas = {
   urlParams: z.object({
     movieId: movieSchema.shape.tmdbId,
-    resolution: z.string(),
+    resolution: resolutionSchema.shape.resolution,
   }),
 };
 export type TGetStreamingResolutionSchemas = {
