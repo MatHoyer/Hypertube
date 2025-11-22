@@ -98,7 +98,7 @@ export const MovieBaseInfo: React.FC<
                 })}
                 target="_blank"
               >
-                <Badge>
+                <Badge className="flex h-full">
                   IMDb
                   <ExternalLink />
                 </Badge>

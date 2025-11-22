@@ -128,8 +128,8 @@
     },
     "page": {
       "missing": {
-        "desc": "Pas description pour ce film.",
-        "genres": "Pas de genres pour ce film.",
+        "desc": "Pas description",
+        "genres": "Pas de genres",
         "date": "Pas de date"
       },
       "seen": "Vu",

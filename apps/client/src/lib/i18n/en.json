@@ -128,8 +128,8 @@
     },
     "page": {
       "missing": {
-        "desc": "No description available for this film.",
-        "genres": "This film doesn't fit into any genre.",
+        "desc": "No description",
+        "genres": "No genre",
         "date": "No date"
       },
       "seen": "Seen",
