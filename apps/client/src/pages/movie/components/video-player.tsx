@@ -9,10 +9,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
-import { getUrl, languageCodes, ROUTES, ytsQualities } from "@hypertube/libs";
-import { intervalToDuration } from "date-fns";
-import { Expand, Pause, Play, Shrink, Volume2, VolumeX } from "lucide-react";
 import {
+  getUrl,
+  languageCodes,
+  ROUTES,
+  secondsToHMS,
+  ytsQualities,
+} from "@hypertube/libs";
+import { Expand, Pause, Play, Shrink, Volume2, VolumeX } from "lucide-react";
+import React, {
   useEffect,
   useMemo,
   useRef,
@@ -97,8 +102,11 @@ const VolumeControl = () => {
         onClick={toggleMute}
         className="dark p-2 rounded-full z-10"
       >
-        {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-        <span className="sr-only">Toggle mute</span>
+        {muted ? (
+          <VolumeX size={20} color="white" />
+        ) : (
+          <Volume2 size={20} color="white" />
+        )}
       </Button>
 
       <div
@@ -125,23 +133,6 @@ const VolumeControl = () => {
       </div>
     </div>
   );
-};
-
-const secondsToHMS = (totalSeconds: number) => {
-  const d = intervalToDuration({
-    start: 0,
-    end: totalSeconds * 1000,
-  });
-
-  const hours = d.hours ? `${d.hours.toString().padStart(2, "0")}:` : "00:";
-
-  const minutes = d.minutes
-    ? `${d.minutes.toString().padStart(2, "0")}:`
-    : "00:";
-
-  const seconds = d.seconds ? `${d.seconds.toString().padStart(2, "0")}` : "00";
-
-  return `${hours}${minutes}${seconds}`;
 };
 
 const Timer = () => {
@@ -172,11 +163,14 @@ const Timer = () => {
   );
 };
 
-const ProgressBar = () => {
+const ProgressBar: React.FC<ComponentProps<"div">> = ({
+  className,
+  ...props
+}) => {
   const { progress, bufferedProgress, handleSeek } = useVideoPlayer();
 
   return (
-    <div className="flex items-center w-full">
+    <div className={cn("flex items-center w-full", className)} {...props}>
       <div className="relative flex-1">
         {/* Background track */}
         <Progress
@@ -276,7 +270,7 @@ const ControlsBar = () => {
         }}
         className="absolute bottom-0 left-0 right-0"
       >
-        <div className="dark flex flex-col gap-3 items-center justify-between size-full bg-black/30 p-3">
+        <div className="dark flex flex-col gap-3 items-center justify-between size-full bg-gradient-to-t from-black/70 to-transparent p-3">
           <ProgressBar />
           <div className="flex flex-row items-center w-full">
             {!isMobile && <PlayPauseButton />}

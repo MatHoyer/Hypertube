@@ -28,7 +28,11 @@ export const VideoPlayerProvider: React.FC<{
     toggle: toggleMute,
     setValue: setMute,
   } = useToggle(false);
-  const { value: playing, toggle: togglePlay } = useToggle(false);
+  const {
+    value: playing,
+    toggle: togglePlay,
+    setValue: setPlaying,
+  } = useToggle(false);
   const [volume, setVolume] = useState(20);
   const [progress, setProgress] = useState(0);
   const [bufferedProgress, setBufferedProgress] = useState(0);
@@ -53,12 +57,13 @@ export const VideoPlayerProvider: React.FC<{
     if (!videoRef.current) return;
 
     if (playing) {
+      if (progress >= 100) setProgress(0);
       videoRef.current.play();
     } else {
       videoRef.current.pause();
     }
     videoRef.current.volume = volume / 100;
-  }, [videoRef, playing, volume]);
+  }, [videoRef, playing, volume, progress, setProgress]);
 
   // Mute/Unmute
   useEffect(() => {
@@ -131,9 +136,9 @@ export const VideoPlayerProvider: React.FC<{
     }
 
     if (percent >= 100) {
-      togglePlay();
+      setPlaying(false);
     }
-  }, [videoRef, togglePlay, setProgress, setBufferedProgress]);
+  }, [videoRef, setPlaying, setProgress, setBufferedProgress]);
 
   const handleSeek = useCallback(
     (percent: number) => {
@@ -142,9 +147,10 @@ export const VideoPlayerProvider: React.FC<{
       if (percent > 100) percent = 100;
       videoRef.current.currentTime =
         (percent / 100) * videoRef.current.duration;
+      if (percent >= 100) setPlaying(false);
       setProgress(percent);
     },
-    [videoRef, setProgress]
+    [videoRef, setProgress, setPlaying]
   );
 
   const handleSetSpeed = useCallback(
