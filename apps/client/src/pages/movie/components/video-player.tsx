@@ -1,7 +1,6 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
@@ -145,8 +144,8 @@ const secondsToHMS = (totalSeconds: number) => {
   return `${hours}${minutes}${seconds}`;
 };
 
-const ProgressBar = () => {
-  const { videoRef, progress, bufferedProgress, handleSeek } = useVideoPlayer();
+const Timer = () => {
+  const { videoRef, progress } = useVideoPlayer();
 
   const currentTime = secondsToHMS(
     (progress * (videoRef.current?.duration ?? 0)) / 100,
@@ -159,8 +158,26 @@ const ProgressBar = () => {
   );
 
   return (
+    <div className="flex items-center">
+      {currentTime === null || duration === null ? (
+        <Skeleton className="w-[85px] h-[20px]" />
+      ) : (
+        <Badge>
+          <Typography className=" font-mono font-bold">
+            {currentTime} / {duration}
+          </Typography>
+        </Badge>
+      )}
+    </div>
+  );
+};
+
+const ProgressBar = () => {
+  const { progress, bufferedProgress, handleSeek } = useVideoPlayer();
+
+  return (
     <div className="flex items-center w-full">
-      <div className="relative flex-1 mx-3">
+      <div className="relative flex-1">
         {/* Background track */}
         <Progress
           className="absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 bg-white/20"
@@ -190,17 +207,6 @@ const ProgressBar = () => {
           onChange={(e) => handleSeek(e.target.valueAsNumber)}
           className="absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10 cursor-pointer"
         />
-      </div>
-      <div className="flex items-center">
-        {currentTime === null || duration === null ? (
-          <Skeleton className="w-[85px] h-[20px]" />
-        ) : (
-          <Badge>
-            <Typography className="font-mono font-bold">
-              {currentTime} / {duration}
-            </Typography>
-          </Badge>
-        )}
       </div>
     </div>
   );
@@ -268,20 +274,24 @@ const ControlsBar = () => {
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className="absolute bottom-0 left-0 right-0 p-2"
+        className="absolute bottom-0 left-0 right-0"
       >
-        <Card className="dark flex flex-row items-center justify-between size-full p-3 bg-black/30">
-          {!isMobile && <PlayPauseButton />}
-          {!isMobile && <VolumeControl />}
+        <div className="dark flex flex-col gap-3 items-center justify-between size-full bg-black/30 p-3">
           <ProgressBar />
-          {!isMobile && (
-            <SettingsButton
-              settingsOpen={settingsOpen}
-              setSettingsOpen={setSettingsOpen}
-            />
-          )}
-          <FullscreenButton />
-        </Card>
+          <div className="flex flex-row items-center w-full">
+            {!isMobile && <PlayPauseButton />}
+            {!isMobile && <VolumeControl />}
+            <Timer />
+            <div className="flex-1" />
+            {!isMobile && (
+              <SettingsButton
+                settingsOpen={settingsOpen}
+                setSettingsOpen={setSettingsOpen}
+              />
+            )}
+            <FullscreenButton />
+          </div>
+        </div>
       </AnimateApparition>
     </>
   );
