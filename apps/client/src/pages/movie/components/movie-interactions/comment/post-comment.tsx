@@ -9,7 +9,7 @@ import {
 } from "@hypertube/libs";
 import type { TCommentSchema } from "@hypertube/libs/src/schemas/database/comments.schema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { BasePostComment } from "./base.post.comment";
+import { BasePostComment } from "./post-comment.base";
 
 export const PostMovieComment: React.FC<{ tmdbId: TMovieSchema["tmdbId"] }> = ({
   tmdbId,

@@ -30,7 +30,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Comment } from "./movie-interactions/comment/comment";
-import { PostMovieComment } from "./movie-interactions/comment/post.comment";
+import { PostMovieComment } from "./movie-interactions/comment/post-comment";
 import { MovieLikeButton } from "./movie-interactions/like/like";
 
 const SubscriptionButton: React.FC<{

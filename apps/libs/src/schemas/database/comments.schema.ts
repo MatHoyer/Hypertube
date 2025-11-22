@@ -27,6 +27,7 @@ export const commentResponseSchema = commentSchema
     likesNumber: z.number(),
     isLikedByUser: z.boolean(),
     isOwnComment: z.boolean(),
+    hasReplies: z.boolean(),
   });
 
 export type TCommentSchema = z.infer<typeof commentSchema>;

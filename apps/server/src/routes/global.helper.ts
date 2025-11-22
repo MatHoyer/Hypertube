@@ -152,8 +152,21 @@ export const getParentComments = async (
       userLikes = new Set(likes.map((l) => l.parentId));
     }
 
+    const replyCounts = await prisma.comment.groupBy({
+      by: ["parentId"],
+      where: {
+        parentId: { in: commentIds },
+        parentType: ParentTypes.COMMENT,
+      },
+      _count: true,
+    });
+
     const likeCountMap = new Map(
       likeCounts.map((lc) => [lc.parentId, lc._count])
+    );
+
+    const commentsWithRepliesSet = new Set(
+      replyCounts.map((rc) => rc.parentId)
     );
 
     const commentsWithLikes = comments.map((comment) => ({
@@ -161,6 +174,7 @@ export const getParentComments = async (
       likesNumber: likeCountMap.get(comment.id) || 0,
       isLikedByUser: userLikes.has(comment.id),
       isOwnComment: userId ? userId === comment.userId : false,
+      hasReplies: commentsWithRepliesSet.has(comment.id),
     }));
 
     return {

@@ -17,7 +17,7 @@ import { useState } from "react";
 import { CommentLikeButton } from "../like/like";
 import type { TQueryParent } from "../utils";
 import { CommentActionsDropdown, EditCommentInput } from "./comment.actions";
-import { PostReplyComment } from "./post.comment";
+import { PostReplyComment } from "./post-comment";
 
 export const Comment: React.FC<{
   comment: TGetMovieCommentsSchemas["response"]["comments"][number];
@@ -51,6 +51,8 @@ export const Comment: React.FC<{
       enabled: false,
       initialPageParam: 1,
     });
+
+  const canLoadMore = comment.hasReplies && (!data || hasNextPage);
 
   return (
     <div className="flex-col border-b-2 py-1">
@@ -120,11 +122,11 @@ export const Comment: React.FC<{
           ))
         )}
       </div>
-      {hasNextPage && (
+      {canLoadMore && (
         <LoadingButton
           variant="ghost"
           loading={isFetchingNextPage}
-          disabled={!hasNextPage || isFetchingNextPage}
+          disabled={isFetchingNextPage}
           onClick={() => fetchNextPage()}
         >
           <ChevronDown />
