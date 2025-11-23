@@ -4,11 +4,13 @@ import {
   ytsGenres,
   ytsQualities,
 } from "@hypertube/libs";
-import { createResolution, getResolutionPath } from "@hypertube/server-core";
+import {
+  createResolution,
+  env,
+  getResolutionPath,
+} from "@hypertube/server-core";
 import { writeFile } from "fs/promises";
 import z from "zod";
-
-// https://yts.mx/api for documentation
 
 const responseSchema = <T>(dataSchema: z.ZodSchema<T>) =>
   z.object({
@@ -62,7 +64,7 @@ export class YtsApi {
   private readonly fetchOptions: RequestInit;
 
   constructor() {
-    this.ytsApiUrl = "https://yts.mx/api/v2/";
+    this.ytsApiUrl = env.YTS_API_URL;
     this.fetchOptions = {
       headers: {
         "Content-Type": "application/json",

@@ -68,6 +68,8 @@ jobs:
 
           TMDB_TOKEN=${{ secrets.TMDB_TOKEN }}
 
+          YTS_API_URL=${{ secrets.YTS_API_URL }}
+
           REDIS_HOST=${{ secrets.REDIS_HOST }}
           REDIS_PORT=${{ secrets.REDIS_PORT }}
           EOF
