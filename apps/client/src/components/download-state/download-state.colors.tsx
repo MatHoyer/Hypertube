@@ -1,9 +1,8 @@
-import { Color } from "@/lib/color";
 import { DownloadStates } from "@hypertube/libs";
 
 export const DownloadStateColors = {
-  [DownloadStates.DOWNLOADED]: new Color("text-green-500", "green"),
-  [DownloadStates.DOWNLOADING]: new Color("text-orange-500", "orange"),
-  [DownloadStates.WAITING]: new Color("text-blue-500", "blue"),
-  [DownloadStates.NOT_DOWNLOADED]: new Color("text-red-500", "red"),
+  [DownloadStates.DOWNLOADED]: "var(--color-green-500)",
+  [DownloadStates.DOWNLOADING]: "var(--color-orange-500)",
+  [DownloadStates.WAITING]: "var(--color-blue-500)",
+  [DownloadStates.NOT_DOWNLOADED]: "var(--color-red-500)",
 } as const;

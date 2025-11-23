@@ -34,16 +34,14 @@ const ResolutionDisplay: React.FC<{
       </div>
       <div className="flex flex-col gap-2 w-full">
         <div className="flex items-center gap-2">
-          <Typography functionnal={null}>{resolution.resolution}</Typography>
+          <Typography>{resolution.resolution}</Typography>
           <Badge variant="secondary">MP4</Badge>
         </div>
         <div className="flex items-center gap-2">
-          <Typography variant="xs" functionnal={null}>
+          <Typography textSize="xs">
             {t("movie.downloadPage.downloadResolution.size")}:
           </Typography>
-          <Typography variant="xs" functionnal={null}>
-            {resolution.size}
-          </Typography>
+          <Typography textSize="xs">{resolution.size}</Typography>
         </div>
       </div>
     </DownloadResourceDisplay>

@@ -28,7 +28,7 @@ const SubtitleDisplay: React.FC<{
   return (
     <DownloadResourceDisplay>
       <Subtitles size={20} />
-      <Typography functionnal={null}>{subtitle.language}</Typography>
+      <Typography>{subtitle.language}</Typography>
       <Badge variant="secondary">VTT</Badge>
     </DownloadResourceDisplay>
   );

@@ -19,8 +19,10 @@ const DownloadResolutionButton: React.FC<{
       downloadState={resolution.downloadState}
       onClick={() => openDialog("downloadResolution", { tmdbId, resolution })}
     >
-      <Typography variant="small">{resolution.resolution}</Typography>
-      <Typography variant="xs" textColor="muted">
+      <Typography textSize="sm" functionnal={"truncate"}>
+        {resolution.resolution}
+      </Typography>
+      <Typography textSize="xs" textColor="muted" functionnal={"truncate"}>
         {resolution.size}
       </Typography>
       <div className="flex items-center justify-between w-full mt-2">

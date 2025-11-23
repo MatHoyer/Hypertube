@@ -7,7 +7,8 @@ export const VideoPlayerContext = createContext<
 
 export const useVideoPlayer = () => {
   const ctx = useContext(VideoPlayerContext);
-  if (!ctx)
+  if (!ctx) {
     throw new Error("useVideoPlayer must be used within a VideoPlayerProvider");
+  }
   return ctx;
 };

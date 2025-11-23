@@ -19,7 +19,9 @@ const DownloadSubtitleButton: React.FC<{
       downloadState={subtitle.downloadState}
       onClick={() => openDialog("downloadSubtitle", { tmdbId, subtitle })}
     >
-      <Typography variant="small">{subtitle.language}</Typography>
+      <Typography textSize="sm" functionnal={"truncate"}>
+        {subtitle.language}
+      </Typography>
       <div className="flex items-center justify-between w-full mt-2">
         <Badge variant="secondary">VTT</Badge>
         {getDownloadStateIcon(subtitle.downloadState)}

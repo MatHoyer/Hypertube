@@ -9,7 +9,7 @@ export const getDownloadStateIcon = (
   props?: ComponentProps<typeof Icon>
 ) => {
   return DownloadStateIcons[downloadState]({
-    color: DownloadStateColors[downloadState].getColor(),
+    color: DownloadStateColors[downloadState],
     ...props,
   });
 };
