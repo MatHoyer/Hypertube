@@ -207,15 +207,9 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
         downloadState: DownloadStates.DOWNLOADING,
       },
     });
-    try {
-      await notifySubscribers(movie.id, DownloadStates.DOWNLOADING);
-    } catch (error) {
-      hypertubeLogger.error(
-        `Error sending movie downloading notification: ${error}`
-      );
-    }
     job.updateProgress(0);
     let isConverting = false;
+    let isFirstConversion = true;
     const replaceCurrentMovie = async () => {
       await fs.promises.rename(
         path.join(
@@ -293,7 +287,16 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
                   ),
                 },
                 {
-                  onEnd: replaceCurrentMovie,
+                  onEnd: async () => {
+                    await replaceCurrentMovie();
+                    if (isFirstConversion) {
+                      isFirstConversion = false;
+                      await notifySubscribers(
+                        movie.id,
+                        DownloadStates.DOWNLOADING
+                      );
+                    }
+                  },
                 }
               );
               isConverting = false;

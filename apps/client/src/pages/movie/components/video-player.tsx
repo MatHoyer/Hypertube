@@ -10,6 +10,7 @@ import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
 import {
+  DownloadStates,
   getUrl,
   languageCodes,
   ROUTES,
@@ -167,7 +168,15 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
   className,
   ...props
 }) => {
-  const { progress, bufferedProgress, handleSeek } = useVideoPlayer();
+  const { progress, bufferedProgress, handleSeek, selectedResolution } =
+    useVideoPlayer();
+
+  const isExplorable = useMemo(() => {
+    return (
+      selectedResolution &&
+      selectedResolution.downloadState === DownloadStates.DOWNLOADED
+    );
+  }, [selectedResolution]);
 
   return (
     <div className={cn("flex items-center w-full", className)} {...props}>
@@ -199,7 +208,11 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
           step="0.1"
           value={progress}
           onChange={(e) => handleSeek(e.target.valueAsNumber)}
-          className="absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10 cursor-pointer"
+          className={cn(
+            "absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10",
+            !isExplorable ? "cursor-not-allowed" : "cursor-pointer"
+          )}
+          disabled={!isExplorable}
         />
       </div>
     </div>
@@ -331,7 +344,7 @@ const VideoPlayer = () => {
     if (!selectedResolution && resolutions.length > 0) {
       setSelectedResolution(resolutions[0]);
     }
-  }, []);
+  }, [selectedResolution, resolutions, setSelectedResolution]);
 
   return (
     <div

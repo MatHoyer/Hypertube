@@ -58,6 +58,20 @@ const MoviePage = () => {
     return groupBy(movie.subtitles, "downloadState");
   }, [movie]);
 
+  const streamableResolutions = useMemo(() => {
+    return [
+      ...(filteredResolutions?.DOWNLOADED ?? []),
+      ...(filteredResolutions?.DOWNLOADING ?? []),
+    ];
+  }, [filteredResolutions]);
+
+  const streamableSubtitles = useMemo(() => {
+    return [
+      ...(filteredSubtitles?.DOWNLOADED ?? []),
+      ...(filteredSubtitles?.DOWNLOADING ?? []),
+    ];
+  }, [filteredSubtitles]);
+
   useEffect(() => {
     if (
       filteredResolutions &&
@@ -143,14 +157,8 @@ const MoviePage = () => {
 
   return (
     <VideoPlayerProvider
-      resolutions={[
-        ...(filteredResolutions?.DOWNLOADED ?? []),
-        ...(filteredResolutions?.DOWNLOADING ?? []),
-      ]}
-      subtitles={[
-        ...(filteredSubtitles?.DOWNLOADED ?? []),
-        ...(filteredSubtitles?.DOWNLOADING ?? []),
-      ]}
+      resolutions={streamableResolutions}
+      subtitles={streamableSubtitles}
     >
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 relative">
         <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-4 h-fit">

@@ -1,3 +1,4 @@
+import { closeDialog } from "@/components/dialogs/dialog.store";
 import { GlobalDialogFooter } from "@/components/dialogs/GlobalDialog.footer";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -67,10 +68,11 @@ export const DownloadResolutionDialog: React.FC<{
         }),
         schemas: postMovieDownloadResolutionSchemas,
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
       });
+      closeDialog();
     },
   });
 

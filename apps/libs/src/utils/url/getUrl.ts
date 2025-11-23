@@ -160,7 +160,11 @@ const routeSchemas = {
         .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
         .optional(),
       subtitlesLanguage: z
-        .union([z.enum(languageCodes), z.literal("{subtitlesLanguage}")])
+        .union([
+          z.enum(languageCodes),
+          z.literal("{subtitlesLanguage}"),
+          z.string(),
+        ])
         .optional(),
     }),
   },
