@@ -9,6 +9,7 @@ import { imageSchema } from "../../schemas/database/image.schema.js";
 import { movieSchema } from "../../schemas/database/movie.schema.js";
 import { notificationSchema } from "../../schemas/database/notifications.schema.js";
 import { userSchema } from "../../schemas/database/user.schema.js";
+import { isPurObject, typedEntries } from "../object.utils.js";
 import { getClientUrl } from "./getClientUrl.js";
 import { getServerUrl } from "./getServerUrl.js";
 
@@ -296,19 +297,25 @@ type TSearchParams =
   | string
   | URLSearchParams;
 
+type TSearchParamsProvided =
+  | string[][]
+  | Record<string, string | null | undefined>
+  | string
+  | URLSearchParams;
+
 type TGetUrlArgs<T extends TRoute> = TRouteDataMap<T> extends undefined
   ? {
       withUrl?: "server" | "client";
-      searchParams?: TSearchParams;
+      searchParams?: TSearchParamsProvided;
     }
   : TRouteDataMap<T> extends Record<string, never>
   ? {
       withUrl?: "server" | "client";
-      searchParams?: TSearchParams;
+      searchParams?: TSearchParamsProvided;
     }
   : TRouteDataMap<T> & {
       withUrl?: "server" | "client";
-      searchParams?: TSearchParams;
+      searchParams?: TSearchParamsProvided;
     };
 
 const isClientRoute = (route: any): route is TClientRoute =>
@@ -332,7 +339,8 @@ export const getUrl = <T extends TRoute>(
   route: T,
   params?: TGetUrlArgs<T>
 ): string => {
-  const { withUrl, searchParams, ...rawParams } = params || {};
+  const { withUrl, searchParams: _, ...rawParams } = params || {};
+  let { searchParams } = params || {};
 
   const schema = getSchema(route);
   const routeParams = schema.parse(rawParams ?? {}) as TRouteDataMap<T>;
@@ -348,8 +356,15 @@ export const getUrl = <T extends TRoute>(
   const url =
     withUrl && !route.startsWith("external-") ? withUrlMapping[withUrl] : "";
 
+  if (isPurObject(searchParams)) {
+    searchParams = typedEntries(searchParams).reduce((acc, [key, value]) => {
+      if (value) acc[key] = value;
+      return acc;
+    }, {} as Record<string, string>);
+  }
+
   const parsedSearchParams = searchParams
-    ? `?${new URLSearchParams(searchParams)}`
+    ? `?${new URLSearchParams(searchParams as TSearchParams)}`
     : "";
 
   return `${url}${computedUrl}${parsedSearchParams}`;

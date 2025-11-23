@@ -1,4 +1,10 @@
-import { ROUTES, notificationReadStatuses } from "@hypertube/libs";
+import {
+  ROUTES,
+  getMoviesSchemas,
+  notificationReadStatuses,
+  tmdbGenres,
+  typedKeys,
+} from "@hypertube/libs";
 import type { QueryKey } from "@tanstack/react-query";
 import z from "zod";
 
@@ -7,6 +13,14 @@ const apiRouteQueryKeySchemas = {
   [ROUTES.API.USERS_ACCOUNTS]: z.object({}),
   [ROUTES.API.MOVIES]: z.object({
     tmdbId: z.number().optional(),
+    searchParams: z
+      .object({
+        ...getMoviesSchemas.searchParams.shape,
+        page: getMoviesSchemas.searchParams.shape.page.optional(),
+        input: z.string().nullable().optional(),
+        genres: z.array(z.enum(typedKeys(tmdbGenres))).optional(),
+      })
+      .optional(),
   }),
   [ROUTES.API.NOTIFICATIONS]: z.object({
     type: z
@@ -33,8 +47,13 @@ const queryKeys: {
 } = {
   [ROUTES.API.USERS_SESSION]: () => [ROUTES.API.USERS_SESSION],
   [ROUTES.API.USERS_ACCOUNTS]: () => [ROUTES.API.USERS_ACCOUNTS],
-  [ROUTES.API.MOVIES]: ({ tmdbId }) => {
-    return tmdbId ? [ROUTES.API.MOVIES, tmdbId] : [ROUTES.API.MOVIES];
+  [ROUTES.API.MOVIES]: ({ tmdbId, searchParams }) => {
+    if (tmdbId && searchParams) {
+      throw new Error("tmdbId and searchParams are incomptatible");
+    }
+    if (searchParams) return [ROUTES.API.MOVIES, searchParams];
+    if (tmdbId) return [ROUTES.API.MOVIES, tmdbId];
+    return [ROUTES.API.MOVIES];
   },
   [ROUTES.API.NOTIFICATIONS]: ({ type }) => {
     if (!type) return [ROUTES.API.NOTIFICATIONS];

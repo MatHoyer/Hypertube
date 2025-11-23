@@ -8,10 +8,12 @@ import {
   TGetMovieSchemas,
   TGetMoviesSchemas,
   TGetMovieSSESchemas,
+  tmdbGenres,
   tmdbMovieSchema,
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
   TPostMovieSubscribeSchemas,
+  typedKeys,
 } from "@hypertube/libs";
 import { env, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
@@ -36,16 +38,64 @@ export const getMovies = async (
 ) => {
   const tmdbApi = new TmdbApi();
 
-  const { name, page } = c.get("validatedSearchParams");
+  const { query, page, category, sort, genres } = c.get(
+    "validatedSearchParams"
+  );
   const language = c.get("language");
 
+  const tmdbGenresSchemas = z.array(z.enum(typedKeys(tmdbGenres)));
+
+  const genresTyped = tmdbGenresSchemas.safeParse(
+    genres ? genres.split("+") : []
+  );
+  if (!genresTyped.success) return c.json(genresTyped.error, 404);
+  const genreIds = genresTyped.data.map((filter) => tmdbGenres[filter]);
+
   const moviesPagination = await tmdbApi.getMovies({
-    query: name,
+    query,
     language: language as keyof typeof languageCodes,
     page,
+    category,
+    sort,
+    genres: genreIds,
   });
 
-  return c.json(getMoviesSchemas.response.parse(moviesPagination));
+  const moviesWithResolutionsOrderByDownloadState = await prisma.movie.findMany(
+    {
+      where: {
+        tmdbId: {
+          in: moviesPagination.movies.filter(Boolean).map((movie) => movie!.id),
+        },
+      },
+      include: {
+        resolutions: {
+          orderBy: {
+            downloadState: "desc",
+          },
+        },
+      },
+    }
+  );
+
+  const resolutionStatusById = Object.fromEntries(
+    moviesWithResolutionsOrderByDownloadState.map((movie) => [
+      movie.tmdbId,
+      movie.resolutions[0]?.downloadState,
+    ])
+  );
+
+  const moviesWithStatutPagination = {
+    ...moviesPagination,
+    movies: moviesPagination.movies.map((movie) => {
+      if (!movie) return null;
+      return {
+        ...movie,
+        status: resolutionStatusById[movie.id] ?? DownloadStates.NOT_DOWNLOADED,
+      };
+    }),
+  };
+
+  return c.json(getMoviesSchemas.response.parse(moviesWithStatutPagination));
 };
 
 export const getMovie = async (
@@ -75,6 +125,8 @@ export const getMovie = async (
           adult: false,
         } as z.infer<typeof tmdbMovieSchema>)
       : await tmdbApi.getMovie(tmdbId, language as keyof typeof languageCodes);
+
+  if (!tmdbMovie) return c.json(null, 404);
 
   let dbMovie = await prisma.movie.findUnique({
     where: {

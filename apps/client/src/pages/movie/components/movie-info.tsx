@@ -1,56 +1,15 @@
-import { ImageContainer } from "@/components/images/ImageContainer";
-import { Badge } from "@/components/ui/badge";
-import { Typography } from "@/components/ui/typography";
-import { getUrl, ROUTES, type TGetMovieSchemas } from "@hypertube/libs";
-import { Star } from "lucide-react";
-import { Link } from "react-router-dom";
+import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
+import { type TGetMovieSchemas } from "@hypertube/libs";
 
 const MovieInfo: React.FC<{
-  movie: Omit<TGetMovieSchemas["response"], "resolutions" | "subtitles">;
+  movie: Omit<
+    NonNullable<TGetMovieSchemas["response"]>,
+    "resolutions" | "subtitles"
+  >;
 }> = ({ movie }) => {
   return (
-    <div className="flex flex-col gap-4 h-full">
-      <div className="flex justify-center">
-        <ImageContainer
-          imageSrc={movie.poster_path}
-          altImage="Movie Poster"
-          size="lg"
-        >
-          <Typography variant="h3">{movie.title}</Typography>
-        </ImageContainer>
-      </div>
-      <div className="flex flex-col gap-2">
-        <Link
-          to={getUrl(ROUTES.EXTERNAL.IMDB_MOVIE, {
-            imdbId: movie.imdbId ?? "",
-          })}
-          target="_blank"
-        >
-          <Typography variant="h1" className="text-center hover:underline">
-            {movie.title}
-          </Typography>
-        </Link>
-        <div className="flex items-center justify-center gap-2">
-          <Badge>{movie.original_language.toUpperCase()}</Badge>
-          <Badge>{movie.release_date}</Badge>
-        </div>
-        <div className="flex items-center justify-center gap-2 flex-wrap">
-          {movie.genres.map((genre, index) => (
-            <Badge variant="outline" key={index}>
-              {genre.name.toLowerCase()}
-            </Badge>
-          ))}
-        </div>
-        <div className="flex items-center justify-center gap-2">
-          <Star className="text-primary fill-primary" />
-          <Typography variant="mono">
-            {movie.vote_average.toFixed(1)}/10
-          </Typography>
-        </div>
-        <Typography variant="muted" className="text-start">
-          {movie.overview}
-        </Typography>
-      </div>
+    <div className="flex flex-col gap-4 m-5 h-full">
+      <MovieBaseInfo movie={{ imdb_id: movie.imdbId, ...movie }} />
       {/* {actors.length > 0 && (
           <Card>
             <CardHeader>

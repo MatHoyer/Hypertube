@@ -1,6 +1,12 @@
 import z from "zod";
 import { DownloadStates } from "../../const/global.const.js";
 import {
+  tmdbCategories,
+  tmdbGenres,
+  tmdbSorts,
+} from "../../const/tmdb.const.js";
+import { typedKeys } from "../../utils/object.utils.js";
+import {
   movieSchema,
   resolutionSchema,
   subtitleSchema,
@@ -33,13 +39,29 @@ export const tmdbMovieSchema = z.object({
   adult: z.boolean(),
 });
 
+export type TTmdbMovieSchema = z.infer<typeof tmdbMovieSchema>;
+
 export const getMoviesSchemas = {
   searchParams: z.object({
     page: z.coerce.number().int().positive().default(1),
-    name: z.string().optional(),
+    query: z.string().optional(),
+    category: z.enum(tmdbCategories).optional(),
+    sort: z.enum(tmdbSorts).optional(),
+    genres: z
+      .string()
+      .regex(
+        new RegExp(
+          `^(${typedKeys(tmdbGenres).join("|")})(\\+(${typedKeys(
+            tmdbGenres
+          ).join("|")}))*$`
+        )
+      )
+      .optional(),
   }),
   response: z.object({
-    movies: z.array(tmdbMovieSchema),
+    movies: z.array(
+      tmdbMovieSchema.extend({ status: z.enum(DownloadStates) }).nullable()
+    ),
     page: z.number(),
     totalPages: z.number(),
     totalResults: z.number(),
@@ -54,30 +76,32 @@ export const getMovieSchemas = {
   urlParams: z.object({
     tmdbId: movieSchema.shape.tmdbId,
   }),
-  response: z.object({
-    ...tmdbMovieSchema.pick({
-      original_title: true,
-      original_language: true,
-      title: true,
-      overview: true,
+  response: z
+    .object({
+      ...tmdbMovieSchema.pick({
+        original_title: true,
+        original_language: true,
+        title: true,
+        overview: true,
 
-      genres: true,
+        genres: true,
 
-      vote_average: true,
-      vote_count: true,
-      popularity: true,
+        vote_average: true,
+        vote_count: true,
+        popularity: true,
 
-      poster_path: true,
-      backdrop_path: true,
+        poster_path: true,
+        backdrop_path: true,
 
-      release_date: true,
-      adult: true,
-    }).shape,
-    ...movieSchema.shape,
-    resolutions: z.array(resolutionSchema),
-    subtitles: z.array(subtitleSchema),
-    isSubscribed: z.boolean(),
-  }),
+        release_date: true,
+        adult: true,
+      }).shape,
+      ...movieSchema.shape,
+      resolutions: z.array(resolutionSchema),
+      subtitles: z.array(subtitleSchema),
+      isSubscribed: z.boolean(),
+    })
+    .nullable(),
 };
 export type TGetMovieSchemas = {
   urlParams: z.infer<typeof getMovieSchemas.urlParams>;

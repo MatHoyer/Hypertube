@@ -3,6 +3,9 @@ import {
   getMoviesSchemas,
   getUrl,
   ROUTES,
+  tmdbCategories,
+  tmdbGenres,
+  tmdbSorts,
 } from "@hypertube/libs";
 
 export const moviesSwagger = {
@@ -10,6 +13,8 @@ export const moviesSwagger = {
     get: {
       summary: "Get movies",
       tags: ["Movies"],
+      description:
+        "Category filters and search queries are independent - categories ans queries are not applied when using Sort options or Genre filters",
       parameters: [
         {
           in: "query",
@@ -19,9 +24,34 @@ export const moviesSwagger = {
         },
         {
           in: "query",
-          name: "name",
+          name: "query",
           required: false,
-          schema: getMoviesSchemas.searchParams.shape.name,
+          schema: getMoviesSchemas.searchParams.shape.query,
+        },
+        {
+          in: "query",
+          name: "category",
+          required: false,
+          schema: getMoviesSchemas.searchParams.shape.category,
+          description: `Category : ${tmdbCategories
+            .map((category) => category)
+            .join(" / ")}`,
+        },
+        {
+          in: "query",
+          name: "sort",
+          required: false,
+          schema: getMoviesSchemas.searchParams.shape.sort,
+          description: `Sort : ${tmdbSorts.map((sort) => sort).join(" / ")}`,
+        },
+        {
+          in: "query",
+          name: "genres",
+          required: false,
+          schema: getMoviesSchemas.searchParams.shape.genres,
+          description: `Genres : ${Object.keys(tmdbGenres)
+            .map((genre) => genre)
+            .join(" / ")}`,
         },
       ],
       responses: {

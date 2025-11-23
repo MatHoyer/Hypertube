@@ -33,6 +33,8 @@ export const ImageContainer: React.FC<
           alt={altImage}
           className="object-cover absolute inset-0 w-full h-full"
           sizes="(max-width: 768px) 100vw, 50vw"
+          loading="lazy"
+          decoding="async"
         />
       ) : (
         <div className="absolute size-full inset-0 flex items-center justify-center">

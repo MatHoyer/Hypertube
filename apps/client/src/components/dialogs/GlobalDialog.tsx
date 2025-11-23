@@ -1,4 +1,5 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { MovieDialog } from "@/pages/library/dialogs/movie-dialog";
 import { NewCredentialsDialog } from "@/pages/oauthCredentials/dialogs/new-credentials";
 import { PostCredentialsDialog } from "@/pages/oauthCredentials/dialogs/post-credentials";
 import { Button } from "../ui/button";
@@ -47,6 +48,10 @@ const dialogComponents: Record<TDialogType, React.FC> = {
   },
   postCredentials: () => {
     return <PostCredentialsDialog />;
+  },
+  movie: () => {
+    const movie = getDialogData("movie");
+    return <MovieDialog movie={movie} />;
   },
 };
 

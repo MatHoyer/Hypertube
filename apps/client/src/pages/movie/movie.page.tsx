@@ -177,8 +177,8 @@ const MoviePage = () => {
               </TabsContent>
               <TabsContent value={MovieTabs.DOWNLOADS}>
                 <DownloadsSelector
-                  resolutions={movie.resolutions ?? []}
-                  subtitlesLanguages={movie.subtitles ?? []}
+                  resolutions={movie.resolutions}
+                  subtitlesLanguages={movie.subtitles}
                 />
               </TabsContent>
             </Tabs>

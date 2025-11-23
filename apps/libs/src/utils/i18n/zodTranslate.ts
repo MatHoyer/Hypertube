@@ -1,6 +1,7 @@
 // @ts-nocheck
 import type { TFunction } from "i18next";
 import z from "zod";
+import { hypertubeLogger } from "../logger.js";
 
 /**
  * Translate zod errors to the language of the user
@@ -24,7 +25,7 @@ import z from "zod";
 export const zodTranslate = (t: TFunction) => {
   z.config({
     customError: (issue) => {
-      console.log(issue);
+      hypertubeLogger.debug(`zod issue : ${JSON.stringify(issue)}`);
       let errorKey = `zod.${issue.origin ?? issue.expected}.${issue.code}`;
 
       if (issue.code === "custom") {
