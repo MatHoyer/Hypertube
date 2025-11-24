@@ -138,6 +138,17 @@ export type {
 } from "./schemas/api/notifications.schema.js";
 
 export {
+  deletePlaylistSchemas,
+  getPlaylistsSchemas,
+  postPlaylistSchemas,
+} from "./schemas/api/playlists.schema.js";
+export type {
+  TDeletePlaylistSchemas,
+  TGetPlaylistsSchemas,
+  TPostPlaylistSchemas,
+} from "./schemas/api/playlists.schema.js";
+
+export {
   deleteCredentialsSchemas,
   getCredentialsSchemas,
   postCredentialsSchemas,

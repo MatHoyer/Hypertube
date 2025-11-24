@@ -9,6 +9,7 @@ import { credentialSchema } from "../../schemas/database/credential.schema.js";
 import { imageSchema } from "../../schemas/database/image.schema.js";
 import { movieSchema } from "../../schemas/database/movie.schema.js";
 import { notificationSchema } from "../../schemas/database/notifications.schema.js";
+import { playlistSchema } from "../../schemas/database/playlist.schema.js";
 import { userSchema } from "../../schemas/database/user.schema.js";
 import { isPurObject, typedEntries } from "../object.utils.js";
 import { getClientUrl } from "./getClientUrl.js";
@@ -50,6 +51,7 @@ export const ROUTES = {
     IMAGES: "api-images",
     MOVIES: "api-movies",
     MOVIES_SUBSCRIPTION: "api-movies-subscription",
+    PLAYLISTS: "api-playlists",
     NOTIFICATIONS: "api-notifications",
     NOTIFICATIONS_STATS: "api-notifications-stats",
     NOTIFICATIONS_TEST: "api-notifications-test",
@@ -145,6 +147,11 @@ const routeSchemas = {
     [ROUTES.API.MOVIES_SUBSCRIPTION]: z.object({
       tmdbId: z
         .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+    }),
+    [ROUTES.API.PLAYLISTS]: z.object({
+      playlistId: z
+        .union([playlistSchema.shape.id, z.literal("{playlistId}")])
         .optional(),
     }),
     [ROUTES.API.NOTIFICATIONS]: z.object({
@@ -315,6 +322,9 @@ const routes: {
   },
   [ROUTES.API.MOVIES_SUBSCRIPTION]: ({ tmdbId }) =>
     `/api/movies/${tmdbId}/subscription`,
+
+  [ROUTES.API.PLAYLISTS]: ({ playlistId }) =>
+    playlistId ? `/api/playlists/${playlistId}` : "/api/playlists",
 
   [ROUTES.API.NOTIFICATIONS]: ({ notificationId }) =>
     `/api/notifications` + (notificationId ? `/${notificationId}` : ""),
