@@ -8,9 +8,7 @@ dist/
 .vite/
 
 # Back
-**/src/generated/prisma
-**/prisma/**/migrations
-**/prisma/generated
+**/prisma/migrations
 
 # Downloads
 **/downloads/**

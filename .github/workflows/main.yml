@@ -41,6 +41,8 @@ jobs:
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+
 
           SERVER_URL=${{ secrets.SERVER_URL }}
           SERVER_PORT=${{ secrets.SERVER_PORT }}
