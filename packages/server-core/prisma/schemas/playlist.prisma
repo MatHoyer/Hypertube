@@ -1,0 +1,27 @@
+model Playlist {
+  id String @id @default(uuid())
+
+  name    String
+  movies  PlaylistMovie[]
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, userId])
+}
+
+model PlaylistMovie {
+  id String @id @default(uuid())
+
+  playlistId  String
+  playlist    Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  movieId     String
+  movie       Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([playlistId, movieId])
+}

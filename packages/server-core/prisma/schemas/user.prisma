@@ -21,6 +21,7 @@ model User {
   likes            Like[]
   comments         Comment[]
   history          MovieHistory[]
+  playlists        Playlist[]
 
   @@unique([email])
   @@unique([username])

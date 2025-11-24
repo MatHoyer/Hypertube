@@ -49,6 +49,7 @@ model Movie {
   resolutions   Resolution[]
   subtitles     Subtitle[]
   subscriptions MovieSubscription[]
+  playlists     PlaylistMovie[]
 
   additionalInfoFetched Boolean @default(false)
   demoMovie             Boolean @default(false)
