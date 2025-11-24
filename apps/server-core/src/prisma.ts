@@ -1,16 +1,9 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
-import { env } from "./env.js";
 
-export let prisma: PrismaClient;
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
+const prisma = new PrismaClient({ adapter });
 
-if (env.NODE_ENV === "PROD") {
-  prisma = new PrismaClient();
-} else {
-  const globalWithPrisma = global as typeof globalThis & {
-    prisma?: PrismaClient;
-  };
-  if (!globalWithPrisma.prisma) {
-    globalWithPrisma.prisma = new PrismaClient();
-  }
-  prisma = globalWithPrisma.prisma;
-}
+export { prisma };

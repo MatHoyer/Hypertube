@@ -9,14 +9,14 @@
     "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
-    "clear": "rm -rf node_modules dist prisma/schema/migrations",
+    "clear": "rm -rf node_modules dist prisma/schema/migrations src/generated",
     "build": "tsc --build",
     "dev": "tsc -w --preserveWatchOutput",
-    "prisma:generate": "npx dotenv -e ../../.env -- npx prisma generate",
-    "prisma:migrate": "npx dotenv -e ../../.env -- npx prisma migrate dev --name init",
-    "prisma:migrate:reset": "npx dotenv -e ../../.env -- npx prisma migrate reset --force --skip-seed",
-    "prisma:seed": "npx dotenv -e ../../.env -- npx prisma db seed",
-    "prisma:studio": "npx dotenv -e ../../.env -- npx prisma studio"
+    "prisma:generate": "pnpm dlx prisma generate",
+    "prisma:migrate": "pnpm dlx prisma migrate dev --name init",
+    "prisma:migrate:reset": "pnpm dlx prisma migrate reset --force",
+    "prisma:seed": "pnpm dlx prisma db seed",
+    "prisma:studio": "pnpm dlx prisma studio"
   },
   "keywords": [],
   "author": "",
@@ -24,14 +24,15 @@
   "packageManager": "pnpm@10.13.1",
   "dependencies": {
     "@hypertube/libs": "workspace:*",
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.0",
     "dotenv": "^17.2.0",
-    "@prisma/client": "^6.12.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.15",
     "dotenv-cli": "^8.0.0",
-    "prisma": "^6.12.0",
+    "prisma": "^7.0.0",
     "tsx": "^4.7.1"
   }
 }
