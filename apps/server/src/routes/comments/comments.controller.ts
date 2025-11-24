@@ -1,4 +1,5 @@
 import {
+  hypertubeLogger,
   ParentTypes,
   TDeleteCommentLike,
   TDeleteCommentSchemas,
@@ -136,7 +137,7 @@ export const deleteComment = async (
     });
     return c.json({ message: "Comment deleted successfully" }, 200);
   } catch (error) {
-    console.error("Error when deleting comment", error);
+    hypertubeLogger.error(`Error when deleting comment: ${error}`);
     return c.json({ message: "Failed to delete comment" }, 500);
   }
 };

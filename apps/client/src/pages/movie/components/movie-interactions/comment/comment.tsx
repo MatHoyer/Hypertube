@@ -26,7 +26,7 @@ export const Comment: React.FC<{
 }> = ({ comment, parent, depth = 0 }) => {
   const [isReplying, setIsReplying] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const maxDepth = 3;
+  const maxDepth = 1;
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -95,7 +95,7 @@ export const Comment: React.FC<{
           likesNumber={comment.likesNumber}
           parent={parent}
         />
-        {!isEditing && (
+        {!isEditing && depth < maxDepth && (
           <Button
             className="rounded-full"
             size="icon"

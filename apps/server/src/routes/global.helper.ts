@@ -1,13 +1,12 @@
 import { hypertubeLogger, ParentTypes, TParentType } from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
-
-type TStatusCode = 200 | 201 | 400 | 404 | 500;
+import { ContentfulStatusCode } from "hono/utils/http-status";
 
 export const likeParent = async (
   userId: string,
   parentId: string,
   parentType: TParentType
-): Promise<{ message: string; status: TStatusCode }> => {
+): Promise<{ message: string; status: ContentfulStatusCode }> => {
   try {
     await prisma.like.create({
       data: {
@@ -34,7 +33,7 @@ export const commentParent = async (
   userId: string,
   parentId: string,
   parentType: TParentType
-): Promise<{ message: string; status: TStatusCode }> => {
+): Promise<{ message: string; status: ContentfulStatusCode }> => {
   try {
     await prisma.comment.create({
       data: {
@@ -65,7 +64,7 @@ export const commentParent = async (
 export const unlikeParent = async (
   userId: string,
   parentId: string
-): Promise<{ message: string; status: TStatusCode }> => {
+): Promise<{ message: string; status: ContentfulStatusCode }> => {
   try {
     await prisma.like.delete({
       where: {
@@ -186,14 +185,14 @@ export const getParentComments = async (
         totalPages,
       },
       message: `Comment succesfully posted on ${parentType}`,
-      status: 200 as TStatusCode,
+      status: 200 as ContentfulStatusCode,
     };
   } catch (error) {
     hypertubeLogger.error(`Error getting comments: ${error}`);
     return {
       data: null,
       message: `Unexpected error when getting comments on ${parentId}`,
-      status: 400 as TStatusCode,
+      status: 400 as ContentfulStatusCode,
     };
   }
 };

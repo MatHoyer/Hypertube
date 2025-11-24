@@ -184,7 +184,7 @@ export const getMovie = async (
       getMovieData(dbMovie);
     }
   } catch (error) {
-    console.error("Error getting movie data", error);
+    hypertubeLogger.error(`Error getting movie data: ${error}`);
   }
 
   const resolutions = await prisma.resolution.findMany({

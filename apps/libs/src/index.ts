@@ -189,6 +189,9 @@ export type {
   TSubtitleSchema,
 } from "./schemas/database/movie.schema.js";
 
+export { commentSchema } from "./schemas/database/comments.schema.js";
+export type { TCommentSchema } from "./schemas/database/comments.schema.js";
+
 export { notificationSchema } from "./schemas/database/notifications.schema.js";
 export type { TNotificationSchema } from "./schemas/database/notifications.schema.js";
 

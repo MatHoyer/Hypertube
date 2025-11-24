@@ -177,24 +177,12 @@ const routeSchemas = {
       commentId: z
         .union([commentSchema.shape.id, z.literal("{commentId}")])
         .optional(),
-      page: z
-        .union([z.number().int().positive(), z.literal("{page}")])
-        .optional(),
-      pageSize: z
-        .union([z.number().int().positive(), z.literal("{pageSize}")])
-        .optional(),
     }),
     [ROUTES.API.COMMENTS]: z.object({
       commentId: z.union([commentSchema.shape.id, z.literal("{commentId}")]),
     }),
     [ROUTES.API.COMMENTS_REPLIES]: z.object({
       commentId: z.union([commentSchema.shape.id, z.literal("{commentId}")]),
-      page: z
-        .union([z.number().int().positive(), z.literal("{page}")])
-        .optional(),
-      pageSize: z
-        .union([z.number().int().positive(), z.literal("{pageSize}")])
-        .optional(),
     }),
     [ROUTES.API.COMMENTS_LIKES]: z.object({
       commentId: z.union([commentSchema.shape.id, z.literal("{commentId}")]),
