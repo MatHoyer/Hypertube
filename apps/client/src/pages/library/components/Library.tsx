@@ -88,6 +88,11 @@ export const Library = () => {
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.totalPages > lastPage.page ? lastPage.page + 1 : undefined,
+    enabled:
+      !!queryDebounced ||
+      !!categoryDebounced ||
+      !!sortDebounced ||
+      !!genresDebounced,
   });
 
   const allMovies = data ? data.pages.flatMap((page) => page.movies) : [];
