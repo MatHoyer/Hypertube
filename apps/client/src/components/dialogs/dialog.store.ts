@@ -25,6 +25,7 @@ const dialogSchemas = {
     tmdbId: tmdbMovieSchema.shape.id,
     subtitle: subtitleSchema,
   }),
+  playlist: null,
 };
 
 type TDialogDataMap = {
@@ -34,6 +35,7 @@ type TDialogDataMap = {
   movie: z.infer<typeof dialogSchemas.movie>;
   downloadResolution: z.infer<typeof dialogSchemas.downloadResolution>;
   downloadSubtitle: z.infer<typeof dialogSchemas.downloadSubtitle>;
+  playlist: null;
 };
 
 export type TDialogType = keyof TDialogDataMap;

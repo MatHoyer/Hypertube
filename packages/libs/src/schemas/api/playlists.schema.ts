@@ -41,7 +41,7 @@ export type TDeletePlaylistSchemas = {
 export const postMovieToPlaylistSchemas = {
   urlParams: z.object({ playlistId: playlistSchema.shape.id }),
   requirements: z.object({
-    movieId: movieSchema.shape.id,
+    movieId: movieSchema.shape.tmdbId,
   }),
   response: z.object({
     message: z.string(),
@@ -57,7 +57,7 @@ export type TPostMovieToPlaylistSchemas = {
 export const deleteMovieToPlaylistSchemas = {
   urlParams: z.object({
     playlistId: playlistSchema.shape.id,
-    movieId: movieSchema.shape.id,
+    movieId: movieSchema.shape.tmdbId,
   }),
   response: z.object({
     message: z.string(),

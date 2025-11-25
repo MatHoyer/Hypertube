@@ -78,12 +78,12 @@ export const postMovieToPlaylist = async (
     return c.json({ message: "Not your playlist" }, 401);
   }
 
-  const movie = await prisma.movie.findFirst({ where: { id: movieId } });
+  const movie = await prisma.movie.findFirst({ where: { tmdbId: movieId } });
   if (!movie) return c.json({ message: "Movie not found" }, 404);
 
   try {
     await prisma.playlistMovie.create({
-      data: { playlistId, movieId },
+      data: { playlistId, movieId: movie.id },
     });
 
     return c.json({ message: "OK" }, 200);
@@ -108,12 +108,12 @@ export const deleteMovieToPlaylist = async (
     return c.json({ message: "Not your playlist" }, 401);
   }
 
-  const movie = await prisma.movie.findFirst({ where: { id: movieId } });
+  const movie = await prisma.movie.findFirst({ where: { tmdbId: movieId } });
   if (!movie) return c.json({ message: "Movie not found" }, 404);
 
   try {
     await prisma.playlistMovie.delete({
-      where: { playlistId_movieId: { playlistId, movieId } },
+      where: { playlistId_movieId: { playlistId, movieId: movie.id } },
     });
 
     return c.json({ message: "OK" }, 200);

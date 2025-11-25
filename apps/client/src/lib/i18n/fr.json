@@ -246,6 +246,21 @@
     "loadingRessource": "casting",
     "errorRessource": "casting non trouvé"
   },
+  "playlist": {
+    "save": "Enregistrer dans...",
+    "none": "Vous n'avez aucune playlist",
+    "new": "Nouvelle playlist",
+    "dialog": {
+      "title": "Choisissez le nom pour votre future playlist",
+      "desc": "Vous ne pouvez pas avoir deux playlists portant le même nom.",
+      "placeholder": "Nom de votre playlist",
+      "button": "Créer votre playlist"
+    },
+    "addMovieSuccess": "L'ajout du film à votre playlist a réussi.",
+    "addMovieFailed": "L'ajout du film à votre liste de lecture a échoué.",
+    "creationSuccess": "La playlist a été créée avec succès.",
+    "creationFailed": "La création de la playlist a échoué."
+  },
   "oauthCredentials": {
     "title": "Credentials",
     "description": "Gérer vos credentials OAuth pour les intégrations avec des tiers. ",

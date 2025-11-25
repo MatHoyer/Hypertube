@@ -33,6 +33,7 @@ const apiRouteQueryKeySchemas = {
   [ROUTES.API.MOVIES_CASTING]: z.object({
     tmdbId: movieSchema.shape.tmdbId,
   }),
+  [ROUTES.API.PLAYLISTS]: z.object({}),
   [ROUTES.API.NOTIFICATIONS]: z.object({
     type: z
       .union([z.enum(notificationReadStatuses), z.literal("stats")])
@@ -77,6 +78,7 @@ const queryKeys: {
     ROUTES.API.MOVIES_CASTING,
     tmdbId,
   ],
+  [ROUTES.API.PLAYLISTS]: () => [ROUTES.API.PLAYLISTS],
   [ROUTES.API.NOTIFICATIONS]: ({ type }) => {
     if (!type) return [ROUTES.API.NOTIFICATIONS];
     return type === "stats"
