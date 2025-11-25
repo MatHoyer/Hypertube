@@ -82,7 +82,7 @@ const SubscriptionButton: React.FC<{
 export const MovieInteraction = ({
   movie,
 }: {
-  movie: TGetMovieSchemas["response"];
+  movie: NonNullable<TGetMovieSchemas["response"]>;
 }) => {
   const {
     data,
