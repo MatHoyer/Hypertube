@@ -1,20 +1,11 @@
 import { useAuth } from "@/hooks/use-auth";
 import { getUrl, ROUTES } from "@hypertube/libs";
-import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { FlagCombobox } from "../flags/FlagCombobox";
 import { Logo } from "../images/Logo";
 import { ThemeToggle } from "../theme/ThemeToggle";
 import { Button } from "../ui/button";
-<<<<<<< HEAD
-=======
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "../ui/input-group";
->>>>>>> 4b00b04 (feat: start movie interactions)
 import { UserDropdown } from "../UserDropdown";
 
 export const Navbar = () => {
