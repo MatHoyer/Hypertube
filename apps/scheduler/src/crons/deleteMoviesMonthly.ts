@@ -25,7 +25,10 @@ const DELETE_MOVIES_MONTHLY_CRON_CALLBACK = async (localLogger: TLogger) => {
 
   for (const movie of moviesToDelete) {
     try {
-      await deleteMovieFolder(movie.tmdbId);
+      await deleteMovieFolder({
+        movieId: movie.tmdbId,
+        forTransmission: false,
+      });
     } catch (error) {
       localLogger.error(`Error deleting movie folder: ${error}`);
     }

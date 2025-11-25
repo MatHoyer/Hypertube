@@ -31,13 +31,13 @@ export const getSubtitlesDownloadLinks = async ({
         if (tds.length < 5) return null;
 
         const rating = parseInt(
-          await tds[0].$eval("span.label", (el) => el.textContent ?? "0")
+          await tds[0].$eval("span.label", (el) => el.textContent ?? "0"),
         );
         if (rating < 1) return null;
 
         const language = await tds[1].$eval(
           "span.sub-lang",
-          (el) => el.textContent
+          (el) => el.textContent,
         );
         const link = await tds[2].$eval("a", (el) => el.href);
 
@@ -46,7 +46,7 @@ export const getSubtitlesDownloadLinks = async ({
           rating: rating,
           link,
         };
-      })
+      }),
     );
 
     await browser.close();
@@ -55,35 +55,38 @@ export const getSubtitlesDownloadLinks = async ({
     const filtered = subtitlesDownloadLinks
       .filter(
         (
-          subtitle
+          subtitle,
         ): subtitle is { language: string; rating: number; link: string } =>
           !!subtitle &&
           !!subtitle.link &&
           !!subtitle.language &&
-          !!subtitle.rating
+          !!subtitle.rating,
       )
-      .reduce((acc, subtitle) => {
-        const existing = acc.find((s) => s.language === subtitle.language);
-        if (!existing || subtitle.rating > existing.rating) {
-          // Remove existing entry of this language
-          return [
-            ...acc.filter((s) => s.language !== subtitle.language),
-            subtitle,
-          ];
-        }
-        return acc;
-      }, [] as { language: string; rating: number; link: string }[]);
+      .reduce(
+        (acc, subtitle) => {
+          const existing = acc.find((s) => s.language === subtitle.language);
+          if (!existing || subtitle.rating > existing.rating) {
+            // Remove existing entry of this language
+            return [
+              ...acc.filter((s) => s.language !== subtitle.language),
+              subtitle,
+            ];
+          }
+          return acc;
+        },
+        [] as { language: string; rating: number; link: string }[],
+      );
     return filtered;
   } catch (error) {
     hypertubeLogger.error(
-      `Error getting subtitles download links: ${JSON.stringify(error)}`
+      `Error getting subtitles download links: ${JSON.stringify(error)}`,
     );
     return [];
   }
 };
 
 export const downloadYifysubtitles = async (
-  subtitles: TSubtitleSchema & { tmdbId: number }
+  subtitles: TSubtitleSchema & { tmdbId: number },
 ) => {
   const browser = await launchPuppeteer();
 
@@ -92,7 +95,10 @@ export const downloadYifysubtitles = async (
   const client = await page.createCDPSession();
   await client.send("Page.setDownloadBehavior", {
     behavior: "allow",
-    downloadPath: getSubtitlePath(subtitles.tmdbId, subtitles.language),
+    downloadPath: getSubtitlePath({
+      movieId: subtitles.tmdbId,
+      language: subtitles.language,
+    }),
   });
 
   await page.goto(subtitles.downloadLink);
@@ -102,7 +108,7 @@ export const downloadYifysubtitles = async (
   // Get original filename before download
   const originalHref = await page.$eval(
     "a.btn-icon.download-subtitle",
-    (el) => el.href
+    (el) => el.href,
   );
   const originalFilename = originalHref.split("/").pop();
   if (!originalFilename) {
@@ -112,7 +118,10 @@ export const downloadYifysubtitles = async (
   // Download the file
   await page.click("a.btn-icon.download-subtitle");
 
-  const downloadDir = getSubtitlePath(subtitles.tmdbId, subtitles.language);
+  const downloadDir = getSubtitlePath({
+    movieId: subtitles.tmdbId,
+    language: subtitles.language,
+  });
   const originalPath = path.join(downloadDir, originalFilename);
 
   // Wait for original file to download
@@ -126,7 +135,7 @@ export const downloadYifysubtitles = async (
   const zipper = new AdmZip(zipPath);
   const entries = zipper.getEntries();
   const srtEntry = entries.find((e) =>
-    e.entryName.toLowerCase().endsWith(".srt")
+    e.entryName.toLowerCase().endsWith(".srt"),
   );
   if (!srtEntry) {
     throw new Error("SRT file not found");

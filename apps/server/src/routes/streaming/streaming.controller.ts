@@ -8,10 +8,15 @@ import { Context } from "hono";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 
 export const getStreamingResolution = async (
-  c: Context<TUrlParamsParser<TGetStreamingResolutionSchemas["urlParams"]>>
+  c: Context<TUrlParamsParser<TGetStreamingResolutionSchemas["urlParams"]>>,
 ) => {
   const { movieId, resolution } = c.get("validatedUrlParams");
-  const filePath = getResolutionPath(movieId, resolution, false, "movie.mp4");
+  const filePath = getResolutionPath({
+    movieId,
+    resolution,
+    forTransmission: false,
+    filename: "movie.mp4",
+  });
   const stat = await fs.promises.stat(filePath);
   const fileSize = stat.size;
   const range = c.req.header("range");
@@ -27,7 +32,7 @@ export const getStreamingResolution = async (
         {
           message: "Requested range not satisfiable",
         },
-        416
+        416,
       );
     }
 
@@ -51,10 +56,14 @@ export const getStreamingResolution = async (
 };
 
 export const getStreamingSubtitles = async (
-  c: Context<TUrlParamsParser<TGetStreamingSubtitlesSchemas["urlParams"]>>
+  c: Context<TUrlParamsParser<TGetStreamingSubtitlesSchemas["urlParams"]>>,
 ) => {
   const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
-  const filePath = getSubtitlePath(movieId, subtitlesLanguage, true);
+  const filePath = getSubtitlePath({
+    movieId,
+    language: subtitlesLanguage,
+    filename: "subtitles.vtt",
+  });
   const file = fs.readFileSync(filePath);
 
   return c.body(file, 200, {

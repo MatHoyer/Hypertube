@@ -3,32 +3,36 @@ import * as fs from "fs";
 import { getMovieFolderPath } from "./movie.js";
 
 const subtitleFolderName = "subtitles";
-const subtitleFilename = "subtitles.vtt";
 
-export const getSubtitlePath = (
-  movieId: TMovieSchema["tmdbId"],
-  language: TSubtitleSchema["language"],
-  withFilename: boolean = false
-) => {
-  return `${getMovieFolderPath(movieId)}/${subtitleFolderName}/${language}${
-    withFilename ? `/${subtitleFilename}` : ""
+type TSubtitlePathParams = {
+  movieId: TMovieSchema["tmdbId"];
+  language: TSubtitleSchema["language"];
+};
+
+export const getSubtitlePath = ({
+  movieId,
+  language,
+  filename,
+}: TSubtitlePathParams & { filename?: "subtitles.vtt" | (string & {}) }) => {
+  return `${getMovieFolderPath({ movieId, forTransmission: false })}}/${subtitleFolderName}/${language}${
+    filename ? `/${filename}` : ""
   }`;
 };
 
-export const createSubtitle = async (
-  movieId: TMovieSchema["tmdbId"],
-  language: TSubtitleSchema["language"]
-) => {
-  const subtitleFolderPath = getSubtitlePath(movieId, language);
+export const createSubtitle = async ({
+  movieId,
+  language,
+}: TSubtitlePathParams) => {
+  const subtitleFolderPath = getSubtitlePath({ movieId, language });
   await fs.promises.mkdir(subtitleFolderPath, {
     recursive: true,
   });
 };
 
-export const deleteSubtitle = async (
-  movieId: TMovieSchema["tmdbId"],
-  language: TSubtitleSchema["language"]
-) => {
-  const subtitleFolderPath = getSubtitlePath(movieId, language);
+export const deleteSubtitle = async ({
+  movieId,
+  language,
+}: TSubtitlePathParams) => {
+  const subtitleFolderPath = getSubtitlePath({ movieId, language });
   await fs.promises.rm(subtitleFolderPath, { recursive: true });
 };

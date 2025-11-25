@@ -2,28 +2,33 @@ import type { TMovieSchema } from "@hypertube/libs";
 import * as fs from "fs";
 import path from "path";
 
-export const getMovieFolderPath = (
-  movieId: TMovieSchema["tmdbId"],
-  forTransmission: boolean = false
-) => {
+type TMovieFolderPathParams = {
+  movieId: TMovieSchema["tmdbId"];
+  forTransmission: boolean;
+};
+
+export const getMovieFolderPath = ({
+  movieId,
+  forTransmission,
+}: TMovieFolderPathParams) => {
   return path.resolve(
     process.cwd(),
-    `./downloads${forTransmission ? "-transmission" : ""}/${movieId}`
+    `./downloads${forTransmission ? "-transmission" : ""}/${movieId}`,
   );
 };
 
-export const createMovieFolder = async (
-  movieId: TMovieSchema["tmdbId"],
-  forTransmission: boolean = false
-) => {
-  const movieFolderPath = getMovieFolderPath(movieId, forTransmission);
+export const createMovieFolder = async ({
+  movieId,
+  forTransmission,
+}: TMovieFolderPathParams) => {
+  const movieFolderPath = getMovieFolderPath({ movieId, forTransmission });
   await fs.promises.mkdir(movieFolderPath, { recursive: true });
 };
 
-export const deleteMovieFolder = async (
-  movieId: TMovieSchema["tmdbId"],
-  forTransmission: boolean = false
-) => {
-  const movieFolderPath = getMovieFolderPath(movieId, forTransmission);
+export const deleteMovieFolder = async ({
+  movieId,
+  forTransmission,
+}: TMovieFolderPathParams) => {
+  const movieFolderPath = getMovieFolderPath({ movieId, forTransmission });
   await fs.promises.rm(movieFolderPath, { recursive: true });
 };

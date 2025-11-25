@@ -4,42 +4,50 @@ import { getMovieFolderPath } from "./movie.js";
 
 const resolutionFolderName = "resolutions";
 
-export const getResolutionPath = (
-  movieId: TMovieSchema["tmdbId"],
-  resolution: TResolutionSchema["resolution"],
-  forTransmission: boolean = false,
-  type?: "resolution.torrent" | "movie.mp4"
-) => {
-  return `${getMovieFolderPath(
-    movieId,
-    forTransmission
-  )}/${resolutionFolderName}/${resolution}${type ? `/${type}` : ""}`;
+type TResolutionPathParams = {
+  movieId: TMovieSchema["tmdbId"];
+  resolution: TResolutionSchema["resolution"];
+  forTransmission: boolean;
 };
 
-export const createResolution = async (
-  movieId: TMovieSchema["tmdbId"],
-  resolution: TResolutionSchema["resolution"],
-  forTransmission: boolean = false
-) => {
-  const resolutionFolderPath = getResolutionPath(
+export const getResolutionPath = ({
+  movieId,
+  resolution,
+  forTransmission,
+  filename,
+}: TResolutionPathParams & {
+  filename?: "resolution.torrent" | "movie.mp4" | (string & {});
+}) => {
+  return `${getMovieFolderPath({
+    movieId,
+    forTransmission,
+  })}/${resolutionFolderName}/${resolution}${filename ? `/${filename}` : ""}`;
+};
+
+export const createResolution = async ({
+  movieId,
+  resolution,
+  forTransmission,
+}: TResolutionPathParams) => {
+  const resolutionFolderPath = getResolutionPath({
     movieId,
     resolution,
-    forTransmission
-  );
+    forTransmission,
+  });
   await fs.promises.mkdir(resolutionFolderPath, {
     recursive: true,
   });
 };
 
-export const deleteResolution = async (
-  movieId: TMovieSchema["tmdbId"],
-  resolution: TResolutionSchema["resolution"],
-  forTransmission: boolean = false
-) => {
-  const resolutionFolderPath = getResolutionPath(
+export const deleteResolution = async ({
+  movieId,
+  resolution,
+  forTransmission,
+}: TResolutionPathParams) => {
+  const resolutionFolderPath = getResolutionPath({
     movieId,
     resolution,
-    forTransmission
-  );
+    forTransmission,
+  });
   await fs.promises.rm(resolutionFolderPath, { recursive: true });
 };
