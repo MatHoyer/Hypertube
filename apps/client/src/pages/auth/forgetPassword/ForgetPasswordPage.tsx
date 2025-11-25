@@ -15,9 +15,7 @@ export const ForgetPasswordPage = () => {
         <AuthLayout title={t("sign.forgetPassword")}>
           <ForgetPasswordForm />
           <div className="flex items-center">
-            <Typography variant="small">
-              {t("sign.rememberPassword")}
-            </Typography>
+            <Typography textSize="sm">{t("sign.rememberPassword")}</Typography>
             <Button type="button" variant={"link"} asChild>
               <Link to={getUrl(ROUTES.CLIENT.SIGNIN)}>
                 {t("sign.backToSignin")}

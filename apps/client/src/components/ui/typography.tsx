@@ -9,7 +9,7 @@ import React, { forwardRef } from "react";
 
 // Source : https://www.totaltypescript.com/pass-component-as-prop-react
 type FixedForwardRef = <T, P = object>(
-  render: (props: P, ref: React.Ref<T>) => React.ReactNode
+  render: (props: P, ref: React.Ref<T>) => React.ReactNode,
 ) => (props: P & React.RefAttributes<T>) => React.ReactNode;
 
 const fixedForwardRef = forwardRef as FixedForwardRef;
@@ -21,41 +21,47 @@ type DistributiveOmit<T, TOmitted extends PropertyKey> = T extends any
 export const typographyVariants = cva("", {
   variants: {
     variant: {
-      h1: "font-caption scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl",
-      h2: "font-caption scroll-m-20 text-3xl font-semibold tracking-tight transition-colors",
-      h3: "font-caption scroll-m-20 text-xl font-semibold tracking-tight",
-      p: "leading-7 [&:not(:first-child)]:mt-6",
       default: "",
+      h1: "font-caption scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl",
+      h2: "font-caption scroll-m-20 text-3xl font-semibold tracking-tight",
+      h3: "font-caption scroll-m-20 text-xl font-semibold tracking-tight",
+      h4: "font-caption scroll-m-20 text-lg font-semibold tracking-tight",
       quote: "mt-6 border-l-2 pl-6 italic",
       code: "relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold",
-      lead: "text-xl text-muted-foreground",
-      large: "text-lg font-semibold",
-      small: "text-sm font-medium leading-none",
-      muted: "text-sm text-muted-foreground",
-      link: "font-medium text-cyan-600 hover:underline dark:text-primary",
-      mono: "font-mono",
+      link: "hover:underline",
+    },
+    textSize: {
+      xl: "text-xl font-semibold",
+      lg: "text-lg font-semibold",
+      sm: "text-sm font-medium leading-none",
+      xs: "text-xs font-medium leading-none",
+    },
+    textColor: {
+      muted: "text-muted-foreground",
+    },
+    functionnal: {
+      truncate: "w-full text-start truncate",
+      wrap: "w-full text-start text-wrap",
     },
   },
   defaultVariants: {
     variant: "default",
+    textSize: null,
+    textColor: null,
+    functionnal: null,
   },
 });
 type TypographyCvaProps = VariantProps<typeof typographyVariants>;
 
 const defaultElementMapping = {
+  default: "p",
   h1: "h1",
   h2: "h2",
   h3: "h3",
-  p: "p",
+  h4: "h4",
   quote: "p",
   code: "code",
-  lead: "p",
-  large: "p",
-  small: "p",
-  muted: "p",
   link: "a",
-  mono: "p",
-  default: "p",
 } satisfies Record<NonNullable<TypographyCvaProps["variant"]>, ElementType>;
 
 type ElementMapping = typeof defaultElementMapping;
@@ -83,16 +89,22 @@ type ElementTypeForVariant<TVariant extends keyof ElementMapping> =
  */
 const InnerTypography = <
   TAs extends ElementType,
-  TVariant extends TypographyCvaProps["variant"] = "default"
+  TVariant extends TypographyCvaProps["variant"] = "default",
 >(
   {
     variant = "default",
+    textSize = null,
+    textColor = null,
+    functionnal = null,
     className,
     as,
     ...props
   }: {
     as?: TAs;
     variant?: TVariant;
+    textSize?: TypographyCvaProps["textSize"];
+    textColor?: TypographyCvaProps["textColor"];
+    functionnal?: TypographyCvaProps["functionnal"];
   } & DistributiveOmit<
     ComponentPropsWithRef<
       ElementType extends TAs
@@ -101,13 +113,16 @@ const InnerTypography = <
     >,
     "as"
   >,
-  ref: ForwardedRef<any>
+  ref: ForwardedRef<any>,
 ) => {
   const Comp = as ?? defaultElementMapping[variant ?? "default"];
   return (
     <Comp
       {...props}
-      className={cn(typographyVariants({ variant }), className)}
+      className={cn(
+        typographyVariants({ variant, textSize, textColor, functionnal }),
+        className,
+      )}
       ref={ref}
     ></Comp>
   );

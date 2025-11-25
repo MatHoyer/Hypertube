@@ -56,7 +56,7 @@ const DownloadButton: React.FC<{
 
   const variant = useMemo(
     () => DownloadButtonVariants[downloadState],
-    [downloadState]
+    [downloadState],
   );
 
   return (
@@ -97,7 +97,7 @@ export const DownloadsSelector: React.FC<{
 
   const { t } = useTranslation();
   const [selectedResolution, setSelectedResolution] = useState<string | null>(
-    null
+    null,
   );
   const [selectedSubtitlesLanguage, setSelectedSubtitlesLanguage] = useState<
     string | null
@@ -170,10 +170,10 @@ export const DownloadsSelector: React.FC<{
                       }
                     />
                     <Typography
-                      variant="muted"
+                      textColor="muted"
                       className={cn(
                         selectedResolution === resolution.resolution &&
-                          "text-primary"
+                          "text-primary",
                       )}
                     >
                       {resolution.size}
@@ -192,7 +192,7 @@ export const DownloadsSelector: React.FC<{
               success={resolutionMutation.isSuccess}
               onClick={() =>
                 resolutionMutation.mutate(
-                  selectedResolution as (typeof ytsQualities)[number]
+                  selectedResolution as (typeof ytsQualities)[number],
                 )
               }
             >
@@ -232,7 +232,7 @@ export const DownloadsSelector: React.FC<{
               success={subtitlesMutation.isSuccess}
               onClick={() =>
                 subtitlesMutation.mutate(
-                  selectedSubtitlesLanguage as keyof typeof languageCodes
+                  selectedSubtitlesLanguage as keyof typeof languageCodes,
                 )
               }
             >

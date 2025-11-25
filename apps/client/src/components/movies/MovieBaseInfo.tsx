@@ -18,7 +18,7 @@ const DisplayGenresMovie: React.FC<{
   if (!genres.length)
     return (
       <div className="flex flex-wrap gap-2 justify-center">
-        <Typography variant="muted" className="text-center">
+        <Typography textColor="muted" className="text-center">
           {t("movie.page.missing.genres")}
         </Typography>
       </div>
@@ -65,7 +65,7 @@ export const MovieBaseInfo: React.FC<
     <div
       className={cn(
         "flex flex-col items-center w-full gap-2 text-center",
-        className
+        className,
       )}
       {...props}
     >
@@ -75,7 +75,7 @@ export const MovieBaseInfo: React.FC<
         size={posterSize}
       />
       {info === "partial" ? (
-        <Typography variant="large" className="line-clamp-1">
+        <Typography textSize="lg" className="line-clamp-1">
           {movie.title}
         </Typography>
       ) : (
@@ -83,7 +83,7 @@ export const MovieBaseInfo: React.FC<
           <Typography variant="h1">{movie.title}</Typography>
           <div className="flex gap-2">
             <Typography
-              variant="muted"
+              textColor="muted"
               className={cn(truncate && "line-clamp-1")}
             >
               {movie.original_title}

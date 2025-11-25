@@ -17,7 +17,7 @@ function Separator({
       orientation={orientation}
       className={cn(
         "bg-border shrink-0 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px",
-        className
+        className,
       )}
       {...props}
     />
@@ -32,7 +32,7 @@ const TextSeparator: React.FC<React.ComponentProps<typeof Typography>> = ({
     <div className="flex items-center gap-2 w-full">
       <Separator className="flex-1" />
       <Typography
-        variant="small"
+        textSize="sm"
         className={cn("text-muted-foreground", className)}
         {...props}
       />

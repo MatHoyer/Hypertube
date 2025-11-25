@@ -61,7 +61,7 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
         "relative overflow-hidden p-4 gap-2 group hover:shadow-xl transition-all duration-150",
         {
           "bg-muted": notification.read,
-        }
+        },
       )}
     >
       {!notification.read && (
@@ -78,7 +78,7 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
             {notification.resourceUrl && (
               <div className="flex flex-row items-center gap-1">
                 <Typography
-                  variant="small"
+                  textSize="sm"
                   className="group-hover:opacity-100 opacity-20 group-hover:underline transition-all duration-150"
                 >
                   {t("notifications.goToResource")}
@@ -88,7 +88,7 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
             )}
             <div className="h-full w-px bg-border" />
             <div className="flex flex-col gap-2">
-              <Typography variant="muted" className="text-xs">
+              <Typography textSize="xs" textColor="muted">
                 {getNearDateWithLocale({ date: notification.createdAt })}
               </Typography>
               {!notification.read && (
