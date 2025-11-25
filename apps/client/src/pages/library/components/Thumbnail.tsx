@@ -3,29 +3,71 @@ import { getDownloadStateIcon } from "@/components/download-state/getDownloadSta
 import { Logo } from "@/components/images/Logo";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { type TGetMoviesSchemas } from "@hypertube/libs";
-import { Check, EllipsisVertical } from "lucide-react";
+import { Typography } from "@/components/ui/typography";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
+import {
+  getUrl,
+  postMovieToPlaylistSchemas,
+  ROUTES,
+  type TGetMoviesSchemas,
+  type TGetPlaylistsSchemas,
+  type TPostMovieToPlaylistSchemas,
+} from "@hypertube/libs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Bookmark, Check, EllipsisVertical, Plus } from "lucide-react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export const Thumbnail: React.FC<{
   movie: TGetMoviesSchemas["response"]["movies"][number];
-}> = memo(({ movie }) => {
+  userPlaylists: TGetPlaylistsSchemas["response"]["playlists"];
+}> = memo(({ movie, userPlaylists }) => {
   const movieSeen = true; //TODO : movieSeen by user
+  const queryClient = useQueryClient();
   const { t } = useTranslation();
+
+  const mutation = useMutation({
+    mutationFn: (data: {
+      movieId: TPostMovieToPlaylistSchemas["requirements"]["movieId"];
+      playlistId: TPostMovieToPlaylistSchemas["urlParams"]["playlistId"];
+    }) =>
+      axiosFetch({
+        method: "POST",
+        url: getUrl(ROUTES.API.PLAYLISTS_MOVIE, {
+          playlistId: data.playlistId,
+        }),
+        schemas: postMovieToPlaylistSchemas,
+        data,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.PLAYLISTS),
+      });
+      toast.success(t("playlist.addMovieSuccess"));
+    },
+    onError: () => {
+      toast.error(t("playlist.addMovieFailed"));
+    },
+  });
 
   if (!movie)
     return (
@@ -63,15 +105,54 @@ export const Thumbnail: React.FC<{
                 <TooltipContent>{t("movie.page.seen")}</TooltipContent>
               </Tooltip>
             )}
-            <DropdownMenu modal={false}>
+            <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <EllipsisVertical size={15} />
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent className="w-52" side="top" align="start">
+                <DropdownMenuLabel>
+                  <Typography textSize="lg">{t("playlist.save")}</Typography>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>Default playlist</DropdownMenuItem>
-                  <DropdownMenuItem>Choose playlist</DropdownMenuItem>
+                  <ScrollArea className="h-32">
+                    {userPlaylists.map((playlist) => (
+                      <DropdownMenuItem
+                        key={playlist.id}
+                        className="flex justify-between"
+                        onClick={() => {
+                          mutation.mutate({
+                            playlistId: playlist.id,
+                            movieId: movie.id,
+                          });
+                        }}
+                      >
+                        <Typography textSize="lg" className="truncate w-40">
+                          {playlist.name}
+                        </Typography>
+                        <Bookmark />
+                      </DropdownMenuItem>
+                    ))}
+                    {!userPlaylists.length && (
+                      <DropdownMenuItem
+                        className="flex justify-center"
+                        disabled
+                      >
+                        {t("playlist.none")}
+                      </DropdownMenuItem>
+                    )}
+                  </ScrollArea>
                 </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <Button
+                  className="w-full"
+                  onClick={() => {
+                    openDialog("playlist");
+                  }}
+                >
+                  <Plus />
+                  {t("playlist.new")}
+                </Button>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

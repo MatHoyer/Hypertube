@@ -1,6 +1,7 @@
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { MovieDialog } from "@/pages/library/dialogs/movie-dialog";
 
+import { PlaylistDialog } from "@/pages/library/dialogs/playlist-dialog";
 import { DownloadResolutionDialog } from "@/pages/movie/dialogs/download.resolution";
 import { DownloadSubtitleDialog } from "@/pages/movie/dialogs/download.subtitles";
 import { NewCredentialsDialog } from "@/pages/oauthCredentials/dialogs/new-credentials";
@@ -72,6 +73,9 @@ const dialogComponents: Record<TDialogType, React.FC> = {
     return (
       <DownloadSubtitleDialog tmdbId={data.tmdbId} subtitle={data.subtitle} />
     );
+  },
+  playlist: () => {
+    return <PlaylistDialog />;
   },
 };
 

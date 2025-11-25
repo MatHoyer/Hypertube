@@ -246,6 +246,21 @@
     "loadingRessource": "",
     "errorRessource": ""
   },
+  "playlist": {
+    "save": "",
+    "none": "",
+    "new": "",
+    "dialog": {
+      "title": "",
+      "desc": "",
+      "placeholder": "",
+      "button": ""
+    },
+    "addMovieSuccess": "",
+    "addMovieFailed": "",
+    "creationSuccess": "",
+    "creationFailed": ""
+  },
   "oauthCredentials": {
     "title": "Credenciales",
     "description": "Gestiona tus credenciales OAuth para integraciones de terceros.",

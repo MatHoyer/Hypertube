@@ -246,6 +246,21 @@
     "loadingRessource": "casting",
     "errorRessource": "casting not found"
   },
+  "playlist": {
+    "save": "Save to...",
+    "none": "You don't have any playlist",
+    "new": "New playlist",
+    "dialog": {
+      "title": "Choose a name for your future playlist",
+      "desc": "You cannot have two playlists with the same name.",
+      "placeholder": "Name of your playlist",
+      "button": "Create your playlist"
+    },
+    "addMovieSuccess": "The film has been successfully added to your playlist.",
+    "addMovieFailed": "Adding the film to your playlist failed.",
+    "creationSuccess": "Playlist successfully created.",
+    "creationFailed": "Playlist creation failed."
+  },
   "oauthCredentials": {
     "title": "Credentials",
     "description": "Manage your OAuth credentials for third-party integrations.",
