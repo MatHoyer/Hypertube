@@ -52,7 +52,7 @@ export const UserPasswordUpdate = () => {
 
   const hasCredential = useMemo(
     () => accounts.map((account) => account.provider).includes(credentialId),
-    [accounts]
+    [accounts],
   );
 
   const needBlur = useMemo(() => !user.username, [user.username]);
@@ -96,7 +96,7 @@ export const UserPasswordUpdate = () => {
         <div className="relative">
           {needBlur && (
             <div className="flex absolute inset-0 justify-center items-center text-destructive">
-              <Typography variant="large">
+              <Typography textSize="lg">
                 {t("settings.usernameRequired")}
               </Typography>
             </div>
@@ -104,7 +104,7 @@ export const UserPasswordUpdate = () => {
           <div
             className={cn(
               "flex flex-col gap-6",
-              needBlur && "blur-xs pointer-events-none"
+              needBlur && "blur-xs pointer-events-none",
             )}
           >
             <CardContent>

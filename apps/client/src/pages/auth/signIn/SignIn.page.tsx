@@ -24,7 +24,7 @@ export const SignInPage = () => {
             </Link>
           </Button>
           <div className="flex items-center">
-            <Typography variant="small">{t("sign.missAccount")}</Typography>
+            <Typography textSize="sm">{t("sign.missAccount")}</Typography>
             <Button type="button" variant={"link"} asChild>
               <Link to={getUrl(ROUTES.CLIENT.SIGNUP)}>{t("sign.up")}</Link>
             </Button>

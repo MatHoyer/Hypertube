@@ -140,7 +140,7 @@ export const Library = () => {
   if (isError) {
     return (
       <div className="flex justify-center items-center">
-        <Typography variant="large">{t("global.error")}</Typography>
+        <Typography textSize="lg">{t("global.error")}</Typography>
       </div>
     );
   }
@@ -186,7 +186,7 @@ export const Library = () => {
       <div className="flex w-full justify-center">
         {isFetchingNextPage && <AppLoader />}
         {!data.pages[0].totalResults && (
-          <Typography variant="large">{t("movie.page.noFound")}</Typography>
+          <Typography textSize="lg">{t("movie.page.noFound")}</Typography>
         )}
       </div>
     </>

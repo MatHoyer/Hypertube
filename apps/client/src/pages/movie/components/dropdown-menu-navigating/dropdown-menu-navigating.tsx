@@ -143,7 +143,7 @@ const ResolutionsSettings: React.FC<{
           </DropdownMenuSelectedItem>
         ))
       ) : (
-        <Typography variant="muted" className="p-2">
+        <Typography textColor="muted" className="p-2">
           {t("movie.playerSettings.noResolutions")}
         </Typography>
       )}
@@ -199,7 +199,7 @@ const SubtitlesSettings: React.FC<{
           </DropdownMenuSelectedItem>
         ))
       ) : (
-        <Typography variant="muted" className="p-2">
+        <Typography textColor="muted" className="p-2">
           {t("movie.playerSettings.noSubtitles")}
         </Typography>
       )}

@@ -105,7 +105,7 @@ const VolumeControl = () => {
       <div
         className={cn(
           "flex items-center overflow-hidden transition-all duration-300",
-          mouseIn ? "w-24 opacity-100" : "w-0 opacity-0"
+          mouseIn ? "w-24 opacity-100" : "w-0 opacity-0",
         )}
       >
         <AnimateApparition
@@ -149,13 +149,13 @@ const ProgressBar = () => {
   const { videoRef, progress, bufferedProgress, handleSeek } = useVideoPlayer();
 
   const currentTime = secondsToHMS(
-    (progress * (videoRef.current?.duration ?? 0)) / 100
+    (progress * (videoRef.current?.duration ?? 0)) / 100,
   );
   const duration = useMemo(
     () => secondsToHMS(videoRef.current?.duration ?? 0),
     // eslint doesn't understand that videoRef.current?.duration is a dependency of the function and not only videoRef
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [videoRef.current?.duration]
+    [videoRef.current?.duration],
   );
 
   return (
@@ -196,7 +196,7 @@ const ProgressBar = () => {
           <Skeleton className="w-[85px] h-[20px]" />
         ) : (
           <Badge>
-            <Typography variant="mono" className="font-bold">
+            <Typography className="font-mono font-bold">
               {currentTime} / {duration}
             </Typography>
           </Badge>
@@ -381,7 +381,7 @@ const VideoPlayer = () => {
         </>
       ) : (
         <div className="flex items-center justify-center size-full">
-          <Typography variant="muted">
+          <Typography textColor="muted">
             {t("movie.player.noResolutionSelected")}
           </Typography>
         </div>

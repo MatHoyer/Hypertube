@@ -19,7 +19,7 @@ export const SignUpPage = () => {
           <TextSeparator>{t("global.or")}</TextSeparator>
           <SignUpForm />
           <div className="flex items-center">
-            <Typography variant="small">{t("sign.gotAccount")}</Typography>
+            <Typography textSize="sm">{t("sign.gotAccount")}</Typography>
             <Button type="button" variant={"link"} asChild>
               <Link to={getUrl(ROUTES.CLIENT.SIGNIN)}>{t("sign.in")}</Link>
             </Button>
