@@ -52,6 +52,7 @@ export const ROUTES = {
     MOVIES: "api-movies",
     MOVIES_SUBSCRIPTION: "api-movies-subscription",
     PLAYLISTS: "api-playlists",
+    PLAYLISTS_MOVIE: "api-playlists-movie",
     NOTIFICATIONS: "api-notifications",
     NOTIFICATIONS_STATS: "api-notifications-stats",
     NOTIFICATIONS_TEST: "api-notifications-test",
@@ -152,6 +153,12 @@ const routeSchemas = {
     [ROUTES.API.PLAYLISTS]: z.object({
       playlistId: z
         .union([playlistSchema.shape.id, z.literal("{playlistId}")])
+        .optional(),
+    }),
+    [ROUTES.API.PLAYLISTS_MOVIE]: z.object({
+      playlistId: z.union([playlistSchema.shape.id, z.literal("{playlistId}")]),
+      movieId: z
+        .union([movieSchema.shape.id, z.literal("{movieId}")])
         .optional(),
     }),
     [ROUTES.API.NOTIFICATIONS]: z.object({
@@ -325,6 +332,10 @@ const routes: {
 
   [ROUTES.API.PLAYLISTS]: ({ playlistId }) =>
     playlistId ? `/api/playlists/${playlistId}` : "/api/playlists",
+  [ROUTES.API.PLAYLISTS_MOVIE]: ({ playlistId, movieId }) =>
+    movieId
+      ? `/api/playlists/${playlistId}/movie/${movieId}`
+      : `/api/playlists/${playlistId}/movie`,
 
   [ROUTES.API.NOTIFICATIONS]: ({ notificationId }) =>
     `/api/notifications` + (notificationId ? `/${notificationId}` : ""),

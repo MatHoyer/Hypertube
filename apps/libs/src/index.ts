@@ -138,13 +138,17 @@ export type {
 } from "./schemas/api/notifications.schema.js";
 
 export {
+  deleteMovieToPlaylistSchemas,
   deletePlaylistSchemas,
   getPlaylistsSchemas,
+  postMovieToPlaylistSchemas,
   postPlaylistSchemas,
 } from "./schemas/api/playlists.schema.js";
 export type {
+  TDeleteMovieToPlaylistSchemas,
   TDeletePlaylistSchemas,
   TGetPlaylistsSchemas,
+  TPostMovieToPlaylistSchemas,
   TPostPlaylistSchemas,
 } from "./schemas/api/playlists.schema.js";
 

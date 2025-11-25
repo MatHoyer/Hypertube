@@ -1,7 +1,9 @@
 import {
+  deleteMovieToPlaylistSchemas,
   deletePlaylistSchemas,
   getPlaylistsSchemas,
   getUrl,
+  postMovieToPlaylistSchemas,
   postPlaylistSchemas,
   ROUTES,
 } from "@hypertube/libs";
@@ -66,6 +68,74 @@ export const playlistsSwagger = {
           content: {
             "application/json": {
               schema: deletePlaylistSchemas.response,
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.PLAYLISTS_MOVIE, { playlistId: "{playlistId}" })]: {
+    post: {
+      summary: "Add movie to user's playlist",
+      tags: ["Playlists"],
+      parameters: [
+        {
+          in: "path",
+          name: "playlistId",
+          required: true,
+          schema: postMovieToPlaylistSchemas.urlParams.shape.playlistId,
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: postMovieToPlaylistSchemas.requirements,
+            example: {
+              movieId: "",
+            },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Movie get successfully added to user's playlist",
+          content: {
+            "application/json": {
+              schema: postMovieToPlaylistSchemas.response,
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.PLAYLISTS_MOVIE, {
+    playlistId: "{playlistId}",
+    movieId: "{movieId}",
+  })]: {
+    delete: {
+      summary: "Delete movie to user's playlist",
+      tags: ["Playlists"],
+      parameters: [
+        {
+          in: "path",
+          name: "playlistId",
+          required: true,
+          schema: deleteMovieToPlaylistSchemas.urlParams.shape.playlistId,
+        },
+        {
+          in: "path",
+          name: "movieId",
+          required: true,
+          schema: deleteMovieToPlaylistSchemas.urlParams.shape.movieId,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Movie get successfully deleted of user's playlist",
+          content: {
+            "application/json": {
+              schema: deleteMovieToPlaylistSchemas.response,
             },
           },
         },
