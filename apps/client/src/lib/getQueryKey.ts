@@ -1,6 +1,8 @@
 import {
   ROUTES,
+  commentSchema,
   getMoviesSchemas,
+  movieSchema,
   notificationReadStatuses,
   tmdbGenres,
   typedKeys,
@@ -29,10 +31,10 @@ const apiRouteQueryKeySchemas = {
   }),
   [ROUTES.API.OAUTH_CREDENTIALS]: z.object({}),
   [ROUTES.API.MOVIES_COMMENT]: z.object({
-    tmdbId: z.number(),
+    tmdbId: movieSchema.shape.tmdbId,
   }),
   [ROUTES.API.COMMENTS_REPLIES]: z.object({
-    commentId: z.string(),
+    commentId: commentSchema.shape.id,
   }),
 };
 
