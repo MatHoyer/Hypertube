@@ -22,16 +22,13 @@ export const BasePostComment: React.FC<{
   return (
     <InputGroup>
       <InputGroupTextarea
+        maxLength={500}
         autoFocus={autoFocus}
         placeholder={t("movie.comments.addComment")}
         value={newComment}
         onChange={(e) => setNewComment(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && newComment) {
-            e.preventDefault();
-            postComment(newComment);
-            setNewComment("");
-          } else if (e.key === "Escape") {
+          if (e.key === "Escape") {
             handleCancel();
           }
         }}
@@ -49,7 +46,7 @@ export const BasePostComment: React.FC<{
           )}
 
           <LoadingButton
-            disabled={!newComment}
+            disabled={!newComment.trim()}
             className="rounded-full"
             size="icon"
             loading={isPending}

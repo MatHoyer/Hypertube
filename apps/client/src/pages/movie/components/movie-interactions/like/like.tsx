@@ -64,7 +64,10 @@ export const CommentLikeButton: React.FC<{
         schemas: isLiked ? deleteCommentLikeSchemas : postCommentLikeSchemas,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: getParentQueryKey(parent) });
+      const queryKey = getParentQueryKey(parent);
+      if (queryKey) {
+        queryClient.fetchQuery({ queryKey });
+      }
     },
   });
 

@@ -197,6 +197,7 @@
       "editComment": "Modifier le commentaire",
       "cancel": "Annuler",
       "save": "Sauvegarder",
+      "loadMore": "Charger plus de commentaires",
       "likes": {
         "likeComment": "J'aime ce commentaire",
         "unlikeComment": "Je n'aime plus ce commentaire"

@@ -34,6 +34,21 @@ export const commentParent = async (
   parentId: string,
   parentType: TParentType
 ): Promise<{ message: string; status: ContentfulStatusCode }> => {
+  const trimmedContent = content.trim();
+
+  if (trimmedContent.length === 0) {
+    return {
+      message: "Comment cannot be empty or contain only whitespace",
+      status: 400,
+    };
+  }
+
+  if (trimmedContent.length > 500) {
+    return {
+      message: "Comment is too long (max 500 characters)",
+      status: 400,
+    };
+  }
   try {
     await prisma.comment.create({
       data: {

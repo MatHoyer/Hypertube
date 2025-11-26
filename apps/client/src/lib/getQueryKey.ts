@@ -70,12 +70,14 @@ const queryKeys: {
       : [ROUTES.API.NOTIFICATIONS, type];
   },
   [ROUTES.API.OAUTH_CREDENTIALS]: () => [ROUTES.API.OAUTH_CREDENTIALS],
-  [ROUTES.API.MOVIES_COMMENT]: ({ tmdbId }) => {
-    return [ROUTES.API.MOVIES_COMMENT, tmdbId];
-  },
-  [ROUTES.API.COMMENTS_REPLIES]: ({ commentId }) => {
-    return [ROUTES.API.COMMENTS_REPLIES, commentId];
-  },
+  [ROUTES.API.MOVIES_COMMENT]: ({ tmdbId }) => [
+    ROUTES.API.MOVIES_COMMENT,
+    tmdbId,
+  ],
+  [ROUTES.API.COMMENTS_REPLIES]: ({ commentId }) => [
+    ROUTES.API.COMMENTS_REPLIES,
+    commentId,
+  ],
 };
 
 export const getQueryKey = <T extends TRoute>(

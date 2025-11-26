@@ -117,14 +117,12 @@ export const EditCommentInput: React.FC<{
   return (
     <InputGroup>
       <InputGroupTextarea
+        maxLength={500}
         placeholder={t("movie.comments.editComment")}
         value={editedContent}
         onChange={(e) => setEditedContent(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter" && editedContent) {
-            e.preventDefault();
-            patchComment(editedContent);
-          } else if (e.key === "Escape") {
+          if (e.key === "Escape") {
             handleCancel();
           }
         }}
@@ -139,7 +137,7 @@ export const EditCommentInput: React.FC<{
           {t("movie.comments.cancel")}
         </Button>
         <LoadingButton
-          disabled={!editedContent || editedContent === initialContent}
+          disabled={!editedContent.trim() || editedContent === initialContent}
           variant="ghost"
           success={isSuccess}
           loading={isPending}

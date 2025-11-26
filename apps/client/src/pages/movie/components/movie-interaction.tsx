@@ -127,9 +127,7 @@ export const MovieInteraction = ({
           likesNumber={movie.likesNumber}
         />
       </div>
-      <div>
-        <PostMovieComment tmdbId={movie.tmdbId} />
-      </div>
+      <PostMovieComment tmdbId={movie.tmdbId} />
       <div>
         {data?.pages.map((page) =>
           page.comments.map((comment) => (
@@ -149,6 +147,7 @@ export const MovieInteraction = ({
           onClick={() => fetchNextPage()}
         >
           <ChevronDown />
+          {t("movie.comments.loadMore")}
         </LoadingButton>
       )}
     </div>

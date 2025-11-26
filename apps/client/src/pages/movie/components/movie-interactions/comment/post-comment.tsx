@@ -62,7 +62,7 @@ export const PostReplyComment: React.FC<{
         schemas: postCommentReplySchemas,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      queryClient.fetchQuery({
         queryKey: getQueryKey(ROUTES.API.COMMENTS_REPLIES, { commentId }),
       });
       setIsReplying(false);

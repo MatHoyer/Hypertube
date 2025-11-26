@@ -1,5 +1,6 @@
 import { LoadingButton } from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
@@ -12,6 +13,7 @@ import {
   type TGetMovieCommentsSchemas,
 } from "@hypertube/libs";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { t } from "i18next";
 import { ChevronDown, Reply } from "lucide-react";
 import { useState } from "react";
 import { CommentLikeButton } from "../like/like";
@@ -55,7 +57,7 @@ export const Comment: React.FC<{
   const canLoadMore = comment.hasReplies && (!data || hasNextPage);
 
   return (
-    <div className="flex-col border-b-2 py-1">
+    <div className="flex-col py-1">
       <div className="flex justify-between">
         <Typography>{comment.user.name}:</Typography>
         {comment.isOwnComment && (
@@ -130,8 +132,10 @@ export const Comment: React.FC<{
           onClick={() => fetchNextPage()}
         >
           <ChevronDown />
+          {t("movie.comments.loadMore")}
         </LoadingButton>
       )}
+      <Separator className="mt-2" />
     </div>
   );
 };
