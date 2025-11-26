@@ -23,7 +23,7 @@ export const commentResponseSchema = commentSchema
     updatedAt: true,
   })
   .extend({
-    user: userSchema.pick({ id: true, name: true }),
+    user: userSchema.pick({ id: true, name: true, image: true }),
     likesNumber: z.number(),
     isLikedByUser: z.boolean(),
     isOwnComment: z.boolean(),

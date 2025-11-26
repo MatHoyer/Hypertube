@@ -2,7 +2,7 @@ import { useRequiredUser } from "@/hooks/use-required-user";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-type TImageSize = "sm" | "md" | "lg";
+type TImageSize = "xs" | "sm" | "md" | "lg";
 
 // TODO : get UserImage with userId when GET user/:id done
 
@@ -27,6 +27,7 @@ export const ImageAvatar: React.FC<{
   return (
     <Avatar
       className={cn(
+        size === "xs" && "size-6",
         size === "sm" && "size-10",
         size === "md" && "size-16",
         size === "lg" && "size-44"
@@ -35,6 +36,7 @@ export const ImageAvatar: React.FC<{
       <AvatarImage src={imageSrc} />
       <AvatarFallback
         className={cn(
+          size === "xs" && "text-xs",
           size === "sm" && "text-xl",
           size === "md" && "text-4xl",
           size === "lg" && "text-6xl"

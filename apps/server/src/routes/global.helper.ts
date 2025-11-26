@@ -117,6 +117,7 @@ export const getParentComments = async (
           select: {
             id: true,
             name: true,
+            image: true,
           },
         },
       },

@@ -1,10 +1,10 @@
+import { ImageAvatar } from "@/components/images/Avatar";
 import { LoadingButton } from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
-import { cn } from "@/lib/utils";
+import { cn, getNearDateWithLocale } from "@/lib/utils";
 import {
   getCommentRepliesSchemas,
   getUrl,
@@ -16,6 +16,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { t } from "i18next";
 import { ChevronDown, Reply } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { CommentLikeButton } from "../like/like";
 import type { TQueryParent } from "../utils";
 import { CommentActionsDropdown, EditCommentInput } from "./comment.actions";
@@ -59,7 +60,22 @@ export const Comment: React.FC<{
   return (
     <div className="flex-col py-1">
       <div className="flex justify-between">
-        <Typography>{comment.user.name}:</Typography>
+        <div className="flex items-center">
+          <ImageAvatar
+            imageSrc={comment.user.image ?? undefined}
+            name={comment.user.name}
+            size={parent.type === ParentTypes.MOVIE ? "sm" : "xs"}
+          />
+          <Button asChild variant="link">
+            <Link to={"#"}>
+              <Typography>{comment.user.name}</Typography>
+            </Link>
+          </Button>
+          <Typography textSize={"xs"} textColor={"muted"}>
+            {getNearDateWithLocale({ date: comment.createdAt })}
+          </Typography>
+        </div>
+
         {comment.isOwnComment && (
           <CommentActionsDropdown
             commentId={comment.id}
@@ -135,7 +151,6 @@ export const Comment: React.FC<{
           {t("movie.comments.loadMore")}
         </LoadingButton>
       )}
-      <Separator className="mt-2" />
     </div>
   );
 };
