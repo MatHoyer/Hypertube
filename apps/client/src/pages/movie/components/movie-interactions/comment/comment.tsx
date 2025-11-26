@@ -77,7 +77,7 @@ export const Comment: React.FC<{
         />
       ) : (
         <Typography
-          variant="small"
+          textSize={"sm"}
           className="whitespace-pre-wrap break-words mb-2"
         >
           {comment.content}

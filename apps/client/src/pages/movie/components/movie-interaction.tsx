@@ -113,7 +113,7 @@ export const MovieInteraction = ({
   return (
     <div className="flex flex-col gap-1">
       <div className="flex">
-        <Typography variant="large">
+        <Typography textSize={"lg"}>
           {data?.pages?.[0]?.totalComments} {t("movie.comments.comments")}
         </Typography>
         <div className="flex-1" />
