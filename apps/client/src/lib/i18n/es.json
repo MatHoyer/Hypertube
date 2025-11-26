@@ -258,6 +258,8 @@
     },
     "addMovieSuccess": "",
     "addMovieFailed": "",
+    "deleteMovieSuccess": "",
+    "deleteMovieFailed": "",
     "creationSuccess": "",
     "creationFailed": ""
   },

@@ -43,7 +43,7 @@ playlistsRouter.post(
 );
 
 playlistsRouter.delete(
-  "/:playlistId/movie/:movieId",
+  "/:playlistId/movie/:tmdbId",
   isLogged,
   urlParamsParser(deleteMovieToPlaylistSchemas.urlParams),
   deleteMovieToPlaylist

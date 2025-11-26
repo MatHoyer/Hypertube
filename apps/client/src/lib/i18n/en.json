@@ -258,6 +258,8 @@
     },
     "addMovieSuccess": "The film has been successfully added to your playlist.",
     "addMovieFailed": "Adding the film to your playlist failed.",
+    "deleteMovieSuccess": "The film has been successfully deleted of your playlist.",
+    "deleteMovieFailed": "Deleting the film of your playlist failed.",
     "creationSuccess": "Playlist successfully created.",
     "creationFailed": "Playlist creation failed."
   },

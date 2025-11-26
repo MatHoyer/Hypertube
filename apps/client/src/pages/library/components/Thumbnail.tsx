@@ -74,14 +74,14 @@ export const Thumbnail: React.FC<{
 
   const deleteMovieToPlaylistMutation = useMutation({
     mutationFn: (data: {
-      tmdbId: TDeleteMovieToPlaylistSchemas["urlParams"]["tmdbId"];
       playlistId: TDeleteMovieToPlaylistSchemas["urlParams"]["playlistId"];
+      tmdbId: TDeleteMovieToPlaylistSchemas["urlParams"]["tmdbId"];
     }) =>
       axiosFetch({
         method: "DELETE",
         url: getUrl(ROUTES.API.PLAYLISTS_MOVIE, {
-          tmdbId: data.tmdbId,
           playlistId: data.playlistId,
+          tmdbId: data.tmdbId,
         }),
         schemas: deleteMovieToPlaylistSchemas,
       }),
@@ -89,10 +89,10 @@ export const Thumbnail: React.FC<{
       queryClient.invalidateQueries({
         queryKey: getQueryKey(ROUTES.API.PLAYLISTS),
       });
-      toast.success(t("playlist.addMovieSuccess"));
+      toast.success(t("playlist.deleteMovieSuccess"));
     },
     onError: () => {
-      toast.error(t("playlist.addMovieFailed"));
+      toast.error(t("playlist.deleteMovieFailed"));
     },
   });
 
