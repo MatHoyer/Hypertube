@@ -84,7 +84,7 @@ export const postMovieToPlaylist = async (
   >
 ) => {
   const { playlistId } = c.get("validatedUrlParams");
-  const { movieId } = c.get("validatedBody");
+  const { tmdbId } = c.get("validatedBody");
   const user = c.get("user");
 
   const playlist = await prisma.playlist.findFirst({
@@ -95,7 +95,7 @@ export const postMovieToPlaylist = async (
     return c.json({ message: "Not your playlist" }, 401);
   }
 
-  const movie = await prisma.movie.findFirst({ where: { tmdbId: movieId } });
+  const movie = await prisma.movie.findFirst({ where: { tmdbId } });
   if (!movie) return c.json({ message: "Movie not found" }, 404);
 
   try {
@@ -114,7 +114,7 @@ export const deleteMovieToPlaylist = async (
     TIsLogged & TUrlParamsParser<TDeleteMovieToPlaylistSchemas["urlParams"]>
   >
 ) => {
-  const { playlistId, movieId } = c.get("validatedUrlParams");
+  const { playlistId, tmdbId } = c.get("validatedUrlParams");
   const user = c.get("user");
 
   const playlist = await prisma.playlist.findFirst({
@@ -125,7 +125,7 @@ export const deleteMovieToPlaylist = async (
     return c.json({ message: "Not your playlist" }, 401);
   }
 
-  const movie = await prisma.movie.findFirst({ where: { tmdbId: movieId } });
+  const movie = await prisma.movie.findFirst({ where: { tmdbId } });
   if (!movie) return c.json({ message: "Movie not found" }, 404);
 
   try {
