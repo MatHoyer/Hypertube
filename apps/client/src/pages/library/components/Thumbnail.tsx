@@ -50,8 +50,8 @@ export const Thumbnail: React.FC<{
 
   const addMovieToPlaylistMutation = useMutation({
     mutationFn: (data: {
-      movieId: TPostMovieToPlaylistSchemas["requirements"]["movieId"];
       playlistId: TPostMovieToPlaylistSchemas["urlParams"]["playlistId"];
+      tmdbId: TPostMovieToPlaylistSchemas["requirements"]["tmdbId"];
     }) =>
       axiosFetch({
         method: "POST",
@@ -74,13 +74,13 @@ export const Thumbnail: React.FC<{
 
   const deleteMovieToPlaylistMutation = useMutation({
     mutationFn: (data: {
-      movieId: TDeleteMovieToPlaylistSchemas["urlParams"]["movieId"];
+      tmdbId: TDeleteMovieToPlaylistSchemas["urlParams"]["tmdbId"];
       playlistId: TDeleteMovieToPlaylistSchemas["urlParams"]["playlistId"];
     }) =>
       axiosFetch({
         method: "DELETE",
         url: getUrl(ROUTES.API.PLAYLISTS_MOVIE, {
-          movieId: data.movieId,
+          tmdbId: data.tmdbId,
           playlistId: data.playlistId,
         }),
         schemas: deleteMovieToPlaylistSchemas,
@@ -158,11 +158,11 @@ export const Thumbnail: React.FC<{
                             isPlaylistHasMovie
                               ? deleteMovieToPlaylistMutation.mutate({
                                   playlistId: playlist.id,
-                                  movieId: movie.id,
+                                  tmdbId: movie.id,
                                 })
                               : addMovieToPlaylistMutation.mutate({
                                   playlistId: playlist.id,
-                                  movieId: movie.id,
+                                  tmdbId: movie.id,
                                 })
                           }
                         >

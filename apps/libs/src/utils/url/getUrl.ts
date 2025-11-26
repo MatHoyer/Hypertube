@@ -157,8 +157,8 @@ const routeSchemas = {
     }),
     [ROUTES.API.PLAYLISTS_MOVIE]: z.object({
       playlistId: z.union([playlistSchema.shape.id, z.literal("{playlistId}")]),
-      movieId: z
-        .union([movieSchema.shape.tmdbId, z.literal("{movieId}")])
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
         .optional(),
     }),
     [ROUTES.API.NOTIFICATIONS]: z.object({
@@ -332,9 +332,9 @@ const routes: {
 
   [ROUTES.API.PLAYLISTS]: ({ playlistId }) =>
     playlistId ? `/api/playlists/${playlistId}` : "/api/playlists",
-  [ROUTES.API.PLAYLISTS_MOVIE]: ({ playlistId, movieId }) =>
-    movieId
-      ? `/api/playlists/${playlistId}/movie/${movieId}`
+  [ROUTES.API.PLAYLISTS_MOVIE]: ({ playlistId, tmdbId }) =>
+    tmdbId
+      ? `/api/playlists/${playlistId}/movie/${tmdbId}`
       : `/api/playlists/${playlistId}/movie`,
 
   [ROUTES.API.NOTIFICATIONS]: ({ notificationId }) =>

@@ -92,7 +92,7 @@ export const playlistsSwagger = {
           "application/json": {
             schema: postMovieToPlaylistSchemas.requirements,
             example: {
-              movieId: "",
+              tmdbId: "",
             },
           },
         },
@@ -111,7 +111,7 @@ export const playlistsSwagger = {
   },
   [getUrl(ROUTES.API.PLAYLISTS_MOVIE, {
     playlistId: "{playlistId}",
-    movieId: "{movieId}",
+    tmdbId: "{tmdbId}",
   })]: {
     delete: {
       summary: "Delete movie to user's playlist",
@@ -125,9 +125,9 @@ export const playlistsSwagger = {
         },
         {
           in: "path",
-          name: "movieId",
+          name: "tmdbId",
           required: true,
-          schema: deleteMovieToPlaylistSchemas.urlParams.shape.movieId,
+          schema: deleteMovieToPlaylistSchemas.urlParams.shape.tmdbId,
         },
       ],
       responses: {
