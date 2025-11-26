@@ -3,7 +3,6 @@ import { getDownloadStateIcon } from "@/components/download-state/getDownloadSta
 import { Logo } from "@/components/images/Logo";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -36,7 +35,7 @@ import {
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Bookmark, Check, EllipsisVertical, Plus } from "lucide-react";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -47,6 +46,7 @@ export const Thumbnail: React.FC<{
   const movieSeen = true; //TODO : movieSeen by user
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const addMovieToPlaylistMutation = useMutation({
     mutationFn: (data: {
@@ -132,7 +132,10 @@ export const Thumbnail: React.FC<{
                 <TooltipContent>{t("movie.page.seen")}</TooltipContent>
               </Tooltip>
             )}
-            <DropdownMenu>
+            <DropdownMenu
+              open={isDropdownOpen}
+              onOpenChange={setIsDropdownOpen}
+            >
               <DropdownMenuTrigger asChild className="cursor-pointer">
                 <EllipsisVertical size={15} />
               </DropdownMenuTrigger>
@@ -185,15 +188,15 @@ export const Thumbnail: React.FC<{
                   </ScrollArea>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <Button
-                  className="w-full"
+                <DropdownMenuItem
                   onClick={() => {
+                    setIsDropdownOpen(false);
                     openDialog("playlist");
                   }}
                 >
                   <Plus />
                   {t("playlist.new")}
-                </Button>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
