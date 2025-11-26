@@ -147,7 +147,7 @@ export const MovieInteraction = ({
           onClick={() => fetchNextPage()}
         >
           <ChevronDown />
-          {t("movie.comments.loadMore")}
+          <Typography>{t("movie.comments.loadMore")}</Typography>
         </LoadingButton>
       )}
     </div>
