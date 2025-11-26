@@ -15,10 +15,27 @@ export const getPlaylists = async (c: Context<TIsLogged>) => {
 
   const playlists = await prisma.user.findUnique({
     where: { id: user.id },
-    select: { playlists: { include: { movies: true } } },
+    select: {
+      playlists: {
+        include: {
+          movies: { include: { movie: { select: { tmdbId: true } } } },
+        },
+      },
+    },
+  });
+  if (!playlists) return c.json({ playlists: [] }, 200);
+
+  const flatPlaylists = playlists.playlists.map((playlist) => {
+    return {
+      ...playlist,
+      movies: playlist.movies.map((movie) => {
+        const { movie: tmdbMovie, ...movieWithoutTmdbMovie } = movie;
+        return { ...movieWithoutTmdbMovie, tmdbId: tmdbMovie.tmdbId };
+      }),
+    };
   });
 
-  return c.json({ playlists: playlists?.playlists ?? [] }, 200);
+  return c.json({ playlists: flatPlaylists }, 200);
 };
 
 export const postPlaylist = async (
