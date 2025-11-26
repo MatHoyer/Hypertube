@@ -5,6 +5,7 @@ import {
   InputGroupAddon,
   InputGroupTextarea,
 } from "@/components/ui/input-group";
+import { Typography } from "@/components/ui/typography";
 import { t } from "i18next";
 import { Send } from "lucide-react";
 import { useState } from "react";
@@ -19,10 +20,12 @@ export const BasePostComment: React.FC<{
 
   const handleCancel = () => setNewComment("");
 
+  const maxLength = 500;
+
   return (
     <InputGroup>
       <InputGroupTextarea
-        maxLength={500}
+        maxLength={maxLength}
         autoFocus={autoFocus}
         placeholder={t("movie.comments.addComment")}
         value={newComment}
@@ -34,6 +37,7 @@ export const BasePostComment: React.FC<{
         }}
       />
       <InputGroupAddon align="block-end">
+        <Typography>{maxLength - newComment.length}</Typography>
         <div className="flex w-full justify-end">
           {newComment && (
             <Button

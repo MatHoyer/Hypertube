@@ -86,6 +86,7 @@ export const EditCommentInput: React.FC<{
 }> = ({ commentId, parent, initialContent, setIsEditing }) => {
   const queryClient = useQueryClient();
   const [editedContent, setEditedContent] = useState(initialContent);
+  const maxLength = 500;
 
   const {
     mutate: patchComment,
@@ -129,6 +130,7 @@ export const EditCommentInput: React.FC<{
         disabled={isPending}
       />
       <InputGroupAddon align="inline-end">
+        <Typography>{maxLength - editedContent.length}</Typography>
         <Button
           variant="ghost"
           disabled={isPending}

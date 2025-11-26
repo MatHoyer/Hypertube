@@ -44,7 +44,7 @@ export const postCommentReplySchemas = {
     commentId: commentSchema.shape.parentId,
   }),
   requirements: z.object({
-    content: z.string().min(1).max(1000),
+    content: z.string().trim().min(1).max(500),
   }),
   response: z.object({
     message: z.string(),
@@ -88,7 +88,7 @@ export const patchCommentSchemas = {
     commentId: commentSchema.shape.id,
   }),
   requirements: z.object({
-    content: commentSchema.shape.content.min(1),
+    content: commentSchema.shape.content.trim().min(1).max(500),
   }),
   response: z.object({
     message: z.string(),
