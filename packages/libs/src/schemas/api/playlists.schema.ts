@@ -27,7 +27,7 @@ export type TGetPlaylistsSchemas = {
 
 export const postPlaylistSchemas = {
   requirements: z.object({
-    playlistName: playlistSchema.shape.name,
+    playlistName: playlistSchema.shape.name.trim().min(1),
   }),
   response: z.object({
     message: z.string(),
