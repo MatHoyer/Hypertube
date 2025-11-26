@@ -23,7 +23,6 @@ const App = () => {
     <Routes>
       <Route element={<BaseLayoutRoute />}>
         {/* Default routes */}
-        <Route index path="/" element={<LibraryPage />} />
         <Route index path="/error" element={<ErrorPage />} />
         <Route path="/demo" element={<PlaygroundPage />} />
 
@@ -43,6 +42,11 @@ const App = () => {
 
         {/* Private only routes */}
         <Route element={<PrivateOnlyRoute />}>
+          <Route
+            index
+            path={getUrl(ROUTES.CLIENT.HOME)}
+            element={<LibraryPage />}
+          />
           <Route
             path={getUrl(ROUTES.CLIENT.NOTIFICATIONS)}
             element={<NotificationsPage />}

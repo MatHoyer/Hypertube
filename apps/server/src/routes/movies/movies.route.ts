@@ -26,49 +26,53 @@ const moviesRouter = new Hono();
 
 moviesRouter.get(
   "/",
+  isLogged,
   searchParamsParser(getMoviesSchemas.searchParams),
-  getMovies
+  getMovies,
 );
 
 moviesRouter.get(
   "/:tmdbId",
   isLogged,
   urlParamsParser(getMovieSchemas.urlParams),
-  getMovie
+  getMovie,
 );
 
 moviesRouter.get(
   "/:tmdbId/sse",
+  isLogged,
   urlParamsParser(getMovieSSESchemas.urlParams),
-  getMovieSSE
+  getMovieSSE,
 );
 
 moviesRouter.post(
   "/:tmdbId/resolutions/:resolution/download",
   isVPNActive,
+  isLogged,
   urlParamsParser(postMovieDownloadResolutionSchemas.urlParams),
-  downloadMovie
+  downloadMovie,
 );
 
 moviesRouter.post(
   "/:tmdbId/subtitles/:subtitlesLanguage/download",
   isVPNActive,
+  isLogged,
   urlParamsParser(postMovieDownloadSubtitlesSchemas.urlParams),
-  downloadSubtitles
+  downloadSubtitles,
 );
 
 moviesRouter.post(
   "/:tmdbId/subscription",
   isLogged,
   urlParamsParser(postMovieSubscribeSchemas.urlParams),
-  subscribeToMovie
+  subscribeToMovie,
 );
 
 moviesRouter.delete(
   "/:tmdbId/subscription",
   isLogged,
   urlParamsParser(deleteMovieSubscribeSchemas.urlParams),
-  unsubscribeFromMovie
+  unsubscribeFromMovie,
 );
 
 export default moviesRouter;

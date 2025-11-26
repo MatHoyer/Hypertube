@@ -3,6 +3,7 @@ import {
   getStreamingSubtitlesSchemas,
 } from "@hypertube/libs";
 import { Hono } from "hono";
+import { isLogged } from "../../middlewares/isLogged";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
   getStreamingResolution,
@@ -13,14 +14,16 @@ const streamingRouter = new Hono();
 
 streamingRouter.get(
   "/movie/:movieId/resolution/:resolution",
+  isLogged,
   urlParamsParser(getStreamingResolutionSchemas.urlParams),
-  getStreamingResolution
+  getStreamingResolution,
 );
 
 streamingRouter.get(
   "/movie/:movieId/subtitles/:subtitlesLanguage",
+  isLogged,
   urlParamsParser(getStreamingSubtitlesSchemas.urlParams),
-  getStreamingSubtitles
+  getStreamingSubtitles,
 );
 
 export default streamingRouter;
