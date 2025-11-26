@@ -158,7 +158,7 @@ const routeSchemas = {
     [ROUTES.API.PLAYLISTS_MOVIE]: z.object({
       playlistId: z.union([playlistSchema.shape.id, z.literal("{playlistId}")]),
       movieId: z
-        .union([movieSchema.shape.id, z.literal("{movieId}")])
+        .union([movieSchema.shape.tmdbId, z.literal("{movieId}")])
         .optional(),
     }),
     [ROUTES.API.NOTIFICATIONS]: z.object({

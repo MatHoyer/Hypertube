@@ -23,10 +23,13 @@ import {
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
+import { cn } from "@/lib/utils";
 import {
+  deleteMovieToPlaylistSchemas,
   getUrl,
   postMovieToPlaylistSchemas,
   ROUTES,
+  type TDeleteMovieToPlaylistSchemas,
   type TGetMoviesSchemas,
   type TGetPlaylistsSchemas,
   type TPostMovieToPlaylistSchemas,
@@ -45,7 +48,7 @@ export const Thumbnail: React.FC<{
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
-  const mutation = useMutation({
+  const addMovieToPlaylistMutation = useMutation({
     mutationFn: (data: {
       movieId: TPostMovieToPlaylistSchemas["requirements"]["movieId"];
       playlistId: TPostMovieToPlaylistSchemas["urlParams"]["playlistId"];
@@ -57,6 +60,30 @@ export const Thumbnail: React.FC<{
         }),
         schemas: postMovieToPlaylistSchemas,
         data,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.PLAYLISTS),
+      });
+      toast.success(t("playlist.addMovieSuccess"));
+    },
+    onError: () => {
+      toast.error(t("playlist.addMovieFailed"));
+    },
+  });
+
+  const deleteMovieToPlaylistMutation = useMutation({
+    mutationFn: (data: {
+      movieId: TDeleteMovieToPlaylistSchemas["urlParams"]["movieId"];
+      playlistId: TDeleteMovieToPlaylistSchemas["urlParams"]["playlistId"];
+    }) =>
+      axiosFetch({
+        method: "DELETE",
+        url: getUrl(ROUTES.API.PLAYLISTS_MOVIE, {
+          movieId: data.movieId,
+          playlistId: data.playlistId,
+        }),
+        schemas: deleteMovieToPlaylistSchemas,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -106,7 +133,7 @@ export const Thumbnail: React.FC<{
               </Tooltip>
             )}
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+              <DropdownMenuTrigger asChild className="cursor-pointer">
                 <EllipsisVertical size={15} />
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-52" side="top" align="start">
@@ -115,24 +142,38 @@ export const Thumbnail: React.FC<{
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <ScrollArea className="h-32">
-                    {userPlaylists.map((playlist) => (
-                      <DropdownMenuItem
-                        key={playlist.id}
-                        className="flex justify-between"
-                        onClick={() => {
-                          mutation.mutate({
-                            playlistId: playlist.id,
-                            movieId: movie.id,
-                          });
-                        }}
-                      >
-                        <Typography textSize="lg" className="truncate w-40">
-                          {playlist.name}
-                        </Typography>
-                        <Bookmark />
-                      </DropdownMenuItem>
-                    ))}
+                  <ScrollArea className="h-36">
+                    {userPlaylists.map((playlist) => {
+                      const isPlaylistHasMovie = !!playlist.movies.find(
+                        (playlistMovie) => playlistMovie.tmdbId === movie.id
+                      );
+                      return (
+                        <DropdownMenuItem
+                          key={playlist.id}
+                          className="flex justify-between"
+                          onClick={() =>
+                            isPlaylistHasMovie
+                              ? deleteMovieToPlaylistMutation.mutate({
+                                  playlistId: playlist.id,
+                                  movieId: movie.id,
+                                })
+                              : addMovieToPlaylistMutation.mutate({
+                                  playlistId: playlist.id,
+                                  movieId: movie.id,
+                                })
+                          }
+                        >
+                          <Typography textSize="lg" className="truncate w-40">
+                            {playlist.name}
+                          </Typography>
+                          <Bookmark
+                            className={cn(
+                              isPlaylistHasMovie && "fill-primary text-primary"
+                            )}
+                          />
+                        </DropdownMenuItem>
+                      );
+                    })}
                     {!userPlaylists.length && (
                       <DropdownMenuItem
                         className="flex justify-center"

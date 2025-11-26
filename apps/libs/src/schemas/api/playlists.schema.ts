@@ -1,10 +1,23 @@
 import z from "zod";
 import { movieSchema } from "../database/movie.schema.js";
-import { playlistSchema } from "../database/playlist.schema.js";
+import {
+  playlistMovieSchema,
+  playlistSchema,
+} from "../database/playlist.schema.js";
 
 export const getPlaylistsSchemas = {
   response: z.object({
-    playlists: z.array(playlistSchema),
+    playlists: z.array(
+      z.object({
+        ...playlistSchema.shape,
+        movies: z.array(
+          z.object({
+            ...playlistMovieSchema.shape,
+            tmdbId: movieSchema.shape.tmdbId,
+          })
+        ),
+      })
+    ),
   }),
 };
 
