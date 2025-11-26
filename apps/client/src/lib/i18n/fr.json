@@ -257,7 +257,9 @@
       "button": "Créer votre playlist"
     },
     "addMovieSuccess": "L'ajout du film à votre playlist a réussi.",
-    "addMovieFailed": "L'ajout du film à votre liste de lecture a échoué.",
+    "addMovieFailed": "L'ajout du film à votre playlist a échoué.",
+    "deleteMovieSuccess": "La suppression du film de votre playlist a réussi.",
+    "deleteMovieFailed": "La suppression du film de votre playlist a échoué.",
     "creationSuccess": "La playlist a été créée avec succès.",
     "creationFailed": "La création de la playlist a échoué."
   },
