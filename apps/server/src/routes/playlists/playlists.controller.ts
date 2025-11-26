@@ -1,4 +1,5 @@
 import {
+  languageCodes,
   TDeleteMovieToPlaylistSchemas,
   TDeletePlaylistSchemas,
   TPostMovieToPlaylistSchemas,
@@ -6,6 +7,7 @@ import {
 } from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
 import { Context } from "hono";
+import { TmdbApi } from "../../lib/apis/tmdb.api";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
@@ -86,6 +88,7 @@ export const postMovieToPlaylist = async (
   const { playlistId } = c.get("validatedUrlParams");
   const { tmdbId } = c.get("validatedBody");
   const user = c.get("user");
+  const language = c.get("language");
 
   const playlist = await prisma.playlist.findFirst({
     where: { id: playlistId },
@@ -95,8 +98,23 @@ export const postMovieToPlaylist = async (
     return c.json({ message: "Not your playlist" }, 401);
   }
 
-  const movie = await prisma.movie.findFirst({ where: { tmdbId } });
-  if (!movie) return c.json({ message: "Movie not found" }, 404);
+  let movie = await prisma.movie.findFirst({ where: { tmdbId } });
+  if (!movie) {
+    const tmdbApi = new TmdbApi();
+    const tmdbMovie = await tmdbApi.getMovie(
+      tmdbId,
+      language as keyof typeof languageCodes
+    );
+    if (!tmdbMovie) return c.json({ message: "Movie not found" }, 404);
+
+    movie = await prisma.movie.create({
+      data: {
+        tmdbId,
+        imdbId: tmdbMovie.imdb_id,
+      },
+    });
+    if (!movie) return c.json({ message: "Movie not found" }, 404);
+  }
 
   try {
     await prisma.playlistMovie.create({
