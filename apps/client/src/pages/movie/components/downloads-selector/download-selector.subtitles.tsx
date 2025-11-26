@@ -19,7 +19,7 @@ const DownloadSubtitleButton: React.FC<{
       downloadState={subtitle.downloadState}
       onClick={() => openDialog("downloadSubtitle", { tmdbId, subtitle })}
     >
-      <Typography textSize="sm" functionnal={"truncate"}>
+      <Typography textSize="sm" functionnal="truncate">
         {subtitle.language}
       </Typography>
       <div className="flex items-center justify-between w-full mt-2">
