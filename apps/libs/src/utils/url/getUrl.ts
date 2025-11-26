@@ -4,6 +4,7 @@ import {
   languageCodes,
 } from "../../const/global.const.js";
 import { ytsQualities } from "../../const/yts.const.js";
+import { commentSchema } from "../../schemas/database/comments.schema.js";
 import { credentialSchema } from "../../schemas/database/credential.schema.js";
 import { imageSchema } from "../../schemas/database/image.schema.js";
 import { movieSchema } from "../../schemas/database/movie.schema.js";
@@ -55,6 +56,11 @@ export const ROUTES = {
     STREAMING_MOVIE_SUBTITLES: "api-streaming-movie-subtitles",
     SSE_MOVIES: "sse-movies",
     SSE_NOTIFICATIONS: "sse-notifications",
+    MOVIES_LIKE: "api-movies-like",
+    MOVIES_COMMENT: "api-movies-comment",
+    COMMENTS: "api-comments",
+    COMMENTS_REPLIES: "api-comments-replies",
+    COMMENTS_LIKES: "api-comments-like",
   },
   EXTERNAL: {
     IMDB_MOVIE: "external-imdb-movie",
@@ -162,6 +168,24 @@ const routeSchemas = {
       subtitlesLanguage: z
         .union([z.enum(languageCodes), z.literal("{subtitlesLanguage}")])
         .optional(),
+    }),
+    [ROUTES.API.MOVIES_LIKE]: z.object({
+      tmdbId: z.union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")]),
+    }),
+    [ROUTES.API.MOVIES_COMMENT]: z.object({
+      tmdbId: z.union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")]),
+      commentId: z
+        .union([commentSchema.shape.id, z.literal("{commentId}")])
+        .optional(),
+    }),
+    [ROUTES.API.COMMENTS]: z.object({
+      commentId: z.union([commentSchema.shape.id, z.literal("{commentId}")]),
+    }),
+    [ROUTES.API.COMMENTS_REPLIES]: z.object({
+      commentId: z.union([commentSchema.shape.id, z.literal("{commentId}")]),
+    }),
+    [ROUTES.API.COMMENTS_LIKES]: z.object({
+      commentId: z.union([commentSchema.shape.id, z.literal("{commentId}")]),
     }),
   },
   EXTERNAL: {
@@ -274,6 +298,18 @@ const routes: {
   [ROUTES.API.NOTIFICATIONS_STATS]: () => "/api/notifications/stats",
   [ROUTES.API.NOTIFICATIONS_TEST]: () => "/api/notifications/test",
 
+  [ROUTES.API.MOVIES_LIKE]: ({ tmdbId }) => `/api/movies/${tmdbId}/like`,
+
+  [ROUTES.API.MOVIES_COMMENT]: ({ tmdbId, commentId }) =>
+    `/api/movies/${tmdbId}/comments${commentId ? `/${commentId}` : ""}`,
+
+  [ROUTES.API.COMMENTS]: ({ commentId }) => `/api/comments/${commentId}`,
+
+  [ROUTES.API.COMMENTS_REPLIES]: ({ commentId }) =>
+    `/api/comments/${commentId}/replies`,
+
+  [ROUTES.API.COMMENTS_LIKES]: ({ commentId }) =>
+    `/api/comments/${commentId}/like`,
   // SSE routes
   [ROUTES.API.SSE_MOVIES]: ({ tmdbId }) => `/api/movies/${tmdbId}/sse`,
   [ROUTES.API.SSE_NOTIFICATIONS]: () => "/api/notifications/sse",

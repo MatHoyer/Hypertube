@@ -4,14 +4,19 @@ import {
   getMoviesSchemas,
   hypertubeLogger,
   languageCodes,
+  ParentTypes,
+  TDeleteMovieLikeSchemas,
   TDeleteMovieSubscribeSchemas,
+  TGetMovieCommentsSchemas,
   TGetMovieSchemas,
   TGetMoviesSchemas,
   TGetMovieSSESchemas,
   tmdbGenres,
   tmdbMovieSchema,
+  TPostMovieCommentSchemas,
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
+  TPostMovieLikeSchemas,
   TPostMovieSubscribeSchemas,
   typedKeys,
 } from "@hypertube/libs";
@@ -24,9 +29,16 @@ import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
 import { downloaderQueue } from "../../lib/queues/downloader";
 import { downloadYifysubtitles } from "../../lib/scrappers/yifysubtitles.scrapper";
 import { SSEClients } from "../../lib/SSEClients";
+import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
+import {
+  commentParent,
+  getParentComments,
+  likeParent,
+  unlikeParent,
+} from "../global.helper";
 import {
   getMovieData,
   sendSSEDownloadStateChange,
@@ -142,6 +154,26 @@ export const getMovie = async (
     });
   }
 
+  const likesNumber = await prisma.like.count({
+    where: {
+      parentId: dbMovie.id,
+    },
+  });
+
+  let isLikedByUser = false;
+
+  if (user.id) {
+    const existingLike = await prisma.like.findUnique({
+      where: {
+        userId_parentId: {
+          userId: user.id,
+          parentId: dbMovie.id,
+        },
+      },
+    });
+    isLikedByUser = !!existingLike;
+  }
+
   try {
     if (dbMovie.demoMovie) throw new Error("Demo movie");
     if (!env.VPN_IS_ACTIVE) throw new Error("VPN is not active");
@@ -152,7 +184,7 @@ export const getMovie = async (
       getMovieData(dbMovie);
     }
   } catch (error) {
-    console.error("Error getting movie data", error);
+    hypertubeLogger.error(`Error getting movie data: ${error}`);
   }
 
   const resolutions = await prisma.resolution.findMany({
@@ -189,6 +221,8 @@ export const getMovie = async (
       resolutions,
       subtitles,
       isSubscribed,
+      likesNumber,
+      isLikedByUser,
     })
   );
 };
@@ -407,4 +441,90 @@ export const unsubscribeFromMovie = async (
   });
 
   return c.json({ message: "Movie unsubscribed" });
+};
+
+export const likeMovie = async (
+  c: Context<TIsLogged & TUrlParamsParser<TPostMovieLikeSchemas["urlParams"]>>
+) => {
+  const { tmdbId } = c.get("validatedUrlParams");
+  const { id } = c.get("user");
+
+  const movie = await prisma.movie.findUnique({
+    where: { tmdbId },
+    select: { id: true },
+  });
+
+  if (!movie) {
+    return c.json({ message: "Movie not found" }, 404);
+  }
+
+  const result = await likeParent(id, movie.id, ParentTypes.MOVIE);
+  return c.json({ message: result.message }, result.status);
+};
+
+export const deleteMovieLike = async (
+  c: Context<TIsLogged & TUrlParamsParser<TDeleteMovieLikeSchemas["urlParams"]>>
+) => {
+  const { tmdbId } = c.get("validatedUrlParams");
+  const { id } = c.get("user");
+
+  const movie = await prisma.movie.findUnique({ where: { tmdbId } });
+
+  if (!movie) {
+    return c.json({ message: "Movie not found" }, 404);
+  }
+
+  const result = await unlikeParent(id, movie.id);
+  return c.json({ message: result.message }, result.status);
+};
+
+export const getMovieComments = async (
+  c: Context<
+    TIsLogged &
+      TUrlParamsParser<TGetMovieCommentsSchemas["urlParams"]> &
+      TSearchParamsParser<TGetMovieCommentsSchemas["searchParams"]>
+  >
+) => {
+  const { tmdbId } = c.get("validatedUrlParams");
+  const { page, pageSize } = c.get("validatedSearchParams");
+  const user = c.get("user");
+  const userId = user?.id;
+
+  const movie = await prisma.movie.findUnique({ where: { tmdbId } });
+  if (!movie) {
+    return c.json({ message: "Movie not found" }, 404);
+  }
+
+  const result = await getParentComments(
+    movie.id,
+    ParentTypes.MOVIE,
+    userId,
+    page,
+    pageSize
+  );
+
+  if (result.data) {
+    return c.json(result.data);
+  }
+  return c.json({ message: result.message }, result.status);
+};
+
+export const commentMovie = async (
+  c: Context<
+    TIsLogged &
+      TUrlParamsParser<TPostMovieCommentSchemas["urlParams"]> &
+      TBodyParser<TPostMovieCommentSchemas["requirements"]>
+  >
+) => {
+  const { tmdbId } = c.get("validatedUrlParams");
+  const { content } = c.get("validatedBody");
+  const { id } = c.get("user");
+
+  const movie = await prisma.movie.findUnique({ where: { tmdbId } });
+  if (!movie) {
+    return c.json({ message: "Movie not found" }, 404);
+  }
+
+  const result = await commentParent(content, id, movie.id, ParentTypes.MOVIE);
+  return c.json({ message: result.message }, result.status);
 };

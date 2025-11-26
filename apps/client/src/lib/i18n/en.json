@@ -115,8 +115,6 @@
     },
     "cast": "Cast",
     "subscriptions": {
-      "subscribe": "Subscribe to notifications",
-      "unsubscribe": "Unsubscribe from notifications",
       "tooltip": {
         "subscribe": "Subscribe to notifications to get notified when something happens related to this movie",
         "unsubscribe": "Unsubscribe from notifications to stop getting notified when something happens related to this movie"
@@ -181,6 +179,34 @@
         "Thriller": "Thriller",
         "War": "War",
         "Western": "Western"
+      }
+    },
+    "likes": {
+      "likes": "Likes",
+      "likeMovie": "Movie liked successfully",
+      "unlikeMovie": "Movie unliked successfully",
+      "tooltip": {
+        "likeMovie": "I like this movie",
+        "unlikeMovie": "I don't like this movie anymore"
+      }
+    },
+    "comments": {
+      "comments": "Comments",
+      "addComment": "Add a comment...",
+      "deleteComment": "Delete",
+      "editComment": "Edit the comment",
+      "cancel": "Cancel",
+      "save": "Save",
+      "loadMore": "Load more comments",
+      "likes": {
+        "likeComment": "I like this comment",
+        "unlikeComment": "I don't like this comment anymore"
+      },
+      "toast": {
+        "deleteSuccess": "The comment was successfully deleted",
+        "deleteError": "The comment could not be deleted",
+        "updateSuccess": "The comment was successfully updated.",
+        "updateError": "The comment could not be updated."
       }
     }
   },

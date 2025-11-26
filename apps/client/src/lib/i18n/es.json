@@ -115,8 +115,6 @@
     },
     "cast": "Reparto",
     "subscriptions": {
-      "subscribe": "Suscribirse a notificaciones",
-      "unsubscribe": "Darse de baja",
       "tooltip": {
         "subscribe": "Activa las notificaciones para recibir actualizaciones sobre esta película",
         "unsubscribe": "Desactiva las notificaciones para dejar de recibir actualizaciones sobre esta película"
@@ -181,6 +179,34 @@
         "Thriller": "",
         "War": "",
         "Western": ""
+      }
+    },
+    "likes": {
+      "likes": "Me gusta",
+      "likeMovie": "Película marcada con me gusta con éxito",
+      "unlikeMovie": "Película retirada de los me gusta con éxito",
+      "tooltip": {
+        "likeMovie": "Me gusta esta película",
+        "unlikeMovie": "Ya no me gusta"
+      }
+    },
+    "comments": {
+      "comments": "Comentarios",
+      "addComment": "Añadir un comentario...",
+      "deleteComment": "Eliminar",
+      "editComment": "Cambiar el comentario",
+      "cancel": "Cancel",
+      "save": "Save",
+      "loadMore": "Cargar más comentarios",
+      "likes": {
+        "likeComment": "Me gusta este comentario",
+        "unlikeComment": "Ya no me gusta este comentario"
+      },
+      "toast": {
+        "deleteSuccess": "El comentario se eliminó correctamente",
+        "deleteError": "No se ha podido eliminar el comentario",
+        "updateSuccess": "El comentario se ha actualizado correctamente.",
+        "updateError": "No se ha podido actualizar el comentario."
       }
     }
   },

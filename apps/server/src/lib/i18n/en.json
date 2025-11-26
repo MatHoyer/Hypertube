@@ -82,5 +82,16 @@
       "title": "Movie downloading",
       "message": "Your movie is currently downloading"
     }
+  },
+  "likes": {
+    "notFound": "Like not found",
+    "fetchFailed": "Failed to fetch likes",
+    "alreadyLiked": "Content is already liked"
+  },
+  "comments": {
+    "notFound": "Comment not found"
+  },
+  "movies": {
+    "notFound": "Movie not found"
   }
 }

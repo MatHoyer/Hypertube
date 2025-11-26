@@ -115,8 +115,6 @@
     },
     "cast": "Casting",
     "subscriptions": {
-      "subscribe": "S'abonner aux notifications",
-      "unsubscribe": "Se désabonner des notifications",
       "tooltip": {
         "subscribe": "S'abonner aux notifications pour recevoir des notifications lorsque quelque chose se passe lié à ce film",
         "unsubscribe": "Se désabonner des notifications pour ne plus recevoir des notifications lorsque quelque chose se passe lié à ce film"
@@ -181,6 +179,34 @@
         "Thriller": "Thriller",
         "War": "Guerre",
         "Western": "Western"
+      }
+    },
+    "likes": {
+      "likes": "J'aime",
+      "likeMovie": "Film liké avec succès",
+      "unlikeMovie": "Film retiré des likes avec succès",
+      "tooltip": {
+        "likeMovie": "J'aime ce film",
+        "unlikeMovie": "Je n'aime plus ce film"
+      }
+    },
+    "comments": {
+      "comments": "Commentaires",
+      "addComment": "Ajouter un commentaire...",
+      "deleteComment": "Supprimer",
+      "editComment": "Modifier le commentaire",
+      "cancel": "Annuler",
+      "save": "Sauvegarder",
+      "loadMore": "Charger plus de commentaires",
+      "likes": {
+        "likeComment": "J'aime ce commentaire",
+        "unlikeComment": "Je n'aime plus ce commentaire"
+      },
+      "toast": {
+        "deleteSuccess": "Le commentaire a bien été supprimé.",
+        "deleteError": "Le commentaire n'a pas pu être supprimé.",
+        "updateSuccess": "Le commentaire a bien été mis à jour.",
+        "updateError": "Le commentaire n'a pas pu être mis à jour."
       }
     }
   },

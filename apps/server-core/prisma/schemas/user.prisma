@@ -18,6 +18,8 @@ model User {
   credentials      Credential[]
   notifications    Notification[]
   subscriptions    MovieSubscription[]
+  likes            Like[]
+  comments         Comment[]
 
   @@unique([email])
   @@unique([username])

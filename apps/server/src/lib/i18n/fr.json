@@ -82,5 +82,16 @@
       "title": "Film en téléchargement",
       "message": "Votre film est en cours de téléchargement"
     }
+  },
+  "likes": {
+    "notFound": "Impossible de trouver le like",
+    "fetchFailed": "Impossible de récupérer les likes",
+    "alreadyLiked": "Le contenu a déjà été liké"
+  },
+  "comments": {
+    "notFound": "Commentaire introuvable"
+  },
+  "movies": {
+    "notFound": "Film introuvable"
   }
 }

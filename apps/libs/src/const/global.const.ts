@@ -7,6 +7,13 @@ export const DownloadStates = {
 export type DownloadState =
   (typeof DownloadStates)[keyof typeof DownloadStates];
 
+export const ParentTypes = {
+  MOVIE: "MOVIE",
+  COMMENT: "COMMENT",
+} as const;
+
+export type TParentType = (typeof ParentTypes)[keyof typeof ParentTypes];
+
 export const Providers = {
   YTS: "YTS",
 } as const;

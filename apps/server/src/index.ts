@@ -14,6 +14,7 @@ import i18next from "i18next";
 import "./lib/i18n/i18n.js";
 import authRouter from "./routes/auth/auth.route.js";
 import authentificationRouter from "./routes/authentification/authentification.route.js";
+import commentsRouter from "./routes/comments/comments.route.js";
 import imagesRouter from "./routes/images/images.route.js";
 import moviesRouter from "./routes/movies/movies.route.js";
 import notificationsRouter from "./routes/notifications/notifications.route.js";
@@ -57,6 +58,7 @@ apiRouter.route("/movies", moviesRouter);
 apiRouter.route("/notifications", notificationsRouter);
 apiRouter.route("/streaming", streamingRouter);
 apiRouter.route("/swagger", swaggerRouter);
+apiRouter.route("/comments", commentsRouter);
 apiRouter.get("/health", (c) => c.text("OK"));
 
 app.route("/api", apiRouter);
