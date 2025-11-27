@@ -61,6 +61,7 @@ export const ROUTES = {
     COMMENTS: "api-comments",
     COMMENTS_REPLIES: "api-comments-replies",
     COMMENTS_LIKES: "api-comments-like",
+    HISTORY: "api-history",
   },
   EXTERNAL: {
     IMDB_MOVIE: "external-imdb-movie",
@@ -191,6 +192,11 @@ const routeSchemas = {
     [ROUTES.API.COMMENTS_LIKES]: z.object({
       commentId: z.union([commentSchema.shape.id, z.literal("{commentId}")]),
     }),
+    [ROUTES.API.HISTORY]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+    }),
   },
   EXTERNAL: {
     [ROUTES.EXTERNAL.IMDB_MOVIE]: z.object({
@@ -281,7 +287,7 @@ const routes: {
   [ROUTES.API.MOVIES]: ({ tmdbId, resolution, subtitlesLanguage }) => {
     if (resolution && subtitlesLanguage) {
       throw new Error(
-        "Resolution and subtitles language cannot be provided together"
+        "Resolution and subtitles language cannot be provided together",
       );
     }
     if (tmdbId === undefined) return `/api/movies`;
@@ -324,6 +330,9 @@ const routes: {
   [ROUTES.API.STREAMING_MOVIE_SUBTITLES]: ({ tmdbId, subtitlesLanguage }) =>
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
 
+  [ROUTES.API.HISTORY]: ({ tmdbId }) =>
+    tmdbId ? `/api/history/${tmdbId}` : `/api/history`,
+
   // External routes
   [ROUTES.EXTERNAL.IMDB_MOVIE]: ({ imdbId }) =>
     `https://www.imdb.com/title/${imdbId}`,
@@ -343,20 +352,21 @@ type TSearchParamsProvided =
   | string
   | URLSearchParams;
 
-type TGetUrlArgs<T extends TRoute> = TRouteDataMap<T> extends undefined
-  ? {
-      withUrl?: "server" | "client";
-      searchParams?: TSearchParamsProvided;
-    }
-  : TRouteDataMap<T> extends Record<string, never>
-  ? {
-      withUrl?: "server" | "client";
-      searchParams?: TSearchParamsProvided;
-    }
-  : TRouteDataMap<T> & {
-      withUrl?: "server" | "client";
-      searchParams?: TSearchParamsProvided;
-    };
+type TGetUrlArgs<T extends TRoute> =
+  TRouteDataMap<T> extends undefined
+    ? {
+        withUrl?: "server" | "client";
+        searchParams?: TSearchParamsProvided;
+      }
+    : TRouteDataMap<T> extends Record<string, never>
+      ? {
+          withUrl?: "server" | "client";
+          searchParams?: TSearchParamsProvided;
+        }
+      : TRouteDataMap<T> & {
+          withUrl?: "server" | "client";
+          searchParams?: TSearchParamsProvided;
+        };
 
 const isClientRoute = (route: any): route is TClientRoute =>
   Object.values(ROUTES.CLIENT).includes(route as TClientRoute);
@@ -377,7 +387,7 @@ const getSchema = <T extends TRoute>(route: T) => {
 
 export const getUrl = <T extends TRoute>(
   route: T,
-  params?: TGetUrlArgs<T>
+  params?: TGetUrlArgs<T>,
 ): string => {
   const { withUrl, searchParams: _, ...rawParams } = params || {};
   let { searchParams } = params || {};
@@ -397,10 +407,13 @@ export const getUrl = <T extends TRoute>(
     withUrl && !route.startsWith("external-") ? withUrlMapping[withUrl] : "";
 
   if (isPurObject(searchParams)) {
-    searchParams = typedEntries(searchParams).reduce((acc, [key, value]) => {
-      if (value) acc[key] = value;
-      return acc;
-    }, {} as Record<string, string>);
+    searchParams = typedEntries(searchParams).reduce(
+      (acc, [key, value]) => {
+        if (value) acc[key] = value;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
   }
 
   const parsedSearchParams = searchParams

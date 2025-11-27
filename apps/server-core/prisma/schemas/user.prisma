@@ -20,6 +20,7 @@ model User {
   subscriptions    MovieSubscription[]
   likes            Like[]
   comments         Comment[]
+  history          MovieHistory[]
 
   @@unique([email])
   @@unique([username])

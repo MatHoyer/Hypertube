@@ -160,6 +160,17 @@ export type {
   TPostCommentReplySchemas,
 } from "./schemas/api/comments.schema.js";
 
+export {
+  deleteHistorySchemas,
+  deleteMovieFromHistorySchemas,
+  getHistorySchemas,
+} from "./schemas/api/history.schema.js";
+export type {
+  TDeleteHistorySchemas,
+  TDeleteMovieFromHistorySchemas,
+  TGetHistorySchemas,
+} from "./schemas/api/history.schema.js";
+
 // Database Schemas export
 export { imageSchema } from "./schemas/database/image.schema.js";
 export type { TImageSchema } from "./schemas/database/image.schema.js";

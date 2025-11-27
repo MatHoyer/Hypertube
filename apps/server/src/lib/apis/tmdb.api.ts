@@ -37,11 +37,11 @@ export class TmdbApi {
 
   private async getMovieDetailsByTmdbId(
     tmdbId: number,
-    language: keyof typeof languageCodes
+    language: keyof typeof languageCodes,
   ) {
     const responseSchema = tmdbMovieSchema;
     const response = await this.fetch<z.infer<typeof responseSchema>>(
-      `/movie/${tmdbId}?language=${language}`
+      `/movie/${tmdbId}?language=${language}`,
     );
 
     response.poster_path = response.poster_path
@@ -56,12 +56,12 @@ export class TmdbApi {
     return responseParsed.data;
   }
 
-  private async getAllMovieDetails(
-    movieIds: number[],
-    language: keyof typeof languageCodes
+  async getAllMovieDetails(
+    tmdbIds: number[],
+    language: keyof typeof languageCodes,
   ) {
-    const moviePromises = movieIds.map(async (movieId) => {
-      return await this.getMovieDetailsByTmdbId(movieId, language);
+    const moviePromises = tmdbIds.map(async (tmdbId) => {
+      return await this.getMovieDetailsByTmdbId(tmdbId, language);
     });
 
     return await Promise.all(moviePromises);
@@ -87,13 +87,13 @@ export class TmdbApi {
       results: z.array(
         z.object({
           id: z.number(),
-        })
+        }),
       ),
     });
 
     if (category) {
       const response = await this.fetch<z.infer<typeof responseSchema>>(
-        `/movie/${category}?page=${page}&language=${language}`
+        `/movie/${category}?page=${page}&language=${language}`,
       );
       return responseSchema.parse(response);
     }
@@ -101,7 +101,7 @@ export class TmdbApi {
     const genresString = genres?.join(",");
 
     const response = await this.fetch<z.infer<typeof responseSchema>>(
-      `/discover/movie?language=${language}&page=${page}&sort_by=${sort}&with_genres=${genresString}`
+      `/discover/movie?language=${language}&page=${page}&sort_by=${sort}&with_genres=${genresString}`,
     );
 
     return responseSchema.parse(response);
@@ -123,11 +123,11 @@ export class TmdbApi {
       results: z.array(
         z.object({
           id: z.number(),
-        })
+        }),
       ),
     });
     const response = await this.fetch<z.infer<typeof responseSchema>>(
-      `/search/movie?query=${query}&language=${language}&page=${page}`
+      `/search/movie?query=${query}&language=${language}&page=${page}`,
     );
     return responseSchema.parse(response);
   }
@@ -163,7 +163,7 @@ export class TmdbApi {
 
     const movies = await this.getAllMovieDetails(
       rawMovies.results.map((movie) => movie.id),
-      language
+      language,
     );
 
     return {
