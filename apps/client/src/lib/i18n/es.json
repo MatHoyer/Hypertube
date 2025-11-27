@@ -29,6 +29,10 @@
     "confirmTextToType": "Para confirmar, escribe: {{confirmTextToType}}",
     "doubleConfirm": "Doble confirmación"
   },
+  "dialog": {
+    "cancel": "Cancelar",
+    "submit": "Enviar"
+  },
   "sign": {
     "username": "Nombre de usuario",
     "email": "Correo electrónico",
@@ -98,6 +102,23 @@
         "WAITING": "Actualmente en cola para descarga",
         "DOWNLOADING": "Descargando",
         "DOWNLOADED": "Ya descargado"
+      },
+      "downloadResolution": {
+        "title": "",
+        "description": {
+          "1": "",
+          "2": ""
+        },
+        "size": "",
+        "submit": ""
+      },
+      "downloadSubtitle": {
+        "title": "",
+        "description": {
+          "1": "",
+          "2": ""
+        },
+        "submit": ""
       }
     },
     "playerSettings": {

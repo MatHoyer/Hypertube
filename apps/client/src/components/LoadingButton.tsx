@@ -17,6 +17,7 @@ export const LoadingButton = ({
   children,
   className,
   onClick,
+  disabled,
   ...props
 }: LoadingButtonProps) => {
   const { value: showSuccess, setValue: setShowSuccess } = useTimeoutResetState(
@@ -39,7 +40,7 @@ export const LoadingButton = ({
 
   return (
     <Button
-      disabled={loading}
+      disabled={loading || disabled}
       onClick={
         showSuccess
           ? () => {

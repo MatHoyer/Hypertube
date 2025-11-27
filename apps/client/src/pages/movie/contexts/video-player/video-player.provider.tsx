@@ -3,70 +3,15 @@ import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
 import { type TResolutionSchema, type TSubtitleSchema } from "@hypertube/libs";
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useRef,
   useState,
+  type KeyboardEvent,
 } from "react";
-
-type Speed = 0.5 | 1 | 1.5 | 2;
-
-type VideoPlayerContextType = {
-  videoRef: React.RefObject<HTMLVideoElement | null>;
-  containerRef: React.RefObject<HTMLDivElement | null>;
-
-  playing: boolean;
-  togglePlay: () => void;
-
-  muted: boolean;
-  toggleMute: () => void;
-
-  volume: number;
-  handleVolumeChange: (volume: number) => void;
-  handleJumpVolume: (units: number) => void;
-
-  isFullscreen: boolean;
-  toggleFullscreen: () => void;
-  setIsFullscreen: (isFullscreen: boolean) => void;
-
-  progress: number;
-  bufferedProgress: number;
-  handleProgress: () => void;
-  handleSeek: (percent: number) => void;
-  handleJumpVideo: (seconds: number) => void;
-
-  speed: Speed;
-  handleSetSpeed: (speed: Speed) => void;
-
-  mouseMoving: boolean;
-  mouseClicked: boolean;
-  triggerMouseMove: () => void;
-  triggerMouseClick: () => void;
-
-  resolutions: TResolutionSchema[];
-  selectedResolution: TResolutionSchema | null;
-  setSelectedResolution: (resolution: TResolutionSchema) => void;
-
-  subtitles: TSubtitleSchema[];
-  selectedSubtitlesLanguage: string | null;
-  setSelectedSubtitlesLanguage: (language: string | null) => void;
-};
-
-const VideoPlayerContext = createContext<VideoPlayerContextType | undefined>(
-  undefined
-);
-
-const usedKeys = [
-  " ",
-  "m",
-  "f",
-  "ArrowRight",
-  "ArrowLeft",
-  "ArrowUp",
-  "ArrowDown",
-];
+import { usedKeys } from "./video-player.const";
+import { VideoPlayerContext } from "./video-player.context";
+import type { Speed } from "./video-player.type";
 
 export const VideoPlayerProvider: React.FC<{
   children: React.ReactNode;
@@ -83,7 +28,11 @@ export const VideoPlayerProvider: React.FC<{
     toggle: toggleMute,
     setValue: setMute,
   } = useToggle(false);
-  const { value: playing, toggle: togglePlay } = useToggle(false);
+  const {
+    value: playing,
+    toggle: togglePlay,
+    setValue: setPlaying,
+  } = useToggle(false);
   const [volume, setVolume] = useState(20);
   const [progress, setProgress] = useState(0);
   const [bufferedProgress, setBufferedProgress] = useState(0);
@@ -108,12 +57,13 @@ export const VideoPlayerProvider: React.FC<{
     if (!videoRef.current) return;
 
     if (playing) {
+      if (progress >= 100) setProgress(0);
       videoRef.current.play();
     } else {
       videoRef.current.pause();
     }
     videoRef.current.volume = volume / 100;
-  }, [videoRef, playing, volume]);
+  }, [videoRef, playing, volume, progress, setProgress]);
 
   // Mute/Unmute
   useEffect(() => {
@@ -186,18 +136,21 @@ export const VideoPlayerProvider: React.FC<{
     }
 
     if (percent >= 100) {
-      togglePlay();
+      setPlaying(false);
     }
-  }, [videoRef, togglePlay, setProgress, setBufferedProgress]);
+  }, [videoRef, setPlaying, setProgress, setBufferedProgress]);
 
   const handleSeek = useCallback(
     (percent: number) => {
       if (!videoRef.current) return;
+      if (percent < 0) percent = 0;
+      if (percent > 100) percent = 100;
       videoRef.current.currentTime =
         (percent / 100) * videoRef.current.duration;
+      if (percent >= 100) setPlaying(false);
       setProgress(percent);
     },
-    [videoRef, setProgress]
+    [videoRef, setProgress, setPlaying]
   );
 
   const handleSetSpeed = useCallback(
@@ -219,7 +172,7 @@ export const VideoPlayerProvider: React.FC<{
           100
       );
     },
-    [videoRef, progress, handleSeek]
+    [videoRef, handleSeek, progress]
   );
 
   const handleJumpVolume = useCallback(
@@ -229,11 +182,8 @@ export const VideoPlayerProvider: React.FC<{
     [volume, handleVolumeChange]
   );
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    if (!videoRef.current) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLDivElement>) => {
       if (!usedKeys.includes(e.key)) return;
       e.preventDefault();
       triggerMouseMove();
@@ -262,28 +212,25 @@ export const VideoPlayerProvider: React.FC<{
           handleJumpVolume(-10);
           break;
       }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [
-    videoRef,
-    triggerMouseMove,
-    triggerMouseClick,
-    togglePlay,
-    toggleMute,
-    toggleFullscreen,
-    handleJumpVideo,
-    handleJumpVolume,
-  ]);
+    },
+    [
+      triggerMouseMove,
+      triggerMouseClick,
+      togglePlay,
+      toggleMute,
+      toggleFullscreen,
+      handleJumpVideo,
+      handleJumpVolume,
+    ]
+  );
 
   return (
     <VideoPlayerContext.Provider
       value={{
         videoRef,
         containerRef,
+
+        handleKeyDown,
 
         playing,
         togglePlay,
@@ -325,11 +272,4 @@ export const VideoPlayerProvider: React.FC<{
       {children}
     </VideoPlayerContext.Provider>
   );
-};
-
-export const useVideoPlayer = () => {
-  const ctx = useContext(VideoPlayerContext);
-  if (!ctx)
-    throw new Error("useVideoPlayer must be used within a VideoPlayerProvider");
-  return ctx;
 };

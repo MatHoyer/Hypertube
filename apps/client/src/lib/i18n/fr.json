@@ -29,6 +29,10 @@
     "confirmTextToType": "Pour confirmer, tapez: {{confirmTextToType}}",
     "doubleConfirm": "Double confirmation"
   },
+  "dialog": {
+    "cancel": "Annuler",
+    "submit": "Soumettre"
+  },
   "sign": {
     "username": "Nom d'utilisateur",
     "email": "Email",
@@ -98,6 +102,23 @@
         "WAITING": "Actuellement en attente de téléchargement",
         "DOWNLOADING": "Actuellement en cours de téléchargement",
         "DOWNLOADED": "Déjà téléchargé"
+      },
+      "downloadResolution": {
+        "title": "Télécharger la résolution",
+        "description": {
+          "1": "Cette action va lancer le téléchargement sur le serveur.",
+          "2": "Cela peut prendre un certain temps. Vous pouvez vous abonner aux notifications du film pour être notifié lorsque le téléchargement progresse."
+        },
+        "size": "Taille",
+        "submit": "Lancer le téléchargement"
+      },
+      "downloadSubtitle": {
+        "title": "Télécharger les sous-titres",
+        "description": {
+          "1": "Cette action va lancer le téléchargement sur le serveur.",
+          "2": "Cela est assez rapide."
+        },
+        "submit": "Lancer le téléchargement"
       }
     },
     "playerSettings": {

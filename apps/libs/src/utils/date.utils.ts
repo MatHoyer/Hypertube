@@ -1,6 +1,6 @@
 import { TZDate } from "@date-fns/tz";
 import type { Locale } from "date-fns";
-import { format, formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow, intervalToDuration } from "date-fns";
 import { enUS, es, fr } from "date-fns/locale";
 import type { LanguageCode } from "../const/global.const.js";
 
@@ -78,4 +78,21 @@ export const getNearDate = (
     addSuffix: options?.addSuffix ?? true,
     includeSeconds: options?.includeSeconds ?? true,
   });
+};
+
+export const secondsToHMS = (totalSeconds: number) => {
+  const d = intervalToDuration({
+    start: 0,
+    end: totalSeconds * 1000,
+  });
+
+  const hours = d.hours ? `${d.hours.toString().padStart(2, "0")}:` : "00:";
+
+  const minutes = d.minutes
+    ? `${d.minutes.toString().padStart(2, "0")}:`
+    : "00:";
+
+  const seconds = d.seconds ? `${d.seconds.toString().padStart(2, "0")}` : "00";
+
+  return `${hours}${minutes}${seconds}`;
 };

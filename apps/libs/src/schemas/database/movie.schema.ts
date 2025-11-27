@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { DownloadStates, Providers } from "../../const/global.const.js";
+import { ytsQualities } from "../../const/yts.const.js";
 
 export const resolutionSchema = z.object({
   id: z.uuid(),
 
-  resolution: z.string(),
+  resolution: z.enum(ytsQualities),
   size: z.string(),
   downloadState: z.enum([...Object.values(DownloadStates)] as const),
   provider: z.enum([...Object.values(Providers)] as const).nullable(),

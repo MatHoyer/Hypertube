@@ -1,4 +1,9 @@
-import { credentialSchema, tmdbMovieSchema } from "@hypertube/libs";
+import {
+  credentialSchema,
+  resolutionSchema,
+  subtitleSchema,
+  tmdbMovieSchema,
+} from "@hypertube/libs";
 import z from "zod";
 import { create } from "zustand";
 
@@ -12,6 +17,14 @@ const dialogSchemas = {
   }),
   postCredentials: null,
   movie: tmdbMovieSchema,
+  downloadResolution: z.object({
+    tmdbId: tmdbMovieSchema.shape.id,
+    resolution: resolutionSchema,
+  }),
+  downloadSubtitle: z.object({
+    tmdbId: tmdbMovieSchema.shape.id,
+    subtitle: subtitleSchema,
+  }),
 };
 
 type TDialogDataMap = {
@@ -19,6 +32,8 @@ type TDialogDataMap = {
   newCredential: z.infer<typeof dialogSchemas.newCredential>;
   postCredentials: null;
   movie: z.infer<typeof dialogSchemas.movie>;
+  downloadResolution: z.infer<typeof dialogSchemas.downloadResolution>;
+  downloadSubtitle: z.infer<typeof dialogSchemas.downloadSubtitle>;
 };
 
 export type TDialogType = keyof TDialogDataMap;

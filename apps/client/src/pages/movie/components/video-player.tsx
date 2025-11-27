@@ -1,7 +1,6 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Typography } from "@/components/ui/typography";
@@ -10,10 +9,16 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
-import { getUrl, languageCodes, ROUTES, ytsQualities } from "@hypertube/libs";
-import { intervalToDuration } from "date-fns";
-import { Expand, Pause, Play, Shrink, Volume2, VolumeX } from "lucide-react";
 import {
+  DownloadStates,
+  getUrl,
+  languageCodes,
+  ROUTES,
+  secondsToHMS,
+  ytsQualities,
+} from "@hypertube/libs";
+import { Expand, Pause, Play, Shrink, Volume2, VolumeX } from "lucide-react";
+import React, {
   useEffect,
   useMemo,
   useRef,
@@ -21,9 +26,9 @@ import {
   type ComponentProps,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { useVideoPlayer } from "../contexts/video-player/video-player.context";
 import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 import SettingsButton from "./dropdown-menu-navigating/dropdown-menu-navigating";
-import { useVideoPlayer } from "./video-player.context";
 
 const MiddleScreenInfo: React.FC<{
   type: "volume" | "play" | null;
@@ -98,8 +103,11 @@ const VolumeControl = () => {
         onClick={toggleMute}
         className="dark p-2 rounded-full z-10"
       >
-        {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-        <span className="sr-only">Toggle mute</span>
+        {muted ? (
+          <VolumeX size={20} color="white" />
+        ) : (
+          <Volume2 size={20} color="white" />
+        )}
       </Button>
 
       <div
@@ -128,25 +136,8 @@ const VolumeControl = () => {
   );
 };
 
-const secondsToHMS = (totalSeconds: number) => {
-  const d = intervalToDuration({
-    start: 0,
-    end: totalSeconds * 1000,
-  });
-
-  const hours = d.hours ? `${d.hours.toString().padStart(2, "0")}:` : "00:";
-
-  const minutes = d.minutes
-    ? `${d.minutes.toString().padStart(2, "0")}:`
-    : "00:";
-
-  const seconds = d.seconds ? `${d.seconds.toString().padStart(2, "0")}` : "00";
-
-  return `${hours}${minutes}${seconds}`;
-};
-
-const ProgressBar = () => {
-  const { videoRef, progress, bufferedProgress, handleSeek } = useVideoPlayer();
+const Timer = () => {
+  const { videoRef, progress } = useVideoPlayer();
 
   const currentTime = secondsToHMS(
     (progress * (videoRef.current?.duration ?? 0)) / 100,
@@ -159,8 +150,37 @@ const ProgressBar = () => {
   );
 
   return (
-    <div className="flex items-center w-full">
-      <div className="relative flex-1 mx-3">
+    <div className="flex items-center">
+      {currentTime === null || duration === null ? (
+        <Skeleton className="w-[85px] h-[20px]" />
+      ) : (
+        <Badge>
+          <Typography className="font-mono font-bold">
+            {currentTime} / {duration}
+          </Typography>
+        </Badge>
+      )}
+    </div>
+  );
+};
+
+const ProgressBar: React.FC<ComponentProps<"div">> = ({
+  className,
+  ...props
+}) => {
+  const { progress, bufferedProgress, handleSeek, selectedResolution } =
+    useVideoPlayer();
+
+  const isExplorable = useMemo(() => {
+    return (
+      selectedResolution &&
+      selectedResolution.downloadState === DownloadStates.DOWNLOADED
+    );
+  }, [selectedResolution]);
+
+  return (
+    <div className={cn("flex items-center w-full", className)} {...props}>
+      <div className="relative flex-1">
         {/* Background track */}
         <Progress
           className="absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 bg-white/20"
@@ -183,24 +203,17 @@ const ProgressBar = () => {
 
         <input
           type="range"
-          min="1"
-          max="99"
+          min="0"
+          max="100"
           step="0.1"
           value={progress}
           onChange={(e) => handleSeek(e.target.valueAsNumber)}
-          className="absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10 cursor-pointer"
+          className={cn(
+            "absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10",
+            !isExplorable ? "cursor-not-allowed" : "cursor-pointer"
+          )}
+          disabled={!isExplorable}
         />
-      </div>
-      <div className="flex items-center">
-        {currentTime === null || duration === null ? (
-          <Skeleton className="w-[85px] h-[20px]" />
-        ) : (
-          <Badge>
-            <Typography className="font-mono font-bold">
-              {currentTime} / {duration}
-            </Typography>
-          </Badge>
-        )}
       </div>
     </div>
   );
@@ -268,20 +281,24 @@ const ControlsBar = () => {
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className="absolute bottom-0 left-0 right-0 p-2"
+        className="absolute bottom-0 left-0 right-0"
       >
-        <Card className="dark flex flex-row items-center justify-between size-full p-3 bg-black/30">
-          {!isMobile && <PlayPauseButton />}
-          {!isMobile && <VolumeControl />}
+        <div className="dark flex flex-col gap-3 items-center justify-between size-full bg-gradient-to-t from-black/70 to-transparent p-3">
           <ProgressBar />
-          {!isMobile && (
-            <SettingsButton
-              settingsOpen={settingsOpen}
-              setSettingsOpen={setSettingsOpen}
-            />
-          )}
-          <FullscreenButton />
-        </Card>
+          <div className="flex flex-row items-center w-full">
+            {!isMobile && <PlayPauseButton />}
+            {!isMobile && <VolumeControl />}
+            <Timer />
+            <div className="flex-1" />
+            {!isMobile && (
+              <SettingsButton
+                settingsOpen={settingsOpen}
+                setSettingsOpen={setSettingsOpen}
+              />
+            )}
+            <FullscreenButton />
+          </div>
+        </div>
       </AnimateApparition>
     </>
   );
@@ -294,6 +311,9 @@ const VideoPlayer = () => {
   const {
     videoRef,
     containerRef,
+
+    handleKeyDown,
+
     playing,
     volume,
     togglePlay,
@@ -324,12 +344,14 @@ const VideoPlayer = () => {
     if (!selectedResolution && resolutions.length > 0) {
       setSelectedResolution(resolutions[0]);
     }
-  }, []);
+  }, [selectedResolution, resolutions, setSelectedResolution]);
 
   return (
     <div
+      tabIndex={0}
       ref={containerRef}
-      className="w-full h-[72dvh] bg-black rounded-2xl shadow-lg overflow-hidden relative"
+      onKeyDown={handleKeyDown}
+      className="w-full h-[72dvh] bg-black rounded-2xl shadow-lg overflow-hidden relative outline-none"
       onClick={
         !isMobile
           ? togglePlay

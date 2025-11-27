@@ -1,7 +1,7 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
+import { getDownloadStateIcon } from "@/components/download-state/getDownloadStateIcon";
 import { Logo } from "@/components/images/Logo";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
-import { AppLoader } from "@/components/ui/app-loader";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -16,14 +16,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { DownloadStates, type TGetMoviesSchemas } from "@hypertube/libs";
-import {
-  Check,
-  CheckIcon,
-  CircleX,
-  Clock,
-  EllipsisVertical,
-} from "lucide-react";
+import { type TGetMoviesSchemas } from "@hypertube/libs";
+import { Check, EllipsisVertical } from "lucide-react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -52,10 +46,7 @@ export const Thumbnail: React.FC<{
         <div className="flex gap-2 w-full items-center justify-between">
           <Tooltip>
             <TooltipTrigger className="flex items-center">
-              {movie.status === DownloadStates.DOWNLOADED && <CheckIcon />}
-              {movie.status === DownloadStates.DOWNLOADING && <AppLoader />}
-              {movie.status === DownloadStates.WAITING && <Clock />}
-              {movie.status === DownloadStates.NOT_DOWNLOADED && <CircleX />}
+              {getDownloadStateIcon(movie.status)}
             </TooltipTrigger>
             <TooltipContent>
               {t(`movie.downloadPage.tooltip.${movie.status}`)}

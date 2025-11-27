@@ -1,4 +1,5 @@
-import { AppLoader } from "@/components/ui/app-loader";
+import { DownloadStateColors } from "@/components/download-state/download-state.colors";
+import { getDownloadStateIcon } from "@/components/download-state/getDownloadStateIcon";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
@@ -7,25 +8,33 @@ import { getQueryKey } from "@/lib/getQueryKey";
 import { cn, getNearDateWithLocale } from "@/lib/utils";
 import type { TNotification, TNotificationSchema } from "@hypertube/libs";
 import {
+  DownloadStates,
   getUrl,
   notifications,
   patchNotificationsSchemas,
   ROUTES,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  CheckCheck,
-  ChevronRight,
-  DownloadIcon,
-  MessageCircleIcon,
-} from "lucide-react";
+import { CheckCheck, ChevronRight, MessageCircleIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 const notificationIcons: Record<TNotification, React.ReactNode> = {
-  [notifications.TEST]: <MessageCircleIcon />,
-  [notifications.MOVIE_DOWNLOADED]: <DownloadIcon />,
-  [notifications.MOVIE_DOWNLOADING]: <AppLoader />,
+  [notifications.TEST]: <MessageCircleIcon color="var(--color-blue-500)" />,
+  [notifications.MOVIE_DOWNLOADED]: getDownloadStateIcon(
+    DownloadStates.DOWNLOADED
+  ),
+  [notifications.MOVIE_DOWNLOADING]: getDownloadStateIcon(
+    DownloadStates.DOWNLOADING
+  ),
+};
+
+const notificationColors: Record<TNotification, string> = {
+  [notifications.TEST]: "var(--color-blue-500)",
+  [notifications.MOVIE_DOWNLOADED]:
+    DownloadStateColors[DownloadStates.DOWNLOADED],
+  [notifications.MOVIE_DOWNLOADING]:
+    DownloadStateColors[DownloadStates.DOWNLOADING],
 };
 
 export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
@@ -65,7 +74,12 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
       )}
     >
       {!notification.read && (
-        <div className="absolute left-0 top-0 w-2 h-full bg-secondary" />
+        <div
+          className="absolute left-0 top-0 w-2 h-full"
+          style={{
+            backgroundColor: notificationColors[notification.type],
+          }}
+        />
       )}
       <div className="flex flex-row gap-2">
         {notificationIcons[notification.type]}

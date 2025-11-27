@@ -29,6 +29,10 @@
     "confirmTextToType": "To confirm, type: {{confirmTextToType}}",
     "doubleConfirm": "Double confirm"
   },
+  "dialog": {
+    "cancel": "Cancel",
+    "submit": "Submit"
+  },
   "sign": {
     "username": "Username",
     "email": "Email",
@@ -98,6 +102,23 @@
         "WAITING": "Currently in the queue for downloading",
         "DOWNLOADING": "Currently downloading",
         "DOWNLOADED": "Already downloaded"
+      },
+      "downloadResolution": {
+        "title": "Download Resolution",
+        "description": {
+          "1": "This action will initiate the download on the server.",
+          "2": "This may take some time. You can subscribe to the movie notifications to get notified when the download is progressing."
+        },
+        "size": "Size",
+        "submit": "Launch download"
+      },
+      "downloadSubtitle": {
+        "title": "Download Subtitles",
+        "description": {
+          "1": "This action will initiate the download on the server.",
+          "2": "This is pretty fast."
+        },
+        "submit": "Launch download"
       }
     },
     "playerSettings": {

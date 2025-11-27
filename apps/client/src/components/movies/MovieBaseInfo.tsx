@@ -80,7 +80,9 @@ export const MovieBaseInfo: React.FC<
         </Typography>
       ) : (
         <>
-          <Typography variant="h1">{movie.title}</Typography>
+          <Typography variant="h1" className="text-center">
+            {movie.title}
+          </Typography>
           <div className="flex gap-2">
             <Typography
               textColor="muted"

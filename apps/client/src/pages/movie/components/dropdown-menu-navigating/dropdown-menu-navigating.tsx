@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
-import { useVideoPlayer } from "../video-player.context";
+import { useVideoPlayer } from "../../contexts/video-player/video-player.context";
 import {
   DropdownMenuNavigatingPage,
   DropdownMenuSelectedItem,

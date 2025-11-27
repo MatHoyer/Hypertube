@@ -16,11 +16,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NotFoundPage } from "../notFound/NotFound.page";
+import { DownloadsSelector } from "./components/downloads-selector/download-selector";
 import MovieInfo from "./components/movie-info";
 import { MovieInteraction } from "./components/movie-interaction";
-import { DownloadsSelector } from "./components/settings-selector";
 import VideoPlayer from "./components/video-player";
-import { VideoPlayerProvider } from "./components/video-player.context";
+import { VideoPlayerProvider } from "./contexts/video-player/video-player.provider";
 import { MoviePageParamsSchema } from "./schemas/urlParams.schema";
 
 const MovieTabs = {
@@ -58,11 +58,25 @@ const MoviePage = () => {
     return groupBy(movie.subtitles, "downloadState");
   }, [movie]);
 
+  const streamableResolutions = useMemo(() => {
+    return [
+      ...(filteredResolutions?.DOWNLOADED ?? []),
+      ...(filteredResolutions?.DOWNLOADING ?? []),
+    ];
+  }, [filteredResolutions]);
+
+  const streamableSubtitles = useMemo(() => {
+    return [
+      ...(filteredSubtitles?.DOWNLOADED ?? []),
+      ...(filteredSubtitles?.DOWNLOADING ?? []),
+    ];
+  }, [filteredSubtitles]);
+
   useEffect(() => {
     if (
       filteredResolutions &&
-      filteredResolutions?.DOWNLOADING?.length === 0 &&
-      filteredResolutions?.DOWNLOADED?.length === 0
+      !filteredResolutions?.DOWNLOADING?.length &&
+      !filteredResolutions?.DOWNLOADED?.length
     ) {
       setSelectedTab(MovieTabs.DOWNLOADS);
     }
@@ -143,14 +157,8 @@ const MoviePage = () => {
 
   return (
     <VideoPlayerProvider
-      resolutions={[
-        ...(filteredResolutions?.DOWNLOADED ?? []),
-        ...(filteredResolutions?.DOWNLOADING ?? []),
-      ]}
-      subtitles={[
-        ...(filteredSubtitles?.DOWNLOADED ?? []),
-        ...(filteredSubtitles?.DOWNLOADING ?? []),
-      ]}
+      resolutions={streamableResolutions}
+      subtitles={streamableSubtitles}
     >
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 relative">
         <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-4 h-fit">

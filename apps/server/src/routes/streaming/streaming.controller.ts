@@ -8,23 +8,40 @@ import { Context } from "hono";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 
 export const getStreamingResolution = async (
-  c: Context<TUrlParamsParser<TGetStreamingResolutionSchemas["urlParams"]>>
+  c: Context<TUrlParamsParser<TGetStreamingResolutionSchemas["urlParams"]>>,
 ) => {
   const { movieId, resolution } = c.get("validatedUrlParams");
-  const filePath = getResolutionPath(movieId, resolution, "movie.mp4");
-  const stat = fs.statSync(filePath);
+  const filePath = getResolutionPath({
+    movieId,
+    resolution,
+    forTransmission: false,
+    filename: "movie.mp4",
+  });
+  const stat = await fs.promises.stat(filePath);
   const fileSize = stat.size;
   const range = c.req.header("range");
 
   if (range) {
-    const parts = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(parts[0], 10);
-    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-    const chunkSize = end - start + 1;
+    const [rawStart, rawEnd] = range.replace(/bytes=/, "").split("-");
+    const start = parseInt(rawStart, 10);
+    const end = rawEnd ? parseInt(rawEnd, 10) : start + 5000000; // 5MB
 
-    const fileStream = fs.createReadStream(filePath, { start, end });
+    if (start >= fileSize) {
+      c.header("Content-Range", `bytes */${fileSize}`);
+      return c.json(
+        {
+          message: "Requested range not satisfiable",
+        },
+        416,
+      );
+    }
 
-    c.header("Content-Range", `bytes ${start}-${end}/${fileSize}`);
+    const safeEnd = Math.min(end, fileSize - 1);
+    const chunkSize = safeEnd - start + 1;
+
+    const fileStream = fs.createReadStream(filePath, { start, end: safeEnd });
+
+    c.header("Content-Range", `bytes ${start}-${safeEnd}/${fileSize}`);
     c.header("Accept-Ranges", "bytes");
     c.header("Content-Length", chunkSize.toString());
     c.header("Content-Type", "video/mp4");
@@ -39,10 +56,14 @@ export const getStreamingResolution = async (
 };
 
 export const getStreamingSubtitles = async (
-  c: Context<TUrlParamsParser<TGetStreamingSubtitlesSchemas["urlParams"]>>
+  c: Context<TUrlParamsParser<TGetStreamingSubtitlesSchemas["urlParams"]>>,
 ) => {
   const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
-  const filePath = getSubtitlePath(movieId, subtitlesLanguage, true);
+  const filePath = getSubtitlePath({
+    movieId,
+    language: subtitlesLanguage,
+    filename: "subtitles.vtt",
+  });
   const file = fs.readFileSync(filePath);
 
   return c.body(file, 200, {

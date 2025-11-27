@@ -3,6 +3,7 @@ export {
   getDateAsString,
   getNearDate,
   newUTCDate,
+  secondsToHMS,
 } from "./utils/date.utils.js";
 export type {
   TDateFormatsKeys,

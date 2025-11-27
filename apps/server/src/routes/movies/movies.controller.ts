@@ -18,6 +18,7 @@ import {
   TPostMovieDownloadSubtitlesSchemas,
   TPostMovieLikeSchemas,
   TPostMovieSubscribeSchemas,
+  TResolutionSchema,
   typedKeys,
 } from "@hypertube/libs";
 import { env, prisma } from "@hypertube/server-core";
@@ -181,7 +182,7 @@ export const getMovie = async (
     if (!dbMovie.additionalInfoFetched) {
       await getMovieData(dbMovie);
     } else {
-      getMovieData(dbMovie);
+      void getMovieData(dbMovie);
     }
   } catch (error) {
     hypertubeLogger.error(`Error getting movie data: ${error}`);
@@ -192,7 +193,7 @@ export const getMovie = async (
       movieId: dbMovie.id,
     },
     orderBy: {
-      resolution: "asc",
+      size: "asc",
     },
   });
   const subtitles = await prisma.subtitle.findMany({
@@ -290,10 +291,12 @@ export const downloadMovie = async (
   if (!dbMovie) {
     return c.json({ message: "Movie not found" }, 404);
   }
+
   const dbResolution = dbMovie.resolutions[0];
   if (!dbResolution) {
     return c.json({ message: "Resolution not found" }, 404);
   }
+
   if (dbResolution.downloadState !== DownloadStates.NOT_DOWNLOADED) {
     return c.json(
       { message: "Resolution already downloaded or in downloading queue" },
@@ -312,9 +315,9 @@ export const downloadMovie = async (
   try {
     await downloadTorrent({
       movie: dbMovie,
-      resolution: dbResolution,
+      resolution: dbResolution as TResolutionSchema,
     });
-  } catch {
+  } catch (error) {
     await prisma.resolution.update({
       where: {
         id: dbResolution.id,
@@ -323,6 +326,7 @@ export const downloadMovie = async (
         downloadState: DownloadStates.NOT_DOWNLOADED,
       },
     });
+    hypertubeLogger.error(`Error downloading movie ${JSON.stringify(error)}`);
   }
 
   return c.json({ message: "Movie downloaded started" });
