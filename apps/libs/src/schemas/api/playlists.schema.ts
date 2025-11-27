@@ -67,7 +67,7 @@ export type TPostMovieToPlaylistSchemas = {
   response: z.infer<typeof postMovieToPlaylistSchemas.response>;
 };
 
-export const deleteMovieToPlaylistSchemas = {
+export const deleteMovieFromPlaylistSchemas = {
   urlParams: z.object({
     playlistId: playlistSchema.shape.id,
     tmdbId: movieSchema.shape.tmdbId,
@@ -77,7 +77,7 @@ export const deleteMovieToPlaylistSchemas = {
   }),
 };
 
-export type TDeleteMovieToPlaylistSchemas = {
-  urlParams: z.infer<typeof deleteMovieToPlaylistSchemas.urlParams>;
-  response: z.infer<typeof deleteMovieToPlaylistSchemas.response>;
+export type TDeleteMovieFromPlaylistSchemas = {
+  urlParams: z.infer<typeof deleteMovieFromPlaylistSchemas.urlParams>;
+  response: z.infer<typeof deleteMovieFromPlaylistSchemas.response>;
 };

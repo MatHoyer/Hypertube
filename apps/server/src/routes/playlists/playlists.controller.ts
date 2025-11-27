@@ -1,6 +1,6 @@
 import {
   languageCodes,
-  TDeleteMovieToPlaylistSchemas,
+  TDeleteMovieFromPlaylistSchemas,
   TDeletePlaylistSchemas,
   TPostMovieToPlaylistSchemas,
   TPostPlaylistSchemas,
@@ -27,7 +27,7 @@ export const getPlaylists = async (c: Context<TIsLogged>) => {
   });
   if (!playlists) return c.json({ playlists: [] }, 200);
 
-  const flatPlaylists = playlists.playlists.map((playlist) => {
+  const playlistsWithFlatMovies = playlists.playlists.map((playlist) => {
     return {
       ...playlist,
       movies: playlist.movies.map((movie) => {
@@ -37,7 +37,7 @@ export const getPlaylists = async (c: Context<TIsLogged>) => {
     };
   });
 
-  return c.json({ playlists: flatPlaylists }, 200);
+  return c.json({ playlists: playlistsWithFlatMovies }, 200);
 };
 
 export const postPlaylist = async (
@@ -129,7 +129,7 @@ export const postMovieToPlaylist = async (
 
 export const deleteMovieToPlaylist = async (
   c: Context<
-    TIsLogged & TUrlParamsParser<TDeleteMovieToPlaylistSchemas["urlParams"]>
+    TIsLogged & TUrlParamsParser<TDeleteMovieFromPlaylistSchemas["urlParams"]>
   >
 ) => {
   const { playlistId, tmdbId } = c.get("validatedUrlParams");

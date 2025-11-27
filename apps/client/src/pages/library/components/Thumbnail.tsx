@@ -24,11 +24,11 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import {
-  deleteMovieToPlaylistSchemas,
+  deleteMovieFromPlaylistSchemas,
   getUrl,
   postMovieToPlaylistSchemas,
   ROUTES,
-  type TDeleteMovieToPlaylistSchemas,
+  type TDeleteMovieFromPlaylistSchemas,
   type TGetMoviesSchemas,
   type TGetPlaylistsSchemas,
   type TPostMovieToPlaylistSchemas,
@@ -72,10 +72,10 @@ export const Thumbnail: React.FC<{
     },
   });
 
-  const deleteMovieToPlaylistMutation = useMutation({
+  const deleteMovieFromPlaylistMutation = useMutation({
     mutationFn: (data: {
-      playlistId: TDeleteMovieToPlaylistSchemas["urlParams"]["playlistId"];
-      tmdbId: TDeleteMovieToPlaylistSchemas["urlParams"]["tmdbId"];
+      playlistId: TDeleteMovieFromPlaylistSchemas["urlParams"]["playlistId"];
+      tmdbId: TDeleteMovieFromPlaylistSchemas["urlParams"]["tmdbId"];
     }) =>
       axiosFetch({
         method: "DELETE",
@@ -83,7 +83,7 @@ export const Thumbnail: React.FC<{
           playlistId: data.playlistId,
           tmdbId: data.tmdbId,
         }),
-        schemas: deleteMovieToPlaylistSchemas,
+        schemas: deleteMovieFromPlaylistSchemas,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -156,7 +156,7 @@ export const Thumbnail: React.FC<{
                           className="flex justify-between"
                           onClick={() =>
                             isPlaylistHasMovie
-                              ? deleteMovieToPlaylistMutation.mutate({
+                              ? deleteMovieFromPlaylistMutation.mutate({
                                   playlistId: playlist.id,
                                   tmdbId: movie.id,
                                 })

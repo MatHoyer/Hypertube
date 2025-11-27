@@ -1,4 +1,4 @@
-import { useDialogStore } from "@/components/dialogs/dialog.store";
+import { closeDialog } from "@/components/dialogs/dialog.store";
 import { LoadingButton } from "@/components/LoadingButton";
 import {
   DialogContent,
@@ -23,7 +23,6 @@ type TFormSchema = z.infer<typeof formSchema>;
 export const PlaylistDialog = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const { close } = useDialogStore();
 
   const form = useForm<TFormSchema>({
     resolver: zodResolver(formSchema),
@@ -45,7 +44,7 @@ export const PlaylistDialog = () => {
         queryKey: getQueryKey(ROUTES.API.PLAYLISTS),
       });
       toast.success(t("playlist.creationSuccess"));
-      close();
+      closeDialog();
     },
     onError: () => {
       toast.error(t("playlist.creationFailed"));

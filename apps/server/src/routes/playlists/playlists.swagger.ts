@@ -1,5 +1,5 @@
 import {
-  deleteMovieToPlaylistSchemas,
+  deleteMovieFromPlaylistSchemas,
   deletePlaylistSchemas,
   getPlaylistsSchemas,
   getUrl,
@@ -121,13 +121,13 @@ export const playlistsSwagger = {
           in: "path",
           name: "playlistId",
           required: true,
-          schema: deleteMovieToPlaylistSchemas.urlParams.shape.playlistId,
+          schema: deleteMovieFromPlaylistSchemas.urlParams.shape.playlistId,
         },
         {
           in: "path",
           name: "tmdbId",
           required: true,
-          schema: deleteMovieToPlaylistSchemas.urlParams.shape.tmdbId,
+          schema: deleteMovieFromPlaylistSchemas.urlParams.shape.tmdbId,
         },
       ],
       responses: {
@@ -135,7 +135,7 @@ export const playlistsSwagger = {
           description: "Movie get successfully deleted of user's playlist",
           content: {
             "application/json": {
-              schema: deleteMovieToPlaylistSchemas.response,
+              schema: deleteMovieFromPlaylistSchemas.response,
             },
           },
         },

@@ -1,5 +1,5 @@
 import {
-  deleteMovieToPlaylistSchemas,
+  deleteMovieFromPlaylistSchemas,
   deletePlaylistSchemas,
   postMovieToPlaylistSchemas,
   postPlaylistSchemas,
@@ -45,7 +45,7 @@ playlistsRouter.post(
 playlistsRouter.delete(
   "/:playlistId/movie/:tmdbId",
   isLogged,
-  urlParamsParser(deleteMovieToPlaylistSchemas.urlParams),
+  urlParamsParser(deleteMovieFromPlaylistSchemas.urlParams),
   deleteMovieToPlaylist
 );
 
