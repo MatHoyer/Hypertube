@@ -62,6 +62,7 @@ export const ROUTES = {
     COMMENTS_REPLIES: "api-comments-replies",
     COMMENTS_LIKES: "api-comments-like",
     HISTORY: "api-history",
+    MOVIES_WATCH_TIMER: "api-movies-watch-timer",
   },
   EXTERNAL: {
     IMDB_MOVIE: "external-imdb-movie",
@@ -196,6 +197,9 @@ const routeSchemas = {
       tmdbId: z
         .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
         .optional(),
+    }),
+    [ROUTES.API.MOVIES_WATCH_TIMER]: z.object({
+      tmdbId: z.union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")]),
     }),
   },
   EXTERNAL: {
@@ -332,6 +336,9 @@ const routes: {
 
   [ROUTES.API.HISTORY]: ({ tmdbId }) =>
     tmdbId ? `/api/history/${tmdbId}` : `/api/history`,
+
+  [ROUTES.API.MOVIES_WATCH_TIMER]: ({ tmdbId }) =>
+    `/api/movies/${tmdbId}/watch-timer`,
 
   // External routes
   [ROUTES.EXTERNAL.IMDB_MOVIE]: ({ imdbId }) =>

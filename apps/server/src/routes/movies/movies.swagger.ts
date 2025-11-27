@@ -7,6 +7,7 @@ import {
   getUrl,
   postMovieCommentSchemas,
   postMovieLikeSchemas,
+  putMovieWatchTimerSchemas,
   ROUTES,
   tmdbCategories,
   tmdbGenres,
@@ -238,6 +239,31 @@ export const moviesSwagger = {
           },
         },
         "400": { description: "Error deleting comment" },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.MOVIES_WATCH_TIMER, { tmdbId: "{tmdbId}" })]: {
+    put: {
+      summary: "Update movie watch timer",
+      tags: ["Movies"],
+      parameters: [tmdbIdPathParam],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: putMovieWatchTimerSchemas.requirements,
+          },
+        },
+      },
+    },
+    responses: {
+      "200": {
+        description: "OK",
+        content: {
+          "application/json": {
+            schema: putMovieWatchTimerSchemas.response,
+          },
+        },
       },
     },
   },

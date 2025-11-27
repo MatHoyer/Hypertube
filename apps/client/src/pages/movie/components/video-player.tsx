@@ -8,17 +8,20 @@ import { useConvertParams } from "@/hooks/use-convert-params";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { cn } from "@/lib/utils";
 import {
   DownloadStates,
   getUrl,
   languageCodes,
+  putMovieWatchTimerSchemas,
   ROUTES,
   secondsToHMS,
   ytsQualities,
 } from "@hypertube/libs";
 import { Expand, Pause, Play, Shrink, Volume2, VolumeX } from "lucide-react";
 import React, {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -325,6 +328,8 @@ const VideoPlayer = () => {
     setSelectedResolution,
 
     selectedSubtitlesLanguage,
+
+    progress,
   } = useVideoPlayer();
 
   const isMobile = useIsMobile();
@@ -345,6 +350,26 @@ const VideoPlayer = () => {
       setSelectedResolution(resolutions[0]);
     }
   }, [selectedResolution, resolutions, setSelectedResolution]);
+
+  const updateWatchTimer = useCallback(() => {
+    axiosFetch({
+      method: "PUT",
+      url: getUrl(ROUTES.API.MOVIES_WATCH_TIMER, { tmdbId }),
+      schemas: putMovieWatchTimerSchemas,
+      data: {
+        timestamp: (progress * (videoRef.current?.duration ?? 0)) / 100,
+      },
+    });
+  }, [tmdbId, progress, videoRef]);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", updateWatchTimer);
+
+    return () => {
+      updateWatchTimer();
+      window.removeEventListener("beforeunload", updateWatchTimer);
+    };
+  }, [updateWatchTimer]);
 
   return (
     <div

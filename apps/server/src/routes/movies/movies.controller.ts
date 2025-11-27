@@ -18,6 +18,7 @@ import {
   TPostMovieDownloadSubtitlesSchemas,
   TPostMovieLikeSchemas,
   TPostMovieSubscribeSchemas,
+  TPutMovieWatchTimerSchemas,
   TResolutionSchema,
   typedKeys,
 } from "@hypertube/libs";
@@ -36,6 +37,7 @@ import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import { commentParent, getParentComments } from "../global/comment.global";
 import { likeParent, unlikeParent } from "../global/like.global";
+import { getMovieDownloadStatesByTmdbIds } from "../global/movie.global";
 import {
   getMovieData,
   sendSSEDownloadStateChange,
@@ -69,28 +71,8 @@ export const getMovies = async (
     genres: genreIds,
   });
 
-  const moviesWithResolutionsOrderByDownloadState = await prisma.movie.findMany(
-    {
-      where: {
-        tmdbId: {
-          in: moviesPagination.movies.filter(Boolean).map((movie) => movie!.id),
-        },
-      },
-      include: {
-        resolutions: {
-          orderBy: {
-            downloadState: "desc",
-          },
-        },
-      },
-    },
-  );
-
-  const resolutionStatusById = Object.fromEntries(
-    moviesWithResolutionsOrderByDownloadState.map((movie) => [
-      movie.tmdbId,
-      movie.resolutions[0]?.downloadState,
-    ]),
+  const movieDownloadStatesByTmdbIds = await getMovieDownloadStatesByTmdbIds(
+    moviesPagination.movies.filter(Boolean).map((movie) => movie!.id),
   );
 
   const moviesWithStatutPagination = {
@@ -99,7 +81,9 @@ export const getMovies = async (
       if (!movie) return null;
       return {
         ...movie,
-        status: resolutionStatusById[movie.id] ?? DownloadStates.NOT_DOWNLOADED,
+        status:
+          movieDownloadStatesByTmdbIds.get(movie.id) ??
+          DownloadStates.NOT_DOWNLOADED,
       };
     }),
   };
@@ -531,4 +515,29 @@ export const commentMovie = async (
 
   const result = await commentParent(content, id, movie.id, ParentTypes.MOVIE);
   return c.json({ message: result.message }, result.status);
+};
+
+export const putMovieWatchTimer = async (
+  c: Context<
+    TIsLogged &
+      TUrlParamsParser<TPutMovieWatchTimerSchemas["urlParams"]> &
+      TBodyParser<TPutMovieWatchTimerSchemas["requirements"]>
+  >,
+) => {
+  const { tmdbId } = c.get("validatedUrlParams");
+  const { timestamp } = c.get("validatedBody");
+  const { id } = c.get("user");
+
+  const movie = await prisma.movie.findUnique({ where: { tmdbId } });
+  if (!movie) {
+    return c.json({ message: "Movie not found" }, 404);
+  }
+
+  await prisma.movieHistory.upsert({
+    where: { movieId_userId: { movieId: movie.id, userId: id } },
+    update: { timestamp },
+    create: { movieId: movie.id, userId: id, timestamp },
+  });
+
+  return c.json({ message: "Movie watch timer updated" }, 200);
 };

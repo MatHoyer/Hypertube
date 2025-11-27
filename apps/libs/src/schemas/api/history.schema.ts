@@ -11,7 +11,10 @@ export const getHistorySchemas = {
   response: z.object({
     movies: z.array(
       tmdbMovieSchema
-        .extend({ downloadState: z.enum(DownloadStates) })
+        .extend({
+          downloadState: z.enum(DownloadStates),
+          watchTimer: z.number(),
+        })
         .nullable(),
     ),
   }),
@@ -34,7 +37,11 @@ export const deleteMovieFromHistorySchemas = {
   urlParams: z.object({
     tmdbId: movieSchema.shape.tmdbId,
   }),
+  response: z.object({
+    message: z.string(),
+  }),
 };
 export type TDeleteMovieFromHistorySchemas = {
   urlParams: z.infer<typeof deleteMovieFromHistorySchemas.urlParams>;
+  response: z.infer<typeof deleteMovieFromHistorySchemas.response>;
 };

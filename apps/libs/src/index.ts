@@ -85,6 +85,7 @@ export {
   postMovieDownloadSubtitlesSchemas,
   postMovieLikeSchemas,
   postMovieSubscribeSchemas,
+  putMovieWatchTimerSchemas,
   tmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
 
@@ -101,6 +102,7 @@ export type {
   TPostMovieDownloadSubtitlesSchemas,
   TPostMovieLikeSchemas,
   TPostMovieSubscribeSchemas,
+  TPutMovieWatchTimerSchemas,
   TTmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
 

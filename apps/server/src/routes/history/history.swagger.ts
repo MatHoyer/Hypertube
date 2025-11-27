@@ -71,7 +71,7 @@ export const historySwagger = {
           description: "Movie removed from history",
           content: {
             "application/json": {
-              schema: deleteHistorySchemas.response,
+              schema: deleteMovieFromHistorySchemas.response,
             },
           },
         },

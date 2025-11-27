@@ -1,4 +1,5 @@
 import {
+  DownloadStates,
   getHistorySchemas,
   languageCodes,
   TDeleteMovieFromHistorySchemas,
@@ -10,6 +11,7 @@ import { TmdbApi } from "../../lib/apis/tmdb.api";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
+import { getMovieDownloadStatesByTmdbIds } from "../global/movie.global";
 
 export const getHistory = async (
   c: Context<
@@ -25,17 +27,40 @@ export const getHistory = async (
     include: {
       movie: true,
     },
+    orderBy: {
+      updatedAt: "desc",
+    },
     skip: (page - 1) * pageSize,
     take: pageSize,
   });
 
-  const tmdbApi = new TmdbApi();
-  const tmdbMovies = await tmdbApi.getAllMovieDetails(
+  const movieDownloadStatesByTmdbIds = await getMovieDownloadStatesByTmdbIds(
     history.map((history) => history.movie.tmdbId),
-    language as keyof typeof languageCodes,
+  );
+  const watchTimersByMovieId = new Map(
+    history.map((history) => [history.movie.tmdbId, history.timestamp]),
   );
 
-  return c.json(getHistorySchemas.response.parse({ movies: tmdbMovies }), 200);
+  const tmdbApi = new TmdbApi();
+  const tmdbMovies = (
+    await tmdbApi.getAllMovieDetails(
+      history.map((history) => history.movie.tmdbId),
+      language as keyof typeof languageCodes,
+    )
+  ).filter(Boolean);
+
+  return c.json(
+    getHistorySchemas.response.parse({
+      movies: tmdbMovies.map((tmdbMovie) => ({
+        ...tmdbMovie,
+        downloadState:
+          movieDownloadStatesByTmdbIds.get(tmdbMovie!.id) ??
+          DownloadStates.NOT_DOWNLOADED,
+        watchTimer: watchTimersByMovieId.get(tmdbMovie!.id) ?? 0,
+      })),
+    }),
+    200,
+  );
 };
 
 export const deleteHistory = async (c: Context<TIsLogged>) => {
