@@ -83,6 +83,11 @@
     "firstName": "Prénom",
     "lastName": "Nom"
   },
+  "profile": {
+    "likes": "Likes",
+    "commentsLeft": "Commentaires postés",
+    "joined": "Inscrit"
+  },
   "movie": {
     "loadingRessource": "du film",
     "tabs": {
