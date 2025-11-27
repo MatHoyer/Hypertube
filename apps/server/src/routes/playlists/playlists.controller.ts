@@ -113,7 +113,6 @@ export const postMovieToPlaylist = async (
         imdbId: tmdbMovie.imdb_id,
       },
     });
-    if (!movie) return c.json({ message: "Movie not found" }, 404);
   }
 
   try {
