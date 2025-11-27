@@ -19,6 +19,4 @@ usersRouter.get("/me/accounts", isLogged, getAccounts);
 
 usersRouter.get("/me/session", isLogged, getSession);
 
-usersRouter.get("/:userId", isLogged, (c) => c.json("OK", 200));
-
 export default usersRouter;

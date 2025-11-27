@@ -19,7 +19,7 @@ authRouter.use(
 
 authRouter.on(
   ["POST", "GET"],
-  ["/callback/**", "/oauth2/callback/**", "/verify-email", "/error"],
+  ["/callback/*", "/oauth2/callback/*", "/verify-email", "/error"],
   (c) => auth.handler(c.req.raw)
 );
 
