@@ -9,18 +9,19 @@ export const OAuthCredentialsActions = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex items-center justify-between w-full">
+    <div className="flex flex-col gap-2 md:flex-row md:items-center justify-between w-full">
       <Button onClick={() => openDialog("postCredentials")}>
         {t("oauthCredentials.actions.addCredential")}
       </Button>
       <div>
-        <Button asChild>
+        <Button className="w-full md:w-auto" variant="outline" asChild>
           <Link
             to={getUrl(ROUTES.API.SWAGGER, {
               mode: "ui",
               withUrl: "server",
             })}
             target="_blank"
+            className="flex-1 md:flex-none"
           >
             <File /> {t("oauthCredentials.actions.openDocumentation")}
           </Link>

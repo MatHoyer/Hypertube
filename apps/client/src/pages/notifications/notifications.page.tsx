@@ -39,7 +39,7 @@ export const NotificationsPage = () => {
   const [showScrollToTopButton, setShowScrollToTopButton] =
     useState<boolean>(false);
   const [readStatus, setReadStatus] = useState<NotificationReadStatus>(
-    notificationReadStatuses.UNREAD
+    notificationReadStatuses.UNREAD,
   );
 
   const { stats, isUnreadNotifications } = useNotificationsStats();
@@ -79,7 +79,7 @@ export const NotificationsPage = () => {
         root: null,
         rootMargin: "0px 0px 1000px 0px",
         threshold: 0,
-      }
+      },
     );
     if (bottomRef.current) {
       observer.observe(bottomRef.current);
@@ -95,7 +95,7 @@ export const NotificationsPage = () => {
         const headerEntry = entries[0];
         setShowScrollToTopButton(!headerEntry.isIntersecting);
       },
-      { threshold: 0 }
+      { threshold: 0 },
     );
 
     if (topRef.current) {
@@ -117,10 +117,10 @@ export const NotificationsPage = () => {
             }}
             values={{
               [notificationReadStatuses.UNREAD]: t(
-                "notifications.readStatus.unread"
+                "notifications.readStatus.unread",
               ),
               [notificationReadStatuses.READ]: t(
-                "notifications.readStatus.read"
+                "notifications.readStatus.read",
               ),
               [notificationReadStatuses.ALL]: t("notifications.readStatus.all"),
             }}
