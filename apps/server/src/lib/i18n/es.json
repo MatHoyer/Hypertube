@@ -26,7 +26,8 @@
   },
   "httpCode": {
     "400": "Solicitud incorrecta",
-    "401": "No autorizado"
+    "401": "No autorizado",
+    "404": "No encontrado"
   },
   "betterAuthError": {
     "INVALID_USERNAME_OR_PASSWORD": "Nombre de usuario o contraseña inválidos",

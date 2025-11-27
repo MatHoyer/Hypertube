@@ -55,11 +55,13 @@ export type {
 export {
   getAccountsUsersSchemas,
   getSessionUsersSchemas,
+  getUserSchemas,
   patchUsersSchemas,
 } from "./schemas/api/users.schema.js";
 export type {
   TGetAccountsUsersSchemas,
   TGetSessionUsersSchemas,
+  TGetUserSchemas,
   TPatchUsersSchemas,
 } from "./schemas/api/users.schema.js";
 

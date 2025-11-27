@@ -1,9 +1,11 @@
 import {
   getUrl,
+  hypertubeLogger,
   newUTCDate,
   ROUTES,
   TPatchUsersSchemas,
 } from "@hypertube/libs";
+import { TGetUserSchemas } from "@hypertube/libs/src/schemas/api/users.schema";
 import { env, prisma } from "@hypertube/server-core";
 import { APIError } from "better-auth/api";
 import { addHours, getTime } from "date-fns";
@@ -142,6 +144,53 @@ export const getSession = async (c: Context<TIsLogged>) => {
     });
     return c.json(session, 200);
   } catch {
+    return c.json(null, 400);
+  }
+};
+
+export const getUser = async (
+  c: Context<TUrlParamsParser<TGetUserSchemas["urlParams"]> & TIsLogged>
+) => {
+  const { userId } = c.get("validatedUrlParams");
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        displayUsername: true,
+        firstName: true,
+        lastName: true,
+        image: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) {
+      return c.json(null, 404);
+    }
+
+    const totalLikes = await prisma.like.count({
+      where: { userId },
+    });
+
+    const totalComments = await prisma.comment.count({
+      where: { userId },
+    });
+    return c.json(
+      {
+        user,
+        stats: {
+          totalLikes,
+          totalComments,
+        },
+      },
+      200
+    );
+  } catch (e) {
+    hypertubeLogger.error(`Error getting user profile: ${e}`);
     return c.json(null, 400);
   }
 };

@@ -26,6 +26,7 @@ export const ROUTES = {
     OAUTH_CREDENTIALS: "client-oauth-credentials",
     ERROR: "client-error",
     NOTIFICATIONS: "client-notifications",
+    PROFILE: "client-profile",
   },
   API: {
     SWAGGER: "api-swagger",
@@ -91,6 +92,9 @@ const routeSchemas = {
     [ROUTES.CLIENT.OAUTH_CREDENTIALS]: z.object({}),
     [ROUTES.CLIENT.ERROR]: z.object({}),
     [ROUTES.CLIENT.NOTIFICATIONS]: z.object({}),
+    [ROUTES.CLIENT.PROFILE]: z.object({
+      userId: z.union([userSchema.shape.id, z.literal(":userId")]),
+    }),
   },
   API: {
     [ROUTES.API.SWAGGER]: z.object({
@@ -252,6 +256,7 @@ const routes: {
   [ROUTES.CLIENT.OAUTH_CREDENTIALS]: () => "/credentials",
   [ROUTES.CLIENT.ERROR]: () => "/error",
   [ROUTES.CLIENT.NOTIFICATIONS]: () => "/notifications",
+  [ROUTES.CLIENT.PROFILE]: ({ userId }) => `/profile/${userId}`,
 
   // API routes
   [ROUTES.API.SWAGGER]: ({ mode }) =>

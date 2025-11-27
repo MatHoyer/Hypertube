@@ -6,11 +6,13 @@ import {
   notificationReadStatuses,
   tmdbGenres,
   typedKeys,
+  userSchema,
 } from "@hypertube/libs";
 import type { QueryKey } from "@tanstack/react-query";
 import z from "zod";
 
 const apiRouteQueryKeySchemas = {
+  [ROUTES.API.USERS]: z.object({ userId: userSchema.shape.id }),
   [ROUTES.API.USERS_SESSION]: z.object({}),
   [ROUTES.API.USERS_ACCOUNTS]: z.object({}),
   [ROUTES.API.MOVIES]: z.object({
@@ -53,6 +55,7 @@ type TRouteDataMap<T extends TRoute> = T extends keyof TApiRouteDataRequirements
 const queryKeys: {
   [T in TRoute]: (params: TRouteDataMap<T>) => QueryKey;
 } = {
+  [ROUTES.API.USERS]: ({ userId }) => [ROUTES.API.USERS, userId],
   [ROUTES.API.USERS_SESSION]: () => [ROUTES.API.USERS_SESSION],
   [ROUTES.API.USERS_ACCOUNTS]: () => [ROUTES.API.USERS_ACCOUNTS],
   [ROUTES.API.MOVIES]: ({ tmdbId, searchParams }) => {

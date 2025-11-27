@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useNotificationsStats } from "@/hooks/use-notifications-stats";
+import { useRequiredUser } from "@/hooks/use-required-user";
 import { playBeep } from "@/lib/audio";
 import { LOCAL_STORAGE_KEYS } from "@/lib/const";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -37,6 +38,8 @@ export const UserDropdown = () => {
     LOCAL_STORAGE_KEYS.NOTIFICATIONS_MUTE,
     false
   );
+
+  const user = useRequiredUser();
 
   const { isUnreadNotifications } = useNotificationsStats();
 
@@ -114,7 +117,7 @@ export const UserDropdown = () => {
         <DropdownMenuLabel>{t("navbar.account")}</DropdownMenuLabel>
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link to={"#"}>
+            <Link to={getUrl(ROUTES.CLIENT.PROFILE, { userId: user.id })}>
               <User /> {t("navbar.profile")}
             </Link>
           </DropdownMenuItem>
