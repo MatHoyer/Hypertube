@@ -18,7 +18,7 @@ const DisplayGenresMovie: React.FC<{
   if (!genres.length)
     return (
       <div className="flex flex-wrap gap-2 justify-center">
-        <Typography textColor="muted" className="text-center">
+        <Typography textColor="muted">
           {t("movie.page.missing.genres")}
         </Typography>
       </div>
@@ -80,9 +80,7 @@ export const MovieBaseInfo: React.FC<
         </Typography>
       ) : (
         <>
-          <Typography variant="h1" className="text-center">
-            {movie.title}
-          </Typography>
+          <Typography variant="h1">{movie.title}</Typography>
           <div className="flex gap-2">
             <Typography
               textColor="muted"

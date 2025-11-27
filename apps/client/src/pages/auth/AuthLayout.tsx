@@ -14,9 +14,7 @@ export const AuthLayout: React.FC<
         className={cn("flex items-center p-8 w-full md:w-[450px]", className)}
         {...props}
       >
-        <Typography variant="h1" className="text-center">
-          {title}
-        </Typography>
+        <Typography variant="h1">{title}</Typography>
         {children}
       </Card>
     </div>

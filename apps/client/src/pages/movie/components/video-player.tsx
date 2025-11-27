@@ -47,7 +47,7 @@ const MiddleScreenInfo: React.FC<{
       return (
         <>
           <div className="absolute top-1/4 bg-black/50 rounded-2xl p-4">
-            <Typography variant="h2" className="text-center text-white">
+            <Typography variant="h2" className="text-white">
               {Math.round(volume)}%
             </Typography>
           </div>
@@ -210,7 +210,7 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
           onChange={(e) => handleSeek(e.target.valueAsNumber)}
           className={cn(
             "absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10",
-            !isExplorable ? "cursor-not-allowed" : "cursor-pointer"
+            !isExplorable ? "cursor-not-allowed" : "cursor-pointer",
           )}
           disabled={!isExplorable}
         />

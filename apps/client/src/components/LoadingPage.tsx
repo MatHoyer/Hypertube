@@ -26,7 +26,7 @@ export const LoadingPage: React.FC<{
   return (
     <div className="size-full flex flex-col justify-center items-center gap-4">
       <AppLoader size={60} />
-      <Typography variant="h3" className="text-center">
+      <Typography variant="h3">
         {t("global.loadingMessage", {
           resource: t(`${resource}.loadingRessource`),
         })}
