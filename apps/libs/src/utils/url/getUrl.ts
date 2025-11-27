@@ -268,8 +268,8 @@ const routes: {
 
   [ROUTES.API.USERS]: ({ userId }) =>
     "/api/users" + (userId ? `/${userId}` : ""),
-  [ROUTES.API.USERS_ACCOUNTS]: () => "/api/users/accounts",
-  [ROUTES.API.USERS_SESSION]: () => "/api/users/session",
+  [ROUTES.API.USERS_ACCOUNTS]: () => "/api/users/me/accounts",
+  [ROUTES.API.USERS_SESSION]: () => "/api/users/me/session",
 
   [ROUTES.API.IMAGES]: ({ imageId }) =>
     "/api/images" + (imageId ? `/${imageId}` : ""),
