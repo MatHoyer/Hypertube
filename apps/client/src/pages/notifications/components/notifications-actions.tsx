@@ -24,7 +24,7 @@ export const NotificationsActions: React.FC<{
   const queryClient = useQueryClient();
   const [mutedNotifications, setMutedNotifications] = useLocalStorage<boolean>(
     LOCAL_STORAGE_KEYS.NOTIFICATIONS_MUTE,
-    false
+    false,
   );
 
   const { mutate: markAllAsRead } = useMutation({
@@ -62,7 +62,7 @@ export const NotificationsActions: React.FC<{
   });
 
   return (
-    <div className="flex items-center justify-between w-full">
+    <div className="flex flex-col gap-2 md:flex-row md:items-center justify-between w-full">
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
@@ -74,14 +74,19 @@ export const NotificationsActions: React.FC<{
           onClick={() => markAllAsRead()}
           disabled={!isUnreadNotifications}
           className={cn(
-            readStatus === notificationReadStatuses.READ && "hidden"
+            "flex-1 md:flex-none",
+            readStatus === notificationReadStatuses.READ && "hidden",
           )}
         >
           {t("notifications.markAllAsRead")}
         </Button>
       </div>
       <div className="flex items-center">
-        <Button variant="outline" onClick={() => sendTestNotification()}>
+        <Button
+          variant="outline"
+          className="flex-1 md:flex-none"
+          onClick={() => sendTestNotification()}
+        >
           {t("notifications.sendTestNotification")}
         </Button>
       </div>
