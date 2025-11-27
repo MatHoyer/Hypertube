@@ -31,10 +31,11 @@ export type TPatchUsersSchemas = {
 };
 
 export const getAccountsUsersSchemas = {
-  response: z.object({
-    data: accountsSchema,
-    message: z.string(),
-  }),
+  response: z
+    .object({
+      accounts: accountsSchema,
+    })
+    .nullable(),
 };
 
 export type TGetAccountsUsersSchemas = {
@@ -42,13 +43,12 @@ export type TGetAccountsUsersSchemas = {
 };
 
 export const getSessionUsersSchemas = {
-  response: z.object({
-    data: z.object({
+  response: z
+    .object({
       session: sessionSchema,
       user: userSchema,
-    }),
-    message: z.string(),
-  }),
+    })
+    .nullable(),
 };
 
 export type TGetSessionUsersSchemas = {

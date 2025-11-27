@@ -129,9 +129,9 @@ export const getAccounts = async (c: Context<TIsLogged>) => {
     const accounts = await auth.api.listUserAccounts({
       headers: c.req.raw.headers,
     });
-    return c.json({ data: accounts, message: "OK" }, 200);
-  } catch (e) {
-    return c.json({ data: {}, message: betterAuthErrorTranslation(e) }, 400);
+    return c.json({ accounts }, 200);
+  } catch {
+    return c.json(null, 400);
   }
 };
 
@@ -140,9 +140,8 @@ export const getSession = async (c: Context<TIsLogged>) => {
     const session = await auth.api.getSession({
       headers: c.req.raw.headers,
     });
-    if (!session) return c.json({ data: {}, message: "No session found" }, 400);
-    return c.json({ data: session, message: "OK" }, 200);
-  } catch (e) {
-    return c.json({ data: {}, message: betterAuthErrorTranslation(e) }, 400);
+    return c.json(session, 200);
+  } catch {
+    return c.json(null, 400);
   }
 };

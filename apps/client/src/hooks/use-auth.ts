@@ -16,8 +16,8 @@ export const useAuth = () => {
   });
 
   return {
-    user: query.data?.data?.user,
-    session: query.data?.data?.session,
+    user: query.data?.user,
+    session: query.data?.session,
     isLoading: query.isLoading,
     isError: query.isError,
   };

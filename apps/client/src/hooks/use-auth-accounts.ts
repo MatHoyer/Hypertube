@@ -16,7 +16,7 @@ export const useAuthAccounts = () => {
   });
 
   return {
-    accounts: query.data?.data ?? [],
+    accounts: query.data?.accounts ?? [],
     isLoading: query.isLoading,
     isError: query.isError,
   };
