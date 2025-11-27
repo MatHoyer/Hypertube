@@ -20,18 +20,14 @@ export const NotFoundPage = () => {
           ref={ref}
           onClick={() => navigate(getUrl(ROUTES.CLIENT.HOME))}
         >
-          <Typography variant="h1" className="text-center">
-            404
-          </Typography>
-          <Typography variant="h3" className="text-center">
-            {t("global.homepage")}
-          </Typography>
+          <Typography variant="h1">404</Typography>
+          <Typography variant="h3">{t("global.homepage")}</Typography>
         </div>
       </div>
       <div
         className={cn(
           "flex flex-col size-full justify-center items-center transition-all animate-spin",
-          mouseIn ? "gap-0" : "gap-60"
+          mouseIn ? "gap-0" : "gap-60",
         )}
         style={{ animationDuration: "15s" }}
       >
