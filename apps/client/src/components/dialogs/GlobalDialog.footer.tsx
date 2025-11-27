@@ -16,8 +16,7 @@ import { DialogClose, DialogFooter } from "../ui/dialog";
  * @param cancelButtonOverwrite - Overwrite for the default cancel button
  */
 export const GlobalDialogFooter: React.FC<{
-  defaultCancelButtonProps?: ComponentProps<typeof DialogClose> &
-    PropsWithChildren;
+  defaultCancelButtonProps?: ComponentProps<typeof Button> & PropsWithChildren;
   defaultSubmitButtonProps?: ComponentProps<typeof LoadingButton> &
     PropsWithChildren;
   submitButtonOverwrite?: React.ReactNode;
