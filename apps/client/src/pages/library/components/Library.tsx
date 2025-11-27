@@ -2,7 +2,6 @@ import { LoadingResource } from "@/components/LoadingResource";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Typography } from "@/components/ui/typography";
 import useDebounce from "@/hooks/use-debounce";
-import { useUserPlaylists } from "@/hooks/use-playlists";
 import { useMainScrollElement } from "@/layouts/BaseLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
@@ -52,7 +51,6 @@ const fetchMovies = async ({
 
 export const Library = () => {
   const { t } = useTranslation();
-  const userPlaylists = useUserPlaylists();
   const listRef = useRef<HTMLDivElement>(null);
   const mainScrollElement = useMainScrollElement();
   const [columns, setColumns] = useState(5);
@@ -179,7 +177,6 @@ export const Library = () => {
                 <Thumbnail
                   key={`${virtualRow.index}-${colIndex}`}
                   movie={movie}
-                  userPlaylists={userPlaylists}
                 />
               );
             })}

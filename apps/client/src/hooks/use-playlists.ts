@@ -18,6 +18,7 @@ export const useUserPlaylists = () => {
         schemas: getPlaylistsSchemas,
       }),
     retry: false,
+    refetchOnMount: false,
   });
 
   return query.data?.playlists ?? [];

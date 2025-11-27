@@ -20,6 +20,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Typography } from "@/components/ui/typography";
+import { useUserPlaylists } from "@/hooks/use-playlists";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
@@ -30,7 +31,6 @@ import {
   ROUTES,
   type TDeleteMovieFromPlaylistSchemas,
   type TGetMoviesSchemas,
-  type TGetPlaylistsSchemas,
   type TPostMovieToPlaylistSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -41,11 +41,11 @@ import { toast } from "sonner";
 
 export const Thumbnail: React.FC<{
   movie: TGetMoviesSchemas["response"]["movies"][number];
-  userPlaylists: TGetPlaylistsSchemas["response"]["playlists"];
-}> = memo(({ movie, userPlaylists }) => {
+}> = memo(({ movie }) => {
   const movieSeen = true; //TODO : movieSeen by user
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const userPlaylists = useUserPlaylists();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const addMovieToPlaylistMutation = useMutation({
@@ -166,7 +166,11 @@ export const Thumbnail: React.FC<{
                                 })
                           }
                         >
-                          <Typography textSize="lg" className="truncate w-40">
+                          <Typography
+                            textSize="lg"
+                            functionnal={"truncate"}
+                            className="w-40"
+                          >
                             {playlist.name}
                           </Typography>
                           <Bookmark
