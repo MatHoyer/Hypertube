@@ -20,15 +20,15 @@ usersRouter.patch(
   patchUser
 );
 
-usersRouter.get("/accounts", isLogged, getAccounts);
-
-usersRouter.get("/session", isLogged, getSession);
-
 usersRouter.get(
   "/:userId",
   isLogged,
   urlParamsParser(getUserSchemas.urlParams),
   getUser
 );
+
+usersRouter.get("/me/accounts", isLogged, getAccounts);
+
+usersRouter.get("/me/session", isLogged, getSession);
 
 export default usersRouter;
