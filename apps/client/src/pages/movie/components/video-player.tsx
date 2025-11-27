@@ -155,7 +155,7 @@ const Timer = () => {
         <Skeleton className="w-[85px] h-[20px]" />
       ) : (
         <Badge>
-          <Typography className=" font-mono font-bold">
+          <Typography className="font-mono font-bold">
             {currentTime} / {duration}
           </Typography>
         </Badge>
