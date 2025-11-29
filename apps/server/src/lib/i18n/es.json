@@ -81,6 +81,14 @@
     "movieDownloading": {
       "title": "Descarga en curso",
       "message": "Tu película se está descargando"
+    },
+    "newCommentReply": {
+      "title": "",
+      "message": ""
+    },
+    "newCommentLike": {
+      "title": "",
+      "message": ""
     }
   },
   "likes": {

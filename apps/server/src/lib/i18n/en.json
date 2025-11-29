@@ -81,6 +81,14 @@
     "movieDownloading": {
       "title": "Movie downloading",
       "message": "Your movie is currently downloading"
+    },
+    "newCommentReply": {
+      "title": "New comment reply",
+      "message": "A comment reply has been posted on one of your comments"
+    },
+    "newCommentLike": {
+      "title": "New comment like",
+      "message": "One of your comments has been liked"
     }
   },
   "likes": {
