@@ -10,6 +10,7 @@ import {
   postMovieDownloadSubtitlesSchemas,
   postMovieLikeSchemas,
   postMovieSubscribeSchemas,
+  putMovieWatchTimerSchemas,
 } from "@hypertube/libs";
 import { Hono } from "hono";
 import { bodyParser } from "../../middlewares/bodyParser";
@@ -27,6 +28,7 @@ import {
   getMovies,
   getMovieSSE,
   likeMovie,
+  putMovieWatchTimer,
   subscribeToMovie,
   unsubscribeFromMovie,
 } from "./movies.controller";
@@ -59,7 +61,7 @@ moviesRouter.get(
   isLogged,
   urlParamsParser(getMovieCommentSchemas.urlParams),
   searchParamsParser(getMovieCommentSchemas.searchParams),
-  getMovieComments
+  getMovieComments,
 );
 
 moviesRouter.post(
@@ -96,7 +98,7 @@ moviesRouter.post(
   "/:tmdbId/like",
   isLogged,
   urlParamsParser(postMovieLikeSchemas.urlParams),
-  likeMovie
+  likeMovie,
 );
 
 moviesRouter.post(
@@ -104,14 +106,22 @@ moviesRouter.post(
   isLogged,
   urlParamsParser(postMovieCommentSchemas.urlParams),
   bodyParser(postMovieCommentSchemas.requirements),
-  commentMovie
+  commentMovie,
 );
 
 moviesRouter.delete(
   "/:tmdbId/like",
   isLogged,
   urlParamsParser(deleteMovieLikeSchemas.urlParams),
-  deleteMovieLike
+  deleteMovieLike,
+);
+
+moviesRouter.put(
+  "/:tmdbId/watch-timer",
+  isLogged,
+  urlParamsParser(putMovieWatchTimerSchemas.urlParams),
+  bodyParser(putMovieWatchTimerSchemas.requirements),
+  putMovieWatchTimer,
 );
 
 export default moviesRouter;

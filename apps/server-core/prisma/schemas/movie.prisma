@@ -56,7 +56,8 @@ model Movie {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  usedAt DateTime @default(now())
+  usedAt         DateTime       @default(now())
+  movieHistories MovieHistory[]
 }
 
 model MovieSubscription {
@@ -66,6 +67,22 @@ model MovieSubscription {
   movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
   userId  String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([movieId, userId])
+}
+
+model MovieHistory {
+  id String @id @default(uuid())
+
+  movieId String
+  movie   Movie  @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  timestamp Int @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

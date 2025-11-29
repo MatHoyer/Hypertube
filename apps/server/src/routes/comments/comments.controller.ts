@@ -14,19 +14,15 @@ import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
-import {
-  commentParent,
-  getParentComments,
-  likeParent,
-  unlikeParent,
-} from "../global.helper";
+import { commentParent, getParentComments } from "../global/comment.global";
+import { likeParent, unlikeParent } from "../global/like.global";
 
 export const getCommentReplies = async (
   c: Context<
     TIsLogged &
       TUrlParamsParser<TGetCommentRepliesSchemas["urlParams"]> &
       TSearchParamsParser<TGetCommentRepliesSchemas["searchParams"]>
-  >
+  >,
 ) => {
   const { commentId } = c.get("validatedUrlParams");
   const { page, pageSize } = c.get("validatedSearchParams");
@@ -42,7 +38,7 @@ export const getCommentReplies = async (
     ParentTypes.COMMENT,
     user.id,
     page,
-    pageSize
+    pageSize,
   );
 
   if (result.data) {
@@ -52,7 +48,9 @@ export const getCommentReplies = async (
 };
 
 export const likeComment = async (
-  c: Context<TIsLogged & TUrlParamsParser<TPostCommentLikeSchemas["urlParams"]>>
+  c: Context<
+    TIsLogged & TUrlParamsParser<TPostCommentLikeSchemas["urlParams"]>
+  >,
 ) => {
   const { commentId } = c.get("validatedUrlParams");
   const { id } = c.get("user");
@@ -72,7 +70,7 @@ export const replyToComment = async (
     TIsLogged &
       TUrlParamsParser<TPostCommentReplySchemas["urlParams"]> &
       TBodyParser<TPostCommentReplySchemas["requirements"]>
-  >
+  >,
 ) => {
   const { commentId } = c.get("validatedUrlParams");
   const { content } = c.get("validatedBody");
@@ -93,13 +91,13 @@ export const replyToComment = async (
     content,
     id,
     commentId,
-    ParentTypes.COMMENT
+    ParentTypes.COMMENT,
   );
   return c.json({ message: result.message }, result.status);
 };
 
 export const deleteCommentLike = async (
-  c: Context<TIsLogged & TUrlParamsParser<TDeleteCommentLike["urlParams"]>>
+  c: Context<TIsLogged & TUrlParamsParser<TDeleteCommentLike["urlParams"]>>,
 ) => {
   const { commentId } = c.get("validatedUrlParams");
   const { id } = c.get("user");
@@ -115,7 +113,7 @@ export const deleteCommentLike = async (
 };
 
 export const deleteComment = async (
-  c: Context<TIsLogged & TUrlParamsParser<TDeleteCommentSchemas["urlParams"]>>
+  c: Context<TIsLogged & TUrlParamsParser<TDeleteCommentSchemas["urlParams"]>>,
 ) => {
   const { commentId } = c.get("validatedUrlParams");
   const { id } = c.get("user");
@@ -147,7 +145,7 @@ export const patchComment = async (
     TIsLogged &
       TUrlParamsParser<TPatchCommentSchemas["urlParams"]> &
       TBodyParser<TPatchCommentSchemas["requirements"]>
-  >
+  >,
 ) => {
   const body = c.get("validatedBody");
   const { id } = c.get("user");

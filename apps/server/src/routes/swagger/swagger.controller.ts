@@ -1,6 +1,7 @@
 import { getUrl, ROUTES } from "@hypertube/libs";
 import { authentificationSwagger } from "../authentification/authentification.swagger";
 import { commentsSwagger } from "../comments/comments.swagger";
+import { historySwagger } from "../history/history.swagger";
 import { imagesSwagger } from "../images/images.swagger";
 import { moviesSwagger } from "../movies/movies.swagger";
 import { notificationsSwagger } from "../notifications/notifications.swagger";
@@ -43,6 +44,10 @@ const openApiDoc = {
       name: "Notifications",
       description: "Notifications endpoints",
     },
+    {
+      name: "History",
+      description: "History endpoints",
+    },
   ],
   paths: {
     [getUrl(ROUTES.API.HEALTH)]: {
@@ -63,6 +68,7 @@ const openApiDoc = {
     ...commentsSwagger,
     ...authentificationSwagger,
     ...notificationsSwagger,
+    ...historySwagger,
   },
 };
 

@@ -29,7 +29,7 @@ export const tmdbMovieSchema = z.object({
     z.object({
       id: z.number(),
       name: z.string(),
-    })
+    }),
   ),
 
   vote_average: z.number(),
@@ -56,15 +56,15 @@ export const getMoviesSchemas = {
       .regex(
         new RegExp(
           `^(${typedKeys(tmdbGenres).join("|")})(\\+(${typedKeys(
-            tmdbGenres
-          ).join("|")}))*$`
-        )
+            tmdbGenres,
+          ).join("|")}))*$`,
+        ),
       )
       .optional(),
   }),
   response: z.object({
     movies: z.array(
-      tmdbMovieSchema.extend({ status: z.enum(DownloadStates) }).nullable()
+      tmdbMovieSchema.extend({ status: z.enum(DownloadStates) }).nullable(),
     ),
     page: z.number(),
     totalPages: z.number(),
@@ -274,4 +274,21 @@ export const postMovieSubscribeSchemas = {
 export type TPostMovieSubscribeSchemas = {
   urlParams: z.infer<typeof postMovieSubscribeSchemas.urlParams>;
   response: z.infer<typeof postMovieSubscribeSchemas.response>;
+};
+
+export const putMovieWatchTimerSchemas = {
+  urlParams: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  requirements: z.object({
+    timestamp: z.number().int().nonnegative(),
+  }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+export type TPutMovieWatchTimerSchemas = {
+  urlParams: z.infer<typeof putMovieWatchTimerSchemas.urlParams>;
+  requirements: z.infer<typeof putMovieWatchTimerSchemas.requirements>;
+  response: z.infer<typeof putMovieWatchTimerSchemas.response>;
 };

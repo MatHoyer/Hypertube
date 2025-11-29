@@ -86,7 +86,7 @@ const MoviePage = () => {
     const eventSource = new EventSource(
       getUrl(ROUTES.API.SSE_MOVIES, {
         tmdbId,
-      })
+      }),
     );
     eventSource.onopen = () => {
       console.log("SSE opened");
@@ -98,7 +98,7 @@ const MoviePage = () => {
     const handleDownloadStateChange = (event: MessageEvent<string>) => {
       const { success, data } =
         getMovieSSESchemas.response.downloadStateChange.safeParse(
-          JSON.parse(event.data)
+          JSON.parse(event.data),
         );
       if (!success) {
         console.error("invalid downloadStateChange data", event.data);
@@ -112,7 +112,7 @@ const MoviePage = () => {
     const handleDownloadProgress = (event: MessageEvent<string>) => {
       const { success, data } =
         getMovieSSESchemas.response.downloadProgress.safeParse(
-          JSON.parse(event.data)
+          JSON.parse(event.data),
         );
       if (!success) {
         console.error("invalid downloadProgress data", event.data);
@@ -127,22 +127,22 @@ const MoviePage = () => {
     };
     eventSource.addEventListener(
       MOVIE_EVENTS.DOWNLOAD_STATE_CHANGE,
-      handleDownloadStateChange
+      handleDownloadStateChange,
     );
     eventSource.addEventListener(
       MOVIE_EVENTS.DOWNLOAD_PROGRESS,
-      handleDownloadProgress
+      handleDownloadProgress,
     );
 
     return () => {
       eventSource.close();
       eventSource.removeEventListener(
         MOVIE_EVENTS.DOWNLOAD_STATE_CHANGE,
-        handleDownloadStateChange
+        handleDownloadStateChange,
       );
       eventSource.removeEventListener(
         MOVIE_EVENTS.DOWNLOAD_PROGRESS,
-        handleDownloadProgress
+        handleDownloadProgress,
       );
     };
   }, [tmdbId, queryClient]);
@@ -175,7 +175,7 @@ const MoviePage = () => {
                   values={{
                     [MovieTabs.VIDEO]: t(`movie.tabs.${MovieTabs.VIDEO}`),
                     [MovieTabs.DOWNLOADS]: t(
-                      `movie.tabs.${MovieTabs.DOWNLOADS}`
+                      `movie.tabs.${MovieTabs.DOWNLOADS}`,
                     ),
                   }}
                 />

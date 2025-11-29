@@ -85,6 +85,7 @@ export {
   postMovieDownloadSubtitlesSchemas,
   postMovieLikeSchemas,
   postMovieSubscribeSchemas,
+  putMovieWatchTimerSchemas,
   tmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
 
@@ -101,6 +102,7 @@ export type {
   TPostMovieDownloadSubtitlesSchemas,
   TPostMovieLikeSchemas,
   TPostMovieSubscribeSchemas,
+  TPutMovieWatchTimerSchemas,
   TTmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
 
@@ -159,6 +161,17 @@ export type {
   TPostCommentLikeSchemas,
   TPostCommentReplySchemas,
 } from "./schemas/api/comments.schema.js";
+
+export {
+  deleteHistorySchemas,
+  deleteMovieFromHistorySchemas,
+  getHistorySchemas,
+} from "./schemas/api/history.schema.js";
+export type {
+  TDeleteHistorySchemas,
+  TDeleteMovieFromHistorySchemas,
+  TGetHistorySchemas,
+} from "./schemas/api/history.schema.js";
 
 // Database Schemas export
 export { imageSchema } from "./schemas/database/image.schema.js";
