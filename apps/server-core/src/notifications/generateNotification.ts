@@ -67,7 +67,7 @@ const createRessourceUrl: {
 export const generateNotification = async <T extends TNotification>(
   forUserId: TUserSchema["id"] | TUserSchema["id"][],
   notification: T,
-  addOns?: TNotificationAddOnsMap<T>,
+  addOns?: TNotificationAddOnsMap<T>
 ) => {
   const userIds = Array.isArray(forUserId) ? forUserId : [forUserId];
 
@@ -75,7 +75,7 @@ export const generateNotification = async <T extends TNotification>(
     userIds.map((userId) => ({
       event: "notification",
       userId,
-    })),
+    }))
   );
 
   const title = notificationsPayloads[notification].title;

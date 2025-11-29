@@ -29,10 +29,10 @@ import { toast } from "sonner";
 const notificationIcons: Record<TNotification, React.ReactNode> = {
   [notifications.TEST]: <MessageCircleIcon color="var(--color-blue-500)" />,
   [notifications.MOVIE_DOWNLOADED]: getDownloadStateIcon(
-    DownloadStates.DOWNLOADED,
+    DownloadStates.DOWNLOADED
   ),
   [notifications.MOVIE_DOWNLOADING]: getDownloadStateIcon(
-    DownloadStates.DOWNLOADING,
+    DownloadStates.DOWNLOADING
   ),
   [notifications.NEW_COMMENT_REPLY]: (
     <MessageCircleIcon color="var(--color-blue-500)" />
@@ -83,7 +83,7 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
         "relative overflow-hidden p-4 gap-2 group hover:shadow-xl transition-all duration-150",
         {
           "bg-muted": notification.read,
-        },
+        }
       )}
     >
       {!notification.read && (
