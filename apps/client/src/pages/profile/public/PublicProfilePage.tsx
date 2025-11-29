@@ -1,14 +1,17 @@
 import { ImageAvatar } from "@/components/images/Avatar";
+import { LoadingPage } from "@/components/LoadingPage";
+import { getProfileStatIcon } from "@/components/profile-stats/getProfileStatsIcon";
+import { StatBackgroundColors } from "@/components/profile-stats/profile-stats.colors";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { getNearDateWithLocale } from "@/lib/utils";
-import { getUrl, getUserSchemas, ROUTES } from "@hypertube/libs";
+import { getUrl, getUserSchemas, ROUTES, StatTypes } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { t } from "i18next";
-import { Calendar, Heart, MessageSquare } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { ProfilePageParamsSchema } from "./schemas/urlParams.schemas";
 
 export const PublicProfilePage = () => {
@@ -27,7 +30,7 @@ export const PublicProfilePage = () => {
   if (isLoading) {
     return (
       <div>
-        <Typography>...</Typography>
+        <LoadingPage resource="global" />
       </div>
     );
   }
@@ -72,8 +75,14 @@ export const PublicProfilePage = () => {
             <Card className="border-2 w-1/4">
               <CardContent className="pt-6 pb-6">
                 <div className="flex gap-3">
-                  <div className="p-3 bg-red-500/10 rounded-full">
-                    <Heart className="h-6 w-6 text-red-500" />
+                  <div
+                    className={`p-3 ${
+                      StatBackgroundColors[StatTypes.LIKES]
+                    } rounded-full`}
+                  >
+                    {getProfileStatIcon(StatTypes.LIKES, {
+                      className: "h-6 w-6",
+                    })}
                   </div>
                   <div className="flex flex-col">
                     <Typography textSize="lg">
@@ -87,14 +96,20 @@ export const PublicProfilePage = () => {
             <Card className="border-2 w-1/4">
               <CardContent className="pt-6 pb-6">
                 <div className="flex gap-3">
-                  <div className="p-3 bg-blue-500/10 rounded-full">
-                    <MessageSquare className="h-6 w-6 text-blue-500" />
+                  <div
+                    className={`p-3 ${
+                      StatBackgroundColors[StatTypes.COMMENTS]
+                    } rounded-full`}
+                  >
+                    {getProfileStatIcon(StatTypes.COMMENTS, {
+                      className: "h-6 w-6",
+                    })}
                   </div>
                   <div className="flex flex-col">
                     <Typography textSize="lg">
                       {data?.stats.totalComments}
                     </Typography>
-                    {t("profile.commentsLeft")}
+                    {t("profile.leftComments")}
                   </div>
                 </div>
               </CardContent>

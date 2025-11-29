@@ -85,7 +85,7 @@
   },
   "profile": {
     "likes": "Likes",
-    "commentsLeft": "Commentaires postés",
+    "leftComments": "Commentaires postés",
     "joined": "Inscrit"
   },
   "movie": {

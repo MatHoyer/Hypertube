@@ -244,12 +244,14 @@ export {
   ParentTypes,
   Providers,
   sizeMaxFile,
+  StatTypes,
 } from "./const/global.const.js";
 export type {
   DownloadState,
   LanguageCode,
   NotificationReadStatus,
   TParentType,
+  TStatType,
 } from "./const/global.const.js";
 
 export type { TBetterAuthProviders } from "./const/global.const.js";
