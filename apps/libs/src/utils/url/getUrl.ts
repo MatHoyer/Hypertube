@@ -28,6 +28,8 @@ export const ROUTES = {
     ERROR: "client-error",
     NOTIFICATIONS: "client-notifications",
     PROFILE: "client-profile",
+    HISTORIC: "client-historic",
+    PLAYLISTS: "client-playlists",
   },
   API: {
     SWAGGER: "api-swagger",
@@ -99,6 +101,8 @@ const routeSchemas = {
     [ROUTES.CLIENT.PROFILE]: z.object({
       userId: z.union([userSchema.shape.id, z.literal(":userId")]),
     }),
+    [ROUTES.CLIENT.HISTORIC]: z.object({}),
+    [ROUTES.CLIENT.PLAYLISTS]: z.object({}),
   },
   API: {
     [ROUTES.API.SWAGGER]: z.object({
@@ -275,6 +279,8 @@ const routes: {
   [ROUTES.CLIENT.ERROR]: () => "/error",
   [ROUTES.CLIENT.NOTIFICATIONS]: () => "/notifications",
   [ROUTES.CLIENT.PROFILE]: ({ userId }) => `/profile/${userId}`,
+  [ROUTES.CLIENT.HISTORIC]: () => "/historic",
+  [ROUTES.CLIENT.PLAYLISTS]: () => "/playlists",
 
   // API routes
   [ROUTES.API.SWAGGER]: ({ mode }) =>
