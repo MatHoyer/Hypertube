@@ -15,8 +15,9 @@ export const getHistorySchemas = {
           downloadState: z.enum(DownloadStates),
           watchTimer: z.number(),
         })
-        .nullable(),
+        .nullable()
     ),
+    totalCount: z.number(),
   }),
 };
 export type TGetHistorySchemas = {
