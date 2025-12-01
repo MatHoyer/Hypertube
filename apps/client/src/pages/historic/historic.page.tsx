@@ -1,15 +1,21 @@
-import { useUserHistoric } from "@/hooks/use-historic";
-import { Layout, LayoutContent } from "@/layouts/PageLayout";
+import {
+  Layout,
+  LayoutContent,
+  LayoutHeader,
+  LayoutTitle,
+} from "@/layouts/PageLayout";
+import { useTranslation } from "react-i18next";
+import { Historic } from "./components/Historic";
 
 export const HistoricPage = () => {
-  const historic = useUserHistoric();
-
+  const { t } = useTranslation();
   return (
     <Layout>
+      <LayoutHeader className="items-center">
+        <LayoutTitle>{t("navbar.historic")}</LayoutTitle>
+      </LayoutHeader>
       <LayoutContent>
-        {historic.map((movie) => {
-          if (movie) return <div key={movie.id}>{movie.title}</div>;
-        })}
+        <Historic />
       </LayoutContent>
     </Layout>
   );
