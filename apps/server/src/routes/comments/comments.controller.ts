@@ -1,5 +1,6 @@
 import {
   hypertubeLogger,
+  notifications,
   ParentTypes,
   TDeleteCommentLike,
   TDeleteCommentSchemas,
@@ -8,7 +9,7 @@ import {
   TPostCommentLikeSchemas,
   TPostCommentReplySchemas,
 } from "@hypertube/libs";
-import { prisma } from "@hypertube/server-core";
+import { generateNotification, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
@@ -56,9 +57,21 @@ export const likeComment = async (
   const { id } = c.get("user");
 
   const comment = await prisma.comment.findUnique({ where: { id: commentId } });
-
   if (!comment) {
     return c.json({ message: "Comment not found" }, 404);
+  }
+
+  if (comment.parentType === ParentTypes.MOVIE) {
+    const movie = await prisma.movie.findUnique({
+      where: { id: comment.parentId },
+    });
+    if (!movie) {
+      return c.json({ message: "Movie not found" }, 404);
+    }
+
+    await generateNotification(comment.userId, notifications.NEW_COMMENT_LIKE, {
+      tmdbId: movie.tmdbId,
+    });
   }
 
   const result = await likeParent(id, comment.id, ParentTypes.COMMENT);
@@ -86,6 +99,20 @@ export const replyToComment = async (
   if (parentComment.parentType !== ParentTypes.MOVIE) {
     return c.json({ message: "You cannot reply to a subcomment" }, 400);
   }
+  const movie = await prisma.movie.findUnique({
+    where: { id: parentComment.parentId },
+  });
+  if (!movie) {
+    return c.json({ message: "Movie not found" }, 404);
+  }
+
+  await generateNotification(
+    parentComment.userId,
+    notifications.NEW_COMMENT_REPLY,
+    {
+      tmdbId: movie.tmdbId,
+    }
+  );
 
   const result = await commentParent(
     content,

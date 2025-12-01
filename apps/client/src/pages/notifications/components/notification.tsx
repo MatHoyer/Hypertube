@@ -15,18 +15,29 @@ import {
   ROUTES,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCheck, ChevronRight, MessageCircleIcon } from "lucide-react";
+import {
+  CheckCheck,
+  ChevronRight,
+  MessageCircleIcon,
+  ThumbsUp,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+
+// TODO: When we have global icons for comments and likes, we can use them here
 
 const notificationIcons: Record<TNotification, React.ReactNode> = {
   [notifications.TEST]: <MessageCircleIcon color="var(--color-blue-500)" />,
   [notifications.MOVIE_DOWNLOADED]: getDownloadStateIcon(
-    DownloadStates.DOWNLOADED,
+    DownloadStates.DOWNLOADED
   ),
   [notifications.MOVIE_DOWNLOADING]: getDownloadStateIcon(
-    DownloadStates.DOWNLOADING,
+    DownloadStates.DOWNLOADING
   ),
+  [notifications.NEW_COMMENT_REPLY]: (
+    <MessageCircleIcon color="var(--color-blue-500)" />
+  ),
+  [notifications.NEW_COMMENT_LIKE]: <ThumbsUp color="var(--color-blue-500)" />,
 };
 
 const notificationColors: Record<TNotification, string> = {
@@ -35,6 +46,8 @@ const notificationColors: Record<TNotification, string> = {
     DownloadStateColors[DownloadStates.DOWNLOADED],
   [notifications.MOVIE_DOWNLOADING]:
     DownloadStateColors[DownloadStates.DOWNLOADING],
+  [notifications.NEW_COMMENT_REPLY]: "var(--color-blue-500)",
+  [notifications.NEW_COMMENT_LIKE]: "var(--color-blue-500)",
 };
 
 export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
@@ -70,7 +83,7 @@ export const Notification: React.FC<{ notification: TNotificationSchema }> = ({
         "relative overflow-hidden p-4 gap-2 group hover:shadow-xl transition-all duration-150",
         {
           "bg-muted": notification.read,
-        },
+        }
       )}
     >
       {!notification.read && (

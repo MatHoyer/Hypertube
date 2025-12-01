@@ -1,5 +1,6 @@
 import {
   getUrl,
+  notifications,
   ROUTES,
   TMovieSchema,
   TNotification,
@@ -12,26 +13,40 @@ export const notificationsPayloads: Record<
   TNotification,
   { title: string; message: string }
 > = {
-  test: {
+  [notifications.TEST]: {
     title: "notifications.test.title",
     message: "notifications.test.message",
   },
-  movieDownloaded: {
+  [notifications.MOVIE_DOWNLOADED]: {
     title: "notifications.movieDownloaded.title",
     message: "notifications.movieDownloaded.message",
   },
-  movieDownloading: {
+  [notifications.MOVIE_DOWNLOADING]: {
     title: "notifications.movieDownloading.title",
     message: "notifications.movieDownloading.message",
+  },
+  [notifications.NEW_COMMENT_REPLY]: {
+    title: "notifications.newCommentReply.title",
+    message: "notifications.newCommentReply.message",
+  },
+  [notifications.NEW_COMMENT_LIKE]: {
+    title: "notifications.newCommentLike.title",
+    message: "notifications.newCommentLike.message",
   },
 };
 
 type TNotificationAddOns = {
-  test: undefined;
-  movieDownloaded: {
+  [notifications.TEST]: undefined;
+  [notifications.MOVIE_DOWNLOADED]: {
     tmdbId: TMovieSchema["tmdbId"];
   };
-  movieDownloading: {
+  [notifications.MOVIE_DOWNLOADING]: {
+    tmdbId: TMovieSchema["tmdbId"];
+  };
+  [notifications.NEW_COMMENT_REPLY]: {
+    tmdbId: TMovieSchema["tmdbId"];
+  };
+  [notifications.NEW_COMMENT_LIKE]: {
     tmdbId: TMovieSchema["tmdbId"];
   };
 };
@@ -45,6 +60,8 @@ const createRessourceUrl: {
   test: () => null,
   movieDownloaded: ({ tmdbId }) => getUrl(ROUTES.CLIENT.MOVIE, { tmdbId }),
   movieDownloading: ({ tmdbId }) => getUrl(ROUTES.CLIENT.MOVIE, { tmdbId }),
+  newCommentReply: ({ tmdbId }) => getUrl(ROUTES.CLIENT.MOVIE, { tmdbId }),
+  newCommentLike: ({ tmdbId }) => getUrl(ROUTES.CLIENT.MOVIE, { tmdbId }),
 };
 
 export const generateNotification = async <T extends TNotification>(
