@@ -18,7 +18,7 @@ historyRouter.get(
   "/",
   isLogged,
   searchParamsParser(getHistorySchemas.searchParams),
-  getHistory,
+  getHistory
 );
 
 historyRouter.delete("/", isLogged, deleteHistory);
@@ -27,7 +27,7 @@ historyRouter.delete(
   "/:tmdbId",
   isLogged,
   urlParamsParser(deleteMovieFromHistorySchemas.urlParams),
-  deleteMovieFromHistory,
+  deleteMovieFromHistory
 );
 
 export default historyRouter;

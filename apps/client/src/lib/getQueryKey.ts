@@ -33,7 +33,7 @@ const apiRouteQueryKeySchemas = {
   [ROUTES.API.MOVIES_CASTING]: z.object({
     tmdbId: movieSchema.shape.tmdbId,
   }),
-  [ROUTES.API.MOVIES_WATCH_TIMER]: z.object({}),
+  [ROUTES.API.MOVIES_WATCH_TIMER]: z.object({ page: z.number().optional() }),
   [ROUTES.API.PLAYLISTS]: z.object({}),
   [ROUTES.API.NOTIFICATIONS]: z.object({
     type: z
@@ -79,7 +79,11 @@ const queryKeys: {
     ROUTES.API.MOVIES_CASTING,
     tmdbId,
   ],
-  [ROUTES.API.MOVIES_WATCH_TIMER]: () => [ROUTES.API.MOVIES_WATCH_TIMER],
+  [ROUTES.API.MOVIES_WATCH_TIMER]: ({ page }) => {
+    return page
+      ? [ROUTES.API.MOVIES_WATCH_TIMER, page]
+      : [ROUTES.API.MOVIES_WATCH_TIMER];
+  },
   [ROUTES.API.PLAYLISTS]: () => [ROUTES.API.PLAYLISTS],
   [ROUTES.API.NOTIFICATIONS]: ({ type }) => {
     if (!type) return [ROUTES.API.NOTIFICATIONS];
