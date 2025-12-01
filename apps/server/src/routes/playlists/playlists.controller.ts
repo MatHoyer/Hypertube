@@ -46,15 +46,18 @@ export const postPlaylist = async (
   const { playlistName } = c.get("validatedBody");
   const user = c.get("user");
 
-  try {
-    await prisma.playlist.create({
-      data: { name: playlistName, userId: user.id },
-    });
-
-    return c.json({ message: "OK" }, 200);
-  } catch {
-    return c.json({ message: "Already have a playlist with this name" }, 400);
+  const findPlaylist = await prisma.playlist.findUnique({
+    where: { name_userId: { name: playlistName, userId: user.id } },
+  });
+  if (findPlaylist) {
+    return c.json({ message: "Already have a playlist with this name" }, 409);
   }
+
+  await prisma.playlist.create({
+    data: { name: playlistName, userId: user.id },
+  });
+
+  return c.json({ message: "OK" }, 200);
 };
 
 export const deletePlaylist = async (
@@ -115,15 +118,16 @@ export const postMovieToPlaylist = async (
     });
   }
 
-  try {
-    await prisma.playlistMovie.create({
-      data: { playlistId, movieId: movie.id },
-    });
+  const findMovie = await prisma.playlistMovie.findUnique({
+    where: { playlistId_movieId: { playlistId, movieId: movie.id } },
+  });
+  if (findMovie) return c.json({ message: "Movie already in playlist" }, 409);
 
-    return c.json({ message: "OK" }, 200);
-  } catch {
-    return c.json({ message: "Movie already in playlist" }, 404);
-  }
+  await prisma.playlistMovie.create({
+    data: { playlistId, movieId: movie.id },
+  });
+
+  return c.json({ message: "OK" }, 200);
 };
 
 export const deleteMovieToPlaylist = async (
