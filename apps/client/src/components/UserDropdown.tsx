@@ -24,7 +24,7 @@ import {
   signOutAuthentificationSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { File, LogOut, Settings, User } from "lucide-react";
+import { File, History, ListVideo, LogOut, Settings, User } from "lucide-react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -124,6 +124,16 @@ export const UserDropdown = () => {
           <DropdownMenuItem asChild>
             <Link to={getUrl(ROUTES.CLIENT.NOTIFICATIONS)}>
               <NotificationBell /> {t("navbar.notifications")}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to={getUrl(ROUTES.CLIENT.HISTORIC)}>
+              <History /> {t("navbar.historic")}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to={getUrl(ROUTES.CLIENT.PLAYLISTS)}>
+              <ListVideo /> {t("navbar.playlists")}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>

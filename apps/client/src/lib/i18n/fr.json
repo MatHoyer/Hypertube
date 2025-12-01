@@ -314,7 +314,9 @@
     "account": "Mon compte",
     "notifications": "Notifications",
     "profile": "Profil",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "historic": "Historique",
+    "playlists": "Playlists"
   },
   "error": {
     "UNEXPECTED_ERROR": "Erreur inattendue.",
