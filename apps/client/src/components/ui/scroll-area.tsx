@@ -18,7 +18,6 @@ function ScrollArea({
 }) {
   const viewportRef = React.useRef<HTMLDivElement>(null);
   const location = useLocation();
-  console.log("location : ", location);
 
   React.useEffect(() => {
     if (scrollToTopOnChildrenChange && viewportRef.current) {

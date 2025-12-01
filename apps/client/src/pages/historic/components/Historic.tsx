@@ -21,14 +21,19 @@ import {
 } from "@hypertube/libs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { parseAsInteger, useQueryState } from "nuqs";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 
-export const Historic = () => {
+export const Historic = ({
+  setIsNotFound,
+}: {
+  setIsNotFound: (value: boolean) => void;
+}) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [_, setSearchParams] = useSearchParams();
 
   useEffect(
@@ -73,9 +78,10 @@ export const Historic = () => {
       </div>
     );
   }
+  if (!historic.length) setIsNotFound(true);
 
   return (
-    <>
+    <div className="flex flex-col gap-5">
       {historic.map(({ ...movie }) => (
         <div key={movie.id} className="flex items-center gap-5">
           <MovieBaseInfo
@@ -107,6 +113,6 @@ export const Historic = () => {
           </PaginationItem>
         </PaginationContent>
       </Pagination>
-    </>
+    </div>
   );
 };
