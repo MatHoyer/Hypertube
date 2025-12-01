@@ -100,8 +100,8 @@ export const SearchBar = () => {
                         to={getUrl(ROUTES.CLIENT.MOVIE, { tmdbId: movie!.id })}
                       >
                         <MovieBaseInfo
-                          className="flex flex-col sm:grid sm:grid-cols-[1fr_4fr_1fr_1fr] items-center w-full gap-2"
                           movie={movie!}
+                          dir="col"
                           posterSize="sm"
                           info="partial"
                         />

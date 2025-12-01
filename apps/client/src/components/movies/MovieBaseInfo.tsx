@@ -47,12 +47,14 @@ const DisplayGenresMovie: React.FC<{
 export const MovieBaseInfo: React.FC<
   ComponentProps<"div"> & {
     movie: Omit<TTmdbMovieSchema, "id">;
+    dir?: "row" | "col";
     posterSize?: "lg" | "md" | "sm";
     info?: "all" | "partial";
     truncate?: boolean;
   }
 > = ({
   movie,
+  dir = "row",
   posterSize = "lg",
   info = "all",
   truncate = false,
@@ -64,8 +66,10 @@ export const MovieBaseInfo: React.FC<
   return (
     <div
       className={cn(
-        "flex flex-col items-center w-full gap-2 text-center",
-        className,
+        dir === "row" && "flex flex-col items-center w-full gap-2 text-center",
+        dir === "col" &&
+          "flex flex-col sm:grid sm:grid-cols-[1fr_4fr_1fr_1fr] items-center w-full gap-2",
+        className
       )}
       {...props}
     >
