@@ -30,10 +30,8 @@ import { toast } from "sonner";
 
 export const Playlist = ({
   playlistName,
-  setIsNotFound,
 }: {
   playlistName: TPlaylistSchema["name"];
-  setIsNotFound: (value: boolean) => void;
 }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
@@ -95,8 +93,6 @@ export const Playlist = ({
     );
   }
 
-  if (page !== 1 && !movies.length) setIsNotFound(true);
-
   return (
     <div className="flex flex-col gap-5">
       {movies.map(({ ...movie }) => (
@@ -115,11 +111,6 @@ export const Playlist = ({
           </Button>
         </div>
       ))}
-      {!movies.length && (
-        <div className="flex justify-center items-center">
-          <Typography textSize="lg">{t("historic.empty")}</Typography>
-        </div>
-      )}
       <Pagination>
         <PaginationContent>
           <PaginationItem>

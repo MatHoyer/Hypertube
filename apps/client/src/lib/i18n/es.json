@@ -249,12 +249,14 @@
   "historic": {
     "title": "",
     "empty": "",
+    "emptyDescription": "",
     "deleteSuccess": "",
     "deleteFailed": ""
   },
   "playlist": {
     "title": "",
     "empty": "",
+    "emptyDescription": "",
     "save": "",
     "none": "",
     "new": "",
