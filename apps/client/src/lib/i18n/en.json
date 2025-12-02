@@ -246,7 +246,15 @@
     "loadingRessource": "casting",
     "errorRessource": "casting not found"
   },
+  "historic": {
+    "title": "Your historic",
+    "empty": "Your historic is empty.",
+    "deleteSuccess": "The movie has been successfully deleted of your historic.",
+    "deleteFailed": "Deleting the movie of your historic failed."
+  },
   "playlist": {
+    "title": "Your playlists",
+    "empty": "You don't have any playlists.",
     "save": "Save to...",
     "none": "You don't have any playlist",
     "new": "New playlist",
@@ -256,10 +264,12 @@
       "placeholder": "Name of your playlist",
       "button": "Create your playlist"
     },
-    "addMovieSuccess": "The film has been successfully added to your playlist.",
-    "addMovieFailed": "Adding the film to your playlist failed.",
-    "deleteMovieSuccess": "The film has been successfully deleted of your playlist.",
-    "deleteMovieFailed": "Deleting the film of your playlist failed.",
+    "deleteSuccess": "The playlist has been successfully deleted.",
+    "deleteFailed": "Deleting the playlist failed.",
+    "addMovieSuccess": "The movie has been successfully added to your playlist.",
+    "addMovieFailed": "Adding the movie to your playlist failed.",
+    "deleteMovieSuccess": "The movie has been successfully deleted of your playlist.",
+    "deleteMovieFailed": "Deleting the movie of your playlist failed.",
     "creationSuccess": "Playlist successfully created.",
     "creationFailed": "Playlist creation failed."
   },

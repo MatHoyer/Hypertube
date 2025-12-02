@@ -246,7 +246,15 @@
     "loadingRessource": "",
     "errorRessource": ""
   },
+  "historic": {
+    "title": "",
+    "empty": "",
+    "deleteSuccess": "",
+    "deleteFailed": ""
+  },
   "playlist": {
+    "title": "",
+    "empty": "",
     "save": "",
     "none": "",
     "new": "",
@@ -256,6 +264,8 @@
       "placeholder": "",
       "button": ""
     },
+    "deleteSuccess": "",
+    "deleteFailed": "",
     "addMovieSuccess": "",
     "addMovieFailed": "",
     "deleteMovieSuccess": "",
