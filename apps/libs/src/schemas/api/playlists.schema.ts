@@ -42,6 +42,7 @@ export const getPlaylistSchemas = {
         .nullable()
     ),
     totalCount: z.number(),
+    playlistId: playlistSchema.shape.id,
   }),
 };
 
