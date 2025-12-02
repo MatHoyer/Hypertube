@@ -4,7 +4,9 @@
     "error": "Erreur",
     "or": "Ou",
     "loadingMessage": "Chargement {{resource}}",
+    "errorMessage": "Erreur {{resource}}",
     "loadingRessource": "...",
+    "errorRessource": "ressource non trouvée",
     "unexpected-error": "Erreur inattendue",
     "homepage": "Page d'accueil",
     "submit": "Soumettre",
@@ -86,7 +88,9 @@
   "profile": {
     "likes": "Likes",
     "leftComments": "Commentaires postés",
-    "joined": "Inscrit"
+    "joined": "Inscrit",
+    "loadingRessource": "profil",
+    "errorRessource": "profil non trouvé"
   },
   "movie": {
     "loadingRessource": "du film",

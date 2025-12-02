@@ -4,7 +4,9 @@
     "error": "Error",
     "or": "Or",
     "loadingMessage": "Loading {{resource}}",
+    "errorMessage": "Error {{resource}}",
     "loadingRessource": "...",
+    "errorRessource": "resource not found",
     "unexpected-error": "Unexpected error",
     "homepage": "Homepage",
     "submit": "Submit",
@@ -86,7 +88,9 @@
   "profile": {
     "likes": "Likes",
     "leftComments": "Comments Left",
-    "joined": "Joined"
+    "joined": "Joined",
+    "loadingRessource": "profile",
+    "errorRessource": "profile not found"
   },
   "movie": {
     "loadingRessource": "movie",
