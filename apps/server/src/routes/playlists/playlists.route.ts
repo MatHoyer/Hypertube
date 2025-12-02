@@ -11,7 +11,7 @@ import { isLogged } from "../../middlewares/isLogged";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
-  deleteMovieToPlaylist,
+  deleteMovieFromPlaylist,
   deletePlaylist,
   getPlaylist,
   getPlaylists,
@@ -57,7 +57,7 @@ playlistsRouter.delete(
   "/:playlistId/movie/:tmdbId",
   isLogged,
   urlParamsParser(deleteMovieFromPlaylistSchemas.urlParams),
-  deleteMovieToPlaylist
+  deleteMovieFromPlaylist
 );
 
 export default playlistsRouter;

@@ -65,6 +65,9 @@ export const getPlaylist = async (
   const movies = await prisma.playlistMovie.findMany({
     where: { playlistId: playlist.id },
     include: { movie: true },
+    orderBy: {
+      updatedAt: "asc",
+    },
     skip: (page - 1) * pageSize,
     take: pageSize,
   });
@@ -94,6 +97,7 @@ export const getPlaylist = async (
           DownloadStates.NOT_DOWNLOADED,
       })),
       totalCount,
+      playlistId: playlist.id,
     }),
     200
   );
@@ -189,7 +193,7 @@ export const postMovieToPlaylist = async (
   return c.json({ message: "OK" }, 200);
 };
 
-export const deleteMovieToPlaylist = async (
+export const deleteMovieFromPlaylist = async (
   c: Context<
     TIsLogged & TUrlParamsParser<TDeleteMovieFromPlaylistSchemas["urlParams"]>
   >
