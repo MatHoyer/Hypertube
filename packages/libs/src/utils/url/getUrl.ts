@@ -30,6 +30,7 @@ export const ROUTES = {
     PROFILE: "client-profile",
     HISTORIC: "client-historic",
     PLAYLISTS: "client-playlists",
+    PLAYLIST: "client-playlist",
   },
   API: {
     SWAGGER: "api-swagger",
@@ -102,10 +103,12 @@ const routeSchemas = {
       userId: z.union([userSchema.shape.id, z.literal(":userId")]),
     }),
     [ROUTES.CLIENT.HISTORIC]: z.object({}),
-    [ROUTES.CLIENT.PLAYLISTS]: z.object({
-      playlistName: z
-        .union([playlistSchema.shape.name, z.literal(":playlistName")])
-        .optional(),
+    [ROUTES.CLIENT.PLAYLISTS]: z.object({}),
+    [ROUTES.CLIENT.PLAYLIST]: z.object({
+      playlistName: z.union([
+        playlistSchema.shape.name,
+        z.literal(":playlistName"),
+      ]),
     }),
   },
   API: {
@@ -289,8 +292,8 @@ const routes: {
   [ROUTES.CLIENT.NOTIFICATIONS]: () => "/notifications",
   [ROUTES.CLIENT.PROFILE]: ({ userId }) => `/profile/${userId}`,
   [ROUTES.CLIENT.HISTORIC]: () => "/historic",
-  [ROUTES.CLIENT.PLAYLISTS]: ({ playlistName }) =>
-    playlistName ? `/playlists/${playlistName}` : "/playlists",
+  [ROUTES.CLIENT.PLAYLISTS]: () => "/playlists",
+  [ROUTES.CLIENT.PLAYLIST]: ({ playlistName }) => `/playlists/${playlistName}`,
 
   // API routes
   [ROUTES.API.SWAGGER]: ({ mode }) =>
