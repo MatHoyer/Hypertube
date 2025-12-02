@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import { AppLoader } from "./ui/app-loader";
 import { Typography } from "./ui/typography";
 
 const errorPages = ["global", "profile"] as const;
