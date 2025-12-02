@@ -1,6 +1,7 @@
 import {
   deleteMovieFromPlaylistSchemas,
   deletePlaylistSchemas,
+  getPlaylistSchemas,
   getPlaylistsSchemas,
   getUrl,
   postMovieToPlaylistSchemas,
@@ -50,9 +51,43 @@ export const playlistsSwagger = {
       },
     },
   },
-  [getUrl(ROUTES.API.PLAYLISTS, { playlistId: "{playlistId}" })]: {
+  [getUrl(ROUTES.API.PLAYLISTS, { playlistName: "{playlistName}" })]: {
+    get: {
+      summary: "Get user's playlist",
+      tags: ["Playlists"],
+      parameters: [
+        {
+          in: "path",
+          name: "playlistName",
+          required: true,
+          schema: getPlaylistSchemas.urlParams.shape.playlistName,
+        },
+        {
+          in: "query",
+          name: "page",
+          required: false,
+          schema: getPlaylistSchemas.searchParams.shape.page,
+        },
+        {
+          in: "query",
+          name: "pageSize",
+          required: false,
+          schema: getPlaylistSchemas.searchParams.shape.pageSize,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "User's playlist got get successfully",
+          content: {
+            "application/json": {
+              schema: getPlaylistSchemas.response,
+            },
+          },
+        },
+      },
+    },
     delete: {
-      summary: "Delete user's playlists",
+      summary: "Delete user's playlist",
       tags: ["Playlists"],
       parameters: [
         {

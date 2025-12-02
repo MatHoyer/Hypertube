@@ -1,9 +1,11 @@
 import z from "zod";
+import { DownloadStates } from "../../const/global.const.js";
 import { movieSchema } from "../database/movie.schema.js";
 import {
   playlistMovieSchema,
   playlistSchema,
 } from "../database/playlist.schema.js";
+import { tmdbMovieSchema } from "./movie.schema.js";
 
 export const getPlaylistsSchemas = {
   response: z.object({
@@ -23,6 +25,30 @@ export const getPlaylistsSchemas = {
 
 export type TGetPlaylistsSchemas = {
   response: z.infer<typeof getPlaylistsSchemas.response>;
+};
+
+export const getPlaylistSchemas = {
+  urlParams: z.object({ playlistName: playlistSchema.shape.name }),
+  searchParams: z.object({
+    page: z.coerce.number().int().positive().default(1),
+    pageSize: z.coerce.number().int().positive().default(10),
+  }),
+  response: z.object({
+    movies: z.array(
+      tmdbMovieSchema
+        .extend({
+          downloadState: z.enum(DownloadStates),
+        })
+        .nullable()
+    ),
+    totalCount: z.number(),
+  }),
+};
+
+export type TGetPlaylistSchemas = {
+  urlParams: z.infer<typeof getPlaylistSchemas.urlParams>;
+  searchParams: z.infer<typeof getPlaylistSchemas.searchParams>;
+  response: z.infer<typeof getPlaylistSchemas.response>;
 };
 
 export const postPlaylistSchemas = {

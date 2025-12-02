@@ -140,6 +140,7 @@ export type {
 export {
   deleteMovieFromPlaylistSchemas,
   deletePlaylistSchemas,
+  getPlaylistSchemas,
   getPlaylistsSchemas,
   postMovieToPlaylistSchemas,
   postPlaylistSchemas,
@@ -147,6 +148,7 @@ export {
 export type {
   TDeleteMovieFromPlaylistSchemas,
   TDeletePlaylistSchemas,
+  TGetPlaylistSchemas,
   TGetPlaylistsSchemas,
   TPostMovieToPlaylistSchemas,
   TPostPlaylistSchemas,

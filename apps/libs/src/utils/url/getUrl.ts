@@ -103,7 +103,9 @@ const routeSchemas = {
     }),
     [ROUTES.CLIENT.HISTORIC]: z.object({}),
     [ROUTES.CLIENT.PLAYLISTS]: z.object({
-      playlistName: playlistSchema.shape.name.optional(),
+      playlistName: z
+        .union([playlistSchema.shape.name, z.literal(":playlistName")])
+        .optional(),
     }),
   },
   API: {
@@ -159,6 +161,9 @@ const routeSchemas = {
     [ROUTES.API.PLAYLISTS]: z.object({
       playlistId: z
         .union([playlistSchema.shape.id, z.literal("{playlistId}")])
+        .optional(),
+      playlistName: z
+        .union([playlistSchema.shape.name, z.literal("{playlistName}")])
         .optional(),
     }),
     [ROUTES.API.PLAYLISTS_MOVIE]: z.object({
@@ -339,8 +344,16 @@ const routes: {
   [ROUTES.API.MOVIES_SUBSCRIPTION]: ({ tmdbId }) =>
     `/api/movies/${tmdbId}/subscription`,
 
-  [ROUTES.API.PLAYLISTS]: ({ playlistId }) =>
-    playlistId ? `/api/playlists/${playlistId}` : "/api/playlists",
+  [ROUTES.API.PLAYLISTS]: ({ playlistId, playlistName }) => {
+    if (playlistId && playlistName) {
+      throw new Error(
+        "playlistId and playlistName cannot be provided together"
+      );
+    }
+    if (playlistId) return `/api/playlists/${playlistId}`;
+    else if (playlistName) return `/api/playlists/${playlistName}`;
+    else return "/api/playlists";
+  },
   [ROUTES.API.PLAYLISTS_MOVIE]: ({ playlistId, tmdbId }) =>
     tmdbId
       ? `/api/playlists/${playlistId}/movie/${tmdbId}`
