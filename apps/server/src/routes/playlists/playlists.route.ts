@@ -1,16 +1,19 @@
 import {
   deleteMovieFromPlaylistSchemas,
   deletePlaylistSchemas,
+  getPlaylistSchemas,
   postMovieToPlaylistSchemas,
   postPlaylistSchemas,
 } from "@hypertube/libs";
 import { Hono } from "hono";
 import { bodyParser } from "../../middlewares/bodyParser";
 import { isLogged } from "../../middlewares/isLogged";
+import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
   deleteMovieToPlaylist,
   deletePlaylist,
+  getPlaylist,
   getPlaylists,
   postMovieToPlaylist,
   postPlaylist,
@@ -19,6 +22,14 @@ import {
 const playlistsRouter = new Hono();
 
 playlistsRouter.get("/", isLogged, getPlaylists);
+
+playlistsRouter.get(
+  "/:playlistName",
+  isLogged,
+  urlParamsParser(getPlaylistSchemas.urlParams),
+  searchParamsParser(getPlaylistSchemas.searchParams),
+  getPlaylist
+);
 
 playlistsRouter.post(
   "/",

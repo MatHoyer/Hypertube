@@ -1,7 +1,10 @@
 import {
+  DownloadStates,
+  getPlaylistSchemas,
   languageCodes,
   TDeleteMovieFromPlaylistSchemas,
   TDeletePlaylistSchemas,
+  TGetPlaylistSchemas,
   TPostMovieToPlaylistSchemas,
   TPostPlaylistSchemas,
 } from "@hypertube/libs";
@@ -10,7 +13,9 @@ import { Context } from "hono";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
+import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
+import { getMovieDownloadStatesByTmdbIds } from "../global/movie.global";
 
 export const getPlaylists = async (c: Context<TIsLogged>) => {
   const user = c.get("user");
@@ -38,6 +43,60 @@ export const getPlaylists = async (c: Context<TIsLogged>) => {
   });
 
   return c.json({ playlists: playlistsWithFlatMovies }, 200);
+};
+
+export const getPlaylist = async (
+  c: Context<
+    TIsLogged &
+      TUrlParamsParser<TGetPlaylistSchemas["urlParams"]> &
+      TSearchParamsParser<TGetPlaylistSchemas["searchParams"]>
+  >
+) => {
+  const user = c.get("user");
+  const language = c.get("language");
+  const { playlistName } = c.get("validatedUrlParams");
+  const { page, pageSize } = c.get("validatedSearchParams");
+
+  const playlist = await prisma.playlist.findUnique({
+    where: { name_userId: { name: playlistName, userId: user.id } },
+  });
+  if (!playlist) return c.json([], 404);
+
+  const movies = await prisma.playlistMovie.findMany({
+    where: { playlistId: playlist.id },
+    include: { movie: true },
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+  });
+
+  const totalCount = await prisma.playlistMovie.count({
+    where: { playlistId: playlist.id },
+  });
+
+  const movieDownloadStatesByTmdbIds = await getMovieDownloadStatesByTmdbIds(
+    movies.map(({ movie }) => movie.tmdbId)
+  );
+
+  const tmdbApi = new TmdbApi();
+  const tmdbMovies = (
+    await tmdbApi.getAllMovieDetails(
+      movies.map(({ movie }) => movie.tmdbId),
+      language as keyof typeof languageCodes
+    )
+  ).filter(Boolean);
+
+  return c.json(
+    getPlaylistSchemas.response.parse({
+      movies: tmdbMovies.map((tmdbMovie) => ({
+        ...tmdbMovie,
+        downloadState:
+          movieDownloadStatesByTmdbIds.get(tmdbMovie!.id) ??
+          DownloadStates.NOT_DOWNLOADED,
+      })),
+      totalCount,
+    }),
+    200
+  );
 };
 
 export const postPlaylist = async (
