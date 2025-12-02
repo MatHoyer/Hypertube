@@ -49,7 +49,7 @@ export const Playlists = () => {
           {playlists.map((playlist) => (
             <Link
               key={playlist.id}
-              to={getUrl(ROUTES.CLIENT.PLAYLISTS, {
+              to={getUrl(ROUTES.CLIENT.PLAYLIST, {
                 playlistName: playlist.name,
               })}
             >
