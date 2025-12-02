@@ -25,6 +25,7 @@ import { parseAsInteger, useQueryState } from "nuqs";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 
 export const Historic = ({
   setIsNotFound,
@@ -67,6 +68,10 @@ export const Historic = ({
       queryClient.invalidateQueries({
         queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER),
       });
+      toast.success(t("historic.deleteSuccess"));
+    },
+    onError: () => {
+      toast.error(t("historic.deleteFailed"));
     },
   });
 
@@ -78,7 +83,8 @@ export const Historic = ({
       </div>
     );
   }
-  if (!historic.length) setIsNotFound(true);
+
+  if (page !== 1 && !historic.length) setIsNotFound(true);
 
   return (
     <div className="flex flex-col gap-5">
@@ -95,6 +101,11 @@ export const Historic = ({
           </Button>
         </div>
       ))}
+      {!historic.length && (
+        <div className="flex justify-center items-center">
+          <Typography textSize="lg">{t("historic.empty")}</Typography>
+        </div>
+      )}
       <Pagination>
         <PaginationContent>
           <PaginationItem>

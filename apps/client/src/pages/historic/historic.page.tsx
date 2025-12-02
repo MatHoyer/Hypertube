@@ -18,7 +18,7 @@ export const HistoricPage = () => {
   return (
     <Layout>
       <LayoutHeader className="items-center">
-        <LayoutTitle>{t("navbar.historic")}</LayoutTitle>
+        <LayoutTitle>{t("historic.title")}</LayoutTitle>
       </LayoutHeader>
       <LayoutContent>
         <Historic setIsNotFound={setIsNotFound} />

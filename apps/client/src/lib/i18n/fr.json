@@ -246,7 +246,15 @@
     "loadingRessource": "casting",
     "errorRessource": "casting non trouvé"
   },
+  "historic": {
+    "title": "Votre historique",
+    "empty": "Votre historique est vide.",
+    "deleteSuccess": "La suppression du film de votre historique a réussi.",
+    "deleteFailed": "La suppression du film de votre historique a échoué."
+  },
   "playlist": {
+    "title": "Vos playlists",
+    "empty": "Vous n'avez pas de playlists.",
     "save": "Enregistrer dans...",
     "none": "Vous n'avez aucune playlist",
     "new": "Nouvelle playlist",
@@ -256,6 +264,8 @@
       "placeholder": "Nom de votre playlist",
       "button": "Créer votre playlist"
     },
+    "deleteSuccess": "La suppression de votre playlist a réussi.",
+    "deleteFailed": "La suppression de votre playlist a échoué.",
     "addMovieSuccess": "L'ajout du film à votre playlist a réussi.",
     "addMovieFailed": "L'ajout du film à votre playlist a échoué.",
     "deleteMovieSuccess": "La suppression du film de votre playlist a réussi.",
