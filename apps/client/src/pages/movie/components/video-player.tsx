@@ -363,7 +363,7 @@ const VideoPlayer = () => {
         timestamp: (progress * (videoRef.current?.duration ?? 0)) / 100,
       },
     });
-    queryClient.refetchQueries({
+    queryClient.invalidateQueries({
       queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER),
     });
   }, [tmdbId, progress, videoRef, queryClient]);
