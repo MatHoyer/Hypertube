@@ -67,6 +67,7 @@ export const PlaylistDialog = () => {
             <InputGroup>
               <InputGroupInput
                 id="playlistName"
+                autoFocus
                 placeholder={t("playlist.dialog.placeholder")}
                 {...form.register("playlistName")}
               />
