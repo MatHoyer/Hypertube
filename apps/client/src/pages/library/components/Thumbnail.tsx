@@ -195,7 +195,7 @@ export const Thumbnail: React.FC<{
                 <DropdownMenuItem
                   onClick={() => {
                     setIsDropdownOpen(false);
-                    openDialog("playlist");
+                    setTimeout(() => openDialog("playlist"), 200);
                   }}
                 >
                   <Plus />
