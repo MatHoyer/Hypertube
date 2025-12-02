@@ -38,7 +38,7 @@ export const Historic = ({
   const [_, setSearchParams] = useSearchParams();
 
   useEffect(
-    () => setSearchParams({ page: page.toString() }),
+    () => setSearchParams({ page: page.toString() }, { replace: true }),
     [setSearchParams, page]
   );
 
