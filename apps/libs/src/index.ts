@@ -151,6 +151,7 @@ export type {
   TPostMovieToPlaylistSchemas,
   TPostPlaylistSchemas,
 } from "./schemas/api/playlists.schema.js";
+export { playlistSchema } from "./schemas/database/playlist.schema.js";
 
 export {
   deleteCredentialsSchemas,

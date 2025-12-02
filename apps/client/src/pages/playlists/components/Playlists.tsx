@@ -14,6 +14,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 export const Playlists = () => {
@@ -44,20 +45,32 @@ export const Playlists = () => {
   return (
     <div className="flex flex-col gap-5">
       {playlists.length ? (
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {playlists.map((playlist) => (
-            <Card
+            <Link
               key={playlist.id}
-              className="flex flex-row justify-between items-center p-5 cursor-pointer hover:bg-card/70"
+              to={getUrl(ROUTES.CLIENT.PLAYLISTS, {
+                playlistName: playlist.name,
+              })}
             >
-              <Typography functionnal={"truncate"}>{playlist.name}</Typography>
-              <Button
-                variant={"destructive"}
-                onClick={() => deleteMutate(playlist.id)}
-              >
-                <X />
-              </Button>
-            </Card>
+              <Card className="flex flex-row justify-between items-center p-5 cursor-pointer hover:bg-card/70">
+                <Typography textSize={"lg"} textColor={"muted"}>
+                  {playlist.movies.length}
+                </Typography>
+                <Typography functionnal={"truncate"}>
+                  {playlist.name}
+                </Typography>
+                <Button
+                  variant={"destructive"}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    deleteMutate(playlist.id);
+                  }}
+                >
+                  <X />
+                </Button>
+              </Card>
+            </Link>
           ))}
         </div>
       ) : (

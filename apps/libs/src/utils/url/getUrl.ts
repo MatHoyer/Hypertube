@@ -102,7 +102,9 @@ const routeSchemas = {
       userId: z.union([userSchema.shape.id, z.literal(":userId")]),
     }),
     [ROUTES.CLIENT.HISTORIC]: z.object({}),
-    [ROUTES.CLIENT.PLAYLISTS]: z.object({}),
+    [ROUTES.CLIENT.PLAYLISTS]: z.object({
+      playlistName: playlistSchema.shape.name.optional(),
+    }),
   },
   API: {
     [ROUTES.API.SWAGGER]: z.object({
@@ -280,7 +282,8 @@ const routes: {
   [ROUTES.CLIENT.NOTIFICATIONS]: () => "/notifications",
   [ROUTES.CLIENT.PROFILE]: ({ userId }) => `/profile/${userId}`,
   [ROUTES.CLIENT.HISTORIC]: () => "/historic",
-  [ROUTES.CLIENT.PLAYLISTS]: () => "/playlists",
+  [ROUTES.CLIENT.PLAYLISTS]: ({ playlistName }) =>
+    playlistName ? `/playlists/${playlistName}` : "/playlists",
 
   // API routes
   [ROUTES.API.SWAGGER]: ({ mode }) =>
