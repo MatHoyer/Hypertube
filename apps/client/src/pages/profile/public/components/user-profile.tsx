@@ -21,7 +21,6 @@ export const UserProfile: React.FC<{
         <Typography textSize="lg">{name}</Typography>
         <div className="flex">
           <Typography>{firstName}</Typography>
-
           <Typography className="ml-1">{lastName}</Typography>
         </div>
       </div>
