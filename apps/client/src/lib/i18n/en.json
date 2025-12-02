@@ -257,6 +257,8 @@
     "title": "Your playlists",
     "empty": "You don't have any playlists.",
     "emptyDescription": "You haven't created a playlist yet.",
+    "emptyPlaylist": "You don't have any movies in that playlist.",
+    "emptyPlaylistDescription": "You haven't added any movies to this playlist yet.",
     "save": "Save to...",
     "none": "You don't have any playlist",
     "new": "New playlist",

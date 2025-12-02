@@ -28,7 +28,7 @@ export type TGetPlaylistsSchemas = {
 };
 
 export const getPlaylistSchemas = {
-  urlParams: z.object({ playlistName: playlistSchema.shape.name }),
+  urlParams: z.object({ playlistId: playlistSchema.shape.id }),
   searchParams: z.object({
     page: z.coerce.number().int().positive().default(1),
     pageSize: z.coerce.number().int().positive().default(10),
@@ -42,7 +42,6 @@ export const getPlaylistSchemas = {
         .nullable()
     ),
     totalCount: z.number(),
-    playlistId: playlistSchema.shape.id,
   }),
 };
 

@@ -93,7 +93,7 @@ const App = () => {
             element={<ProtectedUrlRoute schema={PlaylistPageParamsSchema} />}
             <Route
               path={getUrl(ROUTES.CLIENT.PLAYLIST, {
-                playlistName: ":playlistName",
+                playlistId: ":playlistId",
               })}
               element={<PlaylistPage />}
             />

@@ -105,10 +105,7 @@ const routeSchemas = {
     [ROUTES.CLIENT.HISTORIC]: z.object({}),
     [ROUTES.CLIENT.PLAYLISTS]: z.object({}),
     [ROUTES.CLIENT.PLAYLIST]: z.object({
-      playlistName: z.union([
-        playlistSchema.shape.name,
-        z.literal(":playlistName"),
-      ]),
+      playlistId: z.union([playlistSchema.shape.id, z.literal(":playlistId")]),
     }),
   },
   API: {
@@ -164,9 +161,6 @@ const routeSchemas = {
     [ROUTES.API.PLAYLISTS]: z.object({
       playlistId: z
         .union([playlistSchema.shape.id, z.literal("{playlistId}")])
-        .optional(),
-      playlistName: z
-        .union([playlistSchema.shape.name, z.literal("{playlistName}")])
         .optional(),
     }),
     [ROUTES.API.PLAYLISTS_MOVIE]: z.object({
@@ -291,7 +285,7 @@ const routes: {
   [ROUTES.CLIENT.PROFILE]: ({ userId }) => `/profile/${userId}`,
   [ROUTES.CLIENT.HISTORIC]: () => "/historic",
   [ROUTES.CLIENT.PLAYLISTS]: () => "/playlists",
-  [ROUTES.CLIENT.PLAYLIST]: ({ playlistName }) => `/playlists/${playlistName}`,
+  [ROUTES.CLIENT.PLAYLIST]: ({ playlistId }) => `/playlists/${playlistId}`,
 
   // API routes
   [ROUTES.API.SWAGGER]: ({ mode }) =>
@@ -347,16 +341,8 @@ const routes: {
   [ROUTES.API.MOVIES_SUBSCRIPTION]: ({ tmdbId }) =>
     `/api/movies/${tmdbId}/subscription`,
 
-  [ROUTES.API.PLAYLISTS]: ({ playlistId, playlistName }) => {
-    if (playlistId && playlistName) {
-      throw new Error(
-        "playlistId and playlistName cannot be provided together"
-      );
-    }
-    if (playlistId) return `/api/playlists/${playlistId}`;
-    else if (playlistName) return `/api/playlists/${playlistName}`;
-    else return "/api/playlists";
-  },
+  [ROUTES.API.PLAYLISTS]: ({ playlistId }) =>
+    playlistId ? `/api/playlists/${playlistId}` : "/api/playlists",
   [ROUTES.API.PLAYLISTS_MOVIE]: ({ playlistId, tmdbId }) =>
     tmdbId
       ? `/api/playlists/${playlistId}/movie/${tmdbId}`

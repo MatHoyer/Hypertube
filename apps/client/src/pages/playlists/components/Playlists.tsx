@@ -57,7 +57,7 @@ export const Playlists = () => {
             <Link
               key={playlist.id}
               to={getUrl(ROUTES.CLIENT.PLAYLIST, {
-                playlistName: playlist.name,
+                playlistId: playlist.id,
               })}
             >
               <Card className="flex flex-row justify-between items-center p-5 cursor-pointer hover:bg-card/70">

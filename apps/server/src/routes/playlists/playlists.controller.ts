@@ -54,13 +54,14 @@ export const getPlaylist = async (
 ) => {
   const user = c.get("user");
   const language = c.get("language");
-  const { playlistName } = c.get("validatedUrlParams");
+  const { playlistId } = c.get("validatedUrlParams");
   const { page, pageSize } = c.get("validatedSearchParams");
 
   const playlist = await prisma.playlist.findUnique({
-    where: { name_userId: { name: playlistName, userId: user.id } },
+    where: { id: playlistId },
   });
   if (!playlist) return c.json([], 404);
+  if (user.id !== playlist.userId) return c.json([], 401);
 
   const movies = await prisma.playlistMovie.findMany({
     where: { playlistId: playlist.id },
@@ -97,7 +98,6 @@ export const getPlaylist = async (
           DownloadStates.NOT_DOWNLOADED,
       })),
       totalCount,
-      playlistId: playlist.id,
     }),
     200
   );

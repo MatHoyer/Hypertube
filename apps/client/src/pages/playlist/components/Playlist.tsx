@@ -1,17 +1,17 @@
 import { LoadingPage } from "@/components/LoadingPage";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
+import { PagePagination } from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
-import { cn } from "@/lib/utils";
 import {
   deleteMovieFromPlaylistSchemas,
   getPlaylistSchemas,
@@ -21,18 +21,14 @@ import {
 } from "@hypertube/libs";
 import type { TPlaylistSchema } from "@hypertube/libs/src/schemas/database/playlist.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { X } from "lucide-react";
+import { Video, X } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
-export const Playlist = ({
-  playlistName,
-}: {
-  playlistName: TPlaylistSchema["name"];
-}) => {
+export const Playlist = ({ playlist }: { playlist: TPlaylistSchema }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
@@ -49,7 +45,7 @@ export const Playlist = ({
       axiosFetch({
         method: "GET",
         url: getUrl(ROUTES.API.PLAYLISTS, {
-          playlistName,
+          playlistId: playlist.id,
           searchParams: { page: page.toString(), pageSize: "10" },
         }),
         schemas: getPlaylistSchemas,
@@ -57,7 +53,6 @@ export const Playlist = ({
   });
 
   const movies = data ? data.movies : [];
-  const playlistId = data ? data.playlistId : "";
   const totalCount = data ? data.totalCount : 0;
 
   const { mutate } = useMutation({
@@ -105,30 +100,30 @@ export const Playlist = ({
           />
           <Button
             variant={"destructive"}
-            onClick={() => mutate({ playlistId, tmdbId: movie.id })}
+            onClick={() =>
+              mutate({ playlistId: playlist.id, tmdbId: movie.id })
+            }
           >
             <X />
           </Button>
         </div>
       ))}
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              className={cn(page <= 1 && "opacity-50 pointer-events-none")}
-              onClick={() => setPage((prev) => prev - 1)}
-            />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext
-              className={cn(
-                totalCount <= page * 10 && "opacity-50 pointer-events-none"
-              )}
-              onClick={() => setPage((prev) => prev + 1)}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      {!movies.length && (
+        <div className="flex justify-center items-center">
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Video />
+              </EmptyMedia>
+              <EmptyTitle>{t("playlist.emptyPlaylist")}</EmptyTitle>
+              <EmptyDescription>
+                {t("playlist.emptyPlaylistDescription")}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </div>
+      )}
+      <PagePagination page={page} setPage={setPage} totalCount={totalCount} />
     </div>
   );
 };
