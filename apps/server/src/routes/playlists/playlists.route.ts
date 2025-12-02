@@ -24,7 +24,7 @@ const playlistsRouter = new Hono();
 playlistsRouter.get("/", isLogged, getPlaylists);
 
 playlistsRouter.get(
-  "/:playlistName",
+  "/:playlistId",
   isLogged,
   urlParamsParser(getPlaylistSchemas.urlParams),
   searchParamsParser(getPlaylistSchemas.searchParams),

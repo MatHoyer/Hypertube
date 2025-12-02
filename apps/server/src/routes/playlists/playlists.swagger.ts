@@ -51,16 +51,16 @@ export const playlistsSwagger = {
       },
     },
   },
-  [getUrl(ROUTES.API.PLAYLISTS, { playlistName: "{playlistName}" })]: {
+  [getUrl(ROUTES.API.PLAYLISTS, { playlistId: "{playlistId}" })]: {
     get: {
       summary: "Get user's playlist",
       tags: ["Playlists"],
       parameters: [
         {
           in: "path",
-          name: "playlistName",
+          name: "playlistId",
           required: true,
-          schema: getPlaylistSchemas.urlParams.shape.playlistName,
+          schema: getPlaylistSchemas.urlParams.shape.playlistId,
         },
         {
           in: "query",

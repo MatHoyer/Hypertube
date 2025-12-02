@@ -1,5 +1,6 @@
 import { LoadingPage } from "@/components/LoadingPage";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
+import { PagePagination } from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -8,17 +9,9 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
-import { cn } from "@/lib/utils";
 import {
   deleteMovieFromHistorySchemas,
   getHistorySchemas,
@@ -117,24 +110,7 @@ export const Historic = () => {
           </Empty>
         </div>
       )}
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              className={cn(page <= 1 && "opacity-50 pointer-events-none")}
-              onClick={() => setPage((prev) => prev - 1)}
-            />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext
-              className={cn(
-                totalCount <= page * 10 && "opacity-50 pointer-events-none"
-              )}
-              onClick={() => setPage((prev) => prev + 1)}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      <PagePagination page={page} setPage={setPage} totalCount={totalCount} />
     </div>
   );
 };
