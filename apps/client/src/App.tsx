@@ -14,6 +14,7 @@ import { NotificationsPage } from "./pages/notifications/notifications.page";
 import { OAuthCredentialsPage } from "./pages/oauthCredentials/oauth-credentials.page";
 import { PlaygroundPage } from "./pages/playground/playground.page";
 import { PlaylistsPage } from "./pages/playlists/playlists.page";
+import { PlaylistPageParamsSchema } from "./pages/playlists/schemas/urlParams.schema";
 import { PublicProfilePage } from "./pages/profile/public/PublicProfilePage";
 import { ProfilePageParamsSchema } from "./pages/profile/public/schemas/urlParams.schemas";
 import { SettingsPage } from "./pages/profile/settings/SettingsPage";
@@ -85,7 +86,16 @@ const App = () => {
             <Route
               path={getUrl(ROUTES.CLIENT.PROFILE, { userId: ":userId" })}
               element={<PublicProfilePage />}
-            ></Route>
+            />
+          </Route>
+          <Route>
+            element={<ProtectedUrlRoute schema={PlaylistPageParamsSchema} />}
+            <Route
+              path={getUrl(ROUTES.CLIENT.PLAYLISTS, {
+                playlistName: ":playlistName",
+              })}
+              element={<PlaylistsPage />}
+            />
           </Route>
         </Route>
 
