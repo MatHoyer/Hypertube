@@ -249,12 +249,14 @@
   "historic": {
     "title": "Your historic",
     "empty": "Your historic is empty.",
+    "emptyDescription": "You haven't watched a movie yet.",
     "deleteSuccess": "The movie has been successfully deleted of your historic.",
     "deleteFailed": "Deleting the movie of your historic failed."
   },
   "playlist": {
     "title": "Your playlists",
     "empty": "You don't have any playlists.",
+    "emptyDescription": "You haven't created a playlist yet.",
     "save": "Save to...",
     "none": "You don't have any playlist",
     "new": "New playlist",

@@ -2,6 +2,13 @@ import { LoadingPage } from "@/components/LoadingPage";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
 import { Button } from "@/components/ui/button";
 import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import {
   Pagination,
   PaginationContent,
   PaginationItem,
@@ -20,18 +27,14 @@ import {
   type TTmdbMovieSchema,
 } from "@hypertube/libs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { X } from "lucide-react";
+import { History, X } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
-export const Historic = ({
-  setIsNotFound,
-}: {
-  setIsNotFound: (value: boolean) => void;
-}) => {
+export const Historic = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
@@ -84,8 +87,6 @@ export const Historic = ({
     );
   }
 
-  if (page !== 1 && !historic.length) setIsNotFound(true);
-
   return (
     <div className="flex flex-col gap-5">
       {historic.map(({ ...movie }) => (
@@ -103,7 +104,17 @@ export const Historic = ({
       ))}
       {!historic.length && (
         <div className="flex justify-center items-center">
-          <Typography textSize="lg">{t("historic.empty")}</Typography>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <History />
+              </EmptyMedia>
+              <EmptyTitle>{t("historic.empty")}</EmptyTitle>
+              <EmptyDescription>
+                {t("historic.emptyDescription")}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         </div>
       )}
       <Pagination>

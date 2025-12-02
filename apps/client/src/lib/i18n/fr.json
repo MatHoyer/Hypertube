@@ -249,12 +249,14 @@
   "historic": {
     "title": "Votre historique",
     "empty": "Votre historique est vide.",
+    "emptyDescription": "Vous n'avez pas encore regardé de film.",
     "deleteSuccess": "La suppression du film de votre historique a réussi.",
     "deleteFailed": "La suppression du film de votre historique a échoué."
   },
   "playlist": {
     "title": "Vos playlists",
     "empty": "Vous n'avez pas de playlists.",
+    "emptyDescription": "Vous n'avez pas encore créé de playlist.",
     "save": "Enregistrer dans...",
     "none": "Vous n'avez aucune playlist",
     "new": "Nouvelle playlist",

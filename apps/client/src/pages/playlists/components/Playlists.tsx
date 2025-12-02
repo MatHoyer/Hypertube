@@ -1,6 +1,13 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Typography } from "@/components/ui/typography";
 import { useUserPlaylists } from "@/hooks/use-playlists";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -12,7 +19,7 @@ import {
   type TDeletePlaylistSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, X } from "lucide-react";
+import { ListVideo, Plus, Video, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -43,8 +50,8 @@ export const Playlists = () => {
   });
 
   return (
-    <div className="flex flex-col gap-5">
-      {playlists.length ? (
+    <div className="flex flex-col gap-4">
+      {!!playlists.length && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {playlists.map((playlist) => (
             <Link
@@ -54,9 +61,12 @@ export const Playlists = () => {
               })}
             >
               <Card className="flex flex-row justify-between items-center p-5 cursor-pointer hover:bg-card/70">
-                <Typography textSize={"lg"} textColor={"muted"}>
-                  {playlist.movies.length}
-                </Typography>
+                <div className="flex items-center gap-2">
+                  <Typography textSize={"lg"} textColor={"muted"}>
+                    {playlist.movies.length}
+                  </Typography>
+                  <Video />
+                </div>
                 <Typography functionnal={"truncate"}>
                   {playlist.name}
                 </Typography>
@@ -73,9 +83,20 @@ export const Playlists = () => {
             </Link>
           ))}
         </div>
-      ) : (
+      )}
+      {!playlists.length && (
         <div className="flex justify-center items-center">
-          <Typography textSize="lg">{t("playlist.empty")}</Typography>
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <ListVideo />
+              </EmptyMedia>
+              <EmptyTitle>{t("playlist.empty")}</EmptyTitle>
+              <EmptyDescription>
+                {t("playlist.emptyDescription")}
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         </div>
       )}
       <Button onClick={() => openDialog("playlist")}>
