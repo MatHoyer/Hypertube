@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { AppLoader } from "./ui/app-loader";
 import { Typography } from "./ui/typography";
 
-const loadingPages = ["global", "movie"] as const;
+const loadingPages = ["global", "movie", "profile"] as const;
 
 export const LoadingPage: React.FC<{
   resource: (typeof loadingPages)[number];

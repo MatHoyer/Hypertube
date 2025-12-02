@@ -1,5 +1,7 @@
 import { DownloadStateColors } from "@/components/download-state/download-state.colors";
 import { getDownloadStateIcon } from "@/components/download-state/getDownloadStateIcon";
+import { getProfileStatIcon } from "@/components/profile-stats/getProfileStatsIcon";
+import { StatColors } from "@/components/profile-stats/profile-stats.colors";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
@@ -13,14 +15,10 @@ import {
   notifications,
   patchNotificationsSchemas,
   ROUTES,
+  StatTypes,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  CheckCheck,
-  ChevronRight,
-  MessageCircleIcon,
-  ThumbsUp,
-} from "lucide-react";
+import { CheckCheck, ChevronRight, MessageCircleIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -34,10 +32,8 @@ const notificationIcons: Record<TNotification, React.ReactNode> = {
   [notifications.MOVIE_DOWNLOADING]: getDownloadStateIcon(
     DownloadStates.DOWNLOADING
   ),
-  [notifications.NEW_COMMENT_REPLY]: (
-    <MessageCircleIcon color="var(--color-blue-500)" />
-  ),
-  [notifications.NEW_COMMENT_LIKE]: <ThumbsUp color="var(--color-blue-500)" />,
+  [notifications.NEW_COMMENT_REPLY]: getProfileStatIcon(StatTypes.COMMENTS),
+  [notifications.NEW_COMMENT_LIKE]: getProfileStatIcon(StatTypes.LIKES),
 };
 
 const notificationColors: Record<TNotification, string> = {
@@ -46,8 +42,8 @@ const notificationColors: Record<TNotification, string> = {
     DownloadStateColors[DownloadStates.DOWNLOADED],
   [notifications.MOVIE_DOWNLOADING]:
     DownloadStateColors[DownloadStates.DOWNLOADING],
-  [notifications.NEW_COMMENT_REPLY]: "var(--color-blue-500)",
-  [notifications.NEW_COMMENT_LIKE]: "var(--color-blue-500)",
+  [notifications.NEW_COMMENT_REPLY]: StatColors[StatTypes.COMMENTS],
+  [notifications.NEW_COMMENT_LIKE]: StatColors[StatTypes.LIKES],
 };
 
 export const Notification: React.FC<{ notification: TNotificationSchema }> = ({

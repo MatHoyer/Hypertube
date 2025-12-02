@@ -54,3 +54,29 @@ export const getSessionUsersSchemas = {
 export type TGetSessionUsersSchemas = {
   response: z.infer<typeof getSessionUsersSchemas.response>;
 };
+
+export const getUserSchemas = {
+  urlParams: z.object({ userId: userSchema.shape.id }),
+  response: z
+    .object({
+      user: userSchema.pick({
+        id: true,
+        name: true,
+        displayUsername: true,
+        firstName: true,
+        lastName: true,
+        image: true,
+        createdAt: true,
+      }),
+      stats: z.object({
+        totalLikes: z.number(),
+        totalComments: z.number(),
+      }),
+    })
+    .nullable(),
+};
+
+export type TGetUserSchemas = {
+  urlParams: z.infer<typeof getUserSchemas.urlParams>;
+  response: z.infer<typeof getUserSchemas.response>;
+};

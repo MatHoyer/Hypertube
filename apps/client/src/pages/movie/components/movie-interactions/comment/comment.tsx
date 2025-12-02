@@ -67,7 +67,9 @@ export const Comment: React.FC<{
             size={parent.type === ParentTypes.MOVIE ? "sm" : "xs"}
           />
           <Button asChild variant="link">
-            <Link to={"#"}>
+            <Link
+              to={getUrl(ROUTES.CLIENT.PROFILE, { userId: comment.userId })}
+            >
               <Typography>{comment.user.name}</Typography>
             </Link>
           </Button>

@@ -26,6 +26,7 @@ export const ROUTES = {
     OAUTH_CREDENTIALS: "client-oauth-credentials",
     ERROR: "client-error",
     NOTIFICATIONS: "client-notifications",
+    PROFILE: "client-profile",
   },
   API: {
     SWAGGER: "api-swagger",
@@ -91,6 +92,9 @@ const routeSchemas = {
     [ROUTES.CLIENT.OAUTH_CREDENTIALS]: z.object({}),
     [ROUTES.CLIENT.ERROR]: z.object({}),
     [ROUTES.CLIENT.NOTIFICATIONS]: z.object({}),
+    [ROUTES.CLIENT.PROFILE]: z.object({
+      userId: z.union([userSchema.shape.id, z.literal(":userId")]),
+    }),
   },
   API: {
     [ROUTES.API.SWAGGER]: z.object({
@@ -247,11 +251,12 @@ const routes: {
   [ROUTES.CLIENT.SIGNUP]: () => "/sign-up",
   [ROUTES.CLIENT.FORGET_PASSWORD]: () => "/forget-password",
   [ROUTES.CLIENT.RESET_PASSWORD]: () => "/reset-password",
-  [ROUTES.CLIENT.SETTINGS]: () => "/settings",
+  [ROUTES.CLIENT.SETTINGS]: () => "/profile/settings",
   [ROUTES.CLIENT.MOVIE]: ({ tmdbId }) => `/movie/${tmdbId}`,
   [ROUTES.CLIENT.OAUTH_CREDENTIALS]: () => "/credentials",
   [ROUTES.CLIENT.ERROR]: () => "/error",
   [ROUTES.CLIENT.NOTIFICATIONS]: () => "/notifications",
+  [ROUTES.CLIENT.PROFILE]: ({ userId }) => `/profile/${userId}`,
 
   // API routes
   [ROUTES.API.SWAGGER]: ({ mode }) =>
@@ -291,7 +296,7 @@ const routes: {
   [ROUTES.API.MOVIES]: ({ tmdbId, resolution, subtitlesLanguage }) => {
     if (resolution && subtitlesLanguage) {
       throw new Error(
-        "Resolution and subtitles language cannot be provided together",
+        "Resolution and subtitles language cannot be provided together"
       );
     }
     if (tmdbId === undefined) return `/api/movies`;
@@ -394,7 +399,7 @@ const getSchema = <T extends TRoute>(route: T) => {
 
 export const getUrl = <T extends TRoute>(
   route: T,
-  params?: TGetUrlArgs<T>,
+  params?: TGetUrlArgs<T>
 ): string => {
   const { withUrl, searchParams: _, ...rawParams } = params || {};
   let { searchParams } = params || {};
@@ -419,7 +424,7 @@ export const getUrl = <T extends TRoute>(
         if (value) acc[key] = value;
         return acc;
       },
-      {} as Record<string, string>,
+      {} as Record<string, string>
     );
   }
 

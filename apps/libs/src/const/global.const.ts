@@ -7,6 +7,13 @@ export const DownloadStates = {
 export type DownloadState =
   (typeof DownloadStates)[keyof typeof DownloadStates];
 
+export const StatTypes = {
+  LIKES: "LIKES",
+  COMMENTS: "COMMENTS",
+} as const;
+
+export type TStatType = (typeof StatTypes)[keyof typeof StatTypes];
+
 export const ParentTypes = {
   MOVIE: "MOVIE",
   COMMENT: "COMMENT",

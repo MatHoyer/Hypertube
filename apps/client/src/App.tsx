@@ -12,6 +12,8 @@ import { MoviePageParamsSchema } from "./pages/movie/schemas/urlParams.schema";
 import { NotificationsPage } from "./pages/notifications/notifications.page";
 import { OAuthCredentialsPage } from "./pages/oauthCredentials/oauth-credentials.page";
 import { PlaygroundPage } from "./pages/playground/playground.page";
+import { PublicProfilePage } from "./pages/profile/public/PublicProfilePage";
+import { ProfilePageParamsSchema } from "./pages/profile/public/schemas/urlParams.schemas";
 import { SettingsPage } from "./pages/profile/settings/SettingsPage";
 import { BaseLayoutRoute } from "./routes/BaseLayoutRoute";
 import { PrivateOnlyRoute } from "./routes/PrivateOnlyRoute";
@@ -66,6 +68,14 @@ const App = () => {
               })}
               element={<MoviePage />}
             />
+          </Route>
+          <Route
+            element={<ProtectedUrlRoute schema={ProfilePageParamsSchema} />}
+          >
+            <Route
+              path={getUrl(ROUTES.CLIENT.PROFILE, { userId: ":userId" })}
+              element={<PublicProfilePage />}
+            ></Route>
           </Route>
         </Route>
 
