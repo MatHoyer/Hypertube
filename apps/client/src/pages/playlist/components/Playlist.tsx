@@ -33,6 +33,7 @@ export const Playlist = ({ playlist }: { playlist: TPlaylistSchema }) => {
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [_, setSearchParams] = useSearchParams();
+  const pageSize = 10;
 
   useEffect(
     () => setSearchParams({ page: page.toString() }, { replace: true }),
@@ -46,7 +47,10 @@ export const Playlist = ({ playlist }: { playlist: TPlaylistSchema }) => {
         method: "GET",
         url: getUrl(ROUTES.API.PLAYLISTS, {
           playlistId: playlist.id,
-          searchParams: { page: page.toString(), pageSize: "10" },
+          searchParams: {
+            page: page.toString(),
+            pageSize: pageSize.toString(),
+          },
         }),
         schemas: getPlaylistSchemas,
       }),
@@ -123,7 +127,12 @@ export const Playlist = ({ playlist }: { playlist: TPlaylistSchema }) => {
           </Empty>
         </div>
       )}
-      <PagePagination page={page} setPage={setPage} totalCount={totalCount} />
+      <PagePagination
+        page={page}
+        setPage={setPage}
+        pageSize={pageSize}
+        totalCount={totalCount}
+      />
     </div>
   );
 };

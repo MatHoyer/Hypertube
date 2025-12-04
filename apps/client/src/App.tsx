@@ -89,8 +89,9 @@ const App = () => {
               element={<PublicProfilePage />}
             />
           </Route>
-          <Route>
+          <Route
             element={<ProtectedUrlRoute schema={PlaylistPageParamsSchema} />}
+          >
             <Route
               path={getUrl(ROUTES.CLIENT.PLAYLIST, {
                 playlistId: ":playlistId",
