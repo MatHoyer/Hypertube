@@ -32,6 +32,7 @@ export const Historic = () => {
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [_, setSearchParams] = useSearchParams();
+  const pageSize = 10;
 
   useEffect(
     () => setSearchParams({ page: page.toString() }, { replace: true }),
@@ -44,7 +45,10 @@ export const Historic = () => {
       axiosFetch({
         method: "GET",
         url: getUrl(ROUTES.API.HISTORY, {
-          searchParams: { page: page.toString(), pageSize: "10" },
+          searchParams: {
+            page: page.toString(),
+            pageSize: pageSize.toString(),
+          },
         }),
         schemas: getHistorySchemas,
       }),
@@ -110,7 +114,12 @@ export const Historic = () => {
           </Empty>
         </div>
       )}
-      <PagePagination page={page} setPage={setPage} totalCount={totalCount} />
+      <PagePagination
+        page={page}
+        setPage={setPage}
+        pageSize={pageSize}
+        totalCount={totalCount}
+      />
     </div>
   );
 };
