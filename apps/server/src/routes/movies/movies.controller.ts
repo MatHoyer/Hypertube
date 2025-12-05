@@ -1,5 +1,6 @@
 import {
   DownloadStates,
+  getMovieCastingSchema,
   getMovieSchemas,
   getMoviesSchemas,
   hypertubeLogger,
@@ -7,7 +8,7 @@ import {
   ParentTypes,
   TDeleteMovieLikeSchemas,
   TDeleteMovieSubscribeSchemas,
-  TGetMovieCasting,
+  TGetMovieCastingSchema,
   TGetMovieCommentsSchemas,
   TGetMovieSchemas,
   TGetMoviesSchemas,
@@ -26,6 +27,7 @@ import {
 import { env, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { streamSSE } from "hono/streaming";
+import i18next from "i18next";
 import z from "zod";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
 import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
@@ -540,17 +542,19 @@ export const putMovieWatchTimer = async (
 };
 
 export const getMovieCasting = async (
-  c: Context<TIsLogged & TUrlParamsParser<TGetMovieCasting["urlParams"]>>
+  c: Context<TIsLogged & TUrlParamsParser<TGetMovieCastingSchema["urlParams"]>>
 ) => {
-  const language = c.get("language");
   const { tmdbId } = c.get("validatedUrlParams");
 
   const tmdbApi = new TmdbApi();
-  const casting = await tmdbApi.getMovieCasting(
-    tmdbId,
-    language as keyof typeof languageCodes
-  );
+  const casting = await tmdbApi.getMovieCasting(tmdbId);
   if (!casting) return c.json([], 200);
 
-  return c.json(casting, 200);
+  casting.crew.map((person) => {
+    // @ts-expect-error - i18next is not typed
+    person.job = i18next.t(`${person.department}.${person.job}`);
+    return person;
+  });
+
+  return c.json(getMovieCastingSchema.response.parse(casting), 200);
 };

@@ -293,36 +293,28 @@ export type TPutMovieWatchTimerSchemas = {
   response: z.infer<typeof putMovieWatchTimerSchemas.response>;
 };
 
+const tmdbMovieCastingPersonSchema = z.object({
+  adult: z.boolean(),
+  gender: z.number(),
+  id: z.number(),
+  name: z.string(),
+  original_name: z.string(),
+  popularity: z.number(),
+  profile_path: z.string().nullable(),
+  credit_id: z.string(),
+});
+
 export const tmdbMovieCastingSchema = z.object({
   id: z.coerce.number().int().nonnegative(),
   cast: z.array(
-    z.object({
-      adult: z.boolean(),
-      gender: z.number(),
-      id: z.number(),
-      known_for_department: z.string(),
-      name: z.string(),
-      original_name: z.string(),
-      popularity: z.number(),
-      profile_path: z.string().nullable(),
+    tmdbMovieCastingPersonSchema.extend({
       cast_id: z.number(),
       character: z.string(),
-      credit_id: z.string(),
       order: z.number(),
     })
   ),
   crew: z.array(
-    z.object({
-      adult: z.boolean(),
-      gender: z.number(),
-      id: z.number(),
-      known_for_department: z.string(),
-      name: z.string(),
-      original_name: z.string(),
-      popularity: z.number(),
-      profile_path: z.string().nullable(),
-      credit_id: z.string(),
-      department: z.string(),
+    tmdbMovieCastingPersonSchema.extend({
       job: z.string(),
     })
   ),
@@ -330,13 +322,13 @@ export const tmdbMovieCastingSchema = z.object({
 
 export type TTmdbMovieCastingSchema = z.infer<typeof tmdbMovieCastingSchema>;
 
-export const getMovieCasting = {
+export const getMovieCastingSchema = {
   urlParams: z.object({
     tmdbId: movieSchema.shape.tmdbId,
   }),
   response: tmdbMovieCastingSchema,
 };
-export type TGetMovieCasting = {
-  urlParams: z.infer<typeof getMovieCasting.urlParams>;
-  response: z.infer<typeof getMovieCasting.response>;
+export type TGetMovieCastingSchema = {
+  urlParams: z.infer<typeof getMovieCastingSchema.urlParams>;
+  response: z.infer<typeof getMovieCastingSchema.response>;
 };

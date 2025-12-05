@@ -179,13 +179,17 @@ export class TmdbApi {
     return await this.getMovieDetailsByTmdbId(movieId, language);
   }
 
-  public async getMovieCasting(
-    movieId: number,
-    language: keyof typeof languageCodes
-  ) {
-    const responseSchema = tmdbMovieCastingSchema;
+  public async getMovieCasting(movieId: number) {
+    const responseSchema = z.object({
+      ...tmdbMovieCastingSchema.shape,
+      crew: tmdbMovieCastingSchema.shape.crew
+        .unwrap()
+        .extend({ department: z.string() })
+        .array(),
+    });
+    void tmdbMovieCastingSchema;
     const response = await this.fetch<z.infer<typeof responseSchema>>(
-      `/movie/${movieId}/credits?language=${language}`
+      `/movie/${movieId}/credits`
     );
 
     response.cast.map((person) => {

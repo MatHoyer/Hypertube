@@ -1,7 +1,7 @@
 import {
   deleteMovieCommentSchemas,
   deleteMovieLikeSchemas,
-  getMovieCasting,
+  getMovieCastingSchema,
   getMovieCommentSchemas,
   getMovieSchemas,
   getMoviesSchemas,
@@ -278,7 +278,7 @@ export const moviesSwagger = {
           description: "Movie casting got get successfully",
           content: {
             "application/json": {
-              schema: getMovieCasting.response,
+              schema: getMovieCastingSchema.response,
             },
           },
         },

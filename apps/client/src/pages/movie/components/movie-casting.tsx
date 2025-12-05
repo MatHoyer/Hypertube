@@ -6,7 +6,7 @@ import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
-  getMovieCasting,
+  getMovieCastingSchema,
   getUrl,
   ROUTES,
   type TTmdbMovieSchema,
@@ -26,7 +26,7 @@ export const Casting: React.FC<{
       axiosFetch({
         method: "GET",
         url: getUrl(ROUTES.API.MOVIES_CASTING, { tmdbId }),
-        schemas: getMovieCasting,
+        schemas: getMovieCastingSchema,
       }),
   });
 
