@@ -33,7 +33,8 @@ export const CommentActionsDropdown: React.FC<{
   commentId: TCommentSchema["id"];
   parent: TQueryParent;
   setIsEditing: (value: boolean) => void;
-}> = ({ commentId, parent, setIsEditing }) => {
+  disabled: boolean;
+}> = ({ commentId, parent, setIsEditing, disabled }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -55,7 +56,7 @@ export const CommentActionsDropdown: React.FC<{
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild disabled={disabled}>
         <Button className="rounded-full" size="icon" variant="ghost">
           <EllipsisVertical />
         </Button>
@@ -102,7 +103,7 @@ export const EditCommentInput: React.FC<{
       }),
     onSuccess: () => {
       toast.success(t("movie.comments.toast.updateSuccess"));
-      queryClient.invalidateQueries({ queryKey: getParentQueryKey(parent) });
+      queryClient.fetchQuery({ queryKey: getParentQueryKey(parent) });
       setIsEditing(false);
     },
     onError: () => {

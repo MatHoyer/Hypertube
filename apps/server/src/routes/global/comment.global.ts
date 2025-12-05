@@ -69,7 +69,7 @@ export const getParentComments = async (
         },
       },
       orderBy: {
-        createdAt: "desc",
+        createdAt: parentType === ParentTypes.COMMENT ? "asc" : "desc",
       },
       skip,
       take: pageSize,
@@ -118,8 +118,10 @@ export const getParentComments = async (
 
     const commentsWithLikes = comments.map((comment) => ({
       ...comment,
-      // @ts-expect-error - i18next is not typed
-      content: comment.deletedAt ? i18next.t(comment.content) : comment.content,
+
+      content: comment.deletedAt
+        ? i18next.t("comments.deleted")
+        : comment.content,
       likesNumber: likeCountMap.get(comment.id) || 0,
       isLikedByUser: userLikes.has(comment.id),
       isOwnComment: userId ? userId === comment.userId : false,

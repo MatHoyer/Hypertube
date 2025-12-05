@@ -41,7 +41,7 @@ export const Casting: React.FC<{
     isLoading,
     isError,
   } = useQuery({
-    queryKey: getQueryKey(ROUTES.API.MOVIES),
+    queryKey: getQueryKey(ROUTES.API.MOVIES_CASTING, { tmdbId }),
     queryFn: () =>
       axiosFetch({
         method: "GET",

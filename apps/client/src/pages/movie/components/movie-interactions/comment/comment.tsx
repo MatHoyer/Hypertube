@@ -83,6 +83,7 @@ export const Comment: React.FC<{
             commentId={comment.id}
             parent={parent}
             setIsEditing={setIsEditing}
+            disabled={comment.deletedAt !== null}
           />
         )}
       </div>
@@ -114,12 +115,14 @@ export const Comment: React.FC<{
           isLiked={comment.isLikedByUser}
           likesNumber={comment.likesNumber}
           parent={parent}
+          disabled={comment.deletedAt !== null}
         />
         {!isEditing && depth < maxDepth && (
           <Button
             className="rounded-full"
             size="icon"
             onClick={() => setIsReplying((prev) => !prev)}
+            disabled={comment.deletedAt !== null}
           >
             <Reply />
           </Button>

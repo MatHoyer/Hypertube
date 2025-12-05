@@ -26,6 +26,9 @@ const apiRouteQueryKeySchemas = {
       })
       .optional(),
   }),
+  [ROUTES.API.MOVIES_CASTING]: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
   [ROUTES.API.NOTIFICATIONS]: z.object({
     type: z
       .union([z.enum(notificationReadStatuses), z.literal("stats")])
@@ -66,6 +69,10 @@ const queryKeys: {
     if (tmdbId) return [ROUTES.API.MOVIES, tmdbId];
     return [ROUTES.API.MOVIES];
   },
+  [ROUTES.API.MOVIES_CASTING]: ({ tmdbId }) => [
+    ROUTES.API.MOVIES_CASTING,
+    tmdbId,
+  ],
   [ROUTES.API.NOTIFICATIONS]: ({ type }) => {
     if (!type) return [ROUTES.API.NOTIFICATIONS];
     return type === "stats"

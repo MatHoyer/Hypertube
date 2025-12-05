@@ -12,6 +12,7 @@ export const commentSchema = z.object({
   parentType: z.enum(ParentTypes),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
+  deletedAt: z.coerce.date().nullable(),
 });
 
 export const commentResponseSchema = commentSchema
@@ -19,6 +20,7 @@ export const commentResponseSchema = commentSchema
     id: true,
     content: true,
     userId: true,
+    deletedAt: true,
     createdAt: true,
     updatedAt: true,
   })
