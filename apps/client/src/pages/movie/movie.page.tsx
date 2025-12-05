@@ -1,5 +1,5 @@
 import { UniqueFilter } from "@/components/animated/UniqueFilter";
-import { LoadingPage } from "@/components/LoadingPage";
+import { LoadingResource } from "@/components/LoadingResource";
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -17,6 +17,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NotFoundPage } from "../notFound/NotFound.page";
 import { DownloadsSelector } from "./components/downloads-selector/download-selector";
+import { Casting } from "./components/movie-casting";
 import MovieInfo from "./components/movie-info";
 import { MovieInteraction } from "./components/movie-interaction";
 import VideoPlayer from "./components/video-player";
@@ -86,7 +87,7 @@ const MoviePage = () => {
     const eventSource = new EventSource(
       getUrl(ROUTES.API.SSE_MOVIES, {
         tmdbId,
-      }),
+      })
     );
     eventSource.onopen = () => {
       console.log("SSE opened");
@@ -98,7 +99,7 @@ const MoviePage = () => {
     const handleDownloadStateChange = (event: MessageEvent<string>) => {
       const { success, data } =
         getMovieSSESchemas.response.downloadStateChange.safeParse(
-          JSON.parse(event.data),
+          JSON.parse(event.data)
         );
       if (!success) {
         console.error("invalid downloadStateChange data", event.data);
@@ -112,7 +113,7 @@ const MoviePage = () => {
     const handleDownloadProgress = (event: MessageEvent<string>) => {
       const { success, data } =
         getMovieSSESchemas.response.downloadProgress.safeParse(
-          JSON.parse(event.data),
+          JSON.parse(event.data)
         );
       if (!success) {
         console.error("invalid downloadProgress data", event.data);
@@ -127,28 +128,28 @@ const MoviePage = () => {
     };
     eventSource.addEventListener(
       MOVIE_EVENTS.DOWNLOAD_STATE_CHANGE,
-      handleDownloadStateChange,
+      handleDownloadStateChange
     );
     eventSource.addEventListener(
       MOVIE_EVENTS.DOWNLOAD_PROGRESS,
-      handleDownloadProgress,
+      handleDownloadProgress
     );
 
     return () => {
       eventSource.close();
       eventSource.removeEventListener(
         MOVIE_EVENTS.DOWNLOAD_STATE_CHANGE,
-        handleDownloadStateChange,
+        handleDownloadStateChange
       );
       eventSource.removeEventListener(
         MOVIE_EVENTS.DOWNLOAD_PROGRESS,
-        handleDownloadProgress,
+        handleDownloadProgress
       );
     };
   }, [tmdbId, queryClient]);
 
   if (isLoading) {
-    return <LoadingPage resource="movie" />;
+    return <LoadingResource resource="movie" />;
   }
 
   if (!movie) {
@@ -163,6 +164,7 @@ const MoviePage = () => {
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 relative">
         <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-4 h-fit">
           <MovieInfo movie={movie} />
+          <Casting tmdbId={movie.tmdbId} />
         </div>
 
         <div className="flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:col-span-2 p-4">
@@ -175,7 +177,7 @@ const MoviePage = () => {
                   values={{
                     [MovieTabs.VIDEO]: t(`movie.tabs.${MovieTabs.VIDEO}`),
                     [MovieTabs.DOWNLOADS]: t(
-                      `movie.tabs.${MovieTabs.DOWNLOADS}`,
+                      `movie.tabs.${MovieTabs.DOWNLOADS}`
                     ),
                   }}
                 />

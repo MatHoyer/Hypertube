@@ -78,6 +78,7 @@ export {
   deleteMovieCommentSchemas,
   deleteMovieLikeSchemas,
   deleteMovieSubscribeSchemas,
+  getMovieCastingSchema,
   getMovieCommentSchemas,
   getMovieSchemas,
   getMoviesSchemas,
@@ -88,6 +89,7 @@ export {
   postMovieLikeSchemas,
   postMovieSubscribeSchemas,
   putMovieWatchTimerSchemas,
+  tmdbMovieCastingSchema,
   tmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
 
@@ -95,6 +97,7 @@ export type {
   TDeleteMovieCommentSchemas,
   TDeleteMovieLikeSchemas,
   TDeleteMovieSubscribeSchemas,
+  TGetMovieCastingSchema,
   TGetMovieCommentsSchemas,
   TGetMovieSchemas,
   TGetMoviesSchemas,

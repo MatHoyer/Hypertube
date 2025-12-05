@@ -64,6 +64,7 @@ export const ROUTES = {
     COMMENTS_LIKES: "api-comments-like",
     HISTORY: "api-history",
     MOVIES_WATCH_TIMER: "api-movies-watch-timer",
+    MOVIES_CASTING: "api-movies-casting",
   },
   EXTERNAL: {
     IMDB_MOVIE: "external-imdb-movie",
@@ -205,6 +206,9 @@ const routeSchemas = {
     [ROUTES.API.MOVIES_WATCH_TIMER]: z.object({
       tmdbId: z.union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")]),
     }),
+    [ROUTES.API.MOVIES_CASTING]: z.object({
+      tmdbId: z.union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")]),
+    }),
   },
   EXTERNAL: {
     [ROUTES.EXTERNAL.IMDB_MOVIE]: z.object({
@@ -344,6 +348,7 @@ const routes: {
 
   [ROUTES.API.MOVIES_WATCH_TIMER]: ({ tmdbId }) =>
     `/api/movies/${tmdbId}/watch-timer`,
+  [ROUTES.API.MOVIES_CASTING]: ({ tmdbId }) => `/api/movies/${tmdbId}/casting`,
 
   // External routes
   [ROUTES.EXTERNAL.IMDB_MOVIE]: ({ imdbId }) =>
@@ -364,21 +369,20 @@ type TSearchParamsProvided =
   | string
   | URLSearchParams;
 
-type TGetUrlArgs<T extends TRoute> =
-  TRouteDataMap<T> extends undefined
-    ? {
-        withUrl?: "server" | "client";
-        searchParams?: TSearchParamsProvided;
-      }
-    : TRouteDataMap<T> extends Record<string, never>
-      ? {
-          withUrl?: "server" | "client";
-          searchParams?: TSearchParamsProvided;
-        }
-      : TRouteDataMap<T> & {
-          withUrl?: "server" | "client";
-          searchParams?: TSearchParamsProvided;
-        };
+type TGetUrlArgs<T extends TRoute> = TRouteDataMap<T> extends undefined
+  ? {
+      withUrl?: "server" | "client";
+      searchParams?: TSearchParamsProvided;
+    }
+  : TRouteDataMap<T> extends Record<string, never>
+  ? {
+      withUrl?: "server" | "client";
+      searchParams?: TSearchParamsProvided;
+    }
+  : TRouteDataMap<T> & {
+      withUrl?: "server" | "client";
+      searchParams?: TSearchParamsProvided;
+    };
 
 const isClientRoute = (route: any): route is TClientRoute =>
   Object.values(ROUTES.CLIENT).includes(route as TClientRoute);
@@ -419,13 +423,10 @@ export const getUrl = <T extends TRoute>(
     withUrl && !route.startsWith("external-") ? withUrlMapping[withUrl] : "";
 
   if (isPurObject(searchParams)) {
-    searchParams = typedEntries(searchParams).reduce(
-      (acc, [key, value]) => {
-        if (value) acc[key] = value;
-        return acc;
-      },
-      {} as Record<string, string>
-    );
+    searchParams = typedEntries(searchParams).reduce((acc, [key, value]) => {
+      if (value) acc[key] = value;
+      return acc;
+    }, {} as Record<string, string>);
   }
 
   const parsedSearchParams = searchParams

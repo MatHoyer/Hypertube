@@ -1,5 +1,5 @@
-import { ErrorPage } from "@/components/ErrorPage";
-import { LoadingPage } from "@/components/LoadingPage";
+import { ErrorResource } from "@/components/ErrorResource";
+import { LoadingResource } from "@/components/LoadingResource";
 import { getProfileStatIcon } from "@/components/profile-stats/getProfileStatsIcon";
 import { StatBackgroundColors } from "@/components/profile-stats/profile-stats.colors";
 import { useConvertParams } from "@/hooks/use-convert-params";
@@ -26,8 +26,8 @@ export const PublicProfilePage = () => {
       }),
   });
 
-  if (isLoading) return <LoadingPage resource="profile" />;
-  if (isError || !data) return <ErrorPage resource="profile" />;
+  if (isLoading) return <LoadingResource resource="profile" />;
+  if (isError || !data) return <ErrorResource resource="profile" />;
 
   return (
     <Layout>

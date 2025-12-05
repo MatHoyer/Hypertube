@@ -240,6 +240,12 @@
       }
     }
   },
+  "casting": {
+    "casting": "Casting",
+    "crew": "Crew",
+    "loadingRessource": "casting",
+    "errorRessource": "casting not found"
+  },
   "oauthCredentials": {
     "title": "Credentials",
     "description": "Manage your OAuth credentials for third-party integrations.",

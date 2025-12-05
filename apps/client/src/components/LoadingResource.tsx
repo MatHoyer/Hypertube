@@ -3,10 +3,10 @@ import { useTranslation } from "react-i18next";
 import { AppLoader } from "./ui/app-loader";
 import { Typography } from "./ui/typography";
 
-const loadingPages = ["global", "movie", "profile"] as const;
+const loadingResources = ["global", "movie", "profile", "casting"] as const;
 
-export const LoadingPage: React.FC<{
-  resource: (typeof loadingPages)[number];
+export const LoadingResource: React.FC<{
+  resource: (typeof loadingResources)[number];
 }> = ({ resource }) => {
   const { t } = useTranslation();
   const [showLoader, setShowLoader] = useState(false);
@@ -19,7 +19,7 @@ export const LoadingPage: React.FC<{
     return () => clearTimeout(timer);
   }, []);
 
-  if (!loadingPages.includes(resource) || !showLoader) {
+  if (!loadingResources.includes(resource) || !showLoader) {
     return null;
   }
 

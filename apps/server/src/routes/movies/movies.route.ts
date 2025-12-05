@@ -24,6 +24,7 @@ import {
   downloadMovie,
   downloadSubtitles,
   getMovie,
+  getMovieCasting,
   getMovieComments,
   getMovies,
   getMovieSSE,
@@ -39,21 +40,21 @@ moviesRouter.get(
   "/",
   isLogged,
   searchParamsParser(getMoviesSchemas.searchParams),
-  getMovies,
+  getMovies
 );
 
 moviesRouter.get(
   "/:tmdbId",
   isLogged,
   urlParamsParser(getMovieSchemas.urlParams),
-  getMovie,
+  getMovie
 );
 
 moviesRouter.get(
   "/:tmdbId/sse",
   isLogged,
   urlParamsParser(getMovieSSESchemas.urlParams),
-  getMovieSSE,
+  getMovieSSE
 );
 
 moviesRouter.get(
@@ -61,7 +62,7 @@ moviesRouter.get(
   isLogged,
   urlParamsParser(getMovieCommentSchemas.urlParams),
   searchParamsParser(getMovieCommentSchemas.searchParams),
-  getMovieComments,
+  getMovieComments
 );
 
 moviesRouter.post(
@@ -69,7 +70,7 @@ moviesRouter.post(
   isVPNActive,
   isLogged,
   urlParamsParser(postMovieDownloadResolutionSchemas.urlParams),
-  downloadMovie,
+  downloadMovie
 );
 
 moviesRouter.post(
@@ -77,28 +78,28 @@ moviesRouter.post(
   isVPNActive,
   isLogged,
   urlParamsParser(postMovieDownloadSubtitlesSchemas.urlParams),
-  downloadSubtitles,
+  downloadSubtitles
 );
 
 moviesRouter.post(
   "/:tmdbId/subscription",
   isLogged,
   urlParamsParser(postMovieSubscribeSchemas.urlParams),
-  subscribeToMovie,
+  subscribeToMovie
 );
 
 moviesRouter.delete(
   "/:tmdbId/subscription",
   isLogged,
   urlParamsParser(deleteMovieSubscribeSchemas.urlParams),
-  unsubscribeFromMovie,
+  unsubscribeFromMovie
 );
 
 moviesRouter.post(
   "/:tmdbId/like",
   isLogged,
   urlParamsParser(postMovieLikeSchemas.urlParams),
-  likeMovie,
+  likeMovie
 );
 
 moviesRouter.post(
@@ -106,14 +107,14 @@ moviesRouter.post(
   isLogged,
   urlParamsParser(postMovieCommentSchemas.urlParams),
   bodyParser(postMovieCommentSchemas.requirements),
-  commentMovie,
+  commentMovie
 );
 
 moviesRouter.delete(
   "/:tmdbId/like",
   isLogged,
   urlParamsParser(deleteMovieLikeSchemas.urlParams),
-  deleteMovieLike,
+  deleteMovieLike
 );
 
 moviesRouter.put(
@@ -121,7 +122,14 @@ moviesRouter.put(
   isLogged,
   urlParamsParser(putMovieWatchTimerSchemas.urlParams),
   bodyParser(putMovieWatchTimerSchemas.requirements),
-  putMovieWatchTimer,
+  putMovieWatchTimer
+);
+
+moviesRouter.get(
+  "/:tmdbId/casting",
+  isLogged,
+  urlParamsParser(putMovieWatchTimerSchemas.urlParams),
+  getMovieCasting
 );
 
 export default moviesRouter;
