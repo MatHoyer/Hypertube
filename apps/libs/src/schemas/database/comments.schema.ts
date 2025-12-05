@@ -20,9 +20,9 @@ export const commentResponseSchema = commentSchema
     id: true,
     content: true,
     userId: true,
-    deletedAt: true,
     createdAt: true,
     updatedAt: true,
+    deletedAt: true,
   })
   .extend({
     user: userSchema.pick({ id: true, name: true, image: true }),
