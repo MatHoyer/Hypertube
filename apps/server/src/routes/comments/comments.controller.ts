@@ -58,6 +58,9 @@ export const likeComment = async (
   if (!comment) {
     return c.json({ message: "Comment not found" }, 404);
   }
+  if (comment.deletedAt) {
+    return c.json({ message: "Comment is deleted" }, 400);
+  }
 
   if (comment.parentType === ParentTypes.MOVIE) {
     const movie = await prisma.movie.findUnique({
@@ -98,6 +101,9 @@ export const replyToComment = async (
   });
   if (!parentComment) {
     return c.json({ message: "Comment not found" }, 404);
+  }
+  if (parentComment.deletedAt) {
+    return c.json({ message: "Comment is deleted" }, 400);
   }
 
   if (parentComment.parentType !== ParentTypes.MOVIE) {
@@ -140,6 +146,9 @@ export const deleteCommentLike = async (
   if (!comment) {
     return c.json({ message: "Comment not found" }, 404);
   }
+  if (comment.deletedAt) {
+    return c.json({ message: "Comment is deleted" }, 400);
+  }
 
   const result = await unlikeParent(id, commentId);
   return c.json({ message: result.message }, result.status);
@@ -161,10 +170,17 @@ export const deleteComment = async (
   if (!comment) {
     return c.json({ message: "Comment not found or unauthorized" }, 404);
   }
+  if (comment.deletedAt) {
+    return c.json({ message: "Comment already deleted" }, 400);
+  }
 
   try {
-    await prisma.comment.delete({
+    await prisma.comment.update({
       where: { id: commentId },
+      data: {
+        content: "comments.deleted",
+        deletedAt: new Date(),
+      },
     });
     return c.json({ message: "Comment deleted successfully" }, 200);
   } catch (error) {
@@ -190,6 +206,9 @@ export const patchComment = async (
 
   if (!comment) {
     return c.json({ message: "Comment not found" }, 404);
+  }
+  if (comment.deletedAt) {
+    return c.json({ message: "Comment is deleted" }, 400);
   }
 
   if (comment.userId !== id) {

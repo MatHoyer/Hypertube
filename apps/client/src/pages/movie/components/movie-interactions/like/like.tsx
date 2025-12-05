@@ -53,7 +53,8 @@ export const CommentLikeButton: React.FC<{
   isLiked: boolean;
   likesNumber: number;
   parent: TQueryParent;
-}> = ({ commentId, isLiked, likesNumber, parent }) => {
+  disabled: boolean;
+}> = ({ commentId, isLiked, likesNumber, parent, disabled }) => {
   const queryClient = useQueryClient();
 
   const { mutate, isPending, isSuccess } = useMutation({
@@ -64,15 +65,13 @@ export const CommentLikeButton: React.FC<{
         schemas: isLiked ? deleteCommentLikeSchemas : postCommentLikeSchemas,
       }),
     onSuccess: () => {
-      const queryKey = getParentQueryKey(parent);
-      if (queryKey) {
-        queryClient.fetchQuery({ queryKey });
-      }
+      queryClient.fetchQuery({ queryKey: getParentQueryKey(parent) });
     },
   });
 
   return (
     <BaseLikeButton
+      disabled={disabled}
       isLiked={isLiked}
       likesNumber={likesNumber}
       onToggle={() => mutate()}

@@ -33,4 +33,6 @@ export const getParentQueryKey = (parent: TQueryParent) => {
   if (isParentComment(parent)) {
     return getQueryKey(ROUTES.API.COMMENTS_REPLIES, { commentId: parent.id });
   }
+
+  throw new Error("Invalid parent");
 };

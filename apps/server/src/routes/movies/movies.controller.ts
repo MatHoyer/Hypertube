@@ -547,8 +547,16 @@ export const getMovieCasting = async (
   const { tmdbId } = c.get("validatedUrlParams");
 
   const tmdbApi = new TmdbApi();
-  const casting = await tmdbApi.getMovieCasting(tmdbId);
-  if (!casting) return c.json([], 200);
+  const casting = tmdbId ? await tmdbApi.getMovieCasting(tmdbId) : null;
+  if (!casting)
+    return c.json(
+      {
+        id: tmdbId,
+        cast: [],
+        crew: [],
+      },
+      200
+    );
 
   casting.crew.map((person) => {
     // @ts-expect-error - i18next is not typed

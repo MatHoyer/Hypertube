@@ -11,13 +11,22 @@ import { t } from "i18next";
 import { ThumbsUp } from "lucide-react";
 
 export const BaseLikeButton: React.FC<{
+  disabled?: boolean;
   isLiked: boolean;
   likesNumber?: number;
   onToggle: () => void;
   likeType: TParentType;
   isPending: boolean;
   isSuccess: boolean;
-}> = ({ isLiked, likesNumber, onToggle, likeType, isPending, isSuccess }) => {
+}> = ({
+  disabled,
+  isLiked,
+  likesNumber,
+  onToggle,
+  likeType,
+  isPending,
+  isSuccess,
+}) => {
   const tooltipText = () => {
     if (likeType === ParentTypes.MOVIE) {
       return isLiked
@@ -34,6 +43,7 @@ export const BaseLikeButton: React.FC<{
       <Tooltip>
         <TooltipTrigger asChild>
           <LoadingButton
+            disabled={disabled}
             variant="ghost"
             onClick={onToggle}
             loading={isPending}
@@ -42,7 +52,7 @@ export const BaseLikeButton: React.FC<{
             <ThumbsUp
               className={cn(
                 "transition-colors",
-                isLiked ? "text-primary fill-primary" : "text-gray-500"
+                isLiked && "fill-primary text-primary"
               )}
             />
             {likesNumber}
