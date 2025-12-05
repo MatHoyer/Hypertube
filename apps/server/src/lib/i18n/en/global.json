@@ -98,6 +98,7 @@
     "alreadyLiked": "Content is already liked"
   },
   "comments": {
+    "deleted": "This comment has been deleted",
     "notFound": "Comment not found"
   },
   "movies": {

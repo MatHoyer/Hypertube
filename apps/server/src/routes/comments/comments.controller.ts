@@ -162,9 +162,17 @@ export const deleteComment = async (
     return c.json({ message: "Comment not found or unauthorized" }, 404);
   }
 
+  if (comment.deletedAt) {
+    return c.json({ message: "Comment already deleted" }, 400);
+  }
+
   try {
-    await prisma.comment.delete({
+    await prisma.comment.update({
       where: { id: commentId },
+      data: {
+        content: "comments.deleted",
+        deletedAt: new Date(),
+      },
     });
     return c.json({ message: "Comment deleted successfully" }, 200);
   } catch (error) {

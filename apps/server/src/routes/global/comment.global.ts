@@ -1,12 +1,13 @@
 import { hypertubeLogger, ParentTypes, TParentType } from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
 import { ContentfulStatusCode } from "hono/utils/http-status";
+import i18next from "i18next";
 
 export const commentParent = async (
   content: string,
   userId: string,
   parentId: string,
-  parentType: TParentType,
+  parentType: TParentType
 ): Promise<{ message: string; status: ContentfulStatusCode }> => {
   try {
     await prisma.comment.create({
@@ -19,7 +20,7 @@ export const commentParent = async (
     });
 
     hypertubeLogger.info(
-      `Comment succesfully posted on ${parentType} by ${userId}`,
+      `Comment succesfully posted on ${parentType} by ${userId}`
     );
 
     return {
@@ -40,7 +41,7 @@ export const getParentComments = async (
   parentType: TParentType,
   userId: string,
   page: number,
-  pageSize: number,
+  pageSize: number
 ) => {
   try {
     const totalComments = await prisma.comment.count({
@@ -108,15 +109,17 @@ export const getParentComments = async (
     });
 
     const likeCountMap = new Map(
-      likeCounts.map((lc) => [lc.parentId, lc._count]),
+      likeCounts.map((lc) => [lc.parentId, lc._count])
     );
 
     const commentsWithRepliesSet = new Set(
-      replyCounts.map((rc) => rc.parentId),
+      replyCounts.map((rc) => rc.parentId)
     );
 
     const commentsWithLikes = comments.map((comment) => ({
       ...comment,
+      // @ts-expect-error - i18next is not typed
+      content: comment.deletedAt ? i18next.t(comment.content) : comment.content,
       likesNumber: likeCountMap.get(comment.id) || 0,
       isLikedByUser: userLikes.has(comment.id),
       isOwnComment: userId ? userId === comment.userId : false,
