@@ -7,6 +7,7 @@ import {
   ParentTypes,
   TDeleteMovieLikeSchemas,
   TDeleteMovieSubscribeSchemas,
+  TGetMovieCasting,
   TGetMovieCommentsSchemas,
   TGetMovieSchemas,
   TGetMoviesSchemas,
@@ -47,17 +48,17 @@ import {
 const tmdbGenresSchemas = z.array(z.enum(typedKeys(tmdbGenres)));
 
 export const getMovies = async (
-  c: Context<TSearchParamsParser<TGetMoviesSchemas["searchParams"]>>,
+  c: Context<TSearchParamsParser<TGetMoviesSchemas["searchParams"]>>
 ) => {
   const tmdbApi = new TmdbApi();
 
   const { query, page, category, sort, genres } = c.get(
-    "validatedSearchParams",
+    "validatedSearchParams"
   );
   const language = c.get("language");
 
   const genresTyped = tmdbGenresSchemas.safeParse(
-    genres ? genres.split("+") : [],
+    genres ? genres.split("+") : []
   );
   if (!genresTyped.success) return c.json(genresTyped.error, 404);
   const genreIds = genresTyped.data.map((filter) => tmdbGenres[filter]);
@@ -72,7 +73,7 @@ export const getMovies = async (
   });
 
   const movieDownloadStatesByTmdbIds = await getMovieDownloadStatesByTmdbIds(
-    moviesPagination.movies.filter(Boolean).map((movie) => movie!.id),
+    moviesPagination.movies.filter(Boolean).map((movie) => movie!.id)
   );
 
   const moviesWithStatutPagination = {
@@ -92,7 +93,7 @@ export const getMovies = async (
 };
 
 export const getMovie = async (
-  c: Context<TUrlParamsParser<TGetMovieSchemas["urlParams"]> & TIsLogged>,
+  c: Context<TUrlParamsParser<TGetMovieSchemas["urlParams"]> & TIsLogged>
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const language = c.get("language");
@@ -204,7 +205,7 @@ export const getMovie = async (
       isSubscribed,
       likesNumber,
       isLikedByUser,
-    }),
+    })
   );
 };
 
@@ -231,7 +232,7 @@ downloaderQueue.on("progress", (job) => {
 });
 
 export const getMovieSSE = async (
-  c: Context<TUrlParamsParser<TGetMovieSSESchemas["urlParams"]>>,
+  c: Context<TUrlParamsParser<TGetMovieSSESchemas["urlParams"]>>
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
 
@@ -252,9 +253,7 @@ export const getMovieSSE = async (
 };
 
 export const downloadMovie = async (
-  c: Context<
-    TUrlParamsParser<TPostMovieDownloadResolutionSchemas["urlParams"]>
-  >,
+  c: Context<TUrlParamsParser<TPostMovieDownloadResolutionSchemas["urlParams"]>>
 ) => {
   const { tmdbId, resolution } = c.get("validatedUrlParams");
 
@@ -282,7 +281,7 @@ export const downloadMovie = async (
   if (dbResolution.downloadState !== DownloadStates.NOT_DOWNLOADED) {
     return c.json(
       { message: "Resolution already downloaded or in downloading queue" },
-      400,
+      400
     );
   }
 
@@ -315,7 +314,7 @@ export const downloadMovie = async (
 };
 
 export const downloadSubtitles = async (
-  c: Context<TUrlParamsParser<TPostMovieDownloadSubtitlesSchemas["urlParams"]>>,
+  c: Context<TUrlParamsParser<TPostMovieDownloadSubtitlesSchemas["urlParams"]>>
 ) => {
   const { tmdbId, subtitlesLanguage } = c.get("validatedUrlParams");
 
@@ -376,7 +375,7 @@ export const downloadSubtitles = async (
 export const subscribeToMovie = async (
   c: Context<
     TIsLogged & TUrlParamsParser<TPostMovieSubscribeSchemas["urlParams"]>
-  >,
+  >
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const { id: userId } = c.get("user");
@@ -403,7 +402,7 @@ export const subscribeToMovie = async (
 export const unsubscribeFromMovie = async (
   c: Context<
     TIsLogged & TUrlParamsParser<TDeleteMovieSubscribeSchemas["urlParams"]>
-  >,
+  >
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const { id: userId } = c.get("user");
@@ -430,7 +429,7 @@ export const unsubscribeFromMovie = async (
 };
 
 export const likeMovie = async (
-  c: Context<TIsLogged & TUrlParamsParser<TPostMovieLikeSchemas["urlParams"]>>,
+  c: Context<TIsLogged & TUrlParamsParser<TPostMovieLikeSchemas["urlParams"]>>
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const { id } = c.get("user");
@@ -449,9 +448,7 @@ export const likeMovie = async (
 };
 
 export const deleteMovieLike = async (
-  c: Context<
-    TIsLogged & TUrlParamsParser<TDeleteMovieLikeSchemas["urlParams"]>
-  >,
+  c: Context<TIsLogged & TUrlParamsParser<TDeleteMovieLikeSchemas["urlParams"]>>
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const { id } = c.get("user");
@@ -471,7 +468,7 @@ export const getMovieComments = async (
     TIsLogged &
       TUrlParamsParser<TGetMovieCommentsSchemas["urlParams"]> &
       TSearchParamsParser<TGetMovieCommentsSchemas["searchParams"]>
-  >,
+  >
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const { page, pageSize } = c.get("validatedSearchParams");
@@ -488,7 +485,7 @@ export const getMovieComments = async (
     ParentTypes.MOVIE,
     userId,
     page,
-    pageSize,
+    pageSize
   );
 
   if (result.data) {
@@ -502,7 +499,7 @@ export const commentMovie = async (
     TIsLogged &
       TUrlParamsParser<TPostMovieCommentSchemas["urlParams"]> &
       TBodyParser<TPostMovieCommentSchemas["requirements"]>
-  >,
+  >
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const { content } = c.get("validatedBody");
@@ -522,7 +519,7 @@ export const putMovieWatchTimer = async (
     TIsLogged &
       TUrlParamsParser<TPutMovieWatchTimerSchemas["urlParams"]> &
       TBodyParser<TPutMovieWatchTimerSchemas["requirements"]>
-  >,
+  >
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const { timestamp } = c.get("validatedBody");
@@ -540,4 +537,20 @@ export const putMovieWatchTimer = async (
   });
 
   return c.json({ message: "Movie watch timer updated" }, 200);
+};
+
+export const getMovieCasting = async (
+  c: Context<TIsLogged & TUrlParamsParser<TGetMovieCasting["urlParams"]>>
+) => {
+  const language = c.get("language");
+  const { tmdbId } = c.get("validatedUrlParams");
+
+  const tmdbApi = new TmdbApi();
+  const casting = await tmdbApi.getMovieCasting(
+    tmdbId,
+    language as keyof typeof languageCodes
+  );
+  if (!casting) return c.json([], 200);
+
+  return c.json(casting, 200);
 };

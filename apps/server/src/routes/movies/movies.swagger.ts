@@ -1,6 +1,7 @@
 import {
   deleteMovieCommentSchemas,
   deleteMovieLikeSchemas,
+  getMovieCasting,
   getMovieCommentSchemas,
   getMovieSchemas,
   getMoviesSchemas,
@@ -255,13 +256,30 @@ export const moviesSwagger = {
           },
         },
       },
+      responses: {
+        "200": {
+          description: "OK",
+          content: {
+            "application/json": {
+              schema: putMovieWatchTimerSchemas.response,
+            },
+          },
+        },
+      },
     },
-    responses: {
-      "200": {
-        description: "OK",
-        content: {
-          "application/json": {
-            schema: putMovieWatchTimerSchemas.response,
+  },
+  [getUrl(ROUTES.API.MOVIES_CASTING, { tmdbId: "{tmdbId}" })]: {
+    get: {
+      summary: "Get movie casting",
+      tags: ["Movies"],
+      parameters: [tmdbIdPathParam],
+      responses: {
+        "200": {
+          description: "Movie casting got get successfully",
+          content: {
+            "application/json": {
+              schema: getMovieCasting.response,
+            },
           },
         },
       },

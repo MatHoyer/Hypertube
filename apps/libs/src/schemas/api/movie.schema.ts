@@ -29,7 +29,7 @@ export const tmdbMovieSchema = z.object({
     z.object({
       id: z.number(),
       name: z.string(),
-    }),
+    })
   ),
 
   vote_average: z.number(),
@@ -56,15 +56,15 @@ export const getMoviesSchemas = {
       .regex(
         new RegExp(
           `^(${typedKeys(tmdbGenres).join("|")})(\\+(${typedKeys(
-            tmdbGenres,
-          ).join("|")}))*$`,
-        ),
+            tmdbGenres
+          ).join("|")}))*$`
+        )
       )
       .optional(),
   }),
   response: z.object({
     movies: z.array(
-      tmdbMovieSchema.extend({ status: z.enum(DownloadStates) }).nullable(),
+      tmdbMovieSchema.extend({ status: z.enum(DownloadStates) }).nullable()
     ),
     page: z.number(),
     totalPages: z.number(),
@@ -291,4 +291,52 @@ export type TPutMovieWatchTimerSchemas = {
   urlParams: z.infer<typeof putMovieWatchTimerSchemas.urlParams>;
   requirements: z.infer<typeof putMovieWatchTimerSchemas.requirements>;
   response: z.infer<typeof putMovieWatchTimerSchemas.response>;
+};
+
+export const tmdbMovieCastingSchema = z.object({
+  id: z.coerce.number().int().nonnegative(),
+  cast: z.array(
+    z.object({
+      adult: z.boolean(),
+      gender: z.number(),
+      id: z.number(),
+      known_for_department: z.string(),
+      name: z.string(),
+      original_name: z.string(),
+      popularity: z.number(),
+      profile_path: z.string().nullable(),
+      cast_id: z.number(),
+      character: z.string(),
+      credit_id: z.string(),
+      order: z.number(),
+    })
+  ),
+  crew: z.array(
+    z.object({
+      adult: z.boolean(),
+      gender: z.number(),
+      id: z.number(),
+      known_for_department: z.string(),
+      name: z.string(),
+      original_name: z.string(),
+      popularity: z.number(),
+      profile_path: z.string().nullable(),
+      credit_id: z.string(),
+      department: z.string(),
+      job: z.string(),
+    })
+  ),
+});
+
+export type TTmdbMovieCastingSchema = z.infer<typeof tmdbMovieCastingSchema>;
+
+export const getMovieCasting = {
+  urlParams: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  response: tmdbMovieCastingSchema,
+};
+export type TGetMovieCasting = {
+  urlParams: z.infer<typeof getMovieCasting.urlParams>;
+  response: z.infer<typeof getMovieCasting.response>;
 };
