@@ -1,5 +1,5 @@
 import { UniqueFilter } from "@/components/animated/UniqueFilter";
-import { LoadingPage } from "@/components/LoadingPage";
+import { LoadingResource } from "@/components/LoadingResource";
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -149,7 +149,7 @@ const MoviePage = () => {
   }, [tmdbId, queryClient]);
 
   if (isLoading) {
-    return <LoadingPage resource="movie" />;
+    return <LoadingResource resource="movie" />;
   }
 
   if (!movie) {

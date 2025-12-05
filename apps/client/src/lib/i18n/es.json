@@ -240,6 +240,12 @@
       }
     }
   },
+  "casting": {
+    "casting": "",
+    "crew": "",
+    "loadingRessource": "",
+    "errorRessource": ""
+  },
   "oauthCredentials": {
     "title": "Credenciales",
     "description": "Gestiona tus credenciales OAuth para integraciones de terceros.",

@@ -1,4 +1,4 @@
-import { LoadingPage } from "@/components/LoadingPage";
+import { LoadingResource } from "@/components/LoadingResource";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Typography } from "@/components/ui/typography";
 import useDebounce from "@/hooks/use-debounce";
@@ -136,7 +136,7 @@ export const Library = () => {
     virtualizer.getVirtualItems(),
   ]);
 
-  if (isPending) return <LoadingPage resource="global" />;
+  if (isPending) return <LoadingResource resource="global" />;
   if (isError) {
     return (
       <div className="flex justify-center items-center">

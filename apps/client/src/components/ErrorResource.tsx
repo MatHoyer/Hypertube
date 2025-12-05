@@ -1,14 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { Typography } from "./ui/typography";
 
-const errorPages = ["global", "profile"] as const;
+const errorResources = ["global", "profile", "casting"] as const;
 
-export const ErrorPage: React.FC<{
-  resource: (typeof errorPages)[number];
+export const ErrorResource: React.FC<{
+  resource: (typeof errorResources)[number];
 }> = ({ resource }) => {
   const { t } = useTranslation();
 
-  if (!errorPages.includes(resource)) {
+  if (!errorResources.includes(resource)) {
     return null;
   }
 
