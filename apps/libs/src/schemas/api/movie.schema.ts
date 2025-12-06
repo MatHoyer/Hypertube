@@ -45,6 +45,13 @@ export const tmdbMovieSchema = z.object({
 
 export type TTmdbMovieSchema = z.infer<typeof tmdbMovieSchema>;
 
+export const tmdbMovieCompleteSchema = z.discriminatedUnion("hasDetails", [
+  tmdbMovieSchema.extend({ hasDetails: z.literal(true) }),
+  z.object({ id: tmdbMovieSchema.shape.id, hasDetails: z.literal(false) }),
+]);
+
+export type TTmdbMovieCompleteSchema = z.infer<typeof tmdbMovieCompleteSchema>;
+
 export const getMoviesSchemas = {
   searchParams: z.object({
     page: z.coerce.number().int().positive().default(1),
@@ -64,7 +71,10 @@ export const getMoviesSchemas = {
   }),
   response: z.object({
     movies: z.array(
-      tmdbMovieSchema.extend({ status: z.enum(DownloadStates) }).nullable()
+      z.object({
+        details: tmdbMovieCompleteSchema,
+        downloadState: z.enum(DownloadStates),
+      })
     ),
     page: z.number(),
     totalPages: z.number(),
@@ -82,25 +92,8 @@ export const getMovieSchemas = {
   }),
   response: z
     .object({
-      ...tmdbMovieSchema.pick({
-        original_title: true,
-        original_language: true,
-        title: true,
-        overview: true,
-
-        genres: true,
-
-        vote_average: true,
-        vote_count: true,
-        popularity: true,
-
-        poster_path: true,
-        backdrop_path: true,
-
-        release_date: true,
-        adult: true,
-      }).shape,
-      ...movieSchema.shape,
+      details: tmdbMovieCompleteSchema,
+      id: movieSchema.shape.id,
       resolutions: z.array(resolutionSchema),
       subtitles: z.array(subtitleSchema),
       isSubscribed: z.boolean(),

@@ -1,7 +1,7 @@
 import z from "zod";
 import { DownloadStates } from "../../const/global.const.js";
 import { movieSchema } from "../database/movie.schema.js";
-import { tmdbMovieSchema } from "./movie.schema.js";
+import { tmdbMovieCompleteSchema } from "./movie.schema.js";
 
 export const getHistorySchemas = {
   searchParams: z.object({
@@ -10,12 +10,11 @@ export const getHistorySchemas = {
   }),
   response: z.object({
     movies: z.array(
-      tmdbMovieSchema
-        .extend({
-          downloadState: z.enum(DownloadStates),
-          watchTimer: z.number(),
-        })
-        .nullable()
+      z.object({
+        details: tmdbMovieCompleteSchema,
+        downloadState: z.enum(DownloadStates),
+        watchTimer: z.number(),
+      })
     ),
     totalCount: z.number(),
   }),

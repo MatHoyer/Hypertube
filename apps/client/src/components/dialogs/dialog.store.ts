@@ -2,6 +2,7 @@ import {
   credentialSchema,
   resolutionSchema,
   subtitleSchema,
+  tmdbMovieCompleteSchema,
   tmdbMovieSchema,
 } from "@hypertube/libs";
 import z from "zod";
@@ -16,7 +17,7 @@ const dialogSchemas = {
     clientSecret: credentialSchema.shape.clientSecret,
   }),
   postCredentials: null,
-  movie: tmdbMovieSchema,
+  movie: tmdbMovieCompleteSchema,
   downloadResolution: z.object({
     tmdbId: tmdbMovieSchema.shape.id,
     resolution: resolutionSchema,

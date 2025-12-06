@@ -90,6 +90,7 @@ export {
   postMovieSubscribeSchemas,
   putMovieWatchTimerSchemas,
   tmdbMovieCastingSchema,
+  tmdbMovieCompleteSchema,
   tmdbMovieSchema,
 } from "./schemas/api/movie.schema.js";
 

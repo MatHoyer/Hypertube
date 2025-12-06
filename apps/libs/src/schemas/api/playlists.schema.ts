@@ -5,7 +5,7 @@ import {
   playlistMovieSchema,
   playlistSchema,
 } from "../database/playlist.schema.js";
-import { tmdbMovieSchema } from "./movie.schema.js";
+import { tmdbMovieCompleteSchema } from "./movie.schema.js";
 
 export const getPlaylistsSchemas = {
   response: z.object({
@@ -35,11 +35,10 @@ export const getPlaylistSchemas = {
   }),
   response: z.object({
     movies: z.array(
-      tmdbMovieSchema
-        .extend({
-          downloadState: z.enum(DownloadStates),
-        })
-        .nullable()
+      z.object({
+        details: tmdbMovieCompleteSchema,
+        downloadState: z.enum(DownloadStates),
+      })
     ),
     totalCount: z.number(),
   }),

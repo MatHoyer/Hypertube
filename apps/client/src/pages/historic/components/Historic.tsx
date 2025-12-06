@@ -80,15 +80,18 @@ export const Historic = () => {
 
   return (
     <div className="flex flex-col gap-5">
-      {historic.map(({ ...movie }) => (
-        <div key={movie.id} className="flex items-center gap-5">
+      {historic.map((movie) => (
+        <div key={movie.details.id} className="flex items-center gap-5">
           <MovieBaseInfo
-            movie={movie}
+            movie={movie.details}
             dir="col"
             posterSize="sm"
             info="partial"
           />
-          <Button variant={"destructive"} onClick={() => mutate(movie.id)}>
+          <Button
+            variant={"destructive"}
+            onClick={() => mutate(movie.details.id)}
+          >
             <X />
           </Button>
         </div>

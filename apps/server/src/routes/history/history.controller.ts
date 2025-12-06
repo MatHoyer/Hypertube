@@ -54,7 +54,7 @@ export const getHistory = async (
   return c.json(
     getHistorySchemas.response.parse({
       movies: tmdbMovies.map((tmdbMovie) => ({
-        ...tmdbMovie,
+        details: tmdbMovie,
         downloadState:
           movieDownloadStatesByTmdbIds.get(tmdbMovie!.id) ??
           DownloadStates.NOT_DOWNLOADED,
