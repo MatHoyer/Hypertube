@@ -3,7 +3,15 @@ import { useTranslation } from "react-i18next";
 import { AppLoader } from "./ui/app-loader";
 import { Typography } from "./ui/typography";
 
-const loadingResources = ["global", "movie", "profile", "casting"] as const;
+const loadingResources = [
+  "global",
+  "movie",
+  "profile",
+  "casting",
+  "historic",
+  "playlists",
+  "playlist",
+] as const;
 
 export const LoadingResource: React.FC<{
   resource: (typeof loadingResources)[number];

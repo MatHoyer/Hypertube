@@ -251,7 +251,13 @@
     "empty": "",
     "emptyDescription": "",
     "deleteSuccess": "",
-    "deleteFailed": ""
+    "deleteFailed": "",
+    "loadingRessource": "",
+    "errorRessource": ""
+  },
+  "playlists": {
+    "loadingRessource": "",
+    "errorRessource": ""
   },
   "playlist": {
     "title": "",
@@ -275,7 +281,9 @@
     "deleteMovieSuccess": "",
     "deleteMovieFailed": "",
     "creationSuccess": "",
-    "creationFailed": ""
+    "creationFailed": "",
+    "loadingRessource": "",
+    "errorRessource": ""
   },
   "oauthCredentials": {
     "title": "Credenciales",

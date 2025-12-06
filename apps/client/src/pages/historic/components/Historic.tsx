@@ -1,4 +1,5 @@
-import { LoadingPage } from "@/components/LoadingPage";
+import { ErrorResource } from "@/components/ErrorResource";
+import { LoadingResource } from "@/components/LoadingResource";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
 import { PagePagination } from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
@@ -75,14 +75,8 @@ export const Historic = () => {
     },
   });
 
-  if (isPending) return <LoadingPage resource="global" />;
-  if (isError) {
-    return (
-      <div className="flex justify-center items-center">
-        <Typography textSize="lg">{t("global.error")}</Typography>
-      </div>
-    );
-  }
+  if (isPending) return <LoadingResource resource="historic" />;
+  if (isError) return <ErrorResource resource="historic" />;
 
   return (
     <div className="flex flex-col gap-5">

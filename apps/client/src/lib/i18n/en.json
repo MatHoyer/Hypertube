@@ -251,7 +251,13 @@
     "empty": "Your historic is empty.",
     "emptyDescription": "You haven't watched a movie yet.",
     "deleteSuccess": "The movie has been successfully deleted of your historic.",
-    "deleteFailed": "Deleting the movie of your historic failed."
+    "deleteFailed": "Deleting the movie of your historic failed.",
+    "loadingRessource": "historic",
+    "errorRessource": "historic not found"
+  },
+  "playlists": {
+    "loadingRessource": "playlists",
+    "errorRessource": "playlists not found"
   },
   "playlist": {
     "title": "Your playlists",
@@ -275,7 +281,9 @@
     "deleteMovieSuccess": "The movie has been successfully deleted of your playlist.",
     "deleteMovieFailed": "Deleting the movie of your playlist failed.",
     "creationSuccess": "Playlist successfully created.",
-    "creationFailed": "Playlist creation failed."
+    "creationFailed": "Playlist creation failed.",
+    "loadingRessource": "playlist",
+    "errorRessource": "playlist not found"
   },
   "oauthCredentials": {
     "title": "Credentials",

@@ -1,4 +1,6 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
+import { ErrorResource } from "@/components/ErrorResource";
+import { LoadingResource } from "@/components/LoadingResource";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -27,7 +29,7 @@ import { toast } from "sonner";
 export const Playlists = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const playlists = useUserPlaylists();
+  const { playlists, isLoading, isError } = useUserPlaylists();
 
   const { mutate: deleteMutate } = useMutation({
     mutationFn: (
@@ -48,6 +50,9 @@ export const Playlists = () => {
       toast.error(t("playlist.deleteFailed"));
     },
   });
+
+  if (isLoading) return <LoadingResource resource="playlists" />;
+  if (isError) return <ErrorResource resource="playlists" />;
 
   return (
     <div className="flex flex-col gap-4">

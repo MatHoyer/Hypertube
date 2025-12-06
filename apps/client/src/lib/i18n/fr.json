@@ -251,7 +251,13 @@
     "empty": "Votre historique est vide.",
     "emptyDescription": "Vous n'avez pas encore regardé de film.",
     "deleteSuccess": "La suppression du film de votre historique a réussi.",
-    "deleteFailed": "La suppression du film de votre historique a échoué."
+    "deleteFailed": "La suppression du film de votre historique a échoué.",
+    "loadingRessource": "historique",
+    "errorRessource": "historique non trouvé"
+  },
+  "playlists": {
+    "loadingRessource": "playlists",
+    "errorRessource": "playlists non trouvé"
   },
   "playlist": {
     "title": "Vos playlists",
@@ -275,7 +281,9 @@
     "deleteMovieSuccess": "La suppression du film de votre playlist a réussi.",
     "deleteMovieFailed": "La suppression du film de votre playlist a échoué.",
     "creationSuccess": "La playlist a été créée avec succès.",
-    "creationFailed": "La création de la playlist a échoué."
+    "creationFailed": "La création de la playlist a échoué.",
+    "loadingRessource": "playlist",
+    "errorRessource": "playlist non trouvé"
   },
   "oauthCredentials": {
     "title": "Credentials",

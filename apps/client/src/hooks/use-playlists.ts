@@ -21,5 +21,9 @@ export const useUserPlaylists = () => {
     refetchOnMount: false,
   });
 
-  return query.data?.playlists ?? [];
+  return {
+    playlists: query.data?.playlists ?? [],
+    isLoading: query.isLoading,
+    isError: query.isError,
+  };
 };
