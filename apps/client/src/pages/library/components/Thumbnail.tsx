@@ -1,7 +1,6 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { getDownloadStateIcon } from "@/components/download-state/getDownloadStateIcon";
 import { ErrorResource } from "@/components/ErrorResource";
-import { Logo } from "@/components/images/Logo";
 import { LoadingResource } from "@/components/LoadingResource";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
 import { Badge } from "@/components/ui/badge";
@@ -98,29 +97,22 @@ export const Thumbnail: React.FC<{
     },
   });
 
-  if (!movie)
-    return (
-      <Card className="flex flex-col justify-center items-center">
-        <Logo size="lg" />
-      </Card>
-    );
-
   return (
     <div>
       <Card
         className="flex gap-0 p-2 md:p-4 items-center rounded-b-none hover:bg-card/20 cursor-pointer"
-        onClick={() => openDialog("movie", movie)}
+        onClick={() => openDialog("movie", movie.details)}
       >
-        <MovieBaseInfo movie={movie} posterSize="md" info="partial" />
+        <MovieBaseInfo movie={movie.details} posterSize="md" info="partial" />
       </Card>
       <Card className="p-2 rounded-t-none border-t-0">
         <div className="flex gap-2 w-full items-center justify-between">
           <Tooltip>
             <TooltipTrigger className="flex items-center">
-              {getDownloadStateIcon(movie.status)}
+              {getDownloadStateIcon(movie.downloadState)}
             </TooltipTrigger>
             <TooltipContent>
-              {t(`movie.downloadPage.tooltip.${movie.status}`)}
+              {t(`movie.downloadPage.tooltip.${movie.downloadState}`)}
             </TooltipContent>
           </Tooltip>
           <div className="flex items-center gap-2">
@@ -150,7 +142,8 @@ export const Thumbnail: React.FC<{
                   <ScrollArea className="h-36">
                     {playlists.map((playlist) => {
                       const isPlaylistHasMovie = !!playlist.movies.find(
-                        (playlistMovie) => playlistMovie.tmdbId === movie.id
+                        (playlistMovie) =>
+                          playlistMovie.tmdbId === movie.details.id
                       );
                       return (
                         <DropdownMenuItem
@@ -160,11 +153,11 @@ export const Thumbnail: React.FC<{
                             isPlaylistHasMovie
                               ? deleteMovieFromPlaylistMutation.mutate({
                                   playlistId: playlist.id,
-                                  tmdbId: movie.id,
+                                  tmdbId: movie.details.id,
                                 })
                               : addMovieToPlaylistMutation.mutate({
                                   playlistId: playlist.id,
-                                  tmdbId: movie.id,
+                                  tmdbId: movie.details.id,
                                 })
                           }
                         >

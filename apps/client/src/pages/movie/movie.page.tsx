@@ -17,7 +17,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NotFoundPage } from "../notFound/NotFound.page";
 import { DownloadsSelector } from "./components/downloads-selector/download-selector";
-import { Casting } from "./components/movie-casting";
 import MovieInfo from "./components/movie-info";
 import { MovieInteraction } from "./components/movie-interaction";
 import VideoPlayer from "./components/video-player";
@@ -163,10 +162,8 @@ const MoviePage = () => {
     >
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 relative">
         <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-4 h-fit">
-          <MovieInfo movie={movie} />
-          <Casting tmdbId={movie.tmdbId} />
+          <MovieInfo movie={movie.details} />
         </div>
-
         <div className="flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:col-span-2 p-4">
           <div className="flex flex-col gap-1">
             <Tabs value={selectedTab}>

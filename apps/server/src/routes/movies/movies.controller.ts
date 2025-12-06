@@ -15,7 +15,6 @@ import {
   TGetMoviesSchemas,
   TGetMovieSSESchemas,
   tmdbGenres,
-  tmdbMovieSchema,
   TPostMovieCommentSchemas,
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
@@ -76,16 +75,15 @@ export const getMovies = async (
   });
 
   const movieDownloadStatesByTmdbIds = await getMovieDownloadStatesByTmdbIds(
-    moviesPagination.movies.filter(Boolean).map((movie) => movie!.id)
+    moviesPagination.movies.filter(Boolean).map((movie) => movie.id)
   );
 
   const moviesWithStatutPagination = {
     ...moviesPagination,
     movies: moviesPagination.movies.map((movie) => {
-      if (!movie) return null;
       return {
-        ...movie,
-        status:
+        details: movie,
+        downloadState:
           movieDownloadStatesByTmdbIds.get(movie.id) ??
           DownloadStates.NOT_DOWNLOADED,
       };
@@ -108,7 +106,7 @@ export const getMovie = async (
   const tmdbApi = new TmdbApi();
   const tmdbMovie =
     tmdbId === 0
-      ? ({
+      ? {
           id: 0,
           imdb_id: "tt0",
           original_title: "Demo Movie",
@@ -123,10 +121,11 @@ export const getMovie = async (
           backdrop_path: null,
           release_date: "2025-01-01",
           adult: false,
-        } as z.infer<typeof tmdbMovieSchema>)
+          hasDetails: true as const,
+        }
       : await tmdbApi.getMovie(tmdbId, language as keyof typeof languageCodes);
 
-  if (!tmdbMovie) return c.json(null, 404);
+  if (!tmdbMovie.hasDetails) return c.json(null, 404);
 
   let dbMovie = await prisma.movie.findUnique({
     where: {
@@ -204,8 +203,8 @@ export const getMovie = async (
 
   return c.json(
     getMovieSchemas.response.parse({
-      ...tmdbMovie,
-      ...dbMovie,
+      details: tmdbMovie,
+      id: dbMovie.id,
       resolutions,
       subtitles,
       isSubscribed,

@@ -88,10 +88,10 @@ export const Playlist = ({ playlist }: { playlist: TPlaylistSchema }) => {
 
   return (
     <div className="flex flex-col gap-5">
-      {movies.map(({ ...movie }) => (
-        <div key={movie.id} className="flex items-center gap-5">
+      {movies.map((movie) => (
+        <div key={movie.details.id} className="flex items-center gap-5">
           <MovieBaseInfo
-            movie={movie}
+            movie={movie.details}
             dir="col"
             posterSize="sm"
             info="partial"
@@ -99,7 +99,7 @@ export const Playlist = ({ playlist }: { playlist: TPlaylistSchema }) => {
           <Button
             variant={"destructive"}
             onClick={() =>
-              mutate({ playlistId: playlist.id, tmdbId: movie.id })
+              mutate({ playlistId: playlist.id, tmdbId: movie.details.id })
             }
           >
             <X />

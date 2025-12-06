@@ -7,12 +7,13 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { getUrl, ROUTES, type TTmdbMovieSchema } from "@hypertube/libs";
+import { getUrl, ROUTES } from "@hypertube/libs";
+import type { TTmdbMovieCompleteSchema } from "@hypertube/libs/src/schemas/api/movie.schema";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { PlayCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export const MovieDialog: React.FC<{ movie: TTmdbMovieSchema }> = ({
+export const MovieDialog: React.FC<{ movie: TTmdbMovieCompleteSchema }> = ({
   movie,
 }) => {
   return (

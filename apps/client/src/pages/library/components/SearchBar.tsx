@@ -89,7 +89,11 @@ export const SearchBar = () => {
                   data?.movies.filter(Boolean).map((movie, i) => (
                     <CommandItem
                       key={i}
-                      value={movie!.title + movie!.id}
+                      value={
+                        movie.details.hasDetails
+                          ? movie.details.title + movie.details.id
+                          : movie.details.id.toString()
+                      }
                       onMouseDown={(event) => {
                         event.preventDefault();
                         event.stopPropagation();
@@ -97,10 +101,12 @@ export const SearchBar = () => {
                     >
                       <Link
                         className="w-full"
-                        to={getUrl(ROUTES.CLIENT.MOVIE, { tmdbId: movie!.id })}
+                        to={getUrl(ROUTES.CLIENT.MOVIE, {
+                          tmdbId: movie.details.id,
+                        })}
                       >
                         <MovieBaseInfo
-                          movie={movie!}
+                          movie={movie.details}
                           dir="col"
                           posterSize="sm"
                           info="partial"

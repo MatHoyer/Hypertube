@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
-import { getUrl, ROUTES, type TTmdbMovieSchema } from "@hypertube/libs";
+import { getUrl, ROUTES } from "@hypertube/libs";
+import type { TTmdbMovieCompleteSchema } from "@hypertube/libs/src/schemas/api/movie.schema";
 import { ExternalLink } from "lucide-react";
 import type { ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
@@ -46,7 +47,7 @@ const DisplayGenresMovie: React.FC<{
 
 export const MovieBaseInfo: React.FC<
   ComponentProps<"div"> & {
-    movie: Omit<TTmdbMovieSchema, "id">;
+    movie: TTmdbMovieCompleteSchema;
     dir?: "row" | "col";
     posterSize?: "lg" | "md" | "sm";
     info?: "all" | "partial";
@@ -62,6 +63,8 @@ export const MovieBaseInfo: React.FC<
   ...props
 }) => {
   const { t } = useTranslation();
+
+  if (!movie.hasDetails) return <div>Pas d'info</div>;
 
   return (
     <div

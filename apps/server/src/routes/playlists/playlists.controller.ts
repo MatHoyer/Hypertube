@@ -82,19 +82,17 @@ export const getPlaylist = async (
   );
 
   const tmdbApi = new TmdbApi();
-  const tmdbMovies = (
-    await tmdbApi.getAllMovieDetails(
-      movies.map(({ movie }) => movie.tmdbId),
-      language as keyof typeof languageCodes
-    )
-  ).filter(Boolean);
+  const tmdbMovies = await tmdbApi.getAllMovieDetails(
+    movies.map(({ movie }) => movie.tmdbId),
+    language as keyof typeof languageCodes
+  );
 
   return c.json(
     getPlaylistSchemas.response.parse({
       movies: tmdbMovies.map((tmdbMovie) => ({
-        ...tmdbMovie,
+        details: tmdbMovie,
         downloadState:
-          movieDownloadStatesByTmdbIds.get(tmdbMovie!.id) ??
+          movieDownloadStatesByTmdbIds.get(tmdbMovie.id) ??
           DownloadStates.NOT_DOWNLOADED,
       })),
       totalCount,
@@ -171,7 +169,9 @@ export const postMovieToPlaylist = async (
       tmdbId,
       language as keyof typeof languageCodes
     );
-    if (!tmdbMovie) return c.json({ message: "Movie not found" }, 404);
+    if (!tmdbMovie.hasDetails) {
+      return c.json({ message: "Movie not found" }, 404);
+    }
 
     movie = await prisma.movie.create({
       data: {

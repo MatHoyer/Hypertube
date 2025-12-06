@@ -5,6 +5,7 @@ import {
   tmdbMovieSchema,
   TTmdbCategory,
   TTmdbGenresValue,
+  TTmdbMovieSchema,
   TTmdbSort,
 } from "@hypertube/libs";
 import { env } from "@hypertube/server-core";
@@ -40,8 +41,7 @@ export class TmdbApi {
     tmdbId: number,
     language: keyof typeof languageCodes
   ) {
-    const responseSchema = tmdbMovieSchema;
-    const response = await this.fetch<z.infer<typeof responseSchema>>(
+    const response = await this.fetch<TTmdbMovieSchema>(
       `/movie/${tmdbId}?language=${language}`
     );
 
@@ -52,9 +52,11 @@ export class TmdbApi {
       ? `${this.imgUrl}${response.backdrop_path}`
       : null;
 
-    const responseParsed = responseSchema.safeParse(response);
-    if (!responseParsed.success) return null;
-    return responseParsed.data;
+    const responseParsed = tmdbMovieSchema.safeParse(response);
+    if (!responseParsed.success) {
+      return { id: tmdbId, hasDetails: false as const };
+    }
+    return { ...responseParsed.data, hasDetails: true as const };
   }
 
   async getAllMovieDetails(
@@ -188,7 +190,6 @@ export class TmdbApi {
         .extend({ department: z.string() })
         .array(),
     });
-    void tmdbMovieCastingSchema;
     const response = await this.fetch<z.infer<typeof responseSchema>>(
       `/movie/${movieId}/credits`
     );
