@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -16,7 +17,11 @@ export const PagePagination: React.FC<{
 }> = ({ page, setPage, pageSize, totalCount }) => {
   const lastPage = Math.ceil(totalCount / pageSize);
 
-  if (lastPage <= 1) return <div></div>;
+  useEffect(() => {
+    if (page > lastPage) setPage(1);
+  }, [page, lastPage, setPage]);
+
+  if (lastPage <= 1) return null;
 
   return (
     <Pagination>
