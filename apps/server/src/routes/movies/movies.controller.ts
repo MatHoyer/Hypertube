@@ -104,7 +104,7 @@ export const getMovie = async (
     tmdbId === 0
       ? {
           id: 0,
-          imdb_id: "tt0",
+          imdb_id: null,
           original_title: "Demo Movie",
           original_language: "fr",
           title: "Demo Movie",
