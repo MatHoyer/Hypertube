@@ -39,7 +39,10 @@ import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import { commentParent, getParentComments } from "../global/comment.global";
 import { likeParent, unlikeParent } from "../global/like.global";
-import { getMovieDownloadStatesByTmdbIds } from "../global/movie.global";
+import {
+  getMovieDownloadStatesByTmdbIds,
+  getMovieSeensByTmdbIds,
+} from "../global/movie.global";
 import {
   getMovieData,
   sendSSEDownloadStateChange,
@@ -49,13 +52,14 @@ import {
 const tmdbGenresSchemas = z.array(z.enum(typedKeys(tmdbGenres)));
 
 export const getMovies = async (
-  c: Context<TSearchParamsParser<TGetMoviesSchemas["searchParams"]>>
+  c: Context<TIsLogged & TSearchParamsParser<TGetMoviesSchemas["searchParams"]>>
 ) => {
   const tmdbApi = new TmdbApi();
 
   const { query, page, category, sort, genres } = c.get(
     "validatedSearchParams"
   );
+  const user = c.get("user");
   const language = c.get("language");
 
   const genresTyped = tmdbGenresSchemas.safeParse(
@@ -74,7 +78,12 @@ export const getMovies = async (
   });
 
   const movieDownloadStatesByTmdbIds = await getMovieDownloadStatesByTmdbIds(
-    moviesPagination.movies.filter(Boolean).map((movie) => movie.id)
+    moviesPagination.movies.map((movie) => movie.id)
+  );
+
+  const movieSeensByTmdbIds = await getMovieSeensByTmdbIds(
+    moviesPagination.movies.map((movie) => movie.id),
+    user.id
   );
 
   const moviesWithStatutPagination = {
@@ -85,6 +94,7 @@ export const getMovies = async (
         downloadState:
           movieDownloadStatesByTmdbIds.get(movie.id) ??
           DownloadStates.NOT_DOWNLOADED,
+        isSeen: movieSeensByTmdbIds.get(movie.id) ?? false,
       };
     }),
   };
@@ -523,7 +533,7 @@ export const putMovieWatchTimer = async (
   >
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
-  const { timestamp } = c.get("validatedBody");
+  const { duration, timestamp } = c.get("validatedBody");
   const { id } = c.get("user");
 
   const movie = await prisma.movie.findUnique({ where: { tmdbId } });
@@ -533,8 +543,8 @@ export const putMovieWatchTimer = async (
 
   await prisma.movieHistory.upsert({
     where: { movieId_userId: { movieId: movie.id, userId: id } },
-    update: { timestamp },
-    create: { movieId: movie.id, userId: id, timestamp },
+    update: { duration, timestamp },
+    create: { movieId: movie.id, userId: id, duration, timestamp },
   });
 
   return c.json({ message: "Movie watch timer updated" }, 200);

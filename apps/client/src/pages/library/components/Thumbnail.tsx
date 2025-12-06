@@ -43,7 +43,6 @@ import { toast } from "sonner";
 export const Thumbnail: React.FC<{
   movie: TGetMoviesSchemas["response"]["movies"][number];
 }> = memo(({ movie }) => {
-  const movieSeen = true; //TODO : movieSeen by user
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const { playlists, isLoading, isError } = useUserPlaylists();
@@ -116,7 +115,7 @@ export const Thumbnail: React.FC<{
             </TooltipContent>
           </Tooltip>
           <div className="flex items-center gap-2">
-            {movieSeen && (
+            {movie.isSeen && (
               <Tooltip>
                 <TooltipTrigger>
                   <Badge variant={"success"}>

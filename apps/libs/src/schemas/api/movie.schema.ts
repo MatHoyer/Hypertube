@@ -74,6 +74,7 @@ export const getMoviesSchemas = {
       z.object({
         details: tmdbMovieCompleteSchema,
         downloadState: z.enum(DownloadStates),
+        isSeen: z.boolean(),
       })
     ),
     page: z.number(),
@@ -274,6 +275,7 @@ export const putMovieWatchTimerSchemas = {
     tmdbId: movieSchema.shape.tmdbId,
   }),
   requirements: z.object({
+    duration: z.number().int().nonnegative(),
     timestamp: z.number().int().nonnegative(),
   }),
   response: z.object({

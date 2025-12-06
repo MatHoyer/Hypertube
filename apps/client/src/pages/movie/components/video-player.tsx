@@ -360,7 +360,10 @@ const VideoPlayer = () => {
       url: getUrl(ROUTES.API.MOVIES_WATCH_TIMER, { tmdbId }),
       schemas: putMovieWatchTimerSchemas,
       data: {
-        timestamp: (progress * (videoRef.current?.duration ?? 0)) / 100,
+        duration: Math.round(videoRef.current?.duration ?? 0),
+        timestamp: Math.round(
+          (progress * (videoRef.current?.duration ?? 0)) / 100
+        ),
       },
     });
     queryClient.invalidateQueries({
