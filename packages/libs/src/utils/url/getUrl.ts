@@ -346,7 +346,7 @@ const routes: {
   [ROUTES.API.PLAYLISTS]: ({ playlistId }) =>
     playlistId ? `/api/playlists/${playlistId}` : "/api/playlists",
   [ROUTES.API.PLAYLISTS_MOVIE]: ({ playlistId, tmdbId }) =>
-    tmdbId
+    tmdbId !== undefined
       ? `/api/playlists/${playlistId}/movie/${tmdbId}`
       : `/api/playlists/${playlistId}/movie`,
 
@@ -383,7 +383,7 @@ const routes: {
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
 
   [ROUTES.API.HISTORY]: ({ tmdbId }) =>
-    tmdbId ? `/api/history/${tmdbId}` : `/api/history`,
+    tmdbId !== undefined ? `/api/history/${tmdbId}` : `/api/history`,
 
   [ROUTES.API.MOVIES_WATCH_TIMER]: ({ tmdbId }) =>
     `/api/movies/${tmdbId}/watch-timer`,

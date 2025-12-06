@@ -2,13 +2,34 @@ import { cn } from "@/lib/utils";
 import { getUrl, ROUTES } from "@hypertube/libs";
 import type { TTmdbMovieCompleteSchema } from "@hypertube/libs/src/schemas/api/movie.schema";
 import { ExternalLink } from "lucide-react";
-import type { ComponentProps } from "react";
+import type { ComponentProps, PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ImageContainer } from "../images/ImageContainer";
 import { Badge } from "../ui/badge";
 import { Typography } from "../ui/typography";
 import { ScoreRated } from "./ScoreRated";
+
+const MovieBaseInfoLayout: React.FC<
+  {
+    dir: "row" | "col";
+  } & ComponentProps<"div"> &
+    PropsWithChildren
+> = ({ dir, className, children, ...props }) => {
+  return (
+    <div
+      className={cn(
+        dir === "row" && "flex flex-col items-center w-full gap-2 text-center",
+        dir === "col" &&
+          "flex flex-col sm:grid sm:grid-cols-[1fr_4fr_1fr_1fr] items-center w-full gap-2",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
 
 const DisplayGenresMovie: React.FC<{
   genres: { name: string; id: number }[];
@@ -64,18 +85,17 @@ export const MovieBaseInfo: React.FC<
 }) => {
   const { t } = useTranslation();
 
-  if (!movie.hasDetails) return <div>Pas d'info</div>;
+  if (!movie.hasDetails) {
+    return (
+      <MovieBaseInfoLayout dir={dir} className={className} {...props}>
+        <ImageContainer imageSrc={null} altImage={"?"} size={posterSize} />
+        <Typography textSize="lg">{t("movie.noDetails")}</Typography>
+      </MovieBaseInfoLayout>
+    );
+  }
 
   return (
-    <div
-      className={cn(
-        dir === "row" && "flex flex-col items-center w-full gap-2 text-center",
-        dir === "col" &&
-          "flex flex-col sm:grid sm:grid-cols-[1fr_4fr_1fr_1fr] items-center w-full gap-2",
-        className
-      )}
-      {...props}
-    >
+    <MovieBaseInfoLayout dir={dir} className={className} {...props}>
       <ImageContainer
         imageSrc={movie.poster_path}
         altImage={movie.title}
@@ -125,6 +145,6 @@ export const MovieBaseInfo: React.FC<
         <Badge>{movie.release_date || t("movie.page.missing.date")}</Badge>
         <ScoreRated score={movie.vote_average} voteCount={movie.vote_count} />
       </div>
-    </div>
+    </MovieBaseInfoLayout>
   );
 };

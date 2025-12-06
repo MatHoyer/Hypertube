@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { ComponentProps, PropsWithChildren } from "react";
+import { Typography } from "../ui/typography";
 
 export const ImageContainer: React.FC<
   {
@@ -8,14 +9,7 @@ export const ImageContainer: React.FC<
     size?: "sm" | "md" | "lg";
   } & ComponentProps<"div"> &
     PropsWithChildren
-> = ({
-  imageSrc,
-  altImage,
-  size = "lg",
-  className,
-  children,
-  ...containerProps
-}) => {
+> = ({ imageSrc, altImage, size = "lg", className, ...containerProps }) => {
   return (
     <div
       className={cn(
@@ -38,7 +32,13 @@ export const ImageContainer: React.FC<
         />
       ) : (
         <div className="absolute size-full inset-0 flex items-center justify-center">
-          {children}
+          <Typography
+            textSize={"xs"}
+            functionnal={"wrap"}
+            className="text-center"
+          >
+            {altImage}
+          </Typography>
         </div>
       )}
     </div>

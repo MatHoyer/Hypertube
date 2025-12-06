@@ -94,6 +94,7 @@
   },
   "movie": {
     "loadingRessource": "película",
+    "noDetails": "",
     "tabs": {
       "video": "Vídeo",
       "downloads": "Descargas"
