@@ -83,6 +83,7 @@ model MovieHistory {
   userId  String
   user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  duration  Int @default(0)
   timestamp Int @default(0)
 
   createdAt DateTime @default(now())
