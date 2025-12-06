@@ -1,3 +1,5 @@
+import { ErrorResource } from "@/components/ErrorResource";
+import { LoadingResource } from "@/components/LoadingResource";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { useUserPlaylists } from "@/hooks/use-playlists";
 import {
@@ -12,7 +14,10 @@ import { PlaylistPageParamsSchema } from "./schemas/urlParams.schema";
 
 export const PlaylistPage = () => {
   const { playlistId } = useConvertParams(PlaylistPageParamsSchema);
-  const playlists = useUserPlaylists();
+  const { playlists, isLoading, isError } = useUserPlaylists();
+
+  if (isLoading) return <LoadingResource resource="playlists" />;
+  if (isError) return <ErrorResource resource="playlists" />;
 
   const playlist = playlists.find((playlist) => playlist.id === playlistId);
 

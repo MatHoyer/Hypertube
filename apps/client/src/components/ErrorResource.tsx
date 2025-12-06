@@ -1,7 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { Typography } from "./ui/typography";
 
-const errorResources = ["global", "profile", "casting"] as const;
+const errorResources = [
+  "global",
+  "profile",
+  "casting",
+  "historic",
+  "playlists",
+  "playlist",
+] as const;
 
 export const ErrorResource: React.FC<{
   resource: (typeof errorResources)[number];

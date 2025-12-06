@@ -1,6 +1,8 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { getDownloadStateIcon } from "@/components/download-state/getDownloadStateIcon";
+import { ErrorResource } from "@/components/ErrorResource";
 import { Logo } from "@/components/images/Logo";
+import { LoadingResource } from "@/components/LoadingResource";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -45,7 +47,7 @@ export const Thumbnail: React.FC<{
   const movieSeen = true; //TODO : movieSeen by user
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const userPlaylists = useUserPlaylists();
+  const { playlists, isLoading, isError } = useUserPlaylists();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const addMovieToPlaylistMutation = useMutation({
@@ -146,7 +148,7 @@ export const Thumbnail: React.FC<{
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <ScrollArea className="h-36">
-                    {userPlaylists.map((playlist) => {
+                    {playlists.map((playlist) => {
                       const isPlaylistHasMovie = !!playlist.movies.find(
                         (playlistMovie) => playlistMovie.tmdbId === movie.id
                       );
@@ -181,7 +183,23 @@ export const Thumbnail: React.FC<{
                         </DropdownMenuItem>
                       );
                     })}
-                    {!userPlaylists.length && (
+                    {isLoading && (
+                      <DropdownMenuItem
+                        className="flex justify-center"
+                        disabled
+                      >
+                        <LoadingResource resource="playlists" />
+                      </DropdownMenuItem>
+                    )}
+                    {isError && (
+                      <DropdownMenuItem
+                        className="flex justify-center"
+                        disabled
+                      >
+                        <ErrorResource resource="playlists" />
+                      </DropdownMenuItem>
+                    )}
+                    {!isLoading && !isError && !playlists.length && (
                       <DropdownMenuItem
                         className="flex justify-center"
                         disabled
