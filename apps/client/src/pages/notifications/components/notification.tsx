@@ -22,8 +22,6 @@ import { CheckCheck, ChevronRight, MessageCircleIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-// TODO: When we have global icons for comments and likes, we can use them here
-
 const notificationIcons: Record<TNotification, React.ReactNode> = {
   [notifications.TEST]: <MessageCircleIcon color="var(--color-blue-500)" />,
   [notifications.MOVIE_DOWNLOADED]: getDownloadStateIcon(
