@@ -94,6 +94,7 @@
   },
   "movie": {
     "loadingRessource": "movie",
+    "noDetails": "We no longer have information about this film.",
     "tabs": {
       "video": "Video",
       "downloads": "Downloads"
