@@ -2,6 +2,8 @@ import {
   deleteCommentLikeSchemas,
   deleteCommentSchemas,
   getCommentRepliesSchemas,
+  getCommentSchemas,
+  getCommentsSchemas,
   getUrl,
   patchCommentSchemas,
   postCommentLikeSchemas,
@@ -17,6 +19,36 @@ const commentIdPathParam = {
 };
 
 export const commentsSwagger = {
+  [getUrl(ROUTES.API.COMMENTS)]: {
+    get: {
+      summary: "Get comments",
+      tags: ["Comments"],
+      parameters: [
+        {
+          in: "query",
+          name: "page",
+          required: false,
+          schema: getCommentsSchemas.searchParams.shape.page,
+        },
+        {
+          in: "query",
+          name: "pageSize",
+          required: false,
+          schema: getCommentsSchemas.searchParams.shape.pageSize,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "OK",
+          content: {
+            "application/json": {
+              schema: getCommentsSchemas.response,
+            },
+          },
+        },
+      },
+    },
+  },
   [getUrl(ROUTES.API.COMMENTS_REPLIES, { commentId: "{commentId}" })]: {
     get: {
       summary: "Get comment replies",
@@ -80,7 +112,6 @@ export const commentsSwagger = {
       },
     },
   },
-
   [getUrl(ROUTES.API.COMMENTS_LIKES, { commentId: "{commentId}" })]: {
     post: {
       summary: "Like a comment",
@@ -122,8 +153,22 @@ export const commentsSwagger = {
       },
     },
   },
-
   [getUrl(ROUTES.API.COMMENTS, { commentId: "{commentId}" })]: {
+    get: {
+      summary: "get comment by id",
+      tags: ["Comments"],
+      parameters: [commentIdPathParam],
+      responses: {
+        "200": {
+          description: "Comment got get successfully",
+          content: {
+            "application/json": {
+              schema: getCommentSchemas.response,
+            },
+          },
+        },
+      },
+    },
     patch: {
       summary: "Update a comment",
       tags: ["Comments"],

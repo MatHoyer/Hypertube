@@ -2,6 +2,8 @@ import {
   deleteCommentLikeSchemas,
   deleteCommentSchemas,
   getCommentRepliesSchemas,
+  getCommentSchemas,
+  getCommentsSchemas,
   patchCommentSchemas,
   postCommentLikeSchemas,
   postCommentReplySchemas,
@@ -14,13 +16,29 @@ import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
   deleteComment,
   deleteCommentLike,
+  getComment,
   getCommentReplies,
+  getComments,
   likeComment,
   patchComment,
   replyToComment,
 } from "./comments.controller";
 
 const commentsRouter = new Hono();
+
+commentsRouter.get(
+  "/",
+  isLogged,
+  searchParamsParser(getCommentsSchemas.searchParams),
+  getComments
+);
+
+commentsRouter.get(
+  "/:commentId",
+  isLogged,
+  urlParamsParser(getCommentSchemas.urlParams),
+  getComment
+);
 
 commentsRouter.get(
   "/:commentId/replies",
