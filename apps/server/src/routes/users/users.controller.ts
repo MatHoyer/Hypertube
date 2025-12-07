@@ -40,7 +40,10 @@ export const getUsers = async (
     take: pageSize,
   });
 
-  return c.json(users, 200);
+  const totalUsers = await prisma.user.count();
+  const totalPages = Math.ceil(totalUsers / pageSize);
+
+  return c.json({ users, page, pageSize, totalUsers, totalPages }, 200);
 };
 
 export const getUser = async (
