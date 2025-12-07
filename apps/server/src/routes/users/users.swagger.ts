@@ -2,6 +2,8 @@ import {
   getAccountsUsersSchemas,
   getSessionUsersSchemas,
   getUrl,
+  getUserSchemas,
+  getUsersSchemas,
   patchUsersSchemas,
   ROUTES,
 } from "@hypertube/libs";
@@ -14,7 +16,52 @@ const usersPathParam = {
 };
 
 export const usersSwagger = {
+  [getUrl(ROUTES.API.USERS)]: {
+    get: {
+      summary: "Get users",
+      tags: ["Users"],
+      parameters: [
+        {
+          in: "query",
+          name: "page",
+          required: false,
+          schema: getUsersSchemas.searchParams.shape.page,
+        },
+        {
+          in: "query",
+          name: "pageSize",
+          required: false,
+          schema: getUsersSchemas.searchParams.shape.pageSize,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Users got get successfully",
+          content: {
+            "application/json": {
+              schema: getUsersSchemas.response,
+            },
+          },
+        },
+      },
+    },
+  },
   [getUrl(ROUTES.API.USERS, { userId: "{userId}" })]: {
+    get: {
+      summary: "Get user by id",
+      tags: ["Users"],
+      parameters: [usersPathParam],
+      responses: {
+        "200": {
+          description: "User got get successfully",
+          content: {
+            "application/json": {
+              schema: getUserSchemas.response,
+            },
+          },
+        },
+      },
+    },
     patch: {
       summary: "Update user information",
       tags: ["Users"],
