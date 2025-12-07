@@ -190,7 +190,9 @@ const routeSchemas = {
         .optional(),
     }),
     [ROUTES.API.COMMENTS]: z.object({
-      commentId: z.union([commentSchema.shape.id, z.literal("{commentId}")]),
+      commentId: z
+        .union([commentSchema.shape.id, z.literal("{commentId}")])
+        .optional(),
     }),
     [ROUTES.API.COMMENTS_REPLIES]: z.object({
       commentId: z.union([commentSchema.shape.id, z.literal("{commentId}")]),
@@ -326,7 +328,8 @@ const routes: {
   [ROUTES.API.MOVIES_COMMENT]: ({ tmdbId, commentId }) =>
     `/api/movies/${tmdbId}/comments${commentId ? `/${commentId}` : ""}`,
 
-  [ROUTES.API.COMMENTS]: ({ commentId }) => `/api/comments/${commentId}`,
+  [ROUTES.API.COMMENTS]: ({ commentId }) =>
+    commentId ? `/api/comments/${commentId}` : "/api/comments",
 
   [ROUTES.API.COMMENTS_REPLIES]: ({ commentId }) =>
     `/api/comments/${commentId}/replies`,

@@ -4,6 +4,37 @@ import {
   commentSchema,
 } from "../database/comments.schema.js";
 
+export const getCommentsSchemas = {
+  searchParams: z.object({
+    page: z.coerce.number().int().positive().default(1),
+    pageSize: z.coerce.number().int().positive().max(100).default(10),
+  }),
+  response: z.object({
+    comments: z.array(commentSchema),
+    page: z.number(),
+    pageSize: z.number(),
+    totalComments: z.number(),
+    totalPages: z.number(),
+  }),
+};
+
+export type TGetCommentsSchemas = {
+  searchParams: z.infer<typeof getCommentsSchemas.searchParams>;
+  response: z.infer<typeof getCommentsSchemas.response>;
+};
+
+export const getCommentSchemas = {
+  urlParams: z.object({
+    commentId: commentSchema.shape.id,
+  }),
+  response: commentSchema,
+};
+
+export type TGetCommentSchemas = {
+  urlParams: z.infer<typeof getCommentSchemas.urlParams>;
+  response: z.infer<typeof getCommentSchemas.response>;
+};
+
 export const getCommentRepliesSchemas = {
   urlParams: z.object({
     commentId: commentSchema.shape.parentId,

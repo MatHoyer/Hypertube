@@ -5,6 +5,8 @@ import {
   TDeleteCommentLike,
   TDeleteCommentSchemas,
   TGetCommentRepliesSchemas,
+  TGetCommentSchemas,
+  TGetCommentsSchemas,
   TPatchCommentSchemas,
   TPostCommentLikeSchemas,
   TPostCommentReplySchemas,
@@ -17,6 +19,36 @@ import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import { commentParent, getParentComments } from "../global/comment.global";
 import { likeParent, unlikeParent } from "../global/like.global";
+
+export const getComments = async (
+  c: Context<
+    TIsLogged & TSearchParamsParser<TGetCommentsSchemas["searchParams"]>
+  >
+) => {
+  const { page, pageSize } = c.get("validatedSearchParams");
+
+  const comments = await prisma.comment.findMany({
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+  });
+
+  const totalComments = await prisma.comment.count();
+  const totalPages = Math.ceil(totalComments / pageSize);
+
+  return c.json({ comments, page, pageSize, totalComments, totalPages }, 200);
+};
+
+export const getComment = async (
+  c: Context<TIsLogged & TUrlParamsParser<TGetCommentSchemas["urlParams"]>>
+) => {
+  const { commentId } = c.get("validatedUrlParams");
+
+  const comment = await prisma.comment.findUnique({ where: { id: commentId } });
+
+  if (!comment) return c.json(null, 404);
+
+  return c.json(comment, 200);
+};
 
 export const getCommentReplies = async (
   c: Context<
