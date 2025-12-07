@@ -8,18 +8,24 @@ export const getUsersSchemas = {
     page: z.coerce.number().int().positive().default(1),
     pageSize: z.coerce.number().int().positive().default(10),
   }),
-  response: z.array(
-    userSchema.pick({
-      id: true,
-      name: true,
-      username: true,
-      displayUsername: true,
-      firstName: true,
-      lastName: true,
-      image: true,
-      createdAt: true,
-    })
-  ),
+  response: z.object({
+    users: z.array(
+      userSchema.pick({
+        id: true,
+        name: true,
+        username: true,
+        displayUsername: true,
+        firstName: true,
+        lastName: true,
+        image: true,
+        createdAt: true,
+      })
+    ),
+    page: z.number(),
+    pageSize: z.number(),
+    totalUsers: z.number(),
+    totalPages: z.number(),
+  }),
 };
 
 export type TGetUsersSchemas = {
