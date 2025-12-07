@@ -56,12 +56,14 @@ export {
   getAccountsUsersSchemas,
   getSessionUsersSchemas,
   getUserSchemas,
+  getUsersSchemas,
   patchUsersSchemas,
 } from "./schemas/api/users.schema.js";
 export type {
   TGetAccountsUsersSchemas,
   TGetSessionUsersSchemas,
   TGetUserSchemas,
+  TGetUsersSchemas,
   TPatchUsersSchemas,
 } from "./schemas/api/users.schema.js";
 

@@ -3,6 +3,57 @@ import { accountsSchema } from "../database/accounts.schema.js";
 import { sessionSchema } from "../database/session.schema.js";
 import { userSchema } from "../database/user.schema.js";
 
+export const getUsersSchemas = {
+  searchParams: z.object({
+    page: z.coerce.number().int().positive().default(1),
+    pageSize: z.coerce.number().int().positive().default(10),
+  }),
+  response: z.array(
+    userSchema.pick({
+      id: true,
+      name: true,
+      username: true,
+      displayUsername: true,
+      firstName: true,
+      lastName: true,
+      image: true,
+      createdAt: true,
+    })
+  ),
+};
+
+export type TGetUsersSchemas = {
+  searchParams: z.infer<typeof getUsersSchemas.searchParams>;
+  response: z.infer<typeof getUsersSchemas.response>;
+};
+
+export const getUserSchemas = {
+  urlParams: z.object({ userId: userSchema.shape.id }),
+  response: z
+    .object({
+      user: userSchema.pick({
+        id: true,
+        name: true,
+        username: true,
+        displayUsername: true,
+        firstName: true,
+        lastName: true,
+        image: true,
+        createdAt: true,
+      }),
+      stats: z.object({
+        totalLikes: z.number(),
+        totalComments: z.number(),
+      }),
+    })
+    .nullable(),
+};
+
+export type TGetUserSchemas = {
+  urlParams: z.infer<typeof getUserSchemas.urlParams>;
+  response: z.infer<typeof getUserSchemas.response>;
+};
+
 export const patchUsersSchemas = {
   urlParams: z.object({ userId: userSchema.shape.id }),
   requirements: z
@@ -53,30 +104,4 @@ export const getSessionUsersSchemas = {
 
 export type TGetSessionUsersSchemas = {
   response: z.infer<typeof getSessionUsersSchemas.response>;
-};
-
-export const getUserSchemas = {
-  urlParams: z.object({ userId: userSchema.shape.id }),
-  response: z
-    .object({
-      user: userSchema.pick({
-        id: true,
-        name: true,
-        displayUsername: true,
-        firstName: true,
-        lastName: true,
-        image: true,
-        createdAt: true,
-      }),
-      stats: z.object({
-        totalLikes: z.number(),
-        totalComments: z.number(),
-      }),
-    })
-    .nullable(),
-};
-
-export type TGetUserSchemas = {
-  urlParams: z.infer<typeof getUserSchemas.urlParams>;
-  response: z.infer<typeof getUserSchemas.response>;
 };

@@ -1,23 +1,28 @@
-import { getUserSchemas, patchUsersSchemas } from "@hypertube/libs";
+import {
+  getUserSchemas,
+  getUsersSchemas,
+  patchUsersSchemas,
+} from "@hypertube/libs";
 import { Hono } from "hono";
 import { bodyParser } from "../../middlewares/bodyParser";
 import { isLogged } from "../../middlewares/isLogged";
+import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
   getAccounts,
   getSession,
   getUser,
+  getUsers,
   patchUser,
 } from "./users.controller";
 
 const usersRouter = new Hono();
 
-usersRouter.patch(
-  "/:userId",
+usersRouter.get(
+  "/",
   isLogged,
-  urlParamsParser(patchUsersSchemas.urlParams),
-  bodyParser(patchUsersSchemas.requirements),
-  patchUser
+  searchParamsParser(getUsersSchemas.searchParams),
+  getUsers
 );
 
 usersRouter.get(
@@ -25,6 +30,14 @@ usersRouter.get(
   isLogged,
   urlParamsParser(getUserSchemas.urlParams),
   getUser
+);
+
+usersRouter.patch(
+  "/:userId",
+  isLogged,
+  urlParamsParser(patchUsersSchemas.urlParams),
+  bodyParser(patchUsersSchemas.requirements),
+  patchUser
 );
 
 usersRouter.get("/me/accounts", isLogged, getAccounts);
