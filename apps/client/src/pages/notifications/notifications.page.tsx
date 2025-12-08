@@ -1,4 +1,5 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
+import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
@@ -41,6 +42,7 @@ export const NotificationsPage = () => {
   const [readStatus, setReadStatus] = useState<NotificationReadStatus>(
     notificationReadStatuses.UNREAD
   );
+  const { scrollTo } = useScrollArea();
 
   const { stats, isUnreadNotifications } = useNotificationsStats();
 
@@ -113,7 +115,7 @@ export const NotificationsPage = () => {
             layoutId="notifications-read-status"
             value={readStatus}
             onChange={(value) => {
-              topRef.current?.scrollIntoView({ behavior: "instant" });
+              scrollTo({ top: 0, behavior: "instant" });
               setReadStatus(value as NotificationReadStatus);
             }}
             values={{
@@ -142,7 +144,7 @@ export const NotificationsPage = () => {
           >
             <Button
               onClick={() => {
-                topRef.current?.scrollIntoView({ behavior: "smooth" });
+                scrollTo({ top: 0, behavior: "smooth" });
               }}
               className="ml-2"
             >
