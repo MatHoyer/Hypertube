@@ -7,12 +7,13 @@ type TUniqueFilterProps = {
   value: string;
   onChange: (value: string) => void;
   values: Record<string, string>;
+  layoutId: string;
 };
 
 export const UniqueFilter: React.FC<
   TUniqueFilterProps &
     Omit<ComponentProps<"div">, "value" | "onChange" | "values">
-> = ({ value, onChange, values, className, ...props }) => {
+> = ({ value, onChange, values, layoutId, className, ...props }) => {
   return (
     <div
       className={cn(
@@ -31,7 +32,7 @@ export const UniqueFilter: React.FC<
         >
           {value === key && (
             <motion.div
-              layoutId="active-pill"
+              layoutId={`active-pill-${layoutId}`}
               className="absolute inset-0 rounded-md bg-background shadow-sm"
               transition={{
                 type: "spring",

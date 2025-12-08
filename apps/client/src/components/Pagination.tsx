@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { useEffect } from "react";
 import {
   Pagination,
@@ -5,8 +6,6 @@ import {
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "./ui/pagination";
 
 export const PagePagination: React.FC<{
@@ -26,11 +25,6 @@ export const PagePagination: React.FC<{
   return (
     <Pagination>
       <PaginationContent>
-        {page > 1 && (
-          <PaginationItem>
-            <PaginationPrevious onClick={() => setPage((prev) => prev - 1)} />
-          </PaginationItem>
-        )}
         {page > 2 && (
           <>
             <PaginationItem>
@@ -48,7 +42,16 @@ export const PagePagination: React.FC<{
             </PaginationLink>
           </PaginationItem>
         )}
-        <PaginationItem>
+        <PaginationItem className="relative">
+          <motion.div
+            layoutId="active-pill-pagination"
+            className="absolute inset-0 rounded-md bg-background shadow-sm"
+            transition={{
+              type: "spring",
+              stiffness: 380,
+              damping: 30,
+            }}
+          />
           <PaginationLink className="opacity-50 pointer-events-none">
             {page}
           </PaginationLink>
@@ -71,11 +74,6 @@ export const PagePagination: React.FC<{
               </PaginationLink>
             </PaginationItem>
           </>
-        )}
-        {page < lastPage && (
-          <PaginationItem>
-            <PaginationNext onClick={() => setPage((prev) => prev + 1)} />
-          </PaginationItem>
         )}
       </PaginationContent>
     </Pagination>

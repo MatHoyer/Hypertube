@@ -10,6 +10,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { FloatingBar } from "@/components/ui/FloatingBar";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
@@ -111,12 +112,14 @@ export const Historic = () => {
           </Empty>
         </div>
       )}
-      <PagePagination
-        page={page}
-        setPage={setPage}
-        pageSize={pageSize}
-        totalCount={totalCount}
-      />
+      <FloatingBar className="bg-muted/50 p-1">
+        <PagePagination
+          page={page}
+          setPage={setPage}
+          pageSize={pageSize}
+          totalCount={totalCount}
+        />
+      </FloatingBar>
     </div>
   );
 };
