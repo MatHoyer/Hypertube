@@ -1,3 +1,4 @@
+import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
 import { ErrorResource } from "@/components/ErrorResource";
 import { LoadingResource } from "@/components/LoadingResource";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
@@ -10,6 +11,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { FloatingBar } from "@/components/ui/FloatingBar";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
@@ -22,22 +24,17 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { History, X } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
+
+const pageSize = 10;
 
 export const Historic = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const [_, setSearchParams] = useSearchParams();
-  const pageSize = 10;
 
-  useEffect(
-    () => setSearchParams({ page: page.toString() }, { replace: true }),
-    [setSearchParams, page]
-  );
+  const { scrollTo } = useScrollArea();
 
   const { data, isPending, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER, { page }),
@@ -111,12 +108,17 @@ export const Historic = () => {
           </Empty>
         </div>
       )}
-      <PagePagination
-        page={page}
-        setPage={setPage}
-        pageSize={pageSize}
-        totalCount={totalCount}
-      />
+      <FloatingBar className="bg-muted/50 p-1">
+        <PagePagination
+          page={page}
+          setPage={(value) => {
+            setPage(value);
+            scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          pageSize={pageSize}
+          totalCount={totalCount}
+        />
+      </FloatingBar>
     </div>
   );
 };

@@ -1,18 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { motion } from "motion/react";
 import type { ComponentProps } from "react";
+import { ActivePill } from "./animated/ActivePill";
 
 type TUniqueFilterProps = {
   value: string;
   onChange: (value: string) => void;
   values: Record<string, string>;
+  layoutId: string;
 };
 
 export const UniqueFilter: React.FC<
   TUniqueFilterProps &
     Omit<ComponentProps<"div">, "value" | "onChange" | "values">
-> = ({ value, onChange, values, className, ...props }) => {
+> = ({ value, onChange, values, layoutId, className, ...props }) => {
   return (
     <div
       className={cn(
@@ -29,17 +30,7 @@ export const UniqueFilter: React.FC<
           size="sm"
           className="relative"
         >
-          {value === key && (
-            <motion.div
-              layoutId="active-pill"
-              className="absolute inset-0 rounded-md bg-background shadow-sm"
-              transition={{
-                type: "spring",
-                stiffness: 380,
-                damping: 30,
-              }}
-            />
-          )}
+          {value === key && <ActivePill layoutId={layoutId} />}
           <span className="relative z-10">{label}</span>
         </Button>
       ))}

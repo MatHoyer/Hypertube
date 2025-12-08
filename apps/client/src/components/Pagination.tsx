@@ -1,12 +1,11 @@
 import { useEffect } from "react";
+import { ActivePill } from "./animated/ActivePill";
 import {
   Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "./ui/pagination";
 
 export const PagePagination: React.FC<{
@@ -26,11 +25,6 @@ export const PagePagination: React.FC<{
   return (
     <Pagination>
       <PaginationContent>
-        {page > 1 && (
-          <PaginationItem>
-            <PaginationPrevious onClick={() => setPage((prev) => prev - 1)} />
-          </PaginationItem>
-        )}
         {page > 2 && (
           <>
             <PaginationItem>
@@ -48,7 +42,8 @@ export const PagePagination: React.FC<{
             </PaginationLink>
           </PaginationItem>
         )}
-        <PaginationItem>
+        <PaginationItem className="relative">
+          <ActivePill layoutId="pagination" />
           <PaginationLink className="opacity-50 pointer-events-none">
             {page}
           </PaginationLink>
@@ -71,11 +66,6 @@ export const PagePagination: React.FC<{
               </PaginationLink>
             </PaginationItem>
           </>
-        )}
-        {page < lastPage && (
-          <PaginationItem>
-            <PaginationNext onClick={() => setPage((prev) => prev + 1)} />
-          </PaginationItem>
         )}
       </PaginationContent>
     </Pagination>

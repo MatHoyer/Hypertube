@@ -1,8 +1,9 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
-import { UniqueFilter } from "@/components/animated/UniqueFilter";
+import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
+import { UniqueFilter } from "@/components/UniqueFilter";
 import { useNotificationsStats } from "@/hooks/use-notifications-stats";
 import {
   Layout,
@@ -39,8 +40,9 @@ export const NotificationsPage = () => {
   const [showScrollToTopButton, setShowScrollToTopButton] =
     useState<boolean>(false);
   const [readStatus, setReadStatus] = useState<NotificationReadStatus>(
-    notificationReadStatuses.UNREAD,
+    notificationReadStatuses.UNREAD
   );
+  const { scrollTo } = useScrollArea();
 
   const { stats, isUnreadNotifications } = useNotificationsStats();
 
@@ -79,7 +81,7 @@ export const NotificationsPage = () => {
         root: null,
         rootMargin: "0px 0px 1000px 0px",
         threshold: 0,
-      },
+      }
     );
     if (bottomRef.current) {
       observer.observe(bottomRef.current);
@@ -95,7 +97,7 @@ export const NotificationsPage = () => {
         const headerEntry = entries[0];
         setShowScrollToTopButton(!headerEntry.isIntersecting);
       },
-      { threshold: 0 },
+      { threshold: 0 }
     );
 
     if (topRef.current) {
@@ -110,17 +112,18 @@ export const NotificationsPage = () => {
       <FloatingBar>
         <div ref={filterRef}>
           <UniqueFilter
+            layoutId="notifications-read-status"
             value={readStatus}
             onChange={(value) => {
-              topRef.current?.scrollIntoView({ behavior: "instant" });
+              scrollTo({ top: 0, behavior: "instant" });
               setReadStatus(value as NotificationReadStatus);
             }}
             values={{
               [notificationReadStatuses.UNREAD]: t(
-                "notifications.readStatus.unread",
+                "notifications.readStatus.unread"
               ),
               [notificationReadStatuses.READ]: t(
-                "notifications.readStatus.read",
+                "notifications.readStatus.read"
               ),
               [notificationReadStatuses.ALL]: t("notifications.readStatus.all"),
             }}
@@ -141,7 +144,7 @@ export const NotificationsPage = () => {
           >
             <Button
               onClick={() => {
-                topRef.current?.scrollIntoView({ behavior: "smooth" });
+                scrollTo({ top: 0, behavior: "smooth" });
               }}
               className="ml-2"
             >
