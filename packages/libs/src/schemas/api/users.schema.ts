@@ -2,12 +2,9 @@ import z from "zod";
 import { accountsSchema } from "../database/accounts.schema.js";
 import { sessionSchema } from "../database/session.schema.js";
 import { userSchema } from "../database/user.schema.js";
+import { getPaginationSchemas } from "../utils/pagination.schema.js";
 
-export const getUsersSchemas = {
-  searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
-    pageSize: z.coerce.number().int().positive().default(10),
-  }),
+export const getUsersSchemas = getPaginationSchemas({
   response: z.object({
     users: z.array(
       userSchema.pick({
@@ -21,12 +18,8 @@ export const getUsersSchemas = {
         createdAt: true,
       })
     ),
-    page: z.number(),
-    pageSize: z.number(),
-    totalUsers: z.number(),
-    totalPages: z.number(),
   }),
-};
+});
 
 export type TGetUsersSchemas = {
   searchParams: z.infer<typeof getUsersSchemas.searchParams>;
