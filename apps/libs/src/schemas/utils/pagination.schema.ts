@@ -15,8 +15,8 @@ const paginationResponse = z.object({
 });
 type TPaginationResponse = typeof paginationResponse.shape;
 
-type TPaginationSchemas<T> = T extends ZodRawShape
-  ? { requirements: ZodObject<T> }
+type TPaginationUrlParamsSchemas<TUrlParams> = TUrlParams extends ZodRawShape
+  ? { urlParams: ZodObject<TUrlParams> }
   : {};
 
 type TPaginationSearchParamsSchemas<TSearchParams> = {
@@ -25,6 +25,11 @@ type TPaginationSearchParamsSchemas<TSearchParams> = {
       TPaginationSearchParams
   >;
 };
+
+type TPaginationRequirementsSchemas<TRequirements> =
+  TRequirements extends ZodRawShape
+    ? { requirements: ZodObject<TRequirements> }
+    : {};
 
 type TPaginationResponseSchemas<TResponse> = {
   response: ZodObject<TResponse & TPaginationResponse>;
@@ -35,9 +40,9 @@ type TPaginationSchemasReturn<
   TSearchParams,
   TRequirements,
   TResponse
-> = TPaginationSchemas<TUrlParams> &
+> = TPaginationUrlParamsSchemas<TUrlParams> &
   TPaginationSearchParamsSchemas<TSearchParams> &
-  TPaginationSchemas<TRequirements> &
+  TPaginationRequirementsSchemas<TRequirements> &
   TPaginationResponseSchemas<TResponse>;
 
 export const getPaginationSchemas = <
@@ -51,21 +56,21 @@ export const getPaginationSchemas = <
   requirements,
   response,
 }: {
-  urlParams?: ZodObject<TUrlParams extends ZodRawShape ? TUrlParams : any>;
+  urlParams?: ZodObject<TUrlParams extends ZodRawShape ? TUrlParams : never>;
   searchParams?: ZodObject<
-    TSearchParams extends ZodRawShape ? TSearchParams : any
+    TSearchParams extends ZodRawShape ? TSearchParams : never
   >;
   requirements?: ZodObject<
-    TRequirements extends ZodRawShape ? TRequirements : any
+    TRequirements extends ZodRawShape ? TRequirements : never
   >;
   response: ZodObject<TResponse>;
 }) => {
   return {
-    ...(urlParams && { urlParams }),
+    urlParams,
     searchParams: searchParams
       ? z.object({ ...searchParams.shape, ...paginationSearchParams.shape })
       : paginationSearchParams,
-    ...(requirements && { requirements }),
+    requirements,
     response: z.object({ ...response.shape, ...paginationResponse.shape }),
   } as any as TPaginationSchemasReturn<
     TUrlParams,
