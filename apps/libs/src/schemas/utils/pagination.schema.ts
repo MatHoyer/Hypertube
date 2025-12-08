@@ -15,6 +15,31 @@ const paginationResponse = z.object({
 });
 type TPaginationResponse = typeof paginationResponse.shape;
 
+type TPaginationSchemas<T> = T extends ZodRawShape
+  ? { requirements: ZodObject<T> }
+  : {};
+
+type TPaginationSearchParamsSchemas<TSearchParams> = {
+  searchParams: ZodObject<
+    (TSearchParams extends ZodRawShape ? TSearchParams : {}) &
+      TPaginationSearchParams
+  >;
+};
+
+type TPaginationResponseSchemas<TResponse> = {
+  response: ZodObject<TResponse & TPaginationResponse>;
+};
+
+type TPaginationSchemasReturn<
+  TUrlParams,
+  TSearchParams,
+  TRequirements,
+  TResponse
+> = TPaginationSchemas<TUrlParams> &
+  TPaginationSearchParamsSchemas<TSearchParams> &
+  TPaginationSchemas<TRequirements> &
+  TPaginationResponseSchemas<TResponse>;
+
 export const getPaginationSchemas = <
   TUrlParams extends ZodRawShape | undefined = undefined,
   TSearchParams extends ZodRawShape | undefined = undefined,
@@ -42,14 +67,10 @@ export const getPaginationSchemas = <
       : paginationSearchParams,
     ...(requirements && { requirements }),
     response: z.object({ ...response.shape, ...paginationResponse.shape }),
-  } as any as (TUrlParams extends ZodRawShape
-    ? { urlParams: ZodObject<TUrlParams> }
-    : {}) & {
-    searchParams: ZodObject<
-      (TSearchParams extends ZodRawShape ? TSearchParams : {}) &
-        TPaginationSearchParams
-    >;
-  } & (TRequirements extends ZodRawShape
-      ? { requirements: ZodObject<TRequirements> }
-      : {}) & { response: ZodObject<TResponse & TPaginationResponse> };
+  } as any as TPaginationSchemasReturn<
+    TUrlParams,
+    TSearchParams,
+    TRequirements,
+    TResponse
+  >;
 };
