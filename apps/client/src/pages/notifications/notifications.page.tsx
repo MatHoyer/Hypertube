@@ -1,8 +1,8 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
-import { UniqueFilter } from "@/components/animated/UniqueFilter";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
+import { UniqueFilter } from "@/components/UniqueFilter";
 import { useNotificationsStats } from "@/hooks/use-notifications-stats";
 import {
   Layout,

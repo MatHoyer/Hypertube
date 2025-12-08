@@ -1,6 +1,6 @@
-import { UniqueFilter } from "@/components/animated/UniqueFilter";
 import { LoadingResource } from "@/components/LoadingResource";
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
+import { UniqueFilter } from "@/components/UniqueFilter";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";

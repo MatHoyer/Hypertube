@@ -1,5 +1,5 @@
-import { motion } from "motion/react";
 import { useEffect } from "react";
+import { ActivePill } from "./animated/ActivePill";
 import {
   Pagination,
   PaginationContent,
@@ -43,15 +43,7 @@ export const PagePagination: React.FC<{
           </PaginationItem>
         )}
         <PaginationItem className="relative">
-          <motion.div
-            layoutId="active-pill-pagination"
-            className="absolute inset-0 rounded-md bg-background shadow-sm"
-            transition={{
-              type: "spring",
-              stiffness: 380,
-              damping: 30,
-            }}
-          />
+          <ActivePill layoutId="pagination" />
           <PaginationLink className="opacity-50 pointer-events-none">
             {page}
           </PaginationLink>
