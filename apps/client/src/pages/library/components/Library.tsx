@@ -9,6 +9,7 @@ import {
   getMoviesSchemas,
   getUrl,
   ROUTES,
+  tmdbDefaultSort,
   type TTmdbCategory,
   type TTmdbGenresKey,
   type TTmdbSort,
@@ -71,19 +72,22 @@ export const Library = () => {
   } = useInfiniteQuery({
     queryKey: getQueryKey(ROUTES.API.MOVIES, {
       searchParams: {
-        query: queryDebounced,
+        query: queryDebounced ?? "",
         category: categoryDebounced ?? undefined,
-        sort: sortDebounced ?? undefined,
-        genres: genresDebounced,
+        sort:
+          sortDebounced ?? (!queryDebounced && !categoryDebounced)
+            ? tmdbDefaultSort
+            : undefined,
+        genres: genresDebounced ?? [],
       },
     }),
     queryFn: ({ pageParam }) =>
       fetchMovies({
         pageParam,
-        query: queryDebounced,
+        query: queryDebounced ?? "",
         category: categoryDebounced ?? undefined,
         sort: sortDebounced ?? undefined,
-        genres: genresDebounced,
+        genres: genresDebounced ?? [],
       }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
