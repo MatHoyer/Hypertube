@@ -262,12 +262,11 @@
   },
   "playlist": {
     "title": "",
+    "none": "",
+    "noneDescription": "",
     "empty": "",
     "emptyDescription": "",
-    "emptyPlaylist": "",
-    "emptyPlaylistDescription": "",
     "save": "",
-    "none": "",
     "new": "",
     "dialog": {
       "title": "",

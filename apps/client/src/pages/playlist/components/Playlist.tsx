@@ -1,17 +1,6 @@
-import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
 import { ErrorResource } from "@/components/ErrorResource";
 import { LoadingResource } from "@/components/LoadingResource";
-import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
-import { PagePagination } from "@/components/Pagination";
-import { Button } from "@/components/ui/button";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { FloatingBar } from "@/components/ui/FloatingBar";
+import { MovieListWithPagination } from "@/components/movies/MovieListWithPagination";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
@@ -23,7 +12,6 @@ import {
 } from "@hypertube/libs";
 import type { TPlaylistSchema } from "@hypertube/libs/src/schemas/database/playlist.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Video, X } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -33,8 +21,7 @@ const pageSize = 10;
 export const Playlist = ({ playlist }: { playlist: TPlaylistSchema }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const { scrollTo } = useScrollArea();
+  const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));
 
   const { data, isPending, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.PLAYLISTS, { page }),
@@ -51,9 +38,6 @@ export const Playlist = ({ playlist }: { playlist: TPlaylistSchema }) => {
         schemas: getPlaylistSchemas,
       }),
   });
-
-  const movies = data ? data.movies : [];
-  const totalCount = data ? data.totalCount : 0;
 
   const { mutate } = useMutation({
     mutationFn: ({
@@ -83,51 +67,12 @@ export const Playlist = ({ playlist }: { playlist: TPlaylistSchema }) => {
   if (isError) return <ErrorResource resource="playlist" />;
 
   return (
-    <div className="flex flex-col gap-5">
-      {movies.map((movie) => (
-        <div key={movie.details.id} className="flex items-center gap-5">
-          <MovieBaseInfo
-            movie={movie.details}
-            dir="col"
-            posterSize="sm"
-            info="partial"
-          />
-          <Button
-            variant={"destructive"}
-            onClick={() =>
-              mutate({ playlistId: playlist.id, tmdbId: movie.details.id })
-            }
-          >
-            <X />
-          </Button>
-        </div>
-      ))}
-      {!movies.length && (
-        <div className="flex justify-center items-center">
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <Video />
-              </EmptyMedia>
-              <EmptyTitle>{t("playlist.emptyPlaylist")}</EmptyTitle>
-              <EmptyDescription>
-                {t("playlist.emptyPlaylistDescription")}
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </div>
-      )}
-      <FloatingBar className="bg-muted/50 p-1">
-        <PagePagination
-          page={page}
-          setPage={(value) => {
-            setPage(value);
-            scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          pageSize={pageSize}
-          totalCount={totalCount}
-        />
-      </FloatingBar>
-    </div>
+    <MovieListWithPagination
+      movieListType="playlist"
+      movies={data ? data.movies : []}
+      pageSize={pageSize}
+      totalCount={data ? data.totalCount : 0}
+      deleteFn={(tmdbId: number) => mutate({ playlistId: playlist.id, tmdbId })}
+    />
   );
 };

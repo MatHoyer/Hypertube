@@ -14,7 +14,7 @@ export const PagePagination: React.FC<{
   pageSize: number;
   totalCount: number;
 }> = ({ page, setPage, pageSize, totalCount }) => {
-  const lastPage = Math.ceil(totalCount / pageSize);
+  const lastPage = Math.ceil(totalCount / pageSize) || 1;
 
   useEffect(() => {
     if (page > lastPage) setPage(1);

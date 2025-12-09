@@ -1,17 +1,6 @@
-import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
 import { ErrorResource } from "@/components/ErrorResource";
 import { LoadingResource } from "@/components/LoadingResource";
-import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
-import { PagePagination } from "@/components/Pagination";
-import { Button } from "@/components/ui/button";
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty";
-import { FloatingBar } from "@/components/ui/FloatingBar";
+import { MovieListWithPagination } from "@/components/movies/MovieListWithPagination";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
@@ -22,7 +11,6 @@ import {
   type TTmdbMovieSchema,
 } from "@hypertube/libs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { History, X } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -32,9 +20,7 @@ const pageSize = 10;
 export const Historic = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-
-  const { scrollTo } = useScrollArea();
+  const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));
 
   const { data, isPending, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER, { page }),
@@ -51,11 +37,8 @@ export const Historic = () => {
       }),
   });
 
-  const historic = data ? data.movies : [];
-  const totalCount = data ? data.totalCount : 0;
-
   const { mutate } = useMutation({
-    mutationFn: (tmdbId: TTmdbMovieSchema["id"]) =>
+    mutationFn: ({ tmdbId }: { tmdbId: TTmdbMovieSchema["id"] }) =>
       axiosFetch({
         method: "DELETE",
         url: getUrl(ROUTES.API.HISTORY, { tmdbId }),
@@ -76,49 +59,12 @@ export const Historic = () => {
   if (isError) return <ErrorResource resource="historic" />;
 
   return (
-    <div className="flex flex-col gap-5">
-      {historic.map((movie) => (
-        <div key={movie.details.id} className="flex items-center gap-5">
-          <MovieBaseInfo
-            movie={movie.details}
-            dir="col"
-            posterSize="sm"
-            info="partial"
-          />
-          <Button
-            variant={"destructive"}
-            onClick={() => mutate(movie.details.id)}
-          >
-            <X />
-          </Button>
-        </div>
-      ))}
-      {!historic.length && (
-        <div className="flex justify-center items-center">
-          <Empty>
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <History />
-              </EmptyMedia>
-              <EmptyTitle>{t("historic.empty")}</EmptyTitle>
-              <EmptyDescription>
-                {t("historic.emptyDescription")}
-              </EmptyDescription>
-            </EmptyHeader>
-          </Empty>
-        </div>
-      )}
-      <FloatingBar className="bg-muted/50 p-1">
-        <PagePagination
-          page={page}
-          setPage={(value) => {
-            setPage(value);
-            scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          pageSize={pageSize}
-          totalCount={totalCount}
-        />
-      </FloatingBar>
-    </div>
+    <MovieListWithPagination
+      movieListType="historic"
+      movies={data ? data.movies : []}
+      pageSize={pageSize}
+      totalCount={data ? data.totalCount : 0}
+      deleteFn={(tmdbId: number) => mutate({ tmdbId })}
+    />
   );
 };

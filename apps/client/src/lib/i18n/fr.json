@@ -262,12 +262,11 @@
   },
   "playlist": {
     "title": "Vos playlists",
-    "empty": "Vous n'avez pas de playlists.",
-    "emptyDescription": "Vous n'avez pas encore créé de playlist.",
-    "emptyPlaylist": "Vous n'avez aucun film dans cette playlist.",
-    "emptyPlaylistDescription": "Vous n'avez pas encore ajouté de film à cette playlist.",
+    "none": "Vous n'avez pas de playlists.",
+    "noneDescription": "Vous n'avez pas encore créé de playlist.",
+    "empty": "Vous n'avez aucun film dans cette playlist.",
+    "emptyDescription": "Vous n'avez pas encore ajouté de film à cette playlist.",
     "save": "Enregistrer dans...",
-    "none": "Vous n'avez aucune playlist",
     "new": "Nouvelle playlist",
     "dialog": {
       "title": "Choisissez le nom pour votre future playlist",

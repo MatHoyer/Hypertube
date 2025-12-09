@@ -96,9 +96,9 @@ export const Playlists = () => {
               <EmptyMedia variant="icon">
                 <ListVideo />
               </EmptyMedia>
-              <EmptyTitle>{t("playlist.empty")}</EmptyTitle>
+              <EmptyTitle>{t("playlist.none")}</EmptyTitle>
               <EmptyDescription>
-                {t("playlist.emptyDescription")}
+                {t("playlist.noneDescription")}
               </EmptyDescription>
             </EmptyHeader>
           </Empty>
