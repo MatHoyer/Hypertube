@@ -1,7 +1,8 @@
-import type { TTmdbMovieCompleteSchema } from "@hypertube/libs";
+import { getUrl, ROUTES, type TTmdbMovieCompleteSchema } from "@hypertube/libs";
 import { Video, X } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { useScrollArea } from "../contexts/scroll-area/scroll-area.context";
 import { PagePagination } from "../Pagination";
 import { Button } from "../ui/button";
@@ -34,24 +35,29 @@ export const MovieListWithPagination: React.FC<{
   return (
     <div className="flex flex-col gap-2">
       {movies.map((movie) => (
-        <Card
+        <Link
           key={movie.details.id}
-          className="flex sm:flex-row items-center gap-4 p-2"
+          to={getUrl(ROUTES.CLIENT.MOVIE, { tmdbId: movie.details.id })}
         >
-          <MovieBaseInfo
-            movie={movie.details}
-            dir="col"
-            posterSize="sm"
-            info="partial"
-          />
-          <Button
-            className="w-full sm:w-min"
-            variant={"destructive"}
-            onClick={() => deleteFn(movie.details.id)}
-          >
-            <X />
-          </Button>
-        </Card>
+          <Card className="flex sm:flex-row items-center gap-4 p-2 hover:bg-card/20 cursor-pointer">
+            <MovieBaseInfo
+              movie={movie.details}
+              dir="col"
+              posterSize="sm"
+              info="partial"
+            />
+            <Button
+              className="w-full sm:w-min"
+              variant={"destructive"}
+              onClick={(event) => {
+                event.preventDefault();
+                deleteFn(movie.details.id);
+              }}
+            >
+              <X />
+            </Button>
+          </Card>
+        </Link>
       ))}
       {!movies.length && (
         <div className="flex justify-center items-center">

@@ -65,7 +65,7 @@ export const Playlists = () => {
                 playlistId: playlist.id,
               })}
             >
-              <Card className="flex flex-row justify-between items-center p-5 cursor-pointer hover:bg-card/70">
+              <Card className="flex flex-row justify-between items-center p-5 hover:bg-card/20 cursor-pointer">
                 <div className="flex items-center gap-2">
                   <Typography textSize={"lg"} textColor={"muted"}>
                     {playlist.movies.length}

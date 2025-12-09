@@ -89,7 +89,12 @@ export const MovieBaseInfo: React.FC<
     return (
       <MovieBaseInfoLayout dir={dir} className={className} {...props}>
         <ImageContainer imageSrc={null} altImage={"?"} size={posterSize} />
-        <Typography textSize="lg">{t("movie.noDetails")}</Typography>
+        <Typography
+          textSize="lg"
+          className="sm:col-span-3 text-center sm:text-start"
+        >
+          {t("movie.noDetails")}
+        </Typography>
       </MovieBaseInfoLayout>
     );
   }
