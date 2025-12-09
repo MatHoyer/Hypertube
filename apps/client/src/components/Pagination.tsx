@@ -26,14 +26,14 @@ export const PagePagination: React.FC<{
     <Pagination>
       <PaginationContent>
         {page > 2 && (
-          <>
-            <PaginationItem>
-              <PaginationLink onClick={() => setPage(1)}>1</PaginationLink>
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-          </>
+          <PaginationItem>
+            <PaginationLink onClick={() => setPage(1)}>1</PaginationLink>
+          </PaginationItem>
+        )}
+        {page > 3 && (
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
         )}
         {page > 1 && (
           <PaginationItem>
@@ -55,17 +55,17 @@ export const PagePagination: React.FC<{
             </PaginationLink>
           </PaginationItem>
         )}
+        {page < lastPage - 2 && (
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+        )}
         {page < lastPage - 1 && (
-          <>
-            <PaginationItem>
-              <PaginationEllipsis />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink onClick={() => setPage(lastPage)}>
-                {lastPage}
-              </PaginationLink>
-            </PaginationItem>
-          </>
+          <PaginationItem>
+            <PaginationLink onClick={() => setPage(lastPage)}>
+              {lastPage}
+            </PaginationLink>
+          </PaginationItem>
         )}
       </PaginationContent>
     </Pagination>
