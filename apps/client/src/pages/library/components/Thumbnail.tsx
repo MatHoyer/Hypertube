@@ -148,23 +148,22 @@ export const Thumbnail: React.FC<{
                         <DropdownMenuItem
                           key={playlist.id}
                           className="flex justify-between"
-                          onClick={() =>
-                            isPlaylistHasMovie
-                              ? deleteMovieFromPlaylistMutation.mutate({
-                                  playlistId: playlist.id,
-                                  tmdbId: movie.details.id,
-                                })
-                              : addMovieToPlaylistMutation.mutate({
-                                  playlistId: playlist.id,
-                                  tmdbId: movie.details.id,
-                                })
-                          }
+                          onClick={(event) => {
+                            event.preventDefault();
+                            if (isPlaylistHasMovie) {
+                              deleteMovieFromPlaylistMutation.mutate({
+                                playlistId: playlist.id,
+                                tmdbId: movie.details.id,
+                              });
+                            } else {
+                              addMovieToPlaylistMutation.mutate({
+                                playlistId: playlist.id,
+                                tmdbId: movie.details.id,
+                              });
+                            }
+                          }}
                         >
-                          <Typography
-                            textSize="lg"
-                            functionnal={"truncate"}
-                            className="w-40"
-                          >
+                          <Typography functionnal={"truncate"} className="w-40">
                             {playlist.name}
                           </Typography>
                           <Bookmark
