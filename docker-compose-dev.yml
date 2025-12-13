@@ -18,7 +18,7 @@ services:
     volumes:
       - ./node_modules:/hypertube/node_modules
       - ./apps:/hypertube/apps
-    command: bash -c "umask 000 && pnpm i --frozen-lockfile && chmod 777 -R /hypertube/apps/server/node_modules && chmod 777 -R /hypertube/apps/client/node_modules && chmod 777 -R /hypertube/apps/libs/node_modules && chmod 777 -R /hypertube/apps/server-core/node_modules && chmod 777 -R /hypertube/apps/downloader/node_modules && chmod 777 -R /hypertube/apps/scheduler/node_modules && chmod 777 -R /hypertube/node_modules && pnpm --filter server-core prisma:migrate:reset && pnpm --filter server-core prisma:migrate && pnpm dev"
+    command: bash -c "umask 000 && pnpm i --frozen-lockfile && chmod 777 -R /hypertube/apps/server/node_modules && chmod 777 -R /hypertube/apps/client/node_modules && chmod 777 -R /hypertube/apps/libs/node_modules && chmod 777 -R /hypertube/apps/server-core/node_modules && chmod 777 -R /hypertube/apps/downloader/node_modules && chmod 777 -R /hypertube/apps/scheduler/node_modules && chmod 777 -R /hypertube/node_modules && pnpm --filter server-core prisma:generate && pnpm --filter server-core prisma:migrate:reset && pnpm --filter server-core prisma:migrate && pnpm dev"
     networks:
       - hypertube-network
     healthcheck:
