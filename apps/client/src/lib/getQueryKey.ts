@@ -4,7 +4,9 @@ import {
   getMoviesSchemas,
   movieSchema,
   notificationReadStatuses,
+  tmdbCategories,
   tmdbGenres,
+  tmdbSorts,
   typedKeys,
   userSchema,
 } from "@hypertube/libs";
@@ -22,6 +24,8 @@ const apiRouteQueryKeySchemas = {
         ...getMoviesSchemas.searchParams.shape,
         page: getMoviesSchemas.searchParams.shape.page.optional(),
         input: z.string().nullable().optional(),
+        category: z.enum(tmdbCategories).nullable().optional(),
+        sort: z.enum(tmdbSorts).nullable().optional(),
         genres: z.array(z.enum(typedKeys(tmdbGenres))).optional(),
       })
       .optional(),
