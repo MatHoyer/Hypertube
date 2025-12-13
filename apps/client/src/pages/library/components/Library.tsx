@@ -1,7 +1,6 @@
 import { LoadingResource } from "@/components/LoadingResource";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Typography } from "@/components/ui/typography";
-import useDebounce from "@/hooks/use-debounce";
 import { useMainScrollElement } from "@/layouts/BaseLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
@@ -28,10 +27,10 @@ const fetchMovies = async ({
   genres,
 }: {
   pageParam: number;
-  query: string | undefined;
-  category: TTmdbCategory | undefined;
-  sort: TTmdbSort | undefined;
-  genres: TTmdbGenresKey[] | undefined;
+  query: string;
+  category: TTmdbCategory | null;
+  sort: TTmdbSort | null;
+  genres: TTmdbGenresKey[];
 }) => {
   const res = await axiosFetch({
     method: "GET",
@@ -56,11 +55,6 @@ export const Library = () => {
   const [columns, setColumns] = useState(5);
   const { query, category, sort, genres } = useLibrary();
 
-  const queryDebounced = useDebounce(query, 500);
-  const categoryDebounced = useDebounce(category, 500);
-  const sortDebounced = useDebounce(sort, 500);
-  const genresDebounced = useDebounce(genres, 500);
-
   const {
     data,
     fetchNextPage,
@@ -71,28 +65,24 @@ export const Library = () => {
   } = useInfiniteQuery({
     queryKey: getQueryKey(ROUTES.API.MOVIES, {
       searchParams: {
-        query: queryDebounced,
-        category: categoryDebounced ?? undefined,
-        sort: sortDebounced ?? undefined,
-        genres: genresDebounced,
+        query,
+        category,
+        sort,
+        genres,
       },
     }),
     queryFn: ({ pageParam }) =>
       fetchMovies({
         pageParam,
-        query: queryDebounced,
-        category: categoryDebounced ?? undefined,
-        sort: sortDebounced ?? undefined,
-        genres: genresDebounced,
+        query,
+        category,
+        sort,
+        genres,
       }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.totalPages > lastPage.page ? lastPage.page + 1 : undefined,
-    enabled:
-      !!queryDebounced ||
-      !!categoryDebounced ||
-      !!sortDebounced ||
-      !!genresDebounced,
+    enabled: !!query || !!category || !!sort || !!genres,
   });
 
   const allMovies = data ? data.pages.flatMap((page) => page.movies) : [];

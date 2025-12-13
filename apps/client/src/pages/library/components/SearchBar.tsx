@@ -25,7 +25,7 @@ export const SearchBar = () => {
   const [input, setInput] = useState<string>("");
   const searchBarRef = useRef<HTMLDivElement>(null);
   const { query, setQuery } = useLibrary();
-  const inputDebounced = useDebounce(input, 200);
+  const inputDebounced = useDebounce(input, 500);
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
