@@ -6,7 +6,7 @@ import {
   Layout,
   LayoutContent,
   LayoutHeader,
-  LayoutTitle,
+  LayoutTitleResource,
 } from "@/layouts/PageLayout";
 import { NotFoundPage } from "../notFound/NotFound.page";
 import { Playlist } from "./components/Playlist";
@@ -25,8 +25,12 @@ export const PlaylistPage = () => {
 
   return (
     <Layout>
-      <LayoutHeader className="items-center">
-        <LayoutTitle>{playlist.name}</LayoutTitle>
+      <LayoutHeader>
+        <LayoutTitleResource
+          resource="playlist"
+          count={playlist.movies.length}
+          dynamicTitle={playlist.name}
+        />
       </LayoutHeader>
       <LayoutContent>
         <Playlist playlist={playlist} />

@@ -1,19 +1,19 @@
+import { useUserPlaylists } from "@/hooks/use-playlists";
 import {
   Layout,
   LayoutContent,
   LayoutHeader,
-  LayoutTitle,
+  LayoutTitleResource,
 } from "@/layouts/PageLayout";
-import { useTranslation } from "react-i18next";
 import { Playlists } from "./components/Playlists";
 
 export const PlaylistsPage = () => {
-  const { t } = useTranslation();
+  const { playlists } = useUserPlaylists();
 
   return (
     <Layout>
-      <LayoutHeader className="items-center">
-        <LayoutTitle>{t("playlist.title")}</LayoutTitle>
+      <LayoutHeader>
+        <LayoutTitleResource resource="playlists" count={playlists.length} />
       </LayoutHeader>
       <LayoutContent>
         <Playlists />

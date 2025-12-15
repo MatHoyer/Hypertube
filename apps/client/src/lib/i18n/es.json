@@ -253,10 +253,13 @@
     "emptyDescription": "",
     "deleteSuccess": "",
     "deleteFailed": "",
+    "descriptionResource": "",
     "loadingRessource": "",
     "errorRessource": ""
   },
   "playlists": {
+    "title": "",
+    "descriptionResource": "",
     "loadingRessource": "",
     "errorRessource": ""
   },
@@ -282,6 +285,7 @@
     "deleteMovieFailed": "",
     "creationSuccess": "",
     "creationFailed": "",
+    "descriptionResource": "",
     "loadingRessource": "",
     "errorRessource": ""
   },
@@ -327,7 +331,7 @@
     "markAllAsRead": "Marcar todas como leídas",
     "markedAsRead": "Notificación marcada como leída",
     "markedAllAsRead": "Todas las notificaciones marcadas como leídas",
-    "unreadNotifications": "notificaciones sin leer",
+    "descriptionResource": "notificaciones sin leer",
     "goToResource": "Haz clic para más",
     "sendTestNotification": "Enviar notificación de prueba"
   },

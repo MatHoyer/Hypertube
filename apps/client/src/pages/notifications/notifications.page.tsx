@@ -9,9 +9,8 @@ import {
   Layout,
   LayoutActions,
   LayoutContent,
-  LayoutDescription,
   LayoutHeader,
-  LayoutTitle,
+  LayoutTitleResource,
 } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
@@ -28,7 +27,6 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Notification } from "./components/notification";
-import { NotificationBell } from "./components/notification-bell";
 import { NotificationsActions } from "./components/notifications-actions";
 import { NotificationsEmpty } from "./components/notifications-empty";
 
@@ -153,20 +151,12 @@ export const NotificationsPage = () => {
           </AnimateApparition>
         </div>
       </FloatingBar>
-      <LayoutHeader className="mb-6">
+      <LayoutHeader>
         <div ref={topRef} />
-        <div className="flex items-center gap-2">
-          <NotificationBell size="lg" />
-          <div className="flex flex-col gap-2">
-            <LayoutTitle className="flex items-center gap-2">
-              {t("notifications.title")}
-            </LayoutTitle>
-            <LayoutDescription>
-              {stats?.totalUnreadNotifications ?? 0}{" "}
-              {t("notifications.unreadNotifications")}
-            </LayoutDescription>
-          </div>
-        </div>
+        <LayoutTitleResource
+          resource="notifications"
+          count={stats?.totalUnreadNotifications ?? 0}
+        />
         <LayoutActions className="w-full">
           <NotificationsActions
             readStatus={readStatus}

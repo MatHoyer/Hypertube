@@ -253,15 +253,18 @@
     "emptyDescription": "You haven't watched a movie yet.",
     "deleteSuccess": "The movie has been successfully deleted of your historic.",
     "deleteFailed": "Deleting the movie of your historic failed.",
+    "descriptionResource": "movies in the historic",
     "loadingRessource": "historic",
     "errorRessource": "historic not found"
   },
   "playlists": {
+    "title": "Your playlists",
+    "descriptionResource": "playlists",
     "loadingRessource": "playlists",
     "errorRessource": "playlists not found"
   },
   "playlist": {
-    "title": "Your playlists",
+    "title": "Your playlist",
     "none": "You don't have any playlists.",
     "noneDescription": "You haven't created a playlist yet.",
     "empty": "You don't have any movies in that playlist.",
@@ -282,6 +285,7 @@
     "deleteMovieFailed": "Deleting the movie of your playlist failed.",
     "creationSuccess": "Playlist successfully created.",
     "creationFailed": "Playlist creation failed.",
+    "descriptionResource": "movies in your playlist",
     "loadingRessource": "playlist",
     "errorRessource": "playlist not found"
   },
@@ -327,7 +331,7 @@
     "markAllAsRead": "Mark all as read",
     "markedAsRead": "Notification marked as read",
     "markedAllAsRead": "All notifications marked as read",
-    "unreadNotifications": "unread notifications",
+    "descriptionResource": "unread notifications",
     "goToResource": "Click for more",
     "sendTestNotification": "Send test notification"
   },

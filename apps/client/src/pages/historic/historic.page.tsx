@@ -2,21 +2,21 @@ import {
   Layout,
   LayoutContent,
   LayoutHeader,
-  LayoutTitle,
+  LayoutTitleResource,
 } from "@/layouts/PageLayout";
-import { useTranslation } from "react-i18next";
+import { useState } from "react";
 import { Historic } from "./components/Historic";
 
 export const HistoricPage = () => {
-  const { t } = useTranslation();
+  const [historicCount, setHistoricCount] = useState(0);
 
   return (
     <Layout>
-      <LayoutHeader className="items-center">
-        <LayoutTitle>{t("historic.title")}</LayoutTitle>
+      <LayoutHeader>
+        <LayoutTitleResource resource="historic" count={historicCount} />
       </LayoutHeader>
       <LayoutContent>
-        <Historic />
+        <Historic setHistoricCount={setHistoricCount} />
       </LayoutContent>
     </Layout>
   );
