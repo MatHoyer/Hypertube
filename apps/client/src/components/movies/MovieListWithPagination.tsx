@@ -74,7 +74,7 @@ export const MovieListWithPagination: React.FC<{
           </Empty>
         </div>
       )}
-      <FloatingBar className="bg-muted/50 p-1">
+      <FloatingBar>
         <PagePagination
           page={page}
           setPage={(value) => {

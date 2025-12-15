@@ -11,7 +11,7 @@ export const FloatingBar: React.FC<ComponentProps<"div">> = ({
       <div className={cn("flex w-full p-4 justify-center relative")}>
         <div
           className={cn(
-            "flex justify-center bg-background rounded-lg",
+            "flex justify-center rounded-lg bg-muted border border-card p-1",
             className
           )}
           {...props}
