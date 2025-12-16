@@ -170,6 +170,7 @@ const MoviePage = () => {
               <TabsList className="bg-transparent">
                 <UniqueFilter
                   layoutId="movie-tabs"
+                  className="bg-muted/50"
                   value={selectedTab}
                   onChange={(value) => setSelectedTab(value as TMovieTabs)}
                   values={{

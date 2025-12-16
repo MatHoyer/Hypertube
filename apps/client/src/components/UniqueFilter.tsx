@@ -16,10 +16,7 @@ export const UniqueFilter: React.FC<
 > = ({ value, onChange, values, layoutId, className, ...props }) => {
   return (
     <div
-      className={cn(
-        "inline-flex items-center gap-1 rounded-lg bg-muted/50 p-1",
-        className
-      )}
+      className={cn("inline-flex items-center gap-1 rounded-lg p-1", className)}
       {...props}
     >
       {Object.entries(values).map(([key, label]) => (
