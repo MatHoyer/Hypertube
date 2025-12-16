@@ -80,7 +80,7 @@ jobs:
         run: docker network create hypertube-network || echo "Network already exists"
 
       - name: Start DB containers (docker-compose.yml)
-        run: docker compose up -d
+        run: docker compose -f docker-compose.yml up -d
 
       - name: Wait for DBs to be ready
         run: |
