@@ -11,4 +11,4 @@ services:
 
   redis:
     ports:
-      - "2424:6379"
+      - "${EXPOSED_REDIS_PORT}:${REDIS_PORT}"
