@@ -1,5 +1,3 @@
-import { ErrorResource } from "@/components/ErrorResource";
-import { LoadingResource } from "@/components/LoadingResource";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import {
   Layout,
@@ -17,30 +15,29 @@ import { PlaylistPageParamsSchema } from "./schemas/urlParams.schema";
 export const PlaylistPage = () => {
   const { playlistId } = useConvertParams(PlaylistPageParamsSchema);
 
-  const {
-    data: playlist,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: getQueryKey(ROUTES.API.PLAYLISTS, { playlistId }),
+  const { data } = useQuery({
+    queryKey: getQueryKey(ROUTES.API.PLAYLISTS, { playlistId, page: 1 }),
     queryFn: () =>
       axiosFetch({
         method: "GET",
-        url: getUrl(ROUTES.API.PLAYLISTS, { playlistId }),
+        url: getUrl(ROUTES.API.PLAYLISTS, {
+          playlistId,
+          searchParams: {
+            page: "1",
+            pageSize: "1",
+          },
+        }),
         schemas: getPlaylistSchemas,
       }),
   });
-
-  if (isLoading) return <LoadingResource resource="playlist" />;
-  if (isError || !playlist) return <ErrorResource resource="playlist" />;
 
   return (
     <Layout>
       <LayoutHeader>
         <LayoutTitleResource
           resource="playlist"
-          count={playlist.totalCount}
-          dynamicTitle={playlist.name}
+          count={data?.totalCount ?? 0}
+          dynamicTitle={data?.name}
         />
       </LayoutHeader>
       <LayoutContent>

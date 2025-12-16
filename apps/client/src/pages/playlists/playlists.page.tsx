@@ -1,5 +1,6 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { Button } from "@/components/ui/button";
+import { useUserPlaylists } from "@/hooks/use-playlists";
 import {
   Layout,
   LayoutActions,
@@ -8,19 +9,18 @@ import {
   LayoutTitleResource,
 } from "@/layouts/PageLayout";
 import { Plus } from "lucide-react";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Playlists } from "./components/Playlists";
 
 export const PlaylistsPage = () => {
   const { t } = useTranslation();
-  const [playlistsCount, setPlaylistsCount] = useState(0);
+  const { totalCount } = useUserPlaylists({ page: 1, pageSize: 10 });
 
   return (
     <Layout>
       <LayoutHeader>
-        <LayoutTitleResource resource="playlists" count={playlistsCount} />
-        <LayoutActions className="flex w-full justify-end">
+        <LayoutTitleResource resource="playlists" count={totalCount} />
+        <LayoutActions>
           <Button onClick={() => openDialog("playlist")}>
             <Plus />
             {t("playlist.new")}
@@ -28,7 +28,7 @@ export const PlaylistsPage = () => {
         </LayoutActions>
       </LayoutHeader>
       <LayoutContent>
-        <Playlists setPlaylistsCount={setPlaylistsCount} />
+        <Playlists />
       </LayoutContent>
     </Layout>
   );

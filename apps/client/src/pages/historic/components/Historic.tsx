@@ -17,9 +17,7 @@ import { toast } from "sonner";
 
 const pageSize = 10;
 
-export const Historic: React.FC<{
-  setHistoricCount: (count: number) => void;
-}> = ({ setHistoricCount }) => {
+export const Historic = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));
@@ -59,8 +57,6 @@ export const Historic: React.FC<{
 
   if (isPending) return <LoadingResource resource="historic" />;
   if (isError) return <ErrorResource resource="historic" />;
-
-  setHistoricCount(data.totalCount);
 
   return (
     <MovieListWithPagination

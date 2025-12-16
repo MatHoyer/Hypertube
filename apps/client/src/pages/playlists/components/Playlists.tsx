@@ -30,9 +30,7 @@ import { toast } from "sonner";
 
 const pageSize = 10;
 
-export const Playlists: React.FC<{
-  setPlaylistsCount: (count: number) => void;
-}> = ({ setPlaylistsCount }) => {
+export const Playlists = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
@@ -63,8 +61,6 @@ export const Playlists: React.FC<{
 
   if (isLoading) return <LoadingResource resource="playlists" />;
   if (isError) return <ErrorResource resource="playlists" />;
-
-  setPlaylistsCount(totalCount);
 
   return (
     <div className="flex flex-col gap-4">
