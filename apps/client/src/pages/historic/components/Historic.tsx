@@ -15,9 +15,7 @@ import { parseAsInteger, useQueryState } from "nuqs";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const pageSize = 10;
-
-export const Historic = () => {
+export const Historic: React.FC<{ pageSize: number }> = ({ pageSize }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));

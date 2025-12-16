@@ -10,16 +10,19 @@ import { getHistorySchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { Historic } from "./components/Historic";
 
+const defaultPage = 1;
+const pageSize = 10;
+
 export const HistoricPage = () => {
   const { data } = useQuery({
-    queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER, { page: 1 }),
+    queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER, { page: defaultPage }),
     queryFn: () =>
       axiosFetch({
         method: "GET",
         url: getUrl(ROUTES.API.HISTORY, {
           searchParams: {
-            page: "1",
-            pageSize: "10",
+            page: defaultPage.toString(),
+            pageSize: pageSize.toString(),
           },
         }),
         schemas: getHistorySchemas,
@@ -35,7 +38,7 @@ export const HistoricPage = () => {
         />
       </LayoutHeader>
       <LayoutContent>
-        <Historic />
+        <Historic pageSize={pageSize} />
       </LayoutContent>
     </Layout>
   );

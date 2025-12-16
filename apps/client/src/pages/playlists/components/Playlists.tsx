@@ -28,9 +28,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
-const pageSize = 10;
-
-export const Playlists = () => {
+export const Playlists: React.FC<{ pageSize: number }> = ({ pageSize }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));

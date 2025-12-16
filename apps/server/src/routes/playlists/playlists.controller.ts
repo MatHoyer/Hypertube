@@ -38,7 +38,7 @@ export const getPlaylists = async (
       },
     },
   });
-  if (!playlists) return c.json({ playlists: [] }, 200);
+  if (!playlists) return c.json({ playlists: [], totalCount: 0 }, 200);
 
   const totalCount = await prisma.playlist.count({
     where: { userId: user.id },
@@ -72,8 +72,12 @@ export const getPlaylist = async (
   const playlist = await prisma.playlist.findUnique({
     where: { id: playlistId },
   });
-  if (!playlist) return c.json([], 404);
-  if (user.id !== playlist.userId) return c.json([], 401);
+  if (!playlist) {
+    return c.json({ name: undefined, movies: [], totalCount: 0 }, 404);
+  }
+  if (user.id !== playlist.userId) {
+    return c.json({ name: undefined, movies: [], totalCount: 0 }, 401);
+  }
 
   const movies = await prisma.playlistMovie.findMany({
     where: { playlistId: playlist.id },

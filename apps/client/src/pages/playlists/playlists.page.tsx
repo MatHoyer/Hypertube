@@ -12,9 +12,12 @@ import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Playlists } from "./components/Playlists";
 
+const defaultPage = 1;
+const pageSize = 10;
+
 export const PlaylistsPage = () => {
   const { t } = useTranslation();
-  const { totalCount } = useUserPlaylists({ page: 1, pageSize: 10 });
+  const { totalCount } = useUserPlaylists({ page: defaultPage, pageSize });
 
   return (
     <Layout>
@@ -28,7 +31,7 @@ export const PlaylistsPage = () => {
         </LayoutActions>
       </LayoutHeader>
       <LayoutContent>
-        <Playlists />
+        <Playlists pageSize={pageSize} />
       </LayoutContent>
     </Layout>
   );
