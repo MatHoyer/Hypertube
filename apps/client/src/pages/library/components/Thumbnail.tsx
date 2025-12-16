@@ -139,7 +139,7 @@ export const Thumbnail: React.FC<{
               <DropdownMenuTrigger asChild className="cursor-pointer">
                 <EllipsisVertical size={15} />
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" align="start">
+              <DropdownMenuContent className="w-72" side="top" align="start">
                 <DropdownMenuLabel>
                   <Typography textSize="lg">{t("playlist.save")}</Typography>
                 </DropdownMenuLabel>
@@ -218,7 +218,7 @@ export const Thumbnail: React.FC<{
                   {t("playlist.new")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup className="flex">
+                <DropdownMenuGroup>
                   <PagePagination
                     page={page}
                     pageSize={pageSize}

@@ -23,6 +23,9 @@ export const useUserPlaylists = ({
         }),
         schemas: getPlaylistsSchemas,
       }),
+    placeholderData: (previousData) => previousData,
+    retry: false,
+    refetchOnMount: false,
   });
 
   return {
