@@ -5,6 +5,7 @@ import {
   TDeleteMovieFromPlaylistSchemas,
   TDeletePlaylistSchemas,
   TGetPlaylistSchemas,
+  TGetPlaylistsSchemas,
   TPostMovieToPlaylistSchemas,
   TPostPlaylistSchemas,
 } from "@hypertube/libs";
@@ -17,8 +18,13 @@ import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import { getMovieDownloadStatesByTmdbIds } from "../global/movie.global";
 
-export const getPlaylists = async (c: Context<TIsLogged>) => {
+export const getPlaylists = async (
+  c: Context<
+    TIsLogged & TSearchParamsParser<TGetPlaylistsSchemas["searchParams"]>
+  >
+) => {
   const user = c.get("user");
+  const { page, pageSize } = c.get("validatedSearchParams");
 
   const playlists = await prisma.user.findUnique({
     where: { id: user.id },
@@ -27,10 +33,16 @@ export const getPlaylists = async (c: Context<TIsLogged>) => {
         include: {
           movies: { include: { movie: { select: { tmdbId: true } } } },
         },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
       },
     },
   });
   if (!playlists) return c.json({ playlists: [] }, 200);
+
+  const totalCount = await prisma.playlist.count({
+    where: { userId: user.id },
+  });
 
   const playlistsWithFlatMovies = playlists.playlists.map((playlist) => {
     return {
@@ -42,7 +54,7 @@ export const getPlaylists = async (c: Context<TIsLogged>) => {
     };
   });
 
-  return c.json({ playlists: playlistsWithFlatMovies }, 200);
+  return c.json({ playlists: playlistsWithFlatMovies, totalCount }, 200);
 };
 
 export const getPlaylist = async (
@@ -89,6 +101,7 @@ export const getPlaylist = async (
 
   return c.json(
     getPlaylistSchemas.response.parse({
+      name: playlist.name,
       movies: tmdbMovies.map((tmdbMovie) => ({
         details: tmdbMovie,
         downloadState:

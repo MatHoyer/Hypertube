@@ -1,6 +1,6 @@
-import { openDialog } from "@/components/dialogs/dialog.store";
 import { ErrorResource } from "@/components/ErrorResource";
 import { LoadingResource } from "@/components/LoadingResource";
+import { PagePagination } from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -10,6 +10,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { FloatingBar } from "@/components/ui/FloatingBar";
 import { Typography } from "@/components/ui/typography";
 import { useUserPlaylists } from "@/hooks/use-playlists";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -21,15 +22,24 @@ import {
   type TDeletePlaylistSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ListVideo, Plus, Video, X } from "lucide-react";
+import { ListVideo, Video, X } from "lucide-react";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
-export const Playlists = () => {
+const pageSize = 10;
+
+export const Playlists: React.FC<{
+  setPlaylistsCount: (count: number) => void;
+}> = ({ setPlaylistsCount }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const { playlists, isLoading, isError } = useUserPlaylists();
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const { playlists, totalCount, isLoading, isError } = useUserPlaylists({
+    page,
+    pageSize,
+  });
 
   const { mutate: deleteMutate } = useMutation({
     mutationFn: (
@@ -53,6 +63,8 @@ export const Playlists = () => {
 
   if (isLoading) return <LoadingResource resource="playlists" />;
   if (isError) return <ErrorResource resource="playlists" />;
+
+  setPlaylistsCount(totalCount);
 
   return (
     <div className="flex flex-col gap-4">
@@ -104,10 +116,17 @@ export const Playlists = () => {
           </Empty>
         </div>
       )}
-      <Button onClick={() => openDialog("playlist")}>
-        <Plus />
-        {t("playlist.new")}
-      </Button>
+      <FloatingBar>
+        <PagePagination
+          page={page}
+          setPage={(value) => {
+            setPage(value);
+            scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          pageSize={pageSize}
+          totalCount={totalCount}
+        />
+      </FloatingBar>
     </div>
   );
 };

@@ -1,39 +1,50 @@
 import { ErrorResource } from "@/components/ErrorResource";
 import { LoadingResource } from "@/components/LoadingResource";
 import { useConvertParams } from "@/hooks/use-convert-params";
-import { useUserPlaylists } from "@/hooks/use-playlists";
 import {
   Layout,
   LayoutContent,
   LayoutHeader,
   LayoutTitleResource,
 } from "@/layouts/PageLayout";
-import { NotFoundPage } from "../notFound/NotFound.page";
+import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
+import { getPlaylistSchemas, getUrl, ROUTES } from "@hypertube/libs";
+import { useQuery } from "@tanstack/react-query";
 import { Playlist } from "./components/Playlist";
 import { PlaylistPageParamsSchema } from "./schemas/urlParams.schema";
 
 export const PlaylistPage = () => {
   const { playlistId } = useConvertParams(PlaylistPageParamsSchema);
-  const { playlists, isLoading, isError } = useUserPlaylists();
 
-  if (isLoading) return <LoadingResource resource="playlists" />;
-  if (isError) return <ErrorResource resource="playlists" />;
+  const {
+    data: playlist,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: getQueryKey(ROUTES.API.PLAYLISTS, { playlistId }),
+    queryFn: () =>
+      axiosFetch({
+        method: "GET",
+        url: getUrl(ROUTES.API.PLAYLISTS, { playlistId }),
+        schemas: getPlaylistSchemas,
+      }),
+  });
 
-  const playlist = playlists.find((playlist) => playlist.id === playlistId);
-
-  if (!playlist) return <NotFoundPage />;
+  if (isLoading) return <LoadingResource resource="playlist" />;
+  if (isError || !playlist) return <ErrorResource resource="playlist" />;
 
   return (
     <Layout>
       <LayoutHeader>
         <LayoutTitleResource
           resource="playlist"
-          count={playlist.movies.length}
+          count={playlist.totalCount}
           dynamicTitle={playlist.name}
         />
       </LayoutHeader>
       <LayoutContent>
-        <Playlist playlist={playlist} />
+        <Playlist playlistId={playlistId} />
       </LayoutContent>
     </Layout>
   );

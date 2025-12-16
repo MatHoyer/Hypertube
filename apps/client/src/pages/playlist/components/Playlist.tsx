@@ -18,18 +18,23 @@ import { toast } from "sonner";
 
 const pageSize = 10;
 
-export const Playlist = ({ playlist }: { playlist: TPlaylistSchema }) => {
+export const Playlist: React.FC<{ playlistId: TPlaylistSchema["id"] }> = ({
+  playlistId,
+}) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));
 
   const { data, isPending, isError } = useQuery({
-    queryKey: getQueryKey(ROUTES.API.PLAYLISTS, { page }),
+    queryKey: getQueryKey(ROUTES.API.PLAYLISTS, {
+      playlistId,
+      page,
+    }),
     queryFn: () =>
       axiosFetch({
         method: "GET",
         url: getUrl(ROUTES.API.PLAYLISTS, {
-          playlistId: playlist.id,
+          playlistId,
           searchParams: {
             page: page.toString(),
             pageSize: pageSize.toString(),
@@ -72,7 +77,7 @@ export const Playlist = ({ playlist }: { playlist: TPlaylistSchema }) => {
       movies={data ? data.movies : []}
       pageSize={pageSize}
       totalCount={data ? data.totalCount : 0}
-      deleteFn={(tmdbId: number) => mutate({ playlistId: playlist.id, tmdbId })}
+      deleteFn={(tmdbId: number) => mutate({ playlistId, tmdbId })}
     />
   );
 };

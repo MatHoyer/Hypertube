@@ -8,6 +8,10 @@ import {
 import { tmdbMovieCompleteSchema } from "./movie.schema.js";
 
 export const getPlaylistsSchemas = {
+  searchParams: z.object({
+    page: z.coerce.number().int().positive().default(1),
+    pageSize: z.coerce.number().int().positive().default(10),
+  }),
   response: z.object({
     playlists: z.array(
       z.object({
@@ -20,10 +24,12 @@ export const getPlaylistsSchemas = {
         ),
       })
     ),
+    totalCount: z.number(),
   }),
 };
 
 export type TGetPlaylistsSchemas = {
+  searchParams: z.infer<typeof getPlaylistsSchemas.searchParams>;
   response: z.infer<typeof getPlaylistsSchemas.response>;
 };
 
@@ -34,6 +40,7 @@ export const getPlaylistSchemas = {
     pageSize: z.coerce.number().int().positive().default(10),
   }),
   response: z.object({
+    name: playlistSchema.shape.name,
     movies: z.array(
       z.object({
         details: tmdbMovieCompleteSchema,

@@ -2,6 +2,7 @@ import {
   deleteMovieFromPlaylistSchemas,
   deletePlaylistSchemas,
   getPlaylistSchemas,
+  getPlaylistsSchemas,
   postMovieToPlaylistSchemas,
   postPlaylistSchemas,
 } from "@hypertube/libs";
@@ -21,7 +22,12 @@ import {
 
 const playlistsRouter = new Hono();
 
-playlistsRouter.get("/", isLogged, getPlaylists);
+playlistsRouter.get(
+  "/",
+  isLogged,
+  searchParamsParser(getPlaylistsSchemas.searchParams),
+  getPlaylists
+);
 
 playlistsRouter.get(
   "/:playlistId",

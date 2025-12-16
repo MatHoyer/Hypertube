@@ -4,6 +4,7 @@ import {
   getMoviesSchemas,
   movieSchema,
   notificationReadStatuses,
+  playlistSchema,
   tmdbCategories,
   tmdbGenres,
   tmdbSorts,
@@ -34,7 +35,10 @@ const apiRouteQueryKeySchemas = {
     tmdbId: movieSchema.shape.tmdbId,
   }),
   [ROUTES.API.MOVIES_WATCH_TIMER]: z.object({ page: z.number().optional() }),
-  [ROUTES.API.PLAYLISTS]: z.object({ page: z.number().optional() }),
+  [ROUTES.API.PLAYLISTS]: z.object({
+    playlistId: playlistSchema.shape.id.optional(),
+    page: z.number().optional(),
+  }),
   [ROUTES.API.NOTIFICATIONS]: z.object({
     type: z
       .union([z.enum(notificationReadStatuses), z.literal("stats")])
@@ -84,8 +88,10 @@ const queryKeys: {
       ? [ROUTES.API.MOVIES_WATCH_TIMER, page]
       : [ROUTES.API.MOVIES_WATCH_TIMER];
   },
-  [ROUTES.API.PLAYLISTS]: ({ page }) => {
-    return page ? [ROUTES.API.PLAYLISTS, page] : [ROUTES.API.PLAYLISTS];
+  [ROUTES.API.PLAYLISTS]: ({ playlistId, page }) => {
+    if (playlistId && page) return [ROUTES.API.PLAYLISTS, playlistId, page];
+    else if (page) return [ROUTES.API.PLAYLISTS, page];
+    return [ROUTES.API.PLAYLISTS];
   },
   [ROUTES.API.NOTIFICATIONS]: ({ type }) => {
     if (!type) return [ROUTES.API.NOTIFICATIONS];

@@ -3,6 +3,7 @@ import { getDownloadStateIcon } from "@/components/download-state/getDownloadSta
 import { ErrorResource } from "@/components/ErrorResource";
 import { LoadingResource } from "@/components/LoadingResource";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
+import { PagePagination } from "@/components/Pagination";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -40,12 +41,18 @@ import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
+const pageSize = 10;
+
 export const Thumbnail: React.FC<{
   movie: TGetMoviesSchemas["response"]["movies"][number];
 }> = memo(({ movie }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const { playlists, isLoading, isError } = useUserPlaylists();
+  const [page, setPage] = useState(1);
+  const { playlists, totalCount, isLoading, isError } = useUserPlaylists({
+    page,
+    pageSize,
+  });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const addMovieToPlaylistMutation = useMutation({
@@ -132,7 +139,7 @@ export const Thumbnail: React.FC<{
               <DropdownMenuTrigger asChild className="cursor-pointer">
                 <EllipsisVertical size={15} />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-52" side="top" align="start">
+              <DropdownMenuContent side="top" align="start">
                 <DropdownMenuLabel>
                   <Typography textSize="lg">{t("playlist.save")}</Typography>
                 </DropdownMenuLabel>
@@ -210,6 +217,15 @@ export const Thumbnail: React.FC<{
                   <Plus />
                   {t("playlist.new")}
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup className="flex">
+                  <PagePagination
+                    page={page}
+                    pageSize={pageSize}
+                    setPage={setPage}
+                    totalCount={totalCount}
+                  />
+                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -10,7 +10,7 @@ import {
 
 export const PagePagination: React.FC<{
   page: number;
-  setPage: (value: number | ((old: number) => number | null)) => void;
+  setPage: (value: number | ((old: number) => number)) => void;
   pageSize: number;
   totalCount: number;
 }> = ({ page, setPage, pageSize, totalCount }) => {
