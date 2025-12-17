@@ -27,9 +27,9 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 export const Playlists: React.FC<{
-  playlistsPage: TGetPlaylistsSchemas["response"];
-  playlistsPageSize: number;
-}> = ({ playlistsPage, playlistsPageSize }) => {
+  playlists: TGetPlaylistsSchemas["response"]["playlists"];
+  playlistsMaxPage: number;
+}> = ({ playlists, playlistsMaxPage }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
@@ -56,9 +56,9 @@ export const Playlists: React.FC<{
 
   return (
     <div className="flex flex-col gap-4">
-      {!!playlistsPage.playlists.length && (
+      {!!playlists.length && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {playlistsPage.playlists.map((playlist) => (
+          {playlists.map((playlist) => (
             <Link
               key={playlist.id}
               to={getUrl(ROUTES.CLIENT.PLAYLIST, {
@@ -89,7 +89,7 @@ export const Playlists: React.FC<{
           ))}
         </div>
       )}
-      {!playlistsPage.playlists.length && (
+      {!playlists.length && (
         <div className="flex justify-center items-center">
           <Empty>
             <EmptyHeader>
@@ -111,8 +111,7 @@ export const Playlists: React.FC<{
             setPage(value);
             scrollTo({ top: 0, behavior: "smooth" });
           }}
-          pageSize={playlistsPageSize}
-          totalCount={playlistsPage.totalCount}
+          maxPage={playlistsMaxPage}
         />
       </FloatingBar>
     </div>

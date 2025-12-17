@@ -22,10 +22,9 @@ const movieListTypes = ["historic", "playlist"] as const;
 export const MovieListWithPagination: React.FC<{
   movieListType: (typeof movieListTypes)[number];
   movies: { details: TTmdbMovieCompleteSchema }[];
-  pageSize: number;
-  totalCount: number;
+  maxPage: number;
   deleteFn: (tmdbId: number) => void;
-}> = ({ movieListType, movies, pageSize, totalCount, deleteFn }) => {
+}> = ({ movieListType, movies, maxPage, deleteFn }) => {
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const { scrollTo } = useScrollArea();
@@ -81,8 +80,7 @@ export const MovieListWithPagination: React.FC<{
             setPage(value);
             scrollTo({ top: 0, behavior: "smooth" });
           }}
-          pageSize={pageSize}
-          totalCount={totalCount}
+          maxPage={maxPage}
         />
       </FloatingBar>
     </div>

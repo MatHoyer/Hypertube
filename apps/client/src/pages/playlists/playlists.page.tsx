@@ -57,8 +57,10 @@ export const PlaylistsPage = () => {
       <LayoutContent>
         {data && !isFetching && (
           <Playlists
-            playlistsPage={data}
-            playlistsPageSize={playlistsPageSize}
+            playlists={data.playlists}
+            playlistsMaxPage={
+              Math.ceil(data.totalCount / playlistsPageSize) || 1
+            }
           />
         )}
         {(isLoading || isFetching) && <LoadingResource resource="playlists" />}

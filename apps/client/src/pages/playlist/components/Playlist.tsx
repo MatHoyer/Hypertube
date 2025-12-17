@@ -14,10 +14,10 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Playlist: React.FC<{
-  playlistPage: TGetPlaylistSchemas["response"];
-  playlistPageSize: number;
+  movies: TGetPlaylistSchemas["response"]["movies"];
+  playlistMaxPage: number;
   playlistId: TPlaylistSchema["id"];
-}> = ({ playlistPage, playlistPageSize, playlistId }) => {
+}> = ({ movies, playlistMaxPage, playlistId }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -48,9 +48,8 @@ export const Playlist: React.FC<{
   return (
     <MovieListWithPagination
       movieListType="playlist"
-      movies={playlistPage.movies}
-      pageSize={playlistPageSize}
-      totalCount={playlistPage.totalCount}
+      movies={movies}
+      maxPage={playlistMaxPage}
       deleteFn={(tmdbId: number) => mutate({ playlistId, tmdbId })}
     />
   );

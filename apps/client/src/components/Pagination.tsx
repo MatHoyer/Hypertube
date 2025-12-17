@@ -11,16 +11,13 @@ import {
 export const PagePagination: React.FC<{
   page: number;
   setPage: (value: number | ((old: number) => number)) => void;
-  pageSize: number;
-  totalCount: number;
-}> = ({ page, setPage, pageSize, totalCount }) => {
-  const lastPage = Math.ceil(totalCount / pageSize) || 1;
-
+  maxPage: number;
+}> = ({ page, setPage, maxPage }) => {
   useEffect(() => {
-    if (page > lastPage) setPage(1);
-  }, [page, lastPage, setPage]);
+    if (page > maxPage) setPage(1);
+  }, [page, maxPage, setPage]);
 
-  if (lastPage <= 1) return null;
+  if (maxPage <= 1) return null;
 
   return (
     <Pagination>
@@ -48,22 +45,22 @@ export const PagePagination: React.FC<{
             {page}
           </PaginationLink>
         </PaginationItem>
-        {page < lastPage && (
+        {page < maxPage && (
           <PaginationItem>
             <PaginationLink onClick={() => setPage((prev) => prev + 1)}>
               {page + 1}
             </PaginationLink>
           </PaginationItem>
         )}
-        {page < lastPage - 2 && (
+        {page < maxPage - 2 && (
           <PaginationItem>
             <PaginationEllipsis />
           </PaginationItem>
         )}
-        {page < lastPage - 1 && (
+        {page < maxPage - 1 && (
           <PaginationItem>
-            <PaginationLink onClick={() => setPage(lastPage)}>
-              {lastPage}
+            <PaginationLink onClick={() => setPage(maxPage)}>
+              {maxPage}
             </PaginationLink>
           </PaginationItem>
         )}

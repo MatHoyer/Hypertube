@@ -221,9 +221,8 @@ export const Thumbnail: React.FC<{
                 <DropdownMenuGroup>
                   <PagePagination
                     page={page}
-                    pageSize={pageSize}
                     setPage={setPage}
-                    totalCount={totalCount}
+                    maxPage={Math.ceil(totalCount / pageSize) || 1}
                   />
                 </DropdownMenuGroup>
               </DropdownMenuContent>

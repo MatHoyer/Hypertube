@@ -40,7 +40,10 @@ export const HistoricPage = () => {
       </LayoutHeader>
       <LayoutContent>
         {data && !isFetching && (
-          <Historic historicPage={data} historicPageSize={historicPageSize} />
+          <Historic
+            movies={data.movies}
+            historicMaxPage={Math.ceil(data.totalCount / historicPageSize) || 1}
+          />
         )}
         {(isLoading || isFetching) && <LoadingResource resource="historic" />}
         {isError && <ErrorResource resource="historic" />}

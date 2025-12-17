@@ -49,8 +49,8 @@ export const PlaylistPage = () => {
       <LayoutContent>
         {data && !isFetching && (
           <Playlist
-            playlistPage={data}
-            playlistPageSize={playlistPageSize}
+            movies={data.movies}
+            playlistMaxPage={Math.ceil(data.totalCount / playlistPageSize) || 1}
             playlistId={playlistId}
           />
         )}
