@@ -2,23 +2,34 @@ import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.con
 import { ErrorResource } from "@/components/ErrorResource";
 import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { LoadingResource } from "@/components/LoadingResource";
+import { MovieList } from "@/components/movies/MovieList";
 import { PagePagination } from "@/components/Pagination";
 import { FloatingBar } from "@/components/ui/FloatingBar";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { Layout, LayoutContent, LayoutHeader } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
-import { getPlaylistSchemas, getUrl, ROUTES } from "@hypertube/libs";
-import { useQuery } from "@tanstack/react-query";
+import {
+  deleteMovieFromPlaylistSchemas,
+  getPlaylistSchemas,
+  getUrl,
+  ROUTES,
+  type TTmdbMovieSchema,
+} from "@hypertube/libs";
+import type { TPlaylistSchema } from "@hypertube/libs/src/schemas/database/playlist.schema";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { parseAsInteger, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
-import { Playlist } from "./components/Playlist";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { PlaylistPageParamsSchema } from "./schemas/urlParams.schema";
 
 const playlistPageSize = 10;
 
 export const PlaylistPage = () => {
   const { scrollTo } = useScrollArea();
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const { playlistId } = useConvertParams(PlaylistPageParamsSchema);
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [totalCount, setTotalCount] = useState(0);
@@ -46,6 +57,30 @@ export const PlaylistPage = () => {
     if (data) setTotalCount(data.totalCount);
   }, [data, setTotalCount]);
 
+  const { mutate } = useMutation({
+    mutationFn: ({
+      playlistId,
+      tmdbId,
+    }: {
+      playlistId: TPlaylistSchema["id"];
+      tmdbId: TTmdbMovieSchema["id"];
+    }) =>
+      axiosFetch({
+        method: "DELETE",
+        url: getUrl(ROUTES.API.PLAYLISTS_MOVIE, { playlistId, tmdbId }),
+        schemas: deleteMovieFromPlaylistSchemas,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.PLAYLISTS),
+      });
+      toast.success(t("playlist.deleteMovieSuccess"));
+    },
+    onError: () => {
+      toast.error(t("playlist.deleteMovieFailed"));
+    },
+  });
+
   return (
     <Layout>
       <LayoutHeader>
@@ -56,7 +91,13 @@ export const PlaylistPage = () => {
         />
       </LayoutHeader>
       <LayoutContent>
-        {data && <Playlist movies={data.movies} playlistId={playlistId} />}
+        {data && (
+          <MovieList
+            movieListType="playlist"
+            movies={data.movies}
+            deleteFn={(tmdbId: number) => mutate({ playlistId, tmdbId })}
+          />
+        )}
         {isLoading && <LoadingResource resource="playlist" />}
         {isError && <ErrorResource resource="playlist" />}
         {totalCount > playlistPageSize && (
