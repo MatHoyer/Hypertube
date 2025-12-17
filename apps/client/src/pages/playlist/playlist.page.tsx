@@ -1,10 +1,6 @@
+import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { useConvertParams } from "@/hooks/use-convert-params";
-import {
-  Layout,
-  LayoutContent,
-  LayoutHeader,
-  LayoutTitleResource,
-} from "@/layouts/PageLayout";
+import { Layout, LayoutContent, LayoutHeader } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { getPlaylistSchemas, getUrl, ROUTES } from "@hypertube/libs";
@@ -34,7 +30,7 @@ export const PlaylistPage = () => {
   return (
     <Layout>
       <LayoutHeader>
-        <LayoutTitleResource
+        <LayoutHeaderResource
           resource="playlist"
           count={data?.totalCount ?? 0}
           dynamicTitle={data?.name}

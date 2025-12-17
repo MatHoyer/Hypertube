@@ -1,5 +1,6 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
 import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
+import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
@@ -10,7 +11,6 @@ import {
   LayoutActions,
   LayoutContent,
   LayoutHeader,
-  LayoutTitleResource,
 } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
@@ -153,7 +153,7 @@ export const NotificationsPage = () => {
       </FloatingBar>
       <LayoutHeader>
         <div ref={topRef} />
-        <LayoutTitleResource
+        <LayoutHeaderResource
           resource="notifications"
           count={stats?.totalUnreadNotifications ?? 0}
         />

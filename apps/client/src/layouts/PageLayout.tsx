@@ -1,9 +1,6 @@
 import { Typography } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
-import { NotificationBell } from "@/pages/notifications/components/notification-bell";
-import { History, ListVideo } from "lucide-react";
-import type { ComponentProps, ComponentPropsWithoutRef } from "react";
-import { useTranslation } from "react-i18next";
+import type { ComponentPropsWithoutRef } from "react";
 
 export const Layout: React.FC<
   ComponentPropsWithoutRef<"div"> & { size?: "sm" | "default" | "lg" }
@@ -61,44 +58,4 @@ export const LayoutContent: React.FC<ComponentPropsWithoutRef<"div">> = (
   props
 ) => {
   return <div {...props} className={cn("w-full", props.className)} />;
-};
-
-const titleResources = [
-  "notifications",
-  "historic",
-  "playlists",
-  "playlist",
-] as const;
-
-const iconByTitleResources = {
-  notifications: <NotificationBell size="lg" />,
-  historic: <History size={60} />,
-  playlists: <ListVideo size={60} />,
-  playlist: <ListVideo size={60} />,
-} as const;
-
-export const LayoutTitleResource: React.FC<
-  ComponentProps<"div"> & {
-    resource: (typeof titleResources)[number];
-    count: number;
-    dynamicTitle?: string;
-  }
-> = ({ resource, count, dynamicTitle, className, ...props }) => {
-  const { t } = useTranslation();
-
-  if (!titleResources.includes(resource)) return null;
-
-  return (
-    <div {...props} className={cn("flex items-center gap-2", className)}>
-      {iconByTitleResources[resource]}
-      <div className="flex flex-col gap-2">
-        <LayoutTitle className="flex items-center gap-2">
-          {dynamicTitle ? dynamicTitle : t(`${resource}.title`)}
-        </LayoutTitle>
-        <LayoutDescription>
-          {count} {t(`${resource}.descriptionResource`)}
-        </LayoutDescription>
-      </div>
-    </div>
-  );
 };

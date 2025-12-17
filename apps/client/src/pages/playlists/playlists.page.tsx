@@ -1,4 +1,5 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
+import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { Button } from "@/components/ui/button";
 import { useUserPlaylists } from "@/hooks/use-playlists";
 import {
@@ -6,7 +7,6 @@ import {
   LayoutActions,
   LayoutContent,
   LayoutHeader,
-  LayoutTitleResource,
 } from "@/layouts/PageLayout";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -22,7 +22,7 @@ export const PlaylistsPage = () => {
   return (
     <Layout>
       <LayoutHeader>
-        <LayoutTitleResource resource="playlists" count={totalCount} />
+        <LayoutHeaderResource resource="playlists" count={totalCount} />
         <LayoutActions>
           <Button onClick={() => openDialog("playlist")}>
             <Plus />

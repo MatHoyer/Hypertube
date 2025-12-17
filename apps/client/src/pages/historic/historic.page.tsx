@@ -1,9 +1,5 @@
-import {
-  Layout,
-  LayoutContent,
-  LayoutHeader,
-  LayoutTitleResource,
-} from "@/layouts/PageLayout";
+import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
+import { Layout, LayoutContent, LayoutHeader } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { getHistorySchemas, getUrl, ROUTES } from "@hypertube/libs";
@@ -32,7 +28,7 @@ export const HistoricPage = () => {
   return (
     <Layout>
       <LayoutHeader>
-        <LayoutTitleResource
+        <LayoutHeaderResource
           resource="historic"
           count={data?.totalCount ?? 0}
         />
