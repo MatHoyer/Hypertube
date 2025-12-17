@@ -38,7 +38,7 @@ export const LayoutHeaderResource: React.FC<
           {dynamicTitle ? dynamicTitle : t(`${resource}.title`)}
         </LayoutTitle>
         <LayoutDescription>
-          {count} {t(`${resource}.descriptionResource`)}
+          {t(`${resource}.descriptionResource`, { count })}
         </LayoutDescription>
       </div>
     </div>
