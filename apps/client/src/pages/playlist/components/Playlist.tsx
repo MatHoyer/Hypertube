@@ -1,48 +1,25 @@
-import { ErrorResource } from "@/components/ErrorResource";
-import { LoadingResource } from "@/components/LoadingResource";
 import { MovieListWithPagination } from "@/components/movies/MovieListWithPagination";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
   deleteMovieFromPlaylistSchemas,
-  getPlaylistSchemas,
   getUrl,
   ROUTES,
+  type TGetPlaylistSchemas,
   type TTmdbMovieSchema,
 } from "@hypertube/libs";
 import type { TPlaylistSchema } from "@hypertube/libs/src/schemas/database/playlist.schema";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { parseAsInteger, useQueryState } from "nuqs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const pageSize = 10;
-
-export const Playlist: React.FC<{ playlistId: TPlaylistSchema["id"] }> = ({
-  playlistId,
-}) => {
+export const Playlist: React.FC<{
+  playlistPage: TGetPlaylistSchemas["response"];
+  playlistPageSize: number;
+  playlistId: TPlaylistSchema["id"];
+}> = ({ playlistPage, playlistPageSize, playlistId }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));
-
-  const { data, isPending, isError } = useQuery({
-    queryKey: getQueryKey(ROUTES.API.PLAYLISTS, {
-      playlistId,
-      page,
-    }),
-    queryFn: () =>
-      axiosFetch({
-        method: "GET",
-        url: getUrl(ROUTES.API.PLAYLISTS, {
-          playlistId,
-          searchParams: {
-            page: page.toString(),
-            pageSize: pageSize.toString(),
-          },
-        }),
-        schemas: getPlaylistSchemas,
-      }),
-  });
 
   const { mutate } = useMutation({
     mutationFn: ({
@@ -68,15 +45,12 @@ export const Playlist: React.FC<{ playlistId: TPlaylistSchema["id"] }> = ({
     },
   });
 
-  if (isPending) return <LoadingResource resource="playlist" />;
-  if (isError) return <ErrorResource resource="playlist" />;
-
   return (
     <MovieListWithPagination
       movieListType="playlist"
-      movies={data ? data.movies : []}
-      pageSize={pageSize}
-      totalCount={data ? data.totalCount : 0}
+      movies={playlistPage.movies}
+      pageSize={playlistPageSize}
+      totalCount={playlistPage.totalCount}
       deleteFn={(tmdbId: number) => mutate({ playlistId, tmdbId })}
     />
   );

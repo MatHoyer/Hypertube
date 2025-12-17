@@ -1,28 +1,33 @@
+import { ErrorResource } from "@/components/ErrorResource";
 import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
+import { LoadingResource } from "@/components/LoadingResource";
 import { Layout, LayoutContent, LayoutHeader } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { getHistorySchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { Historic } from "./components/Historic";
 
-const defaultPage = 1;
-const pageSize = 10;
+const historicPageSize = 10;
 
 export const HistoricPage = () => {
-  const { data } = useQuery({
-    queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER, { page: defaultPage }),
+  const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER, { page }),
     queryFn: () =>
       axiosFetch({
         method: "GET",
         url: getUrl(ROUTES.API.HISTORY, {
           searchParams: {
-            page: defaultPage.toString(),
-            pageSize: pageSize.toString(),
+            page: page.toString(),
+            pageSize: historicPageSize.toString(),
           },
         }),
         schemas: getHistorySchemas,
       }),
+    placeholderData: (previousData) => previousData,
   });
 
   return (
@@ -34,7 +39,11 @@ export const HistoricPage = () => {
         />
       </LayoutHeader>
       <LayoutContent>
-        <Historic pageSize={pageSize} />
+        {data && (
+          <Historic historicPage={data} historicPageSize={historicPageSize} />
+        )}
+        {isLoading && <LoadingResource resource="historic" />}
+        {isError && <ErrorResource resource="historic" />}
       </LayoutContent>
     </Layout>
   );

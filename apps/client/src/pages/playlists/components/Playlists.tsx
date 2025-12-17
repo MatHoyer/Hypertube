@@ -1,5 +1,3 @@
-import { ErrorResource } from "@/components/ErrorResource";
-import { LoadingResource } from "@/components/LoadingResource";
 import { PagePagination } from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,7 +10,6 @@ import {
 } from "@/components/ui/empty";
 import { FloatingBar } from "@/components/ui/FloatingBar";
 import { Typography } from "@/components/ui/typography";
-import { useUserPlaylists } from "@/hooks/use-playlists";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
@@ -20,6 +17,7 @@ import {
   getUrl,
   ROUTES,
   type TDeletePlaylistSchemas,
+  type TGetPlaylistsSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ListVideo, Video, X } from "lucide-react";
@@ -28,14 +26,13 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
-export const Playlists: React.FC<{ pageSize: number }> = ({ pageSize }) => {
+export const Playlists: React.FC<{
+  playlistsPage: TGetPlaylistsSchemas["response"];
+  playlistsPageSize: number;
+}> = ({ playlistsPage, playlistsPageSize }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const { playlists, totalCount, isLoading, isError } = useUserPlaylists({
-    page,
-    pageSize,
-  });
 
   const { mutate: deleteMutate } = useMutation({
     mutationFn: (
@@ -57,14 +54,11 @@ export const Playlists: React.FC<{ pageSize: number }> = ({ pageSize }) => {
     },
   });
 
-  if (isLoading) return <LoadingResource resource="playlists" />;
-  if (isError) return <ErrorResource resource="playlists" />;
-
   return (
     <div className="flex flex-col gap-4">
-      {!!playlists.length && (
+      {!!playlistsPage.playlists.length && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {playlists.map((playlist) => (
+          {playlistsPage.playlists.map((playlist) => (
             <Link
               key={playlist.id}
               to={getUrl(ROUTES.CLIENT.PLAYLIST, {
@@ -95,7 +89,7 @@ export const Playlists: React.FC<{ pageSize: number }> = ({ pageSize }) => {
           ))}
         </div>
       )}
-      {!playlists.length && (
+      {!playlistsPage.playlists.length && (
         <div className="flex justify-center items-center">
           <Empty>
             <EmptyHeader>
@@ -117,8 +111,8 @@ export const Playlists: React.FC<{ pageSize: number }> = ({ pageSize }) => {
             setPage(value);
             scrollTo({ top: 0, behavior: "smooth" });
           }}
-          pageSize={pageSize}
-          totalCount={totalCount}
+          pageSize={playlistsPageSize}
+          totalCount={playlistsPage.totalCount}
         />
       </FloatingBar>
     </div>

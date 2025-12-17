@@ -1,39 +1,23 @@
-import { ErrorResource } from "@/components/ErrorResource";
-import { LoadingResource } from "@/components/LoadingResource";
 import { MovieListWithPagination } from "@/components/movies/MovieListWithPagination";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
   deleteMovieFromHistorySchemas,
-  getHistorySchemas,
   getUrl,
   ROUTES,
+  type TGetHistorySchemas,
   type TTmdbMovieSchema,
 } from "@hypertube/libs";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { parseAsInteger, useQueryState } from "nuqs";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-export const Historic: React.FC<{ pageSize: number }> = ({ pageSize }) => {
+export const Historic: React.FC<{
+  historicPage: TGetHistorySchemas["response"];
+  historicPageSize: number;
+}> = ({ historicPage, historicPageSize }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));
-
-  const { data, isPending, isError } = useQuery({
-    queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER, { page }),
-    queryFn: () =>
-      axiosFetch({
-        method: "GET",
-        url: getUrl(ROUTES.API.HISTORY, {
-          searchParams: {
-            page: page.toString(),
-            pageSize: pageSize.toString(),
-          },
-        }),
-        schemas: getHistorySchemas,
-      }),
-  });
 
   const { mutate } = useMutation({
     mutationFn: ({ tmdbId }: { tmdbId: TTmdbMovieSchema["id"] }) =>
@@ -53,15 +37,12 @@ export const Historic: React.FC<{ pageSize: number }> = ({ pageSize }) => {
     },
   });
 
-  if (isPending) return <LoadingResource resource="historic" />;
-  if (isError) return <ErrorResource resource="historic" />;
-
   return (
     <MovieListWithPagination
       movieListType="historic"
-      movies={data ? data.movies : []}
-      pageSize={pageSize}
-      totalCount={data ? data.totalCount : 0}
+      movies={historicPage.movies}
+      pageSize={historicPageSize}
+      totalCount={historicPage.totalCount}
       deleteFn={(tmdbId: number) => mutate({ tmdbId })}
     />
   );
