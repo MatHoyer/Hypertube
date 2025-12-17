@@ -18,7 +18,6 @@ import { getPlaylistsSchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Playlists } from "./components/Playlists";
 
@@ -28,9 +27,8 @@ export const PlaylistsPage = () => {
   const { scrollTo } = useScrollArea();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const [totalCount, setTotalCount] = useState(0);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isPlaceholderData, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.PLAYLISTS, { page }),
     queryFn: () =>
       axiosFetch({
@@ -43,16 +41,16 @@ export const PlaylistsPage = () => {
         }),
         schemas: getPlaylistsSchemas,
       }),
+    placeholderData: (previousData) => previousData,
   });
-
-  useEffect(() => {
-    if (data) setTotalCount(data.totalCount);
-  }, [data, setTotalCount]);
 
   return (
     <Layout>
       <LayoutHeader>
-        <LayoutHeaderResource resource="playlists" count={totalCount} />
+        <LayoutHeaderResource
+          resource="playlists"
+          count={data?.totalCount ?? 0}
+        />
         <LayoutActions>
           <Button onClick={() => openDialog("playlist")}>
             <Plus />
@@ -61,10 +59,12 @@ export const PlaylistsPage = () => {
         </LayoutActions>
       </LayoutHeader>
       <LayoutContent>
-        {data && <Playlists playlists={data.playlists} />}
-        {isLoading && <LoadingResource resource="playlists" />}
+        {data && !isPlaceholderData && <Playlists playlists={data.playlists} />}
+        {(isLoading || isPlaceholderData) && (
+          <LoadingResource resource="playlists" />
+        )}
         {isError && <ErrorResource resource="playlists" />}
-        {totalCount > playlistsPageSize && (
+        {(data?.totalCount ?? 0) > playlistsPageSize && (
           <FloatingBar>
             <PagePagination
               page={page}
@@ -72,7 +72,7 @@ export const PlaylistsPage = () => {
                 setPage(value);
                 scrollTo({ top: 0, behavior: "smooth" });
               }}
-              maxPage={Math.ceil(totalCount / playlistsPageSize)}
+              maxPage={Math.ceil((data?.totalCount ?? 0) / playlistsPageSize)}
             />
           </FloatingBar>
         )}

@@ -19,7 +19,6 @@ import {
 import type { TPlaylistSchema } from "@hypertube/libs/src/schemas/database/playlist.schema";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { PlaylistPageParamsSchema } from "./schemas/urlParams.schema";
@@ -32,10 +31,8 @@ export const PlaylistPage = () => {
   const { t } = useTranslation();
   const { playlistId } = useConvertParams(PlaylistPageParamsSchema);
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const [totalCount, setTotalCount] = useState(0);
-  const [playlistName, setPlaylistName] = useState<string | undefined>();
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isPlaceholderData, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.PLAYLISTS, {
       playlistId,
       page,
@@ -52,14 +49,8 @@ export const PlaylistPage = () => {
         }),
         schemas: getPlaylistSchemas,
       }),
+    placeholderData: (previousData) => previousData,
   });
-
-  useEffect(() => {
-    if (data) {
-      setTotalCount(data.totalCount);
-      setPlaylistName(data.name);
-    }
-  }, [data, setTotalCount, setPlaylistName]);
 
   const { mutate } = useMutation({
     mutationFn: ({
@@ -90,21 +81,23 @@ export const PlaylistPage = () => {
       <LayoutHeader>
         <LayoutHeaderResource
           resource="playlist"
-          count={totalCount}
-          dynamicTitle={playlistName ?? t("global.loadingRessource")}
+          count={data?.totalCount ?? 0}
+          dynamicTitle={data?.name ?? t("global.loadingRessource")}
         />
       </LayoutHeader>
       <LayoutContent>
-        {data && (
+        {data && !isPlaceholderData && (
           <MovieList
             movieListType="playlist"
             movies={data.movies}
-            deleteFn={(tmdbId: number) => mutate({ playlistId, tmdbId })}
+            deleteFn={(tmdbId) => mutate({ playlistId, tmdbId })}
           />
         )}
-        {isLoading && <LoadingResource resource="playlist" />}
+        {(isLoading || isPlaceholderData) && (
+          <LoadingResource resource="playlist" />
+        )}
         {isError && <ErrorResource resource="playlist" />}
-        {totalCount > playlistPageSize && (
+        {(data?.totalCount ?? 0) > playlistPageSize && (
           <FloatingBar>
             <PagePagination
               page={page}
@@ -112,7 +105,7 @@ export const PlaylistPage = () => {
                 setPage(value);
                 scrollTo({ top: 0, behavior: "smooth" });
               }}
-              maxPage={Math.ceil(totalCount / playlistPageSize)}
+              maxPage={Math.ceil((data?.totalCount ?? 0) / playlistPageSize)}
             />
           </FloatingBar>
         )}

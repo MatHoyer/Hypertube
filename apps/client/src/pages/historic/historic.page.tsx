@@ -17,7 +17,6 @@ import {
 } from "@hypertube/libs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { parseAsInteger, useQueryState } from "nuqs";
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
@@ -28,9 +27,8 @@ export const HistoricPage = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const [totalCount, setTotalCount] = useState(0);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isPlaceholderData, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER, { page }),
     queryFn: () =>
       axiosFetch({
@@ -43,11 +41,8 @@ export const HistoricPage = () => {
         }),
         schemas: getHistorySchemas,
       }),
+    placeholderData: (previousData) => previousData,
   });
-
-  useEffect(() => {
-    if (data) setTotalCount(data.totalCount);
-  }, [data, setTotalCount]);
 
   const { mutate } = useMutation({
     mutationFn: ({ tmdbId }: { tmdbId: TTmdbMovieSchema["id"] }) =>
@@ -70,19 +65,24 @@ export const HistoricPage = () => {
   return (
     <Layout>
       <LayoutHeader>
-        <LayoutHeaderResource resource="historic" count={totalCount} />
+        <LayoutHeaderResource
+          resource="historic"
+          count={data?.totalCount ?? 0}
+        />
       </LayoutHeader>
       <LayoutContent>
-        {data && (
+        {data && !isPlaceholderData && (
           <MovieList
             movieListType="historic"
             movies={data.movies}
-            deleteFn={(tmdbId: number) => mutate({ tmdbId })}
+            deleteFn={(tmdbId) => mutate({ tmdbId })}
           />
         )}
-        {isLoading && <LoadingResource resource="historic" />}
+        {(isLoading || isPlaceholderData) && (
+          <LoadingResource resource="historic" />
+        )}
         {isError && <ErrorResource resource="historic" />}
-        {totalCount > historicPageSize && (
+        {(data?.totalCount ?? 0) > historicPageSize && (
           <FloatingBar>
             <PagePagination
               page={page}
@@ -90,7 +90,7 @@ export const HistoricPage = () => {
                 setPage(value);
                 scrollTo({ top: 0, behavior: "smooth" });
               }}
-              maxPage={Math.ceil(totalCount / historicPageSize)}
+              maxPage={Math.ceil((data?.totalCount ?? 0) / historicPageSize)}
             />
           </FloatingBar>
         )}
