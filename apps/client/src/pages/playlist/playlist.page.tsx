@@ -1,6 +1,8 @@
 import { ErrorResource } from "@/components/ErrorResource";
 import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { LoadingResource } from "@/components/LoadingResource";
+import { PagePagination } from "@/components/Pagination";
+import { FloatingBar } from "@/components/ui/FloatingBar";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { Layout, LayoutContent, LayoutHeader } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -8,6 +10,7 @@ import { getQueryKey } from "@/lib/getQueryKey";
 import { getPlaylistSchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
 import { parseAsInteger, useQueryState } from "nuqs";
+import { useEffect, useState } from "react";
 import { Playlist } from "./components/Playlist";
 import { PlaylistPageParamsSchema } from "./schemas/urlParams.schema";
 
@@ -15,9 +18,10 @@ const playlistPageSize = 10;
 
 export const PlaylistPage = () => {
   const { playlistId } = useConvertParams(PlaylistPageParamsSchema);
-  const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));
+  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+  const [totalCount, setTotalCount] = useState(0);
 
-  const { data, isLoading, isFetching, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.PLAYLISTS, {
       playlistId,
       page,
@@ -34,28 +38,37 @@ export const PlaylistPage = () => {
         }),
         schemas: getPlaylistSchemas,
       }),
-    placeholderData: (previousData) => previousData,
   });
+
+  useEffect(() => {
+    if (data) setTotalCount(data.totalCount);
+  }, [data, setTotalCount]);
 
   return (
     <Layout>
       <LayoutHeader>
         <LayoutHeaderResource
           resource="playlist"
-          count={data?.totalCount ?? 0}
+          count={totalCount}
           dynamicTitle={data?.name}
         />
       </LayoutHeader>
       <LayoutContent>
-        {data && !isFetching && (
-          <Playlist
-            movies={data.movies}
-            playlistMaxPage={Math.ceil(data.totalCount / playlistPageSize) || 1}
-            playlistId={playlistId}
-          />
-        )}
-        {(isLoading || isFetching) && <LoadingResource resource="playlist" />}
+        {data && <Playlist movies={data.movies} playlistId={playlistId} />}
+        {isLoading && <LoadingResource resource="playlist" />}
         {isError && <ErrorResource resource="playlist" />}
+        {totalCount > playlistPageSize && (
+          <FloatingBar>
+            <PagePagination
+              page={page}
+              setPage={(value) => {
+                setPage(value);
+                scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              maxPage={Math.ceil(totalCount / playlistPageSize)}
+            />
+          </FloatingBar>
+        )}
       </LayoutContent>
     </Layout>
   );

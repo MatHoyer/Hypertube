@@ -14,8 +14,7 @@ import { toast } from "sonner";
 
 export const Historic: React.FC<{
   movies: TGetHistorySchemas["response"]["movies"];
-  historicMaxPage: number;
-}> = ({ movies, historicMaxPage }) => {
+}> = ({ movies }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -41,7 +40,6 @@ export const Historic: React.FC<{
     <MovieListWithPagination
       movieListType="historic"
       movies={movies}
-      maxPage={historicMaxPage}
       deleteFn={(tmdbId: number) => mutate({ tmdbId })}
     />
   );

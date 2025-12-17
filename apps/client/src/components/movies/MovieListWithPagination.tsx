@@ -1,10 +1,7 @@
 import { getUrl, ROUTES, type TTmdbMovieCompleteSchema } from "@hypertube/libs";
 import { Video, X } from "lucide-react";
-import { parseAsInteger, useQueryState } from "nuqs";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { useScrollArea } from "../contexts/scroll-area/scroll-area.context";
-import { PagePagination } from "../Pagination";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import {
@@ -14,7 +11,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "../ui/empty";
-import { FloatingBar } from "../ui/FloatingBar";
 import { MovieBaseInfo } from "./MovieBaseInfo";
 
 const movieListTypes = ["historic", "playlist"] as const;
@@ -22,12 +18,9 @@ const movieListTypes = ["historic", "playlist"] as const;
 export const MovieListWithPagination: React.FC<{
   movieListType: (typeof movieListTypes)[number];
   movies: { details: TTmdbMovieCompleteSchema }[];
-  maxPage: number;
   deleteFn: (tmdbId: number) => void;
-}> = ({ movieListType, movies, maxPage, deleteFn }) => {
+}> = ({ movieListType, movies, deleteFn }) => {
   const { t } = useTranslation();
-  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
-  const { scrollTo } = useScrollArea();
 
   if (!movieListTypes.includes(movieListType)) return null;
 
@@ -73,16 +66,6 @@ export const MovieListWithPagination: React.FC<{
           </Empty>
         </div>
       )}
-      <FloatingBar>
-        <PagePagination
-          page={page}
-          setPage={(value) => {
-            setPage(value);
-            scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          maxPage={maxPage}
-        />
-      </FloatingBar>
     </div>
   );
 };

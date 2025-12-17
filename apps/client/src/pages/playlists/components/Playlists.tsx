@@ -1,4 +1,3 @@
-import { PagePagination } from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -8,7 +7,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { FloatingBar } from "@/components/ui/FloatingBar";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
@@ -21,18 +19,15 @@ import {
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ListVideo, Video, X } from "lucide-react";
-import { parseAsInteger, useQueryState } from "nuqs";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 export const Playlists: React.FC<{
   playlists: TGetPlaylistsSchemas["response"]["playlists"];
-  playlistsMaxPage: number;
-}> = ({ playlists, playlistsMaxPage }) => {
+}> = ({ playlists }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
   const { mutate: deleteMutate } = useMutation({
     mutationFn: (
@@ -104,16 +99,6 @@ export const Playlists: React.FC<{
           </Empty>
         </div>
       )}
-      <FloatingBar>
-        <PagePagination
-          page={page}
-          setPage={(value) => {
-            setPage(value);
-            scrollTo({ top: 0, behavior: "smooth" });
-          }}
-          maxPage={playlistsMaxPage}
-        />
-      </FloatingBar>
     </div>
   );
 };

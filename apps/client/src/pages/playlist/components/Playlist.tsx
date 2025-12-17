@@ -15,9 +15,8 @@ import { toast } from "sonner";
 
 export const Playlist: React.FC<{
   movies: TGetPlaylistSchemas["response"]["movies"];
-  playlistMaxPage: number;
   playlistId: TPlaylistSchema["id"];
-}> = ({ movies, playlistMaxPage, playlistId }) => {
+}> = ({ movies, playlistId }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
 
@@ -49,7 +48,6 @@ export const Playlist: React.FC<{
     <MovieListWithPagination
       movieListType="playlist"
       movies={movies}
-      maxPage={playlistMaxPage}
       deleteFn={(tmdbId: number) => mutate({ playlistId, tmdbId })}
     />
   );
