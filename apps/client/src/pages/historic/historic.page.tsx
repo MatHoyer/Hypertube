@@ -1,3 +1,4 @@
+import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
 import { ErrorResource } from "@/components/ErrorResource";
 import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { LoadingResource } from "@/components/LoadingResource";
@@ -15,6 +16,7 @@ import { Historic } from "./components/Historic";
 const historicPageSize = 10;
 
 export const HistoricPage = () => {
+  const { scrollTo } = useScrollArea();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [totalCount, setTotalCount] = useState(0);
 

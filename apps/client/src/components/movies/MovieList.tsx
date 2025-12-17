@@ -15,7 +15,7 @@ import { MovieBaseInfo } from "./MovieBaseInfo";
 
 const movieListTypes = ["historic", "playlist"] as const;
 
-export const MovieListWithPagination: React.FC<{
+export const MovieList: React.FC<{
   movieListType: (typeof movieListTypes)[number];
   movies: { details: TTmdbMovieCompleteSchema }[];
   deleteFn: (tmdbId: number) => void;

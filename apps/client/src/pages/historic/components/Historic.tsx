@@ -1,4 +1,4 @@
-import { MovieListWithPagination } from "@/components/movies/MovieListWithPagination";
+import { MovieList } from "@/components/movies/MovieList";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
@@ -37,7 +37,7 @@ export const Historic: React.FC<{
   });
 
   return (
-    <MovieListWithPagination
+    <MovieList
       movieListType="historic"
       movies={movies}
       deleteFn={(tmdbId: number) => mutate({ tmdbId })}

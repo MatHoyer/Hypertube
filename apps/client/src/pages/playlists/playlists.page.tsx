@@ -1,3 +1,4 @@
+import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { ErrorResource } from "@/components/ErrorResource";
 import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
@@ -24,6 +25,7 @@ import { Playlists } from "./components/Playlists";
 const playlistsPageSize = 10;
 
 export const PlaylistsPage = () => {
+  const { scrollTo } = useScrollArea();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [totalCount, setTotalCount] = useState(0);

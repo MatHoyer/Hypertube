@@ -1,3 +1,4 @@
+import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
 import { ErrorResource } from "@/components/ErrorResource";
 import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { LoadingResource } from "@/components/LoadingResource";
@@ -17,6 +18,7 @@ import { PlaylistPageParamsSchema } from "./schemas/urlParams.schema";
 const playlistPageSize = 10;
 
 export const PlaylistPage = () => {
+  const { scrollTo } = useScrollArea();
   const { playlistId } = useConvertParams(PlaylistPageParamsSchema);
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [totalCount, setTotalCount] = useState(0);
