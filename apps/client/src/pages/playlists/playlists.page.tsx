@@ -24,7 +24,7 @@ export const PlaylistsPage = () => {
   const { t } = useTranslation();
   const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isFetching, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.PLAYLISTS, { page }),
     queryFn: () =>
       axiosFetch({
@@ -55,13 +55,13 @@ export const PlaylistsPage = () => {
         </LayoutActions>
       </LayoutHeader>
       <LayoutContent>
-        {data && (
+        {data && !isFetching && (
           <Playlists
             playlistsPage={data}
             playlistsPageSize={playlistsPageSize}
           />
         )}
-        {isLoading && <LoadingResource resource="playlists" />}
+        {(isLoading || isFetching) && <LoadingResource resource="playlists" />}
         {isError && <ErrorResource resource="playlists" />}
       </LayoutContent>
     </Layout>

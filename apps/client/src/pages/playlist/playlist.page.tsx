@@ -17,7 +17,7 @@ export const PlaylistPage = () => {
   const { playlistId } = useConvertParams(PlaylistPageParamsSchema);
   const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isFetching, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.PLAYLISTS, {
       playlistId,
       page,
@@ -47,14 +47,14 @@ export const PlaylistPage = () => {
         />
       </LayoutHeader>
       <LayoutContent>
-        {data && (
+        {data && !isFetching && (
           <Playlist
             playlistPage={data}
             playlistPageSize={playlistPageSize}
             playlistId={playlistId}
           />
         )}
-        {isLoading && <LoadingResource resource="playlist" />}
+        {(isLoading || isFetching) && <LoadingResource resource="playlist" />}
         {isError && <ErrorResource resource="playlist" />}
       </LayoutContent>
     </Layout>

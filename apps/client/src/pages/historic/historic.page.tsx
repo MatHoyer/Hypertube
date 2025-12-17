@@ -14,7 +14,7 @@ const historicPageSize = 10;
 export const HistoricPage = () => {
   const [page, _] = useQueryState("page", parseAsInteger.withDefault(1));
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isFetching, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER, { page }),
     queryFn: () =>
       axiosFetch({
@@ -39,10 +39,10 @@ export const HistoricPage = () => {
         />
       </LayoutHeader>
       <LayoutContent>
-        {data && (
+        {data && !isFetching && (
           <Historic historicPage={data} historicPageSize={historicPageSize} />
         )}
-        {isLoading && <LoadingResource resource="historic" />}
+        {(isLoading || isFetching) && <LoadingResource resource="historic" />}
         {isError && <ErrorResource resource="historic" />}
       </LayoutContent>
     </Layout>
