@@ -33,6 +33,7 @@ export const PlaylistPage = () => {
   const { playlistId } = useConvertParams(PlaylistPageParamsSchema);
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
   const [totalCount, setTotalCount] = useState(0);
+  const [playlistName, setPlaylistName] = useState<string | undefined>();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.PLAYLISTS, {
@@ -54,8 +55,11 @@ export const PlaylistPage = () => {
   });
 
   useEffect(() => {
-    if (data) setTotalCount(data.totalCount);
-  }, [data, setTotalCount]);
+    if (data) {
+      setTotalCount(data.totalCount);
+      setPlaylistName(data.name);
+    }
+  }, [data, setTotalCount, setPlaylistName]);
 
   const { mutate } = useMutation({
     mutationFn: ({
@@ -87,7 +91,7 @@ export const PlaylistPage = () => {
         <LayoutHeaderResource
           resource="playlist"
           count={totalCount}
-          dynamicTitle={data?.name}
+          dynamicTitle={playlistName ?? t("global.loadingRessource")}
         />
       </LayoutHeader>
       <LayoutContent>

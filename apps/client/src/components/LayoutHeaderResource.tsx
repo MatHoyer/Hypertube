@@ -33,7 +33,7 @@ export const LayoutHeaderResource: React.FC<
   return (
     <div {...props} className={cn("flex items-center gap-2", className)}>
       {iconByHeaderResources[resource]}
-      <div>
+      <div className="flex flex-col gap-2">
         <LayoutTitle>
           {dynamicTitle ? dynamicTitle : t(`${resource}.title`)}
         </LayoutTitle>
