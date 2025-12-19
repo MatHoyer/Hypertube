@@ -63,6 +63,8 @@ export const getNotifications = async (
     getNotificationsSchemas.response.parse({
       notifications,
       page,
+      pageSize,
+      total: notificationsCount,
       totalPages: Math.ceil(notificationsCount / pageSize),
     })
   );
