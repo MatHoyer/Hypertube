@@ -3,20 +3,13 @@ import {
   commentResponseSchema,
   commentSchema,
 } from "../database/comments.schema.js";
+import { getPaginationSchemas } from "../utils/pagination.schema.js";
 
-export const getCommentsSchemas = {
-  searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
-    pageSize: z.coerce.number().int().positive().max(100).default(10),
-  }),
+export const getCommentsSchemas = getPaginationSchemas({
   response: z.object({
     comments: z.array(commentSchema),
-    page: z.number(),
-    pageSize: z.number(),
-    totalComments: z.number(),
-    totalPages: z.number(),
   }),
-};
+});
 
 export type TGetCommentsSchemas = {
   searchParams: z.infer<typeof getCommentsSchemas.searchParams>;
@@ -35,22 +28,14 @@ export type TGetCommentSchemas = {
   response: z.infer<typeof getCommentSchemas.response>;
 };
 
-export const getCommentRepliesSchemas = {
+export const getCommentRepliesSchemas = getPaginationSchemas({
   urlParams: z.object({
     commentId: commentSchema.shape.parentId,
   }),
-  searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
-    pageSize: z.coerce.number().int().positive().max(100).default(10),
-  }),
   response: z.object({
     comments: z.array(commentResponseSchema),
-    page: z.number(),
-    pageSize: z.number(),
-    totalComments: z.number(),
-    totalPages: z.number(),
   }),
-};
+});
 
 export type TGetCommentRepliesSchemas = {
   urlParams: z.infer<typeof getCommentRepliesSchemas.urlParams>;

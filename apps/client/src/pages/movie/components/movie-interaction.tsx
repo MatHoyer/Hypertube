@@ -114,7 +114,7 @@ export const MovieInteraction = ({
     <div className="flex flex-col gap-1">
       <div className="flex">
         <Typography textSize={"lg"}>
-          {data?.pages?.[0]?.totalComments} {t("movie.comments.comments")}
+          {data?.pages?.[0]?.total} {t("movie.comments.comments")}
         </Typography>
         <div className="flex-1" />
         <SubscriptionButton

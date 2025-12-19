@@ -15,6 +15,7 @@ import {
   resolutionSchema,
   subtitleSchema,
 } from "../database/movie.schema.js";
+import { getPaginationSchemas } from "../utils/pagination.schema.js";
 
 export const tmdbMovieSchema = z.object({
   id: z.coerce.number().int().nonnegative(),
@@ -193,22 +194,14 @@ export type TDeleteMovieLikeSchemas = {
   response: z.infer<typeof deleteMovieLikeSchemas.response>;
 };
 
-export const getMovieCommentSchemas = {
+export const getMovieCommentSchemas = getPaginationSchemas({
   urlParams: z.object({
     tmdbId: movieSchema.shape.tmdbId,
   }),
-  searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
-    pageSize: z.coerce.number().int().positive().max(100).default(10),
-  }),
   response: z.object({
     comments: z.array(commentResponseSchema),
-    page: z.number(),
-    pageSize: z.number(),
-    totalComments: z.number(),
-    totalPages: z.number(),
   }),
-};
+});
 
 export type TGetMovieCommentsSchemas = {
   urlParams: z.infer<typeof getMovieCommentSchemas.urlParams>;

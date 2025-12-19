@@ -491,7 +491,7 @@ export const getMovieComments = async (
   );
 
   if (result.data) {
-    return c.json(result.data);
+    return c.json({ ...result.data, total: result.data.totalComments }, 200);
   }
   return c.json({ message: result.message }, result.status);
 };
