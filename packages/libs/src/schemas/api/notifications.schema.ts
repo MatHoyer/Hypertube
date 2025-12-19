@@ -4,21 +4,18 @@ import {
   notificationReadStatuses,
 } from "../../const/global.const.js";
 import { notificationSchema } from "../database/notifications.schema.js";
+import { getPaginationSchemas } from "../utils/pagination.schema.js";
 
-export const getNotificationsSchemas = {
+export const getNotificationsSchemas = getPaginationSchemas({
   searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
-    pageSize: z.coerce.number().int().positive().default(10),
     readStatus: z
       .enum(notificationReadStatusArray)
       .default(notificationReadStatuses.ALL),
   }),
   response: z.object({
     notifications: z.array(notificationSchema),
-    page: z.number(),
-    totalPages: z.number(),
   }),
-};
+});
 
 export type TGetNotificationsSchemas = {
   searchParams: z.infer<typeof getNotificationsSchemas.searchParams>;
