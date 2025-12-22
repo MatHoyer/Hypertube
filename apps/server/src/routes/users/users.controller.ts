@@ -1,4 +1,6 @@
 import {
+  getAccountsUsersSchemas,
+  getSessionUsersSchemas,
   getUrl,
   getUserSchemas,
   getUsersSchemas,
@@ -214,7 +216,7 @@ export const getAccounts = async (c: Context<TIsLogged>) => {
   const accounts = await auth.api.listUserAccounts({
     headers: c.req.raw.headers,
   });
-  return c.json({ accounts }, 200);
+  return c.json(getAccountsUsersSchemas.response.parse({ accounts }), 200);
 };
 
 export const getSession = async (c: Context<TIsLogged>) => {
@@ -223,5 +225,5 @@ export const getSession = async (c: Context<TIsLogged>) => {
   });
   if (!session) return c.json(null, 400);
 
-  return c.json(session, 200);
+  return c.json(getSessionUsersSchemas.response.parse(session), 200);
 };
