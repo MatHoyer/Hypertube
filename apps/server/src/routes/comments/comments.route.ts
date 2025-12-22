@@ -40,19 +40,27 @@ commentsRouter.get(
   getComment
 );
 
+commentsRouter.patch(
+  "/:commentId",
+  isLogged,
+  urlParamsParser(patchCommentSchemas.urlParams),
+  bodyParser(patchCommentSchemas.requirements),
+  patchComment
+);
+
+commentsRouter.delete(
+  "/:commentId",
+  isLogged,
+  urlParamsParser(deleteCommentSchemas.urlParams),
+  deleteComment
+);
+
 commentsRouter.get(
   "/:commentId/replies",
   isLogged,
   urlParamsParser(getCommentRepliesSchemas.urlParams),
   searchParamsParser(getCommentRepliesSchemas.searchParams),
   getCommentReplies
-);
-
-commentsRouter.post(
-  "/:commentId/like",
-  isLogged,
-  urlParamsParser(postCommentLikeSchemas.urlParams),
-  likeComment
 );
 
 commentsRouter.post(
@@ -63,26 +71,18 @@ commentsRouter.post(
   replyToComment
 );
 
+commentsRouter.post(
+  "/:commentId/like",
+  isLogged,
+  urlParamsParser(postCommentLikeSchemas.urlParams),
+  likeComment
+);
+
 commentsRouter.delete(
   "/:commentId/like",
   isLogged,
   urlParamsParser(deleteCommentLikeSchemas.urlParams),
   deleteCommentLike
-);
-
-commentsRouter.delete(
-  "/:commentId",
-  isLogged,
-  urlParamsParser(deleteCommentSchemas.urlParams),
-  deleteComment
-);
-
-commentsRouter.patch(
-  "/:commentId",
-  isLogged,
-  urlParamsParser(patchCommentSchemas.urlParams),
-  bodyParser(patchCommentSchemas.requirements),
-  patchComment
 );
 
 export default commentsRouter;

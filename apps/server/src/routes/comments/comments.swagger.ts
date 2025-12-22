@@ -1,11 +1,8 @@
 import {
   deleteCommentLikeSchemas,
-  deleteCommentSchemas,
   getCommentRepliesSchemas,
-  getCommentSchemas,
   getCommentsSchemas,
   getUrl,
-  patchCommentSchemas,
   postCommentLikeSchemas,
   postCommentReplySchemas,
   ROUTES,
@@ -42,7 +39,168 @@ export const commentsSwagger = {
           description: "OK",
           content: {
             "application/json": {
-              schema: getCommentsSchemas.response,
+              example: {
+                comments: [
+                  {
+                    id: "cmt_clx1a2b3c4d5e6f7g8h9i0j1k",
+                    content:
+                      "This is an amazing movie! Highly recommend watching it.",
+                    userId: "clx1a2b3c4d5e6f7g8h9i0j1k",
+                    parentId: "tt1375666",
+                    parentType: "MOVIE",
+                    createdAt: "2024-12-20T14:30:00.000Z",
+                    updatedAt: "2024-12-20T14:30:00.000Z",
+                    deletedAt: null,
+                  },
+                  {
+                    id: "cmt_clx2b3c4d5e6f7g8h9i0j1k2l",
+                    content: "I agree, the cinematography was stunning!",
+                    userId: "clx2b3c4d5e6f7g8h9i0j1k2l",
+                    parentId: "cmt_clx1a2b3c4d5e6f7g8h9i0j1k",
+                    parentType: "COMMENT",
+                    createdAt: "2024-12-20T15:45:00.000Z",
+                    updatedAt: "2024-12-20T15:45:00.000Z",
+                    deletedAt: null,
+                  },
+                  {
+                    id: "cmt_clx3c4d5e6f7g8h9i0j1k2l3m",
+                    content: "[Comment deleted by user]",
+                    userId: "clx3c4d5e6f7g8h9i0j1k2l3m",
+                    parentId: "tt1375666",
+                    parentType: "MOVIE",
+                    createdAt: "2024-12-19T10:20:00.000Z",
+                    updatedAt: "2024-12-21T08:15:00.000Z",
+                    deletedAt: "2024-12-21T08:15:00.000Z",
+                  },
+                ],
+                page: 1,
+                pageSize: 3,
+                total: 31,
+                totalPages: 11,
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.COMMENTS, { commentId: "{commentId}" })]: {
+    get: {
+      summary: "get comment by id",
+      tags: ["Comments"],
+      parameters: [commentIdPathParam],
+      responses: {
+        "200": {
+          description: "Comment got get successfully",
+          content: {
+            "application/json": {
+              example: {
+                id: "550e8400-e29b-41d4-a716-446655440000",
+                content:
+                  "This is an amazing movie! Highly recommend watching it.",
+                userId: "clx1a2b3c4d5e6f7g8h9i0j1k",
+                parentId: "tt1375666",
+                parentType: "MOVIE",
+                createdAt: "2024-12-20T14:30:00.000Z",
+                updatedAt: "2024-12-20T14:30:00.000Z",
+                deletedAt: null,
+              },
+            },
+          },
+        },
+        "404": {
+          description: "Comment not found",
+          content: {
+            "application/json": {
+              example: null,
+            },
+          },
+        },
+      },
+    },
+    patch: {
+      summary: "Update a comment",
+      tags: ["Comments"],
+      parameters: [commentIdPathParam],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            example: {
+              content: "",
+            },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Comment updated successfully",
+          content: {
+            "application/json": {
+              example: { message: "Comment updated successfully" },
+            },
+          },
+        },
+        "400": {
+          description: "Comment is deleted",
+          content: {
+            "application/json": {
+              example: { message: "Comment is deleted" },
+            },
+          },
+        },
+        "401": {
+          description: "You can only edit your own comment",
+          content: {
+            "application/json": {
+              example: { message: "You can only edit your own comment" },
+            },
+          },
+        },
+        "404": {
+          description: "Comment not found",
+          content: {
+            "application/json": {
+              example: { message: "Comment not found" },
+            },
+          },
+        },
+      },
+    },
+    delete: {
+      summary: "Delete a comment",
+      tags: ["Comments"],
+      parameters: [commentIdPathParam],
+      responses: {
+        "200": {
+          description: "Comment deleted successfully",
+          content: {
+            "application/json": {
+              example: { message: "Comment deleted successfully" },
+            },
+          },
+        },
+        "400": {
+          description: "Comment already deleted",
+          content: {
+            "application/json": {
+              example: { message: "Comment already deleted" },
+            },
+          },
+        },
+        "401": {
+          description: "You can only delete your own comment",
+          content: {
+            "application/json": {
+              example: { message: "You can only delete your own comment" },
+            },
+          },
+        },
+        "404": {
+          description: "Comment not found",
+          content: {
+            "application/json": {
+              example: { message: "Comment not found" },
             },
           },
         },
@@ -149,73 +307,6 @@ export const commentsSwagger = {
         },
         "404": {
           description: "Like not found or comment not found",
-        },
-      },
-    },
-  },
-  [getUrl(ROUTES.API.COMMENTS, { commentId: "{commentId}" })]: {
-    get: {
-      summary: "get comment by id",
-      tags: ["Comments"],
-      parameters: [commentIdPathParam],
-      responses: {
-        "200": {
-          description: "Comment got get successfully",
-          content: {
-            "application/json": {
-              schema: getCommentSchemas.response,
-            },
-          },
-        },
-      },
-    },
-    patch: {
-      summary: "Update a comment",
-      tags: ["Comments"],
-      parameters: [commentIdPathParam],
-      requestBody: {
-        required: true,
-        content: {
-          "application/json": {
-            schema: patchCommentSchemas.requirements,
-          },
-        },
-      },
-      responses: {
-        "200": {
-          description: "Comment updated successfully",
-          content: {
-            "application/json": {
-              schema: patchCommentSchemas.response,
-            },
-          },
-        },
-        "403": {
-          description: "Unauthorized: you can only edit your own comment",
-        },
-        "404": {
-          description: "Comment not found",
-        },
-      },
-    },
-    delete: {
-      summary: "Delete a comment",
-      tags: ["Comments"],
-      parameters: [commentIdPathParam],
-      responses: {
-        "200": {
-          description: "Comment deleted successfully",
-          content: {
-            "application/json": {
-              schema: deleteCommentSchemas.response,
-            },
-          },
-        },
-        "404": {
-          description: "Comment not found or unauthorized",
-        },
-        "500": {
-          description: "Failed to delete comment",
         },
       },
     },

@@ -28,6 +28,38 @@ export type TGetCommentSchemas = {
   response: z.infer<typeof getCommentSchemas.response>;
 };
 
+export const patchCommentSchemas = {
+  urlParams: z.object({
+    commentId: commentSchema.shape.id,
+  }),
+  requirements: z.object({
+    content: commentSchema.shape.content.trim().min(1).max(500),
+  }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+
+export type TPatchCommentSchemas = {
+  urlParams: z.infer<typeof patchCommentSchemas.urlParams>;
+  requirements: z.infer<typeof patchCommentSchemas.requirements>;
+  response: z.infer<typeof patchCommentSchemas.response>;
+};
+
+export const deleteCommentSchemas = {
+  urlParams: z.object({
+    commentId: commentSchema.shape.id,
+  }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+
+export type TDeleteCommentSchemas = {
+  urlParams: z.infer<typeof deleteCommentSchemas.urlParams>;
+  response: z.infer<typeof deleteCommentSchemas.response>;
+};
+
 export const getCommentRepliesSchemas = getPaginationSchemas({
   urlParams: z.object({
     commentId: commentSchema.shape.parentId,
@@ -41,18 +73,6 @@ export type TGetCommentRepliesSchemas = {
   urlParams: z.infer<typeof getCommentRepliesSchemas.urlParams>;
   searchParams: z.infer<typeof getCommentRepliesSchemas.searchParams>;
   response: z.infer<typeof getCommentRepliesSchemas.response>;
-};
-
-export const postCommentLikeSchemas = {
-  urlParams: z.object({ commentId: commentSchema.shape.parentId }),
-  response: z.object({
-    message: z.string(),
-  }),
-};
-
-export type TPostCommentLikeSchemas = {
-  urlParams: z.infer<typeof postCommentLikeSchemas.urlParams>;
-  response: z.infer<typeof postCommentLikeSchemas.response>;
 };
 
 export const postCommentReplySchemas = {
@@ -73,6 +93,18 @@ export type TPostCommentReplySchemas = {
   response: z.infer<typeof postCommentReplySchemas.response>;
 };
 
+export const postCommentLikeSchemas = {
+  urlParams: z.object({ commentId: commentSchema.shape.parentId }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+
+export type TPostCommentLikeSchemas = {
+  urlParams: z.infer<typeof postCommentLikeSchemas.urlParams>;
+  response: z.infer<typeof postCommentLikeSchemas.response>;
+};
+
 export const deleteCommentLikeSchemas = {
   urlParams: z.object({ commentId: commentSchema.shape.parentId }),
   response: z.object({
@@ -83,36 +115,4 @@ export const deleteCommentLikeSchemas = {
 export type TDeleteCommentLike = {
   urlParams: z.infer<typeof deleteCommentLikeSchemas.urlParams>;
   response: z.infer<typeof deleteCommentLikeSchemas.response>;
-};
-
-export const deleteCommentSchemas = {
-  urlParams: z.object({
-    commentId: commentSchema.shape.id,
-  }),
-  response: z.object({
-    message: z.string(),
-  }),
-};
-
-export type TDeleteCommentSchemas = {
-  urlParams: z.infer<typeof deleteCommentSchemas.urlParams>;
-  response: z.infer<typeof deleteCommentSchemas.response>;
-};
-
-export const patchCommentSchemas = {
-  urlParams: z.object({
-    commentId: commentSchema.shape.id,
-  }),
-  requirements: z.object({
-    content: commentSchema.shape.content.trim().min(1).max(500),
-  }),
-  response: z.object({
-    message: z.string(),
-  }),
-};
-
-export type TPatchCommentSchemas = {
-  urlParams: z.infer<typeof patchCommentSchemas.urlParams>;
-  requirements: z.infer<typeof patchCommentSchemas.requirements>;
-  response: z.infer<typeof patchCommentSchemas.response>;
 };
