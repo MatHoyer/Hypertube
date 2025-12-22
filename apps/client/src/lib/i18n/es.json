@@ -221,7 +221,7 @@
       }
     },
     "comments": {
-      "comments": "Comentarios",
+      "comments": "{{count}} comentarios",
       "addComment": "Añadir un comentario...",
       "deleteComment": "Eliminar",
       "editComment": "Cambiar el comentario",
