@@ -37,8 +37,8 @@ const openApiDoc = {
       description: "Movies endpoints",
     },
     {
-      name: "Downloads",
-      description: "Downloads endpoints",
+      name: "Comments",
+      description: "Comments endpoints",
     },
     {
       name: "Notifications",
@@ -62,11 +62,11 @@ const openApiDoc = {
       },
     },
 
-    ...imagesSwagger,
+    ...authentificationSwagger,
     ...usersSwagger,
+    ...imagesSwagger,
     ...moviesSwagger,
     ...commentsSwagger,
-    ...authentificationSwagger,
     ...notificationsSwagger,
     ...historySwagger,
   },
