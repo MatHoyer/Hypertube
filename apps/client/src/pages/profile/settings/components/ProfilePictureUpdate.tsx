@@ -27,7 +27,7 @@ export const ProfilePictureUpdate = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await axiosFetch({
+      const image = await axiosFetch({
         method: "POST",
         url: getUrl(ROUTES.API.IMAGES),
         schemas: {
@@ -38,21 +38,19 @@ export const ProfilePictureUpdate = () => {
         config: { headers: { "Content-Type": "multipart/form-data" } },
       });
 
-      if (res.error || !res.data)
-        throw new Error(t("settings.updatePictureFailed"));
-
-      if (user.imageId)
+      if (user.imageId) {
         await axiosFetch({
           method: "DELETE",
           url: getUrl(ROUTES.API.IMAGES, { imageId: user.imageId }),
           schemas: deleteImageSchemas,
         });
+      }
 
       await axiosFetch({
         method: "PATCH",
         url: getUrl(ROUTES.API.USERS, { userId: user.id }),
         schemas: patchUsersSchemas,
-        data: { image: res.data.path, imageId: res.data.id },
+        data: { image: image.path, imageId: image.id },
       });
     },
     onSuccess: () => {

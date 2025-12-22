@@ -1,8 +1,11 @@
-import { TDeleteImageSchemas, TPostImageSchemas } from "@hypertube/libs";
+import {
+  postImageSchemas,
+  TDeleteImageSchemas,
+  TPostImageSchemas,
+} from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
 import * as fs from "fs";
 import { Context } from "hono";
-import i18next from "i18next";
 import sharp from "sharp";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
@@ -12,23 +15,14 @@ const getImagePath = (imageId: string) => {
   return `./public/images/${imageId}.webp`;
 };
 
-const deleteImageFile = async (imageId: string) => {
-  const image = await prisma.image.findUnique({
-    where: { id: imageId },
-  });
-  if (!image) return { error: i18next.t("images.notFound") };
-
-  const path = getImagePath(image.id);
-  if (fs.existsSync(path)) await fs.promises.rm(path);
-  await prisma.image.delete({ where: { id: imageId } });
-};
-
-export const uploadImage = async (
+export const postImage = async (
   c: Context<TIsLogged & TBodyParser<TPostImageSchemas["requirements"]>>
 ) => {
   const { file } = c.get("validatedBody");
-  if (!file.type.startsWith("image/"))
-    return c.json({ error: i18next.t("images.invalidFile") }, 400);
+
+  if (!file.type.startsWith("image/")) {
+    return c.json({ error: "Invalid file" }, 400);
+  }
 
   try {
     const arrayBuffer = await file.arrayBuffer();
@@ -41,22 +35,25 @@ export const uploadImage = async (
     const path = getImagePath(image.id);
     await fs.promises.writeFile(path, webpBuffer);
 
-    return c.json(
-      { data: { path: getImagePath(image.id), id: image.id } },
-      200
-    );
+    return c.json(postImageSchemas.response.parse({ path, id: image.id }), 200);
   } catch {
-    return c.json({ error: i18next.t("images.invalidFile") }, 400);
+    return c.json({ error: "Invalid file" }, 400);
   }
 };
 
 export const deleteImage = async (
-  c: Context<TUrlParamsParser<TDeleteImageSchemas["urlParams"]> & TIsLogged>
+  c: Context<TIsLogged & TUrlParamsParser<TDeleteImageSchemas["urlParams"]>>
 ) => {
   const { imageId } = c.get("validatedUrlParams");
 
-  const res = await deleteImageFile(imageId);
+  const image = await prisma.image.findUnique({
+    where: { id: imageId },
+  });
+  if (!image) return c.json({ message: "OK" }, 200);
 
-  if (res) return c.json({ error: res.error }, 404);
-  return c.json({ data: "OK" }, 200);
+  const path = getImagePath(image.id);
+  if (fs.existsSync(path)) await fs.promises.rm(path);
+  await prisma.image.delete({ where: { id: imageId } });
+
+  return c.json({ message: "OK" }, 200);
 };
