@@ -1,5 +1,7 @@
 import {
   getUrl,
+  getUserSchemas,
+  getUsersSchemas,
   newUTCDate,
   ROUTES,
   TGetUsersSchemas,
@@ -40,14 +42,23 @@ export const getUsers = async (
     take: pageSize,
   });
 
-  const totalUsers = await prisma.user.count();
-  const totalPages = Math.ceil(totalUsers / pageSize);
+  const total = await prisma.user.count();
+  const totalPages = Math.ceil(total / pageSize);
 
-  return c.json({ users, page, pageSize, totalUsers, totalPages }, 200);
+  return c.json(
+    getUsersSchemas.response.parse({
+      users,
+      page,
+      pageSize,
+      total,
+      totalPages,
+    }),
+    200
+  );
 };
 
 export const getUser = async (
-  c: Context<TUrlParamsParser<TGetUserSchemas["urlParams"]> & TIsLogged>
+  c: Context<TIsLogged & TUrlParamsParser<TGetUserSchemas["urlParams"]>>
 ) => {
   const { userId } = c.get("validatedUrlParams");
 
@@ -64,10 +75,7 @@ export const getUser = async (
       createdAt: true,
     },
   });
-
-  if (!user) {
-    return c.json(null, 404);
-  }
+  if (!user) return c.json(null, 404);
 
   const totalLikes = await prisma.like.count({
     where: { userId },
@@ -76,23 +84,24 @@ export const getUser = async (
   const totalComments = await prisma.comment.count({
     where: { userId },
   });
+
   return c.json(
-    {
+    getUserSchemas.response.parse({
       user,
       stats: {
         totalLikes,
         totalComments,
       },
-    },
+    }),
     200
   );
 };
 
 export const patchUser = async (
   c: Context<
-    TUrlParamsParser<TPatchUsersSchemas["urlParams"]> &
-      TBodyParser<TPatchUsersSchemas["requirements"]> &
-      TIsLogged
+    TIsLogged &
+      TUrlParamsParser<TPatchUsersSchemas["urlParams"]> &
+      TBodyParser<TPatchUsersSchemas["requirements"]>
   >
 ) => {
   const body = c.get("validatedBody");
@@ -100,7 +109,13 @@ export const patchUser = async (
   const user = c.get("user");
 
   if (user.id !== userId) {
-    return c.json({ message: i18next.t("httpCode.401") }, 401);
+    return c.json(
+      {
+        message:
+          "You are not authorized to modify information that is not yours.",
+      },
+      401
+    );
   }
 
   if (body.oldPassword && body.password) {
@@ -196,23 +211,17 @@ export const patchUser = async (
 };
 
 export const getAccounts = async (c: Context<TIsLogged>) => {
-  try {
-    const accounts = await auth.api.listUserAccounts({
-      headers: c.req.raw.headers,
-    });
-    return c.json({ accounts }, 200);
-  } catch {
-    return c.json(null, 400);
-  }
+  const accounts = await auth.api.listUserAccounts({
+    headers: c.req.raw.headers,
+  });
+  return c.json({ accounts }, 200);
 };
 
 export const getSession = async (c: Context<TIsLogged>) => {
-  try {
-    const session = await auth.api.getSession({
-      headers: c.req.raw.headers,
-    });
-    return c.json(session, 200);
-  } catch {
-    return c.json(null, 400);
-  }
+  const session = await auth.api.getSession({
+    headers: c.req.raw.headers,
+  });
+  if (!session) return c.json(null, 400);
+
+  return c.json(session, 200);
 };

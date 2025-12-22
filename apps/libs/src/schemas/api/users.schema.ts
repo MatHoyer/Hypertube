@@ -28,24 +28,22 @@ export type TGetUsersSchemas = {
 
 export const getUserSchemas = {
   urlParams: z.object({ userId: userSchema.shape.id }),
-  response: z
-    .object({
-      user: userSchema.pick({
-        id: true,
-        name: true,
-        username: true,
-        displayUsername: true,
-        firstName: true,
-        lastName: true,
-        image: true,
-        createdAt: true,
-      }),
-      stats: z.object({
-        totalLikes: z.number(),
-        totalComments: z.number(),
-      }),
-    })
-    .nullable(),
+  response: z.object({
+    user: userSchema.pick({
+      id: true,
+      name: true,
+      username: true,
+      displayUsername: true,
+      firstName: true,
+      lastName: true,
+      image: true,
+      createdAt: true,
+    }),
+    stats: z.object({
+      totalLikes: z.number(),
+      totalComments: z.number(),
+    }),
+  }),
 };
 
 export type TGetUserSchemas = {
@@ -81,11 +79,9 @@ export type TPatchUsersSchemas = {
 };
 
 export const getAccountsUsersSchemas = {
-  response: z
-    .object({
-      accounts: accountsSchema,
-    })
-    .nullable(),
+  response: z.object({
+    accounts: accountsSchema,
+  }),
 };
 
 export type TGetAccountsUsersSchemas = {
@@ -93,12 +89,10 @@ export type TGetAccountsUsersSchemas = {
 };
 
 export const getSessionUsersSchemas = {
-  response: z
-    .object({
-      session: sessionSchema,
-      user: userSchema,
-    })
-    .nullable(),
+  response: z.object({
+    session: sessionSchema,
+    user: userSchema,
+  }),
 };
 
 export type TGetSessionUsersSchemas = {
