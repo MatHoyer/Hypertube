@@ -1,15 +1,4 @@
-import {
-  deleteImageSchemas,
-  getUrl,
-  postImageSchemas,
-  ROUTES,
-} from "@hypertube/libs";
-
-const imagePathParam = {
-  in: "path",
-  name: "imageId",
-  required: true,
-};
+import { getUrl, ROUTES } from "@hypertube/libs";
 
 export const imagesSwagger = {
   [getUrl(ROUTES.API.IMAGES)]: {
@@ -40,7 +29,20 @@ export const imagesSwagger = {
           description: "OK",
           content: {
             "application/json": {
-              schema: postImageSchemas.response,
+              example: {
+                path: "https://example.com/images/avatars/johndoe.jpg",
+                id: "550e8400-e29b-41d4-a716-446655440000",
+              },
+            },
+          },
+        },
+        "400": {
+          description: "Invalid file",
+          content: {
+            "application/json": {
+              example: {
+                message: "Invalid file",
+              },
             },
           },
         },
@@ -51,13 +53,19 @@ export const imagesSwagger = {
     delete: {
       summary: "Delete image",
       tags: ["Images"],
-      parameters: [imagePathParam],
+      parameters: [
+        {
+          in: "path",
+          name: "imageId",
+          required: true,
+        },
+      ],
       responses: {
         "200": {
           description: "OK",
           content: {
             "application/json": {
-              schema: deleteImageSchemas.response,
+              example: { message: "OK" },
             },
           },
         },

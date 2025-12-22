@@ -4,10 +4,7 @@ import { imageSchema } from "../database/image.schema.js";
 
 export const postImageSchemas = {
   requirements: z.object({ file: z.file().max(sizeMaxFile) }),
-  response: z.object({
-    data: z.object({ path: z.string(), id: z.uuid() }).optional(),
-    error: z.string().optional(),
-  }),
+  response: z.object({ path: z.string(), id: z.uuid() }),
 };
 
 export type TPostImageSchemas = {
@@ -18,8 +15,7 @@ export type TPostImageSchemas = {
 export const deleteImageSchemas = {
   urlParams: z.object({ imageId: imageSchema.shape.id }),
   response: z.object({
-    data: z.string().optional(),
-    error: z.string().optional(),
+    message: z.string(),
   }),
 };
 

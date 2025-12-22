@@ -8,7 +8,7 @@ import { bodyLimit } from "hono/body-limit";
 import { bodyParser } from "../../middlewares/bodyParser";
 import { isLogged } from "../../middlewares/isLogged";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
-import { deleteImage, uploadImage } from "./images.controller";
+import { deleteImage, postImage } from "./images.controller";
 
 const imagesRouter = new Hono();
 
@@ -22,7 +22,7 @@ imagesRouter.post(
     },
   }),
   bodyParser(postImageSchemas.requirements, "formData"),
-  uploadImage
+  postImage
 );
 
 imagesRouter.delete(

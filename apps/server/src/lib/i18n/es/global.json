@@ -2,11 +2,6 @@
   "global": {
     "hello": "Hola"
   },
-  "images": {
-    "notFound": "Imagen no encontrada",
-    "invalidFile": "Archivo inválido",
-    "deleteFail": "No se pudo eliminar la imagen"
-  },
   "email": {
     "ignoreEmail": "Si no solicitaste este correo, puedes ignorarlo.",
     "allRightsReserved": "Todos los derechos reservados.",
