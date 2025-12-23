@@ -124,17 +124,18 @@ export const getNotificationsSSE = async (c: Context<TIsLogged>) => {
 export const getNotificationsStats = async (c: Context<TIsLogged>) => {
   const { id } = c.get("user");
 
-  const totalReadNotifications = await prisma.notification.count({
-    where: { userId: id, read: true },
+  const notifications = await prisma.notification.groupBy({
+    where: { userId: id },
+    by: "read",
+    _count: true,
+    orderBy: { read: "asc" },
   });
-  const totalUnreadNotifications = await prisma.notification.count({
-    where: { userId: id, read: false },
-  });
+
   return c.json(
     getNotificationsStatsSchemas.response.parse({
-      totalNotifications: totalReadNotifications + totalUnreadNotifications,
-      totalReadNotifications,
-      totalUnreadNotifications,
+      totalNotifications: notifications[0]._count + notifications[1]._count,
+      totalReadNotifications: notifications[1]._count,
+      totalUnreadNotifications: notifications[0]._count,
     })
   );
 };
