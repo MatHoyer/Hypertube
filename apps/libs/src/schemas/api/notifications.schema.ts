@@ -49,6 +49,8 @@ export type TGetNotificationsSSESchemas = {
 
 export const getNotificationsStatsSchemas = {
   response: z.object({
+    totalNotifications: z.number().int(),
+    totalReadNotifications: z.number().int(),
     totalUnreadNotifications: z.number().int(),
   }),
 };
