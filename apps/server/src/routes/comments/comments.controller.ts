@@ -1,4 +1,5 @@
 import {
+  getCommentRepliesSchemas,
   getCommentSchemas,
   getCommentsSchemas,
   notifications,
@@ -79,7 +80,7 @@ export const patchComment = async (
     return c.json({ message: "Comment not found" }, 404);
   }
   if (comment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 400);
+    return c.json({ message: "Comment is deleted" }, 410);
   }
 
   if (comment.userId !== user.id) {
@@ -146,7 +147,7 @@ export const getCommentReplies = async (
 
   const comment = await prisma.comment.findUnique({ where: { id: commentId } });
   if (!comment) {
-    return c.json({ message: "Comment not found " }, 404);
+    return c.json({ message: "Comment not found" }, 404);
   }
 
   const result = await getParentComments(
@@ -158,7 +159,13 @@ export const getCommentReplies = async (
   );
 
   if (result.data) {
-    return c.json({ ...result.data, total: result.data.totalComments }, 200);
+    return c.json(
+      getCommentRepliesSchemas.response.parse({
+        ...result.data,
+        total: result.data.totalComments,
+      }),
+      200
+    );
   }
   return c.json({ message: result.message }, result.status);
 };
@@ -181,7 +188,7 @@ export const replyToComment = async (
     return c.json({ message: "Comment not found" }, 404);
   }
   if (parentComment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 400);
+    return c.json({ message: "Comment is deleted" }, 410);
   }
 
   if (parentComment.parentType !== ParentTypes.MOVIE) {
@@ -224,7 +231,7 @@ export const likeComment = async (
     return c.json({ message: "Comment not found" }, 404);
   }
   if (comment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 400);
+    return c.json({ message: "Comment is deleted" }, 410);
   }
 
   if (comment.parentType === ParentTypes.MOVIE) {
@@ -262,7 +269,7 @@ export const deleteCommentLike = async (
     return c.json({ message: "Comment not found" }, 404);
   }
   if (comment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 400);
+    return c.json({ message: "Comment is deleted" }, 410);
   }
 
   const result = await unlikeParent(id, commentId);

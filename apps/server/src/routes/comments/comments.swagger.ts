@@ -1,10 +1,7 @@
 import {
-  deleteCommentLikeSchemas,
   getCommentRepliesSchemas,
   getCommentsSchemas,
   getUrl,
-  postCommentLikeSchemas,
-  postCommentReplySchemas,
   ROUTES,
 } from "@hypertube/libs";
 
@@ -141,14 +138,6 @@ export const commentsSwagger = {
             },
           },
         },
-        "400": {
-          description: "Comment is deleted",
-          content: {
-            "application/json": {
-              example: { message: "Comment is deleted" },
-            },
-          },
-        },
         "401": {
           description: "You can only edit your own comment",
           content: {
@@ -162,6 +151,14 @@ export const commentsSwagger = {
           content: {
             "application/json": {
               example: { message: "Comment not found" },
+            },
+          },
+        },
+        "410": {
+          description: "Comment is deleted",
+          content: {
+            "application/json": {
+              example: { message: "Comment is deleted" },
             },
           },
         },
@@ -228,15 +225,75 @@ export const commentsSwagger = {
       ],
       responses: {
         "200": {
-          description: "OK",
+          description: "Comment got get successfully",
           content: {
             "application/json": {
-              schema: getCommentRepliesSchemas.response,
+              example: {
+                comments: [
+                  {
+                    userId: "user_123abc",
+                    id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    content:
+                      "Great movie! The cinematography was absolutely stunning.",
+                    createdAt: "2025-12-22T18:30:00.000Z",
+                    updatedAt: "2025-12-22T18:30:00.000Z",
+                    deletedAt: null,
+                    user: {
+                      id: "user_123abc",
+                      name: "John Doe",
+                      image: "https://example.com/avatars/johndoe.jpg",
+                    },
+                    likesNumber: 42,
+                    isLikedByUser: true,
+                    isOwnComment: false,
+                    hasReplies: true,
+                  },
+                  {
+                    userId: "user_456def",
+                    id: "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+                    content:
+                      "I loved the soundtrack! Does anyone know the name of the song in the final scene?",
+                    createdAt: "2025-12-22T14:15:00.000Z",
+                    updatedAt: "2025-12-22T14:15:00.000Z",
+                    deletedAt: null,
+                    user: {
+                      id: "user_456def",
+                      name: "Jane Smith",
+                      image: null,
+                    },
+                    likesNumber: 15,
+                    isLikedByUser: false,
+                    isOwnComment: false,
+                    hasReplies: false,
+                  },
+                ],
+                page: 1,
+                pageSize: 2,
+                total: 42,
+                totalPages: 21,
+              },
+            },
+          },
+        },
+        "400": {
+          description: "Unexpected error when getting comments on {parentId}",
+          content: {
+            "application/json": {
+              example: {
+                message: "Unexpected error when getting comments on {parentId}",
+              },
             },
           },
         },
         "404": {
           description: "Comment not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Comment not found",
+              },
+            },
+          },
         },
       },
     },
@@ -248,7 +305,9 @@ export const commentsSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: postCommentReplySchemas.requirements,
+            example: {
+              content: "",
+            },
           },
         },
       },
@@ -257,15 +316,41 @@ export const commentsSwagger = {
           description: "Reply posted successfully",
           content: {
             "application/json": {
-              schema: postCommentReplySchemas.response,
+              example: {
+                message: "Comment succesfully posted on {parentType}",
+              },
+            },
+          },
+        },
+        "400": {
+          description: "You cannot reply to a subcomment",
+          content: {
+            "application/json": {
+              example: {
+                message: "You cannot reply to a subcomment",
+              },
             },
           },
         },
         "404": {
-          description: "Comment not found",
+          description: "{parentType} not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "{parentType} not found",
+              },
+            },
+          },
         },
-        "500": {
-          description: "Failed to post reply",
+        "410": {
+          description: "Comment is deleted",
+          content: {
+            "application/json": {
+              example: {
+                message: "Comment is deleted",
+              },
+            },
+          },
         },
       },
     },
@@ -277,18 +362,34 @@ export const commentsSwagger = {
       parameters: [commentIdPathParam],
       responses: {
         "201": {
-          description: "Comment liked successfully",
+          description: "Liked successfully",
           content: {
             "application/json": {
-              schema: postCommentLikeSchemas.response,
+              example: {
+                message: "${parentType} liked successfully",
+              },
             },
           },
         },
-        "400": {
-          description: "Comment already liked",
-        },
         "404": {
-          description: "Comment not found",
+          description: "{parentType} not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "{parentType} not found",
+              },
+            },
+          },
+        },
+        "410": {
+          description: "Comment is deleted",
+          content: {
+            "application/json": {
+              example: {
+                message: "Comment is deleted",
+              },
+            },
+          },
         },
       },
     },
@@ -298,15 +399,34 @@ export const commentsSwagger = {
       parameters: [commentIdPathParam],
       responses: {
         "200": {
-          description: "Comment unliked successfully",
+          description: "Unliked successfully",
           content: {
             "application/json": {
-              schema: deleteCommentLikeSchemas.response,
+              example: {
+                message: "${parentType} unliked successfully",
+              },
             },
           },
         },
         "404": {
-          description: "Like not found or comment not found",
+          description: "Comment not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Comment not found",
+              },
+            },
+          },
+        },
+        "410": {
+          description: "Comment is deleted",
+          content: {
+            "application/json": {
+              example: {
+                message: "Comment is deleted",
+              },
+            },
+          },
         },
       },
     },
