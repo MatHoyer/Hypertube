@@ -66,7 +66,8 @@ export const getNotifications = async (
       pageSize,
       total: notificationsCount,
       totalPages: Math.ceil(notificationsCount / pageSize),
-    })
+    }),
+    200
   );
 };
 
@@ -79,7 +80,7 @@ export const patchNotifications = async (
   const { id } = c.get("user");
 
   await prisma.notification.updateMany({
-    where: { userId: id, read: false },
+    where: { userId: id, read: !read },
     data: { read },
   });
 
@@ -122,11 +123,18 @@ export const getNotificationsSSE = async (c: Context<TIsLogged>) => {
 export const getNotificationsStats = async (c: Context<TIsLogged>) => {
   const { id } = c.get("user");
 
+  const totalReadNotifications = await prisma.notification.count({
+    where: { userId: id, read: true },
+  });
   const totalUnreadNotifications = await prisma.notification.count({
     where: { userId: id, read: false },
   });
   return c.json(
-    getNotificationsStatsSchemas.response.parse({ totalUnreadNotifications })
+    getNotificationsStatsSchemas.response.parse({
+      totalNotifications: totalReadNotifications + totalUnreadNotifications,
+      totalReadNotifications,
+      totalUnreadNotifications,
+    })
   );
 };
 
