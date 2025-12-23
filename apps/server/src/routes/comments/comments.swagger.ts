@@ -155,10 +155,10 @@ export const commentsSwagger = {
           },
         },
         "410": {
-          description: "Comment is deleted",
+          description: "Comment is already deleted",
           content: {
             "application/json": {
-              example: { message: "Comment is deleted" },
+              example: { message: "Comment is already deleted" },
             },
           },
         },
@@ -177,14 +177,6 @@ export const commentsSwagger = {
             },
           },
         },
-        "400": {
-          description: "Comment already deleted",
-          content: {
-            "application/json": {
-              example: { message: "Comment already deleted" },
-            },
-          },
-        },
         "401": {
           description: "You can only delete your own comment",
           content: {
@@ -198,6 +190,14 @@ export const commentsSwagger = {
           content: {
             "application/json": {
               example: { message: "Comment not found" },
+            },
+          },
+        },
+        "410": {
+          description: "Comment is already deleted",
+          content: {
+            "application/json": {
+              example: { message: "Comment is already deleted" },
             },
           },
         },
@@ -343,11 +343,11 @@ export const commentsSwagger = {
           },
         },
         "410": {
-          description: "Comment is deleted",
+          description: "Comment is already deleted",
           content: {
             "application/json": {
               example: {
-                message: "Comment is deleted",
+                message: "Comment is already deleted",
               },
             },
           },
@@ -382,11 +382,11 @@ export const commentsSwagger = {
           },
         },
         "410": {
-          description: "Comment is deleted",
+          description: "Comment is already deleted",
           content: {
             "application/json": {
               example: {
-                message: "Comment is deleted",
+                message: "Comment is already deleted",
               },
             },
           },
@@ -419,11 +419,11 @@ export const commentsSwagger = {
           },
         },
         "410": {
-          description: "Comment is deleted",
+          description: "Comment is already deleted",
           content: {
             "application/json": {
               example: {
-                message: "Comment is deleted",
+                message: "Comment is already deleted",
               },
             },
           },

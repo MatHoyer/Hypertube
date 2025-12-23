@@ -80,7 +80,7 @@ export const patchComment = async (
     return c.json({ message: "Comment not found" }, 404);
   }
   if (comment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 410);
+    return c.json({ message: "Comment is already deleted" }, 410);
   }
 
   if (comment.userId !== user.id) {
@@ -120,7 +120,7 @@ export const deleteComment = async (
     return c.json({ message: "You can only delete your own comment" }, 401);
   }
   if (comment.deletedAt) {
-    return c.json({ message: "Comment already deleted" }, 400);
+    return c.json({ message: "Comment is already deleted" }, 410);
   }
 
   await prisma.comment.update({
@@ -188,7 +188,7 @@ export const replyToComment = async (
     return c.json({ message: "Comment not found" }, 404);
   }
   if (parentComment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 410);
+    return c.json({ message: "Comment is already deleted" }, 410);
   }
 
   if (parentComment.parentType !== ParentTypes.MOVIE) {
@@ -231,7 +231,7 @@ export const likeComment = async (
     return c.json({ message: "Comment not found" }, 404);
   }
   if (comment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 410);
+    return c.json({ message: "Comment is already deleted" }, 410);
   }
 
   if (comment.parentType === ParentTypes.MOVIE) {
@@ -269,7 +269,7 @@ export const deleteCommentLike = async (
     return c.json({ message: "Comment not found" }, 404);
   }
   if (comment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 410);
+    return c.json({ message: "Comment is already deleted" }, 410);
   }
 
   const result = await unlikeParent(id, commentId);
