@@ -5,6 +5,7 @@ import { historySwagger } from "../history/history.swagger";
 import { imagesSwagger } from "../images/images.swagger";
 import { moviesSwagger } from "../movies/movies.swagger";
 import { notificationsSwagger } from "../notifications/notifications.swagger";
+import { oauthSwagger } from "../oauth/oauth.swagger";
 import { usersSwagger } from "../users/users.swagger";
 
 const openApiDoc = {
@@ -23,6 +24,10 @@ const openApiDoc = {
     {
       name: "Auth",
       description: "Authentification endpoints",
+    },
+    {
+      name: "Oauth credentials",
+      description: "Oauth credentials endpoints",
     },
     {
       name: "Users",
@@ -63,6 +68,7 @@ const openApiDoc = {
     },
 
     ...authentificationSwagger,
+    ...oauthSwagger,
     ...usersSwagger,
     ...imagesSwagger,
     ...moviesSwagger,
