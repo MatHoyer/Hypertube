@@ -9,9 +9,9 @@ import {
   postMovieLikeSchemas,
   putMovieWatchTimerSchemas,
   ROUTES,
-  tmdbCategories,
   tmdbGenres,
-  tmdbSorts,
+  typedKeys,
+  typedValues,
 } from "@hypertube/libs";
 
 const tmdbIdPathParam = {
@@ -45,26 +45,37 @@ export const moviesSwagger = {
           in: "query",
           name: "category",
           required: false,
-          schema: getMoviesSchemas.searchParams.shape.category,
-          description: `Category : ${tmdbCategories
-            .map((category) => category)
-            .join(" / ")}`,
+          schema: {
+            type: "string",
+            enum: typedValues(
+              getMoviesSchemas.searchParams.shape.category.unwrap().enum
+            ),
+          },
         },
         {
           in: "query",
           name: "sort",
           required: false,
-          schema: getMoviesSchemas.searchParams.shape.sort,
-          description: `Sort : ${tmdbSorts.map((sort) => sort).join(" / ")}`,
+          schema: {
+            type: "string",
+            enum: typedValues(
+              getMoviesSchemas.searchParams.shape.sort.unwrap().enum
+            ),
+          },
         },
         {
           in: "query",
           name: "genres",
           required: false,
-          schema: getMoviesSchemas.searchParams.shape.genres,
-          description: `Genres : ${Object.keys(tmdbGenres)
-            .map((genre) => genre)
-            .join(" / ")}`,
+          schema: {
+            type: "array",
+            items: {
+              type: "string",
+              enum: typedKeys(tmdbGenres),
+            },
+          },
+          style: "form",
+          explode: false,
         },
       ],
       responses: {
@@ -72,7 +83,73 @@ export const moviesSwagger = {
           description: "OK",
           content: {
             "application/json": {
-              schema: getMoviesSchemas.response,
+              example: {
+                movies: [
+                  {
+                    id: 550,
+                    imdb_id: "tt0137523",
+                    original_title: "Fight Club",
+                    original_language: "en",
+                    title: "Fight Club",
+                    overview:
+                      "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.",
+                    genres: [
+                      {
+                        id: 18,
+                        name: "Drama",
+                      },
+                      {
+                        id: 53,
+                        name: "Thriller",
+                      },
+                    ],
+                    vote_average: 8.4,
+                    vote_count: 27500,
+                    popularity: 85.3,
+                    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+                    backdrop_path: "/fCayJrkfRaCRCTh8GqN30f8oyQF.jpg",
+                    release_date: "1999-10-15",
+                    adult: false,
+                    status: "DOWNLOADED",
+                  },
+                  {
+                    id: 155,
+                    imdb_id: "tt0468569",
+                    original_title: "The Dark Knight",
+                    original_language: "en",
+                    title: "The Dark Knight",
+                    overview:
+                      "Batman raises the stakes in his war on crime with the help of Lt. Jim Gordon and District Attorney Harvey Dent.",
+                    genres: [
+                      {
+                        id: 28,
+                        name: "Action",
+                      },
+                      {
+                        id: 80,
+                        name: "Crime",
+                      },
+                      {
+                        id: 18,
+                        name: "Drama",
+                      },
+                    ],
+                    vote_average: 9.0,
+                    vote_count: 31200,
+                    popularity: 120.5,
+                    poster_path: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+                    backdrop_path: "/hkBaDkMWbLaf8B1lsWsKX7Ew3Xq.jpg",
+                    release_date: "2008-07-18",
+                    adult: false,
+                    status: "NOT_DOWNLOADED",
+                  },
+                  null,
+                ],
+                page: 12,
+                pageSize: 20,
+                total: 835,
+                totalPages: 42,
+              },
             },
           },
         },

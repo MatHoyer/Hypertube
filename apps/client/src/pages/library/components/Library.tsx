@@ -41,7 +41,7 @@ const fetchMovies = async ({
         query,
         category,
         sort,
-        genres: genres && genres.join("+"),
+        genres: genres && genres.join(","),
       },
     }),
   });
@@ -159,7 +159,7 @@ export const Library = () => {
               const itemIndex = virtualRow.index * columns + colIndex;
               const movie = allMovies[itemIndex];
 
-              if (itemIndex >= data.pages[0].totalResults) {
+              if (itemIndex >= data.pages[0].total) {
                 return <div key={`${virtualRow.index}-${colIndex}`}></div>;
               }
 
@@ -175,7 +175,7 @@ export const Library = () => {
       </div>
       <div className="flex w-full justify-center">
         {isFetchingNextPage && <AppLoader />}
-        {!data.pages[0].totalResults && (
+        {!data.pages[0].total && (
           <Typography textSize="lg">{t("movie.page.noFound")}</Typography>
         )}
       </div>

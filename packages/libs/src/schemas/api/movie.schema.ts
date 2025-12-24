@@ -43,9 +43,8 @@ export const tmdbMovieSchema = z.object({
 
 export type TTmdbMovieSchema = z.infer<typeof tmdbMovieSchema>;
 
-export const getMoviesSchemas = {
+export const getMoviesSchemas = getPaginationSchemas({
   searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
     query: z.string().optional(),
     category: z.enum(tmdbCategories).optional(),
     sort: z.enum(tmdbSorts).optional(),
@@ -53,22 +52,21 @@ export const getMoviesSchemas = {
       .string()
       .regex(
         new RegExp(
-          `^(${typedKeys(tmdbGenres).join("|")})(\\+(${typedKeys(
+          `^(${typedKeys(tmdbGenres).join("|")})(\\,(${typedKeys(
             tmdbGenres
           ).join("|")}))*$`
         )
       )
-      .optional(),
+      .optional()
+      .catch(undefined),
   }),
   response: z.object({
     movies: z.array(
       tmdbMovieSchema.extend({ status: z.enum(DownloadStates) }).nullable()
     ),
-    page: z.number(),
-    totalPages: z.number(),
-    totalResults: z.number(),
   }),
-};
+  options: { withPageSize: false },
+});
 export type TGetMoviesSchemas = {
   searchParams: z.infer<typeof getMoviesSchemas.searchParams>;
   response: z.infer<typeof getMoviesSchemas.response>;

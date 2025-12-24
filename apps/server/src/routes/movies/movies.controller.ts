@@ -60,9 +60,9 @@ export const getMovies = async (
   const language = c.get("language");
 
   const genresTyped = tmdbGenresSchemas.safeParse(
-    genres ? genres.split("+") : []
+    genres ? genres.split(",") : []
   );
-  if (!genresTyped.success) return c.json(genresTyped.error, 404);
+  if (!genresTyped.success) return c.json(genresTyped.error, 400);
   const genreIds = genresTyped.data.map((filter) => tmdbGenres[filter]);
 
   const moviesPagination = await tmdbApi.getMovies({
@@ -91,11 +91,14 @@ export const getMovies = async (
     }),
   };
 
-  return c.json(getMoviesSchemas.response.parse(moviesWithStatutPagination));
+  return c.json(
+    getMoviesSchemas.response.parse(moviesWithStatutPagination),
+    200
+  );
 };
 
 export const getMovie = async (
-  c: Context<TUrlParamsParser<TGetMovieSchemas["urlParams"]> & TIsLogged>
+  c: Context<TIsLogged & TUrlParamsParser<TGetMovieSchemas["urlParams"]>>
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const language = c.get("language");
