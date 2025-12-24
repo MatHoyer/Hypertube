@@ -93,4 +93,66 @@ export const oauthSwagger = {
       },
     },
   },
+  ["/api/oauth/token"]: {
+    post: {
+      summary: "Generate OAuth access token",
+      tags: ["Oauth credentials"],
+      requestBody: {
+        required: true,
+        content: {
+          "application/x-www-form-urlencoded": {
+            schema: {
+              type: "object",
+              properties: {
+                clientId: {
+                  type: "string",
+                  example: "ci_...",
+                },
+                clientSecret: {
+                  type: "string",
+                  example: "cs_...",
+                },
+                grant_type: {
+                  type: "string",
+                  example: "client_credentials",
+                },
+              },
+              required: ["clientId", "clientSecret", "grant_type"],
+            },
+          },
+        },
+      },
+      responses: {
+        "200": {
+          description: "Access token generated successfully",
+          content: {
+            "application/json": {
+              example: {
+                access_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                expires_in: 3600,
+                token_type: "Bearer",
+                expires_at: 1735063200,
+              },
+            },
+          },
+        },
+        "401": {
+          description: "Invalid client secret",
+          content: {
+            "application/json": {
+              example: { message: "Invalid client secret" },
+            },
+          },
+        },
+        "404": {
+          description: "Credential not found",
+          content: {
+            "application/json": {
+              example: { message: "Credential not found" },
+            },
+          },
+        },
+      },
+    },
+  },
 };
