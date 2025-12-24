@@ -272,6 +272,6 @@ export const deleteCommentLike = async (
     return c.json({ message: "Comment is already deleted" }, 410);
   }
 
-  const result = await unlikeParent(id, commentId);
+  const result = await unlikeParent(id, commentId, ParentTypes.COMMENT);
   return c.json({ message: result.message }, result.status);
 };

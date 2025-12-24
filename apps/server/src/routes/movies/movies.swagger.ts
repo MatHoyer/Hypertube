@@ -461,14 +461,6 @@ export const moviesSwagger = {
             },
           },
         },
-        "400": {
-          description: "Unexpected error when liking movie",
-          content: {
-            "application/json": {
-              example: { message: "Unexpected error when liking movie" },
-            },
-          },
-        },
         "404": {
           description: "Movie not found",
           content: {
@@ -476,6 +468,14 @@ export const moviesSwagger = {
               example: {
                 message: "Movie not found",
               },
+            },
+          },
+        },
+        "409": {
+          description: "Movie already liked",
+          content: {
+            "application/json": {
+              example: { message: "Movie already liked" },
             },
           },
         },
@@ -501,14 +501,6 @@ export const moviesSwagger = {
             },
           },
         },
-        "400": {
-          description: "Unexpected error when unliking movie",
-          content: {
-            "application/json": {
-              example: { message: "Unexpected error when unliking movie" },
-            },
-          },
-        },
         "404": {
           description: "Movie not found",
           content: {
@@ -516,6 +508,14 @@ export const moviesSwagger = {
               example: {
                 message: "Movie not found",
               },
+            },
+          },
+        },
+        "409": {
+          description: "Movie already unliked",
+          content: {
+            "application/json": {
+              example: { message: "Movie already unliked" },
             },
           },
         },

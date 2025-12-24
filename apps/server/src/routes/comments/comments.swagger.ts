@@ -362,21 +362,31 @@ export const commentsSwagger = {
       parameters: [commentIdPathParam],
       responses: {
         "201": {
-          description: "Liked successfully",
+          description: "Comment liked successfully",
           content: {
             "application/json": {
               example: {
-                message: "${parentType} liked successfully",
+                message: "Comment liked successfully",
               },
             },
           },
         },
         "404": {
-          description: "{parentType} not found",
+          description: "Comment not found",
           content: {
             "application/json": {
               example: {
-                message: "{parentType} not found",
+                message: "Comment not found",
+              },
+            },
+          },
+        },
+        "409": {
+          description: "Comment already liked",
+          content: {
+            "application/json": {
+              example: {
+                message: "Comment already liked",
               },
             },
           },
@@ -414,6 +424,16 @@ export const commentsSwagger = {
             "application/json": {
               example: {
                 message: "Comment not found",
+              },
+            },
+          },
+        },
+        "409": {
+          description: "Comment already unliked",
+          content: {
+            "application/json": {
+              example: {
+                message: "Comment already unliked",
               },
             },
           },
