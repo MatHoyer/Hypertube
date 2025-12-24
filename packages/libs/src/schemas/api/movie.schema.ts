@@ -6,10 +6,7 @@ import {
   tmdbSorts,
 } from "../../const/tmdb.const.js";
 import { typedKeys } from "../../utils/object.utils.js";
-import {
-  commentResponseSchema,
-  commentSchema,
-} from "../database/comments.schema.js";
+import { commentResponseSchema } from "../database/comments.schema.js";
 import {
   movieSchema,
   resolutionSchema,
@@ -170,6 +167,33 @@ export type TPostMovieDownloadSubtitlesSchemas = {
   response: z.infer<typeof postMovieDownloadSubtitlesSchemas.response>;
 };
 
+export const postMovieSubscribeSchemas = {
+  urlParams: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+
+export type TPostMovieSubscribeSchemas = {
+  urlParams: z.infer<typeof postMovieSubscribeSchemas.urlParams>;
+  response: z.infer<typeof postMovieSubscribeSchemas.response>;
+};
+
+export const deleteMovieSubscribeSchemas = {
+  urlParams: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+export type TDeleteMovieSubscribeSchemas = {
+  urlParams: z.infer<typeof deleteMovieSubscribeSchemas.urlParams>;
+  response: z.infer<typeof deleteMovieSubscribeSchemas.response>;
+};
+
 export const postMovieLikeSchemas = {
   urlParams: z.object({ tmdbId: movieSchema.shape.tmdbId }),
   response: z.object({
@@ -225,48 +249,6 @@ export type TPostMovieCommentSchemas = {
   urlParams: z.infer<typeof postMovieCommentSchemas.urlParams>;
   requirements: z.infer<typeof postMovieCommentSchemas.requirements>;
   response: z.infer<typeof postMovieCommentSchemas.response>;
-};
-
-export const deleteMovieCommentSchemas = {
-  urlParams: z.object({
-    tmdbId: movieSchema.shape.tmdbId,
-    commentId: commentSchema.shape.id,
-  }),
-  response: z.object({
-    message: z.string(),
-  }),
-};
-
-export type TDeleteMovieCommentSchemas = {
-  urlParams: z.infer<typeof deleteMovieCommentSchemas.urlParams>;
-  response: z.infer<typeof deleteMovieCommentSchemas.response>;
-};
-
-export const deleteMovieSubscribeSchemas = {
-  urlParams: z.object({
-    tmdbId: movieSchema.shape.tmdbId,
-  }),
-  response: z.object({
-    message: z.string(),
-  }),
-};
-export type TDeleteMovieSubscribeSchemas = {
-  urlParams: z.infer<typeof deleteMovieSubscribeSchemas.urlParams>;
-  response: z.infer<typeof deleteMovieSubscribeSchemas.response>;
-};
-
-export const postMovieSubscribeSchemas = {
-  urlParams: z.object({
-    tmdbId: movieSchema.shape.tmdbId,
-  }),
-  response: z.object({
-    message: z.string(),
-  }),
-};
-
-export type TPostMovieSubscribeSchemas = {
-  urlParams: z.infer<typeof postMovieSubscribeSchemas.urlParams>;
-  response: z.infer<typeof postMovieSubscribeSchemas.response>;
 };
 
 export const putMovieWatchTimerSchemas = {

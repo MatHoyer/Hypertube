@@ -1,5 +1,4 @@
 import {
-  deleteMovieCommentSchemas,
   deleteMovieLikeSchemas,
   getMovieCastingSchema,
   getMovieCommentSchemas,
@@ -206,40 +205,6 @@ export const moviesSwagger = {
           },
         },
         "400": { description: "Error creating comment " },
-      },
-    },
-  },
-  [getUrl(ROUTES.API.MOVIES_COMMENT, {
-    tmdbId: "{tmdbId}",
-    commentId: "{commentId}",
-  })]: {
-    delete: {
-      summary: "Delete a movie comment",
-      tags: ["Movies"],
-      parameters: [
-        {
-          in: "path",
-          name: "tmdbId",
-          required: true,
-          schema: deleteMovieCommentSchemas.urlParams.shape.tmdbId,
-        },
-        {
-          in: "path",
-          name: "commentId",
-          required: true,
-          schema: deleteMovieCommentSchemas.urlParams.shape.commentId,
-        },
-      ],
-      responses: {
-        "200": {
-          description: "Comment deleted",
-          content: {
-            "application/json": {
-              schema: deleteMovieCommentSchemas.response,
-            },
-          },
-        },
-        "400": { description: "Error deleting comment" },
       },
     },
   },

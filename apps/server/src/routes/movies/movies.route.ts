@@ -57,14 +57,6 @@ moviesRouter.get(
   getMovieSSE
 );
 
-moviesRouter.get(
-  "/:tmdbId/comments",
-  isLogged,
-  urlParamsParser(getMovieCommentSchemas.urlParams),
-  searchParamsParser(getMovieCommentSchemas.searchParams),
-  getMovieComments
-);
-
 moviesRouter.post(
   "/:tmdbId/resolutions/:resolution/download",
   isVPNActive,
@@ -102,19 +94,27 @@ moviesRouter.post(
   likeMovie
 );
 
+moviesRouter.delete(
+  "/:tmdbId/like",
+  isLogged,
+  urlParamsParser(deleteMovieLikeSchemas.urlParams),
+  deleteMovieLike
+);
+
+moviesRouter.get(
+  "/:tmdbId/comments",
+  isLogged,
+  urlParamsParser(getMovieCommentSchemas.urlParams),
+  searchParamsParser(getMovieCommentSchemas.searchParams),
+  getMovieComments
+);
+
 moviesRouter.post(
   "/:tmdbId/comments",
   isLogged,
   urlParamsParser(postMovieCommentSchemas.urlParams),
   bodyParser(postMovieCommentSchemas.requirements),
   commentMovie
-);
-
-moviesRouter.delete(
-  "/:tmdbId/like",
-  isLogged,
-  urlParamsParser(deleteMovieLikeSchemas.urlParams),
-  deleteMovieLike
 );
 
 moviesRouter.put(
