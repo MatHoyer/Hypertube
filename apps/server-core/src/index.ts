@@ -26,6 +26,10 @@ export { BullMQ } from "./redis/BullMQ.js";
 export { DOWNLOAD_QUEUE } from "./redis/const.js";
 export type { TDownloadJobData } from "./redis/const.js";
 
-export { EventsPublisher, EventsSubscriber } from "./redis/EventsPubSub.js";
+export {
+  EventsAsyncIterator,
+  EventsPublisher,
+  EventsSubscriber,
+} from "./redis/EventsPubSub.js";
 
 export { generateNotification } from "./notifications/generateNotification.js";

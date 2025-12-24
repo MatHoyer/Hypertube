@@ -11,7 +11,7 @@ import {
   TPatchNotificationsSchemas,
 } from "@hypertube/libs";
 import {
-  EventsSubscriber,
+  EventsAsyncIterator,
   generateNotification,
   prisma,
 } from "@hypertube/server-core";
@@ -90,30 +90,29 @@ export const getNotificationsSSE = async (c: Context<TIsLogged>) => {
   hypertubeLogger.info(`[${id}] notifications SSE started`);
 
   return streamSSE(c, async (stream) => {
-    const eventsSubscriber = new EventsSubscriber(
-      { event: "notification", userId: id },
-      async (data) => {
-        await stream.writeSSE({
-          event: NOTIFICATIONS_EVENTS.NEW_NOTIFICATION,
-          data: JSON.stringify(
-            getNotificationsSSESchemas.response.parse({
-              // @ts-expect-error i18next is not typed
-              title: i18next.t(data.title),
-              // @ts-expect-error i18next is not typed
-              message: i18next.t(data.message),
-            })
-          ),
-        });
-      }
-    );
+    const eventsAsyncIterator = new EventsAsyncIterator({
+      event: "notification",
+      userId: id,
+    });
 
     stream.onAbort(() => {
-      eventsSubscriber.destroy();
+      eventsAsyncIterator.destroy();
       hypertubeLogger.info(`[${id}] notifications SSE aborted`);
     });
 
-    while (true) {
-      await stream.sleep(60000);
+    for await (const data of eventsAsyncIterator) {
+      if (!data) break;
+      await stream.writeSSE({
+        event: NOTIFICATIONS_EVENTS.NEW_NOTIFICATION,
+        data: JSON.stringify(
+          getNotificationsSSESchemas.response.parse({
+            // @ts-expect-error - i18next is not typed
+            title: i18next.t(data.title),
+            // @ts-expect-error - i18next is not typed
+            message: i18next.t(data.message),
+          })
+        ),
+      });
     }
   });
 };
