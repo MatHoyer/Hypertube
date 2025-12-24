@@ -127,14 +127,18 @@ export const getNotificationsStats = async (c: Context<TIsLogged>) => {
     where: { userId: id },
     by: "read",
     _count: true,
-    orderBy: { read: "asc" },
   });
+
+  const totalReadNotifications =
+    notifications.find((notification) => notification.read)?._count ?? 0;
+  const totalUnreadNotifications =
+    notifications.find((notification) => !notification.read)?._count ?? 0;
 
   return c.json(
     getNotificationsStatsSchemas.response.parse({
-      totalNotifications: notifications[0]._count + notifications[1]._count,
-      totalReadNotifications: notifications[1]._count,
-      totalUnreadNotifications: notifications[0]._count,
+      totalNotifications: totalReadNotifications + totalUnreadNotifications,
+      totalReadNotifications,
+      totalUnreadNotifications,
     })
   );
 };
