@@ -2,6 +2,7 @@ import {
   getNotificationsSchemas,
   getNotificationsSSESchemas,
   getNotificationsStatsSchemas,
+  groupBy,
   hypertubeLogger,
   notificationReadStatuses,
   notifications,
@@ -129,15 +130,16 @@ export const getNotificationsStats = async (c: Context<TIsLogged>) => {
     by: "read",
     _count: true,
   });
+  const groupedNotifications = groupBy(notifications, "read");
 
-  const totalReadNotifications =
-    notifications.find((notification) => notification.read)?._count ?? 0;
   const totalUnreadNotifications =
-    notifications.find((notification) => !notification.read)?._count ?? 0;
+    groupedNotifications["false"]?.[0]._count ?? 0;
+  const totalReadNotifications = groupedNotifications["true"]?.[0]._count ?? 0;
+  const totalNotifications = totalReadNotifications + totalUnreadNotifications;
 
   return c.json(
     getNotificationsStatsSchemas.response.parse({
-      totalNotifications: totalReadNotifications + totalUnreadNotifications,
+      totalNotifications,
       totalReadNotifications,
       totalUnreadNotifications,
     })

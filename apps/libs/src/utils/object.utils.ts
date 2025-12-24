@@ -1,13 +1,18 @@
+type KeyToString<K> = K extends boolean ? `${K}` : K;
+
 export const groupBy = <T extends Record<string, any>, K extends keyof T>(
   array: T[],
   key: K
-): Record<T[K] & PropertyKey, T[] | undefined> => {
-  return array.reduce((groups, item) => {
-    const group = item[key] as T[K] & PropertyKey;
-    if (!groups[group]) groups[group] = [];
-    groups[group].push(item);
-    return groups;
-  }, {} as Record<T[K] & PropertyKey, T[] | undefined>);
+): Record<KeyToString<T[K]> & PropertyKey, T[] | undefined> => {
+  return array.reduce(
+    (groups, item) => {
+      const group = String(item[key]) as KeyToString<T[K]> & PropertyKey;
+      if (!groups[group]) groups[group] = [];
+      groups[group].push(item);
+      return groups;
+    },
+    {} as Record<KeyToString<T[K]> & PropertyKey, T[] | undefined>
+  );
 };
 
 export const pick = <T extends Record<string, any>, K extends keyof T>(
