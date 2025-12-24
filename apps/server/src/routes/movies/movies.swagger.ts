@@ -444,36 +444,80 @@ export const moviesSwagger = {
     post: {
       summary: "Like a movie",
       tags: ["Movies"],
-      parameters: [tmdbIdPathParam],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: postMovieLikeSchemas.urlParams.shape.tmdbId,
+        },
+      ],
       responses: {
         "201": {
-          description: "Created",
+          description: "Movie liked successfully",
           content: {
             "application/json": {
-              schema: postMovieLikeSchemas.response,
+              example: { message: "Movie liked successfully" },
             },
           },
         },
         "400": {
-          description: "Error on like movie",
+          description: "Unexpected error when liking movie",
+          content: {
+            "application/json": {
+              example: { message: "Unexpected error when liking movie" },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
+            },
+          },
         },
       },
     },
     delete: {
       summary: "Dislike a movie",
       tags: ["Movies"],
-      parameters: [tmdbIdPathParam],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: deleteMovieLikeSchemas.urlParams.shape.tmdbId,
+        },
+      ],
       responses: {
         "200": {
-          description: "OK",
+          description: "Movie unliked successfully",
           content: {
             "application/json": {
-              schema: deleteMovieLikeSchemas.response,
+              example: { message: "Movie unliked successfully" },
             },
           },
         },
         "400": {
-          description: "Error on dislike a movie",
+          description: "Unexpected error when unliking movie",
+          content: {
+            "application/json": {
+              example: { message: "Unexpected error when unliking movie" },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
+            },
+          },
         },
       },
     },
