@@ -210,7 +210,8 @@ export const getMovie = async (
       isSubscribed,
       likesNumber,
       isLikedByUser,
-    })
+    }),
+    200
   );
 };
 
@@ -315,7 +316,7 @@ export const downloadMovie = async (
     hypertubeLogger.error(`Error downloading movie ${JSON.stringify(error)}`);
   }
 
-  return c.json({ message: "Movie downloaded started" });
+  return c.json({ message: "Movie downloaded started" }, 200);
 };
 
 export const downloadSubtitles = async (
@@ -374,7 +375,7 @@ export const downloadSubtitles = async (
     },
   });
 
-  return c.json({ message: "Subtitles downloaded" });
+  return c.json({ message: "Subtitles downloaded" }, 200);
 };
 
 export const subscribeToMovie = async (
@@ -394,6 +395,13 @@ export const subscribeToMovie = async (
     return c.json({ message: "Movie not found" }, 404);
   }
 
+  const movieSub = await prisma.movieSubscription.findUnique({
+    where: { movieId_userId: { movieId: dbMovie.id, userId } },
+  });
+  if (movieSub) {
+    return c.json({ message: "Already subscribe to this movie" }, 409);
+  }
+
   await prisma.movieSubscription.create({
     data: {
       movieId: dbMovie.id,
@@ -401,7 +409,7 @@ export const subscribeToMovie = async (
     },
   });
 
-  return c.json({ message: "Movie subscribed" });
+  return c.json({ message: "Movie subscribed" }, 200);
 };
 
 export const unsubscribeFromMovie = async (
@@ -421,6 +429,13 @@ export const unsubscribeFromMovie = async (
     return c.json({ message: "Movie not found" }, 404);
   }
 
+  const movieSub = await prisma.movieSubscription.findUnique({
+    where: { movieId_userId: { movieId: dbMovie.id, userId } },
+  });
+  if (!movieSub) {
+    return c.json({ message: "Already unsubscribe of this movie" }, 409);
+  }
+
   await prisma.movieSubscription.delete({
     where: {
       movieId_userId: {
@@ -430,7 +445,7 @@ export const unsubscribeFromMovie = async (
     },
   });
 
-  return c.json({ message: "Movie unsubscribed" });
+  return c.json({ message: "Movie unsubscribed" }, 200);
 };
 
 export const likeMovie = async (

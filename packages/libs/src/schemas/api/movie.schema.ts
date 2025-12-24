@@ -76,34 +76,32 @@ export const getMovieSchemas = {
   urlParams: z.object({
     tmdbId: movieSchema.shape.tmdbId,
   }),
-  response: z
-    .object({
-      ...tmdbMovieSchema.pick({
-        original_title: true,
-        original_language: true,
-        title: true,
-        overview: true,
+  response: z.object({
+    ...tmdbMovieSchema.pick({
+      original_title: true,
+      original_language: true,
+      title: true,
+      overview: true,
 
-        genres: true,
+      genres: true,
 
-        vote_average: true,
-        vote_count: true,
-        popularity: true,
+      vote_average: true,
+      vote_count: true,
+      popularity: true,
 
-        poster_path: true,
-        backdrop_path: true,
+      poster_path: true,
+      backdrop_path: true,
 
-        release_date: true,
-        adult: true,
-      }).shape,
-      ...movieSchema.shape,
-      resolutions: z.array(resolutionSchema),
-      subtitles: z.array(subtitleSchema),
-      isSubscribed: z.boolean(),
-      likesNumber: z.number().int().nonnegative(),
-      isLikedByUser: z.boolean(),
-    })
-    .nullable(),
+      release_date: true,
+      adult: true,
+    }).shape,
+    ...movieSchema.shape,
+    resolutions: z.array(resolutionSchema),
+    subtitles: z.array(subtitleSchema),
+    isSubscribed: z.boolean(),
+    likesNumber: z.number().int().nonnegative(),
+    isLikedByUser: z.boolean(),
+  }),
 };
 export type TGetMovieSchemas = {
   urlParams: z.infer<typeof getMovieSchemas.urlParams>;

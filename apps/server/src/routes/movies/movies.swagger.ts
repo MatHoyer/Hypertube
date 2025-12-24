@@ -1,12 +1,16 @@
 import {
   deleteMovieLikeSchemas,
+  deleteMovieSubscribeSchemas,
   getMovieCastingSchema,
   getMovieCommentSchemas,
   getMovieSchemas,
   getMoviesSchemas,
   getUrl,
   postMovieCommentSchemas,
+  postMovieDownloadResolutionSchemas,
+  postMovieDownloadSubtitlesSchemas,
   postMovieLikeSchemas,
+  postMovieSubscribeSchemas,
   putMovieWatchTimerSchemas,
   ROUTES,
   tmdbGenres,
@@ -170,10 +174,266 @@ export const moviesSwagger = {
       ],
       responses: {
         "200": {
-          description: "OK",
+          description: "Get movie successfully",
           content: {
             "application/json": {
-              schema: getMovieSchemas.response,
+              example: {
+                resolutions: [
+                  {
+                    id: "cm5a8b9c1d2e3f4g5h6i7j8k9",
+                    resolution: "720p",
+                    size: "950MB",
+                    downloadState: "DOWNLOADED",
+                    provider: "YTS",
+                  },
+                  {
+                    id: "cm5a8b9c1d2e3f4g5h6i7j8k0",
+                    resolution: "1080p",
+                    size: "2.1GB",
+                    downloadState: "NOT_DOWNLOADED",
+                    provider: "YTS",
+                  },
+                ],
+                subtitles: [
+                  {
+                    id: "cm5sub1a2b3c4d5e6f7g8h9i0",
+                    language: "en",
+                    rating: 5,
+                    downloadLink:
+                      "https://yifysubtitles.org/subtitle/123456.zip",
+                    downloadState: "DOWNLOADED",
+                  },
+                  {
+                    id: "cm5sub1a2b3c4d5e6f7g8h9i1",
+                    language: "fr",
+                    rating: 4,
+                    downloadLink:
+                      "https://yifysubtitles.org/subtitle/123457.zip",
+                    downloadState: "NOT_DOWNLOADED",
+                  },
+                ],
+                isSubscribed: true,
+                likesNumber: 245,
+                isLikedByUser: true,
+                id: "cm5movie1a2b3c4d5e6f7g8h9",
+                tmdbId: 550,
+                imdbId: "tt0137523",
+                original_title: "Fight Club",
+                original_language: "en",
+                title: "Fight Club",
+                overview:
+                  "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.",
+                genres: [
+                  {
+                    id: 18,
+                    name: "Drama",
+                  },
+                ],
+                vote_average: 8.4,
+                vote_count: 27500,
+                popularity: 85.3,
+                poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+                backdrop_path: "/fCayJrkfRaCRCTh8GqN30f8oyQF.jpg",
+                release_date: "1999-10-15",
+                adult: false,
+              },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: null,
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.MOVIES, {
+    tmdbId: "{tmdbId}",
+    resolution: "{resolution}",
+  })]: {
+    post: {
+      summary: "Start movie resolution download (VPN required)",
+      tags: ["Movies"],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: postMovieDownloadResolutionSchemas.urlParams.shape.tmdbId,
+        },
+        {
+          in: "path",
+          name: "resolution",
+          required: true,
+          schema: {
+            type: "string",
+            enum: typedValues(
+              postMovieDownloadResolutionSchemas.urlParams.shape.resolution.enum
+            ),
+          },
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Movie downloaded started",
+          content: {
+            "application/json": {
+              example: { message: "Movie downloaded started" },
+            },
+          },
+        },
+        "400": {
+          description: "Resolution already downloaded or in downloading queue",
+          content: {
+            "application/json": {
+              example: {
+                message:
+                  "Resolution already downloaded or in downloading queue",
+              },
+            },
+          },
+        },
+        "404": {
+          description: "Movie or Resolution not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie or Resolution not found",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.MOVIES, {
+    tmdbId: "{tmdbId}",
+    subtitlesLanguage: "{subtitlesLanguage}",
+  })]: {
+    post: {
+      summary: "Download movie subtitles language (VPN required)",
+      tags: ["Movies"],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: postMovieDownloadSubtitlesSchemas.urlParams.shape.tmdbId,
+        },
+        {
+          in: "path",
+          name: "subtitlesLanguage",
+          required: true,
+          schema:
+            postMovieDownloadSubtitlesSchemas.urlParams.shape.subtitlesLanguage,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Subtitles downloaded",
+          content: {
+            "application/json": {
+              example: { message: "Subtitles downloaded" },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.MOVIES_SUBSCRIPTION, { tmdbId: "{tmdbId}" })]: {
+    post: {
+      summary: "Subscribe to movie",
+      tags: ["Movies"],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: postMovieSubscribeSchemas.urlParams.shape.tmdbId,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Movie subscribed",
+          content: {
+            "application/json": {
+              example: { message: "Movie subscribed" },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
+            },
+          },
+        },
+        "409": {
+          description: "Already subscribe to this movie",
+          content: {
+            "application/json": {
+              example: {
+                message: "Already subscribe to this movie",
+              },
+            },
+          },
+        },
+      },
+    },
+    delete: {
+      summary: "Unsubscribe to movie",
+      tags: ["Movies"],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: deleteMovieSubscribeSchemas.urlParams.shape.tmdbId,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Movie unsubscribed",
+          content: {
+            "application/json": {
+              example: { message: "Movie unsubscribed" },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
+            },
+          },
+        },
+        "409": {
+          description: "Already unsubscribe of this movie",
+          content: {
+            "application/json": {
+              example: {
+                message: "Already unsubscribe of this movie",
+              },
             },
           },
         },
