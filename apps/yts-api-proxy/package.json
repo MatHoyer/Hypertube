@@ -2,9 +2,9 @@
   "name": "yts-api-proxy",
   "scripts": {
     "clear": "rm -rf node_modules dist",
-    "dev": "tsx watch src/index.ts",
+    "dev": "tsx watch src/main.ts",
     "build": "tsc",
-    "start": "node dist/yts-api-proxy/src/index.js",
+    "start": "node dist/yts-api-proxy/src/main.js",
     "download:puppeteer": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
