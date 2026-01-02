@@ -30,9 +30,9 @@ import { streamSSE } from "hono/streaming";
 import i18next from "i18next";
 import z from "zod";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
+import { YtsProxyApi } from "../../lib/apis/yts-proxy.api";
 import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
 import { downloaderQueue } from "../../lib/queues/downloader";
-import { downloadYifysubtitles } from "../../lib/scrappers/yifysubtitles.scrapper";
 import { SSEClients } from "../../lib/SSEClients";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
@@ -346,8 +346,8 @@ export const downloadSubtitles = async (
   });
 
   try {
-    await downloadYifysubtitles({
-      ...dbMovie.subtitles[0],
+    await new YtsProxyApi().downloadSubtitles({
+      subtitles: dbMovie.subtitles[0],
       tmdbId: dbMovie.tmdbId,
     });
   } catch {
