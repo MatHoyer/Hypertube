@@ -1,4 +1,4 @@
-import { serve } from "@hono/node-server/.";
+import { serve } from "@hono/node-server";
 import { hypertubeLogger, movieSchema, subtitleSchema } from "@hypertube/libs";
 import { env } from "@hypertube/server-core";
 import { Hono } from "hono";

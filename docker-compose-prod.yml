@@ -8,7 +8,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
       - NODE_ENV=PROD
-      - YTS_PROXY_URL=http://yts-api-proxy:${YTS_PROXY_PORT}
+      - YTS_PROXY_URL=http://vpn:${YTS_PROXY_PORT}
       - REDIS_HOST=hypertube_redis
     volumes:
       - movies_data:/hypertube/apps/server/downloads
@@ -62,6 +62,7 @@ services:
     environment:
       - PUPPETEER_SKIP_DOWNLOAD=true
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+      - REDIS_HOST=hypertube_redis
       - NODE_ENV=PROD
     volumes:
       - movies_data:/hypertube/apps/yts-api-proxy/downloads
