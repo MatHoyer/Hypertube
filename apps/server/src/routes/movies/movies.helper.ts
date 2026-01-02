@@ -7,15 +7,14 @@ import {
 import { prisma, TDownloadJobData } from "@hypertube/server-core";
 import { Job } from "bullmq";
 import { SSEStreamingApi } from "hono/streaming";
-import { YtsApi } from "../../lib/apis/yts.api";
-import { getSubtitlesDownloadLinks } from "../../lib/scrappers/yifysubtitles.scrapper";
+import { YtsProxyApi } from "../../lib/apis/yts-proxy.api";
 
 export const getMovieData = async (movie: TMovieSchema) => {
   if (!movie.imdbId) throw new Error("Movie has no IMDB ID");
 
-  const ytsApi = new YtsApi();
+  const ytsProxyApi = new YtsProxyApi();
 
-  const resolutions = await ytsApi.getResolutions(movie.imdbId);
+  const resolutions = await ytsProxyApi.getResolutions(movie.imdbId);
   await prisma.resolution.createMany({
     data: resolutions.map((resolution) => ({
       movieId: movie.id,
@@ -26,9 +25,7 @@ export const getMovieData = async (movie: TMovieSchema) => {
     skipDuplicates: true,
   });
 
-  const subtitlesData = await getSubtitlesDownloadLinks({
-    imdbId: movie.imdbId,
-  });
+  const subtitlesData = await ytsProxyApi.getSubtitles(movie.imdbId);
   await prisma.subtitle.createMany({
     data: subtitlesData.map((subtitle) => ({
       movieId: movie.id,

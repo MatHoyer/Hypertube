@@ -35,6 +35,7 @@ COPY apps/libs ./apps/libs
 COPY apps/server-core ./apps/server-core
 
 RUN pnpm i --frozen-lockfile
+RUN pnpm --filter server-core prisma:generate
 RUN pnpm lint
 RUN pnpm build:yts-api-proxy
 

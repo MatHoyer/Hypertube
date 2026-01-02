@@ -1,4 +1,4 @@
-.PHONY: dev prod vpn stop-dev stop-prod stop-vpn stop-all logs-dev logs-prod logs-vpn
+.PHONY: vpn stop-vpn logs-vpn infra stop-infra logs-infra helpers stop-helpers logs-helpers dev stop-dev logs-dev prod stop-prod logs-prod stop-all rebuild-dev rebuild-prod
 
 # VPN (doit être lancé en premier)
 vpn:
@@ -11,7 +11,7 @@ logs-vpn:
 	docker compose -f docker-compose-vpn.yml -f docker-compose-vpn.override.yml logs -f
 
 # Infra
-infra:
+infra: vpn
 	docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
 
 stop-infra:
@@ -31,7 +31,7 @@ logs-helpers:
 	docker compose -f docker-compose-helpers.yml logs -f
 
 # Dev
-dev:
+dev: infra
 	docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
 
 stop-dev:
@@ -41,7 +41,7 @@ logs-dev:
 	docker compose -f docker-compose.yml -f docker-compose.override.yml logs -f
 
 # Prod
-prod:
+prod: infra
 	docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml up -d
 
 stop-prod:

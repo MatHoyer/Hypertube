@@ -3,12 +3,6 @@ services:
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
 
-  transmission:
-    ports:
-      - "${TRANSMISSION_RCP_PORT}:${TRANSMISSION_RCP_PORT}"
-      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}"
-      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}/udp"
-
   redis:
     ports:
       - "${EXPOSED_REDIS_PORT}:${REDIS_PORT}"
