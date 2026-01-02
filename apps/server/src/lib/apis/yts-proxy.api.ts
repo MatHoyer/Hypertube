@@ -1,7 +1,7 @@
 import {
   TMovieSchema,
   TSubtitleSchema,
-  TYtsMovieSchema,
+  TYtsMovieTorrentSchema,
 } from "@hypertube/libs";
 import { env } from "@hypertube/server-core";
 
@@ -27,10 +27,10 @@ export class YtsProxyApi {
   }
 
   public async getResolutions(imdbId: string) {
-    const response = await this.fetch<TYtsMovieSchema>(
+    const response = await this.fetch<TYtsMovieTorrentSchema[]>(
       `/resolutions/${imdbId}`
     );
-    return response.torrents;
+    return response;
   }
 
   public async downloadTorrent({
