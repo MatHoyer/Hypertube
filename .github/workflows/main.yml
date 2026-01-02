@@ -71,13 +71,26 @@ jobs:
           TMDB_TOKEN=${{ secrets.TMDB_TOKEN }}
 
           YTS_API_URL=${{ secrets.YTS_API_URL }}
+          YTS_PROXY_URL=${{ vars.YTS_PROXY_URL }}
+          YTS_PROXY_PORT=${{ vars.YTS_PROXY_PORT }}
 
           REDIS_HOST=${{ secrets.REDIS_HOST }}
           REDIS_PORT=${{ secrets.REDIS_PORT }}
+
+          VPN_SERVICE_PROVIDER=${{ vars.VPN_SERVICE_PROVIDER }}
+          VPN_TYPE=${{ vars.VPN_TYPE }}
+          WIREGUARD_PRIVATE_KEY=${{ secrets.WIREGUARD_PRIVATE_KEY }}
+          WIREGUARD_ADDRESSES=${{ secrets.WIREGUARD_ADDRESSES }}
+          WIREGUARD_ENDPOINT=${{ secrets.WIREGUARD_ENDPOINT }}
+          WIREGUARD_PUBLIC_KEY=${{ secrets.WIREGUARD_PUBLIC_KEY }}
+          DNS=${{ vars.DNS }}
           EOF
 
       - name: Create Docker network
         run: docker network create hypertube-network || echo "Network already exists"
+
+      - name: Start VPN container
+        run: docker compose -f docker-compose-vpn.yml up -d
 
       - name: Start DB containers (docker-compose.yml)
         run: docker compose -f docker-compose.yml up -d

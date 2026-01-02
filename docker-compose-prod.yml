@@ -63,6 +63,8 @@ services:
       - PUPPETEER_SKIP_DOWNLOAD=true
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
       - NODE_ENV=PROD
+    volumes:
+      - movies_data:/hypertube/apps/yts-api-proxy/downloads
     network_mode: container:vpn
 
 networks:
