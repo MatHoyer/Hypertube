@@ -107,7 +107,7 @@ make prod
 
 ## 📜 Dependency Installation Rules
 
-The project is split into **6 workspaces**:
+The project is split into **7 workspaces**:
 
 - **client** (`apps/client`)
 - **libs** (`apps/libs`)
@@ -115,6 +115,7 @@ The project is split into **6 workspaces**:
 - **server-core** (`apps/server-core`)
 - **downloader** (`apps/downloader`)
 - **scheduler** (`apps/scheduler`)
+- **yts-api-proxy** (`apps/yts-api-proxy`)
 
 ### Install a dependency shared across multiple workspaces:
 
@@ -168,6 +169,10 @@ pnpm add <package-name>
 
 - Worker to run cron jobs
 
+### ⚙️ Yts API proxy (`apps/yts-api-proxy`)
+
+- A proxy for the yts using a VPN
+
 ## 📦 Package Import Rules
 
 Understanding how packages can import each other is key to maintaining a clean and scalable monorepo structure:
@@ -185,6 +190,7 @@ Understanding how packages can import each other is key to maintaining a clean a
 | server            |       ✅        |           ✅           |
 | downloader        |       ✅        |           ✅           |
 | scheduler         |       ✅        |           ✅           |
+| yts-api-proxy     |       ✅        |           ✅           |
 | client            |       ✅        |           ❌           |
 
 _Note: This ensures shared logic and types flow in one direction (from base to specialized packages), and frontend code never accidentally pulls in backend/server-only code._
