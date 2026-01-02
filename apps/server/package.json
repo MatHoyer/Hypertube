@@ -4,7 +4,7 @@
     "clear": "rm -rf node_modules dist",
     "dev": "tsx watch src/main.ts",
     "build": "tsc && cp -r src/emails/default-email.html dist/server/src/emails",
-    "start": "node dist/server/src/index.js"
+    "start": "node dist/server/src/main.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.16.0",
