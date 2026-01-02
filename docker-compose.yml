@@ -18,10 +18,6 @@ services:
   transmission:
     container_name: transmission
     image: linuxserver/transmission
-    ports:
-      - ${TRANSMISSION_RCP_PORT}
-      - ${TRANSMISSION_TORRENT_PORT}
-      - ${TRANSMISSION_TORRENT_PORT}/udp
     env_file: .env
     environment:
       - PUID=1000
@@ -33,8 +29,7 @@ services:
       - ./apps/downloader/config:/config:ro
       - ./apps/downloader/downloads:/downloads
       - ./apps/downloader/downloads-transmission:/downloads-transmission
-    networks:
-      - hypertube-network
+    network_mode: container:vpn
 
   redis:
     container_name: hypertube_redis

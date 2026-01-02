@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "types": ["node"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx",
+    "outDir": "./dist",
+    "paths": {
+      "@hypertube/libs": ["../libs/src"],
+      "@hypertube/server-core": ["../server-core/src"]
+    }
+  },
+  "exclude": ["node_modules"]
+}

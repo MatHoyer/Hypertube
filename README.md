@@ -29,10 +29,22 @@ docker network create hypertube-network
 docker compose up
 ```
 
+or
+
+```bash
+make infra
+```
+
 ### 4. [OPTIONAL] Start infra helpers
 
 ```bash
 docker compose -f docker-compose-helpers.yml up
+```
+
+or
+
+```bash
+make helpers
 ```
 
 ## 📂 Launch Modes
@@ -75,10 +87,22 @@ pnpm dev
 docker compose -f docker-compose-dev.yml up
 ```
 
+or
+
+```bash
+make dev
+```
+
 ### 🔹 Option 3 — Prod with Docker (no hot reload)
 
 ```bash
 docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml up
+```
+
+or
+
+```bash
+make prod
 ```
 
 ## 📜 Dependency Installation Rules

@@ -46,7 +46,7 @@ const ytsMovieSchema = z.object({
   rating: z.number(),
   runtime: z.number(),
   genres: z.array(
-    z.enum(ytsGenres.map((genre) => capitalizeAllWords(genre, "-"))),
+    z.enum(ytsGenres.map((genre) => capitalizeAllWords(genre, "-")))
   ),
   description_full: z.string().optional(),
   yt_trailer_code: z.string().optional(),
@@ -84,10 +84,10 @@ export class YtsApi {
     const localResponseSchema = responseSchema(
       z.object({
         movie: ytsMovieSchema,
-      }),
+      })
     );
     const response = await this.fetch<z.infer<typeof localResponseSchema>>(
-      `/movie_details.json?imdb_id=${imdbId}`,
+      `/movie_details.json?imdb_id=${imdbId}`
     );
     return localResponseSchema.parse(response).data.movie;
   }
@@ -101,11 +101,11 @@ export class YtsApi {
     const movie = await this.getMovieByImdbId(imdbId);
 
     const resolution = movie.torrents.find(
-      (resolution) => resolution.quality === targetResolution,
+      (resolution) => resolution.quality === targetResolution
     );
     if (!resolution) {
       throw new Error(
-        `Resolution (${targetResolution}) not found for movie ${imdbId}`,
+        `Resolution (${targetResolution}) not found for movie ${imdbId}`
       );
     }
 
@@ -119,7 +119,7 @@ export class YtsApi {
     const res = await fetch(resolution.url);
     if (!res.ok) {
       throw new Error(
-        `Failed to download resolution for movie ${movie.imdbId}`,
+        `Failed to download resolution for movie ${movie.imdbId}`
       );
     }
 
