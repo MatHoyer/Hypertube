@@ -31,8 +31,8 @@ COPY .env ./
 COPY eslint.config.js ./
 
 COPY apps/yts-api-proxy ./apps/yts-api-proxy
-COPY apps/libs ./apps/libs
-COPY apps/server-core ./apps/server-core
+COPY packages/libs ./packages/libs
+COPY packages/server-core ./packages/server-core
 
 RUN pnpm i --frozen-lockfile
 RUN pnpm --filter server-core prisma:generate

@@ -11,8 +11,8 @@
     "jsxImportSource": "hono/jsx",
     "outDir": "./dist",
     "paths": {
-      "@hypertube/libs": ["../libs/src"],
-      "@hypertube/server-core": ["../server-core/src"]
+      "@hypertube/libs": ["../../packages/libs/src"],
+      "@hypertube/server-core": ["../../packages/server-core/src"]
     }
   },
   "exclude": ["node_modules"]

@@ -56,7 +56,7 @@ importers:
         version: 5.2.0(react-hook-form@7.61.1(react@19.1.0))
       '@hypertube/libs':
         specifier: workspace:*
-        version: link:../libs
+        version: link:../../packages/libs
       '@radix-ui/react-alert-dialog':
         specifier: ^1.1.14
         version: 1.1.14(@types/react-dom@19.1.6(@types/react@19.1.8))(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -198,10 +198,10 @@ importers:
     dependencies:
       '@hypertube/libs':
         specifier: workspace:*
-        version: link:../libs
+        version: link:../../packages/libs
       '@hypertube/server-core':
         specifier: workspace:*
-        version: link:../server-core
+        version: link:../../packages/server-core
       fluent-ffmpeg:
         specifier: ^2.1.3
         version: 2.1.3
@@ -219,27 +219,14 @@ importers:
         specifier: ^4.7.1
         version: 4.20.3
 
-  apps/libs:
-    dependencies:
-      pino:
-        specifier: ^10.0.0
-        version: 10.0.0
-      pino-pretty:
-        specifier: ^13.1.2
-        version: 13.1.2
-    devDependencies:
-      '@types/node':
-        specifier: ^24.0.15
-        version: 24.0.15
-
   apps/scheduler:
     dependencies:
       '@hypertube/libs':
         specifier: workspace:*
-        version: link:../libs
+        version: link:../../packages/libs
       '@hypertube/server-core':
         specifier: workspace:*
-        version: link:../server-core
+        version: link:../../packages/server-core
       node-cron:
         specifier: ^4.2.1
         version: 4.2.1
@@ -261,10 +248,10 @@ importers:
         version: 0.5.2(hono@4.8.5)
       '@hypertube/libs':
         specifier: workspace:*
-        version: link:../libs
+        version: link:../../packages/libs
       '@hypertube/server-core':
         specifier: workspace:*
-        version: link:../server-core
+        version: link:../../packages/server-core
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
@@ -306,7 +293,51 @@ importers:
         specifier: ^4.7.1
         version: 4.20.3
 
-  apps/server-core:
+  apps/yts-api-proxy:
+    dependencies:
+      '@hono/node-server':
+        specifier: ^1.16.0
+        version: 1.16.0(hono@4.8.5)
+      '@hypertube/libs':
+        specifier: workspace:*
+        version: link:../../packages/libs
+      '@hypertube/server-core':
+        specifier: workspace:*
+        version: link:../../packages/server-core
+      adm-zip:
+        specifier: ^0.5.16
+        version: 0.5.16
+      hono:
+        specifier: ^4.8.5
+        version: 4.8.5
+      puppeteer:
+        specifier: ^24.16.0
+        version: 24.16.0(typescript@5.8.3)
+    devDependencies:
+      '@types/adm-zip':
+        specifier: ^0.5.7
+        version: 0.5.7
+      '@types/node':
+        specifier: ^20.11.17
+        version: 20.19.8
+      tsx:
+        specifier: ^4.7.1
+        version: 4.20.3
+
+  packages/libs:
+    dependencies:
+      pino:
+        specifier: ^10.0.0
+        version: 10.0.0
+      pino-pretty:
+        specifier: ^13.1.2
+        version: 13.1.2
+    devDependencies:
+      '@types/node':
+        specifier: ^24.0.15
+        version: 24.0.15
+
+  packages/server-core:
     dependencies:
       '@hypertube/libs':
         specifier: workspace:*
@@ -333,37 +364,6 @@ importers:
       prisma:
         specifier: ^7.0.0
         version: 7.0.0(@types/react@19.1.8)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.3)
-      tsx:
-        specifier: ^4.7.1
-        version: 4.20.3
-
-  apps/yts-api-proxy:
-    dependencies:
-      '@hono/node-server':
-        specifier: ^1.16.0
-        version: 1.16.0(hono@4.8.5)
-      '@hypertube/libs':
-        specifier: workspace:*
-        version: link:../libs
-      '@hypertube/server-core':
-        specifier: workspace:*
-        version: link:../server-core
-      adm-zip:
-        specifier: ^0.5.16
-        version: 0.5.16
-      hono:
-        specifier: ^4.8.5
-        version: 4.8.5
-      puppeteer:
-        specifier: ^24.16.0
-        version: 24.16.0(typescript@5.8.3)
-    devDependencies:
-      '@types/adm-zip':
-        specifier: ^0.5.7
-        version: 0.5.7
-      '@types/node':
-        specifier: ^20.11.17
-        version: 20.19.8
       tsx:
         specifier: ^4.7.1
         version: 4.20.3

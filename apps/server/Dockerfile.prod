@@ -13,8 +13,8 @@ COPY eslint.config.js ./
 
 COPY apps/server ./apps/server
 COPY apps/client ./apps/client
-COPY apps/libs ./apps/libs
-COPY apps/server-core ./apps/server-core
+COPY packages/libs ./packages/libs
+COPY packages/server-core ./packages/server-core
 
 RUN pnpm i --frozen-lockfile
 RUN pnpm lint

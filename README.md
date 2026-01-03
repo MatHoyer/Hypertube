@@ -110,9 +110,9 @@ make prod
 The project is split into **7 workspaces**:
 
 - **client** (`apps/client`)
-- **libs** (`apps/libs`)
+- **libs** (`packages/libs`)
 - **server** (`apps/server`)
-- **server-core** (`apps/server-core`)
+- **server-core** (`packages/server-core`)
 - **downloader** (`apps/downloader`)
 - **scheduler** (`apps/scheduler`)
 - **yts-api-proxy** (`apps/yts-api-proxy`)
@@ -140,7 +140,7 @@ pnpm add <package-name>
 
 ---
 
-### 📚 Libs (`apps/libs`)
+### 📚 Libs (`packages/libs`)
 
 - Functions exported in `index.ts` can be used in other workspaces
 
@@ -153,7 +153,7 @@ pnpm add <package-name>
 
 ---
 
-### 📚 Server core (`apps/server-core`)
+### 📚 Server core (`packages/server-core`)
 
 - Functions exported in `index.ts` can be used in other server side workspaces
 
