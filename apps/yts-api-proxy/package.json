@@ -1,0 +1,23 @@
+{
+  "name": "yts-api-proxy",
+  "scripts": {
+    "clear": "rm -rf node_modules dist",
+    "dev": "tsx watch src/main.ts",
+    "build": "tsc",
+    "start": "node dist/apps/yts-api-proxy/src/main.js",
+    "download:puppeteer": "npx puppeteer browsers install chrome"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.16.0",
+    "@hypertube/libs": "workspace:*",
+    "@hypertube/server-core": "workspace:*",
+    "adm-zip": "^0.5.16",
+    "puppeteer": "^24.16.0",
+    "hono": "^4.8.5"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.7",
+    "@types/node": "^20.11.17",
+    "tsx": "^4.7.1"
+  }
+}

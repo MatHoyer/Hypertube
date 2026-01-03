@@ -32,7 +32,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@hypertube/libs": path.resolve(__dirname, "../libs/src"),
+      "@hypertube/libs": path.resolve(__dirname, "../../packages/libs/src"),
     },
   },
 });

@@ -32,6 +32,8 @@ const envSchema = z.object({
   TRANSMISSION_TORRENT_PORT: z.coerce.number(),
   TMDB_TOKEN: z.string(),
   YTS_API_URL: z.url(),
+  YTS_PROXY_URL: z.url(),
+  YTS_PROXY_PORT: z.coerce.number(),
   REDIS_HOST: z.string(),
   REDIS_PORT: z.coerce.number(),
   VPN_IS_ACTIVE: z.coerce.boolean().default(false),

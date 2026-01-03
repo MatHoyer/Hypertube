@@ -19,7 +19,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@hypertube/libs": ["../libs/src"],
+      "@hypertube/libs": ["../../packages/libs/src"],
       "@/*": ["./src/*"]
     }
   },

@@ -13,8 +13,8 @@ COPY package.json pnpm-lock.yaml ./
 COPY .env ./
 COPY eslint.config.js ./
 
-COPY apps/libs ./apps/libs
-COPY apps/server-core ./apps/server-core
+COPY packages/libs ./packages/libs
+COPY packages/server-core ./packages/server-core
 COPY apps/downloader ./apps/downloader
 
 RUN pnpm i --frozen-lockfile

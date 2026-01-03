@@ -1,0 +1,25 @@
+services:
+  vpn:
+    image: qmcgaw/gluetun
+    container_name: vpn
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun
+    env_file: .env
+    ports:
+      - ${TRANSMISSION_RCP_PORT}
+      - ${TRANSMISSION_TORRENT_PORT}
+      - ${TRANSMISSION_TORRENT_PORT}/udp
+      - ${YTS_PROXY_PORT}
+    environment:
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - SERVER_COUNTRIES=${VPN_COUNTRY:-Netherlands}
+    networks:
+      - hypertube-network
+
+networks:
+  hypertube-network:
+    external: true

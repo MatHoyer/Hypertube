@@ -29,10 +29,22 @@ docker network create hypertube-network
 docker compose up
 ```
 
+or
+
+```bash
+make infra
+```
+
 ### 4. [OPTIONAL] Start infra helpers
 
 ```bash
 docker compose -f docker-compose-helpers.yml up
+```
+
+or
+
+```bash
+make helpers
 ```
 
 ## 📂 Launch Modes
@@ -75,22 +87,35 @@ pnpm dev
 docker compose -f docker-compose-dev.yml up
 ```
 
+or
+
+```bash
+make dev
+```
+
 ### 🔹 Option 3 — Prod with Docker (no hot reload)
 
 ```bash
 docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml up
 ```
 
+or
+
+```bash
+make prod
+```
+
 ## 📜 Dependency Installation Rules
 
-The project is split into **6 workspaces**:
+The project is split into **7 workspaces**:
 
 - **client** (`apps/client`)
-- **libs** (`apps/libs`)
+- **libs** (`packages/libs`)
 - **server** (`apps/server`)
-- **server-core** (`apps/server-core`)
+- **server-core** (`packages/server-core`)
 - **downloader** (`apps/downloader`)
 - **scheduler** (`apps/scheduler`)
+- **yts-api-proxy** (`apps/yts-api-proxy`)
 
 ### Install a dependency shared across multiple workspaces:
 
@@ -115,7 +140,7 @@ pnpm add <package-name>
 
 ---
 
-### 📚 Libs (`apps/libs`)
+### 📚 Libs (`packages/libs`)
 
 - Functions exported in `index.ts` can be used in other workspaces
 
@@ -128,7 +153,7 @@ pnpm add <package-name>
 
 ---
 
-### 📚 Server core (`apps/server-core`)
+### 📚 Server core (`packages/server-core`)
 
 - Functions exported in `index.ts` can be used in other server side workspaces
 
@@ -143,6 +168,10 @@ pnpm add <package-name>
 ### ⚙️ Scheduler (`apps/scheduler`)
 
 - Worker to run cron jobs
+
+### ⚙️ Yts API proxy (`apps/yts-api-proxy`)
+
+- A proxy for the yts using a VPN
 
 ## 📦 Package Import Rules
 
@@ -161,6 +190,7 @@ Understanding how packages can import each other is key to maintaining a clean a
 | server            |       ✅        |           ✅           |
 | downloader        |       ✅        |           ✅           |
 | scheduler         |       ✅        |           ✅           |
+| yts-api-proxy     |       ✅        |           ✅           |
 | client            |       ✅        |           ❌           |
 
 _Note: This ensures shared logic and types flow in one direction (from base to specialized packages), and frontend code never accidentally pulls in backend/server-only code._
