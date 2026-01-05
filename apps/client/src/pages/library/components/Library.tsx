@@ -160,7 +160,7 @@ export const Library = () => {
               const movie = allMovies[itemIndex];
 
               if (itemIndex >= data.pages[0].total) {
-                return <div key={`${virtualRow.index}-${colIndex}`}></div>;
+                return <div key={`${virtualRow.index}-${colIndex}`} />;
               }
 
               return (

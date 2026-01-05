@@ -3,7 +3,6 @@ import { getDownloadStateIcon } from "@/components/download-state/getDownloadSta
 import { ErrorResource } from "@/components/ErrorResource";
 import { LoadingResource } from "@/components/LoadingResource";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
-import { PagePagination } from "@/components/Pagination";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
@@ -41,18 +40,12 @@ import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const pageSize = 10;
-
 export const Thumbnail: React.FC<{
   movie: TGetMoviesSchemas["response"]["movies"][number];
 }> = memo(({ movie }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const [page, setPage] = useState(1);
-  const { playlists, totalCount, isLoading, isError } = useUserPlaylists({
-    page,
-    pageSize,
-  });
+  const { data, isFetchingNextPage, isError } = useUserPlaylists();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const addMovieToPlaylistMutation = useMutation({
@@ -146,10 +139,9 @@ export const Thumbnail: React.FC<{
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <ScrollArea className="h-36">
-                    {playlists.map((playlist) => {
-                      const isPlaylistHasMovie = !!playlist.movies.find(
-                        (playlistMovie) =>
-                          playlistMovie.tmdbId === movie.details.id
+                    {data.playlists.map((playlist) => {
+                      const isPlaylistHasMovie = playlist.movies.has(
+                        movie.details.id
                       );
                       return (
                         <DropdownMenuItem
@@ -181,7 +173,7 @@ export const Thumbnail: React.FC<{
                         </DropdownMenuItem>
                       );
                     })}
-                    {isLoading && (
+                    {isFetchingNextPage && (
                       <DropdownMenuItem
                         className="flex justify-center"
                         disabled
@@ -197,14 +189,16 @@ export const Thumbnail: React.FC<{
                         <ErrorResource resource="playlists" />
                       </DropdownMenuItem>
                     )}
-                    {!isLoading && !isError && !playlists.length && (
-                      <DropdownMenuItem
-                        className="flex justify-center"
-                        disabled
-                      >
-                        {t("playlist.none")}
-                      </DropdownMenuItem>
-                    )}
+                    {!isFetchingNextPage &&
+                      !isError &&
+                      !data.playlists.length && (
+                        <DropdownMenuItem
+                          className="flex justify-center"
+                          disabled
+                        >
+                          {t("playlist.none")}
+                        </DropdownMenuItem>
+                      )}
                   </ScrollArea>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
@@ -217,14 +211,6 @@ export const Thumbnail: React.FC<{
                   <Plus />
                   {t("playlist.new")}
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <PagePagination
-                    page={page}
-                    setPage={setPage}
-                    maxPage={Math.ceil(totalCount / pageSize) || 1}
-                  />
-                </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

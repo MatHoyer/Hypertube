@@ -375,7 +375,6 @@ const VideoPlayer = () => {
     window.addEventListener("beforeunload", updateWatchTimer);
 
     return () => {
-      updateWatchTimer();
       window.removeEventListener("beforeunload", updateWatchTimer);
     };
   }, [updateWatchTimer]);

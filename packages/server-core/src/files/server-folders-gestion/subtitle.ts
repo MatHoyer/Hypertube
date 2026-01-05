@@ -14,9 +14,10 @@ export const getSubtitlePath = ({
   language,
   filename,
 }: TSubtitlePathParams & { filename?: "subtitles.vtt" | (string & {}) }) => {
-  return `${getMovieFolderPath({ movieId, forTransmission: false })}}/${subtitleFolderName}/${language}${
-    filename ? `/${filename}` : ""
-  }`;
+  return `${getMovieFolderPath({
+    movieId,
+    forTransmission: false,
+  })}/${subtitleFolderName}/${language}${filename ? `/${filename}` : ""}`;
 };
 
 export const createSubtitle = async ({

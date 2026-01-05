@@ -36,6 +36,7 @@ export const getPlaylists = async (
         },
         skip: (page - 1) * pageSize,
         take: pageSize,
+        orderBy: { createdAt: "desc" },
       },
     },
   });
