@@ -1,13 +1,10 @@
 import z from "zod";
 import { DownloadStates } from "../../const/global.const.js";
 import { movieSchema } from "../database/movie.schema.js";
+import { getPaginationSchemas } from "../utils/pagination.schema.js";
 import { tmdbMovieCompleteSchema } from "./movie.schema.js";
 
-export const getHistorySchemas = {
-  searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
-    pageSize: z.coerce.number().int().positive().default(10),
-  }),
+export const getHistorySchemas = getPaginationSchemas({
   response: z.object({
     movies: z.array(
       z.object({
@@ -16,9 +13,8 @@ export const getHistorySchemas = {
         watchTimer: z.number(),
       })
     ),
-    totalCount: z.number(),
   }),
-};
+});
 export type TGetHistorySchemas = {
   searchParams: z.infer<typeof getHistorySchemas.searchParams>;
   response: z.infer<typeof getHistorySchemas.response>;

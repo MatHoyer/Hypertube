@@ -34,7 +34,8 @@ export const getHistory = async (
     take: pageSize,
   });
 
-  const totalCount = await prisma.movieHistory.count({ where: { userId } });
+  const total = await prisma.movieHistory.count({ where: { userId } });
+  const totalPages = Math.ceil(total / pageSize);
 
   const movieDownloadStatesByTmdbIds = await getMovieDownloadStatesByTmdbIds(
     history.map((history) => history.movie.tmdbId)
@@ -60,7 +61,10 @@ export const getHistory = async (
           DownloadStates.NOT_DOWNLOADED,
         watchTimer: watchTimersByMovieId.get(tmdbMovie!.id) ?? 0,
       })),
-      totalCount,
+      page,
+      pageSize,
+      total,
+      totalPages,
     }),
     200
   );

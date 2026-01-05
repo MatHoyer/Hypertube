@@ -65,10 +65,7 @@ export const HistoricPage = () => {
   return (
     <Layout>
       <LayoutHeader>
-        <LayoutHeaderResource
-          resource="historic"
-          count={data?.totalCount ?? 0}
-        />
+        <LayoutHeaderResource resource="historic" count={data?.total ?? 0} />
       </LayoutHeader>
       <LayoutContent>
         {data && !isPlaceholderData && (
@@ -82,7 +79,7 @@ export const HistoricPage = () => {
           <LoadingResource resource="historic" />
         )}
         {isError && <ErrorResource resource="historic" />}
-        {(data?.totalCount ?? 0) > historicPageSize && (
+        {(data?.total ?? 0) > historicPageSize && (
           <FloatingBar>
             <PagePagination
               page={page}
@@ -90,7 +87,7 @@ export const HistoricPage = () => {
                 setPage(value);
                 scrollTo({ top: 0, behavior: "smooth" });
               }}
-              maxPage={Math.ceil((data?.totalCount ?? 0) / historicPageSize)}
+              maxPage={data?.totalPages ?? 0}
             />
           </FloatingBar>
         )}
