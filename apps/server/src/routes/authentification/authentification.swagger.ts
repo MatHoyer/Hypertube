@@ -1,22 +1,10 @@
 import {
+  emailVerificationAuthentificationSchemas,
   getUrl,
-  linkProviderAuthentificationSchemas,
-  requestPasswordResetAuthentificationSchemas,
-  resetPasswordAuthentificationSchemas,
   ROUTES,
-  signInAuthentificationSchemas,
-  signInSocialAuthentificationSchemas,
-  signOutAuthentificationSchemas,
-  signUpAuthentificationSchemas,
+  typedValues,
   unlinkProviderAuthentificationSchemas,
 } from "@hypertube/libs";
-
-const unlinkPathParam = {
-  in: "path",
-  name: "providerId",
-  required: true,
-  schema: unlinkProviderAuthentificationSchemas.urlParams.shape.providerId,
-};
 
 export const authentificationSwagger = {
   [getUrl(ROUTES.API.AUTHENTIFICATION_SIGNUP)]: {
@@ -27,7 +15,6 @@ export const authentificationSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: signUpAuthentificationSchemas.requirements,
             example: {
               email: "",
               username: "",
@@ -42,9 +29,12 @@ export const authentificationSwagger = {
       responses: {
         "200": {
           description: "Sign up successfully",
+        },
+        "400": {
+          description: "Sign up failed",
           content: {
             "application/json": {
-              schema: signUpAuthentificationSchemas.response,
+              example: { message: "Translate error message" },
             },
           },
         },
@@ -59,7 +49,6 @@ export const authentificationSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: signInAuthentificationSchemas.requirements,
             example: {
               username: "",
               password: "",
@@ -70,9 +59,12 @@ export const authentificationSwagger = {
       responses: {
         "200": {
           description: "Sign in successfully",
+        },
+        "400": {
+          description: "Sign in failed",
           content: {
             "application/json": {
-              schema: signInAuthentificationSchemas.response,
+              example: { message: "Translate error message" },
             },
           },
         },
@@ -87,7 +79,6 @@ export const authentificationSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: signInSocialAuthentificationSchemas.requirements,
             example: {
               providerId: "",
             },
@@ -99,7 +90,18 @@ export const authentificationSwagger = {
           description: "Sign in with social provider successfully",
           content: {
             "application/json": {
-              schema: signInSocialAuthentificationSchemas.response,
+              example: {
+                url: "https://accounts.google.com/o/oauth2/v2/auth?client_id=123456.apps.googleusercontent.com&redirect_uri=http://localhost:3000/api/auth/callback/google&response_type=code&scope=openid%20profile%20email&state=abc123xyz",
+                message: "Sign in with social provider successfully",
+              },
+            },
+          },
+        },
+        "400": {
+          description: "Sign in with social provider failed",
+          content: {
+            "application/json": {
+              example: { url: "", message: "Translate error message" },
             },
           },
         },
@@ -114,7 +116,6 @@ export const authentificationSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: requestPasswordResetAuthentificationSchemas.requirements,
             example: {
               email: "",
             },
@@ -126,7 +127,15 @@ export const authentificationSwagger = {
           description: "Request password reset successfully",
           content: {
             "application/json": {
-              schema: requestPasswordResetAuthentificationSchemas.response,
+              example: { message: "Request password reset successfully" },
+            },
+          },
+        },
+        "400": {
+          description: "Request password reset failed",
+          content: {
+            "application/json": {
+              example: { message: "Translate error message" },
             },
           },
         },
@@ -141,7 +150,6 @@ export const authentificationSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: resetPasswordAuthentificationSchemas.requirements,
             example: {
               newPassword: "",
               token: "",
@@ -154,7 +162,15 @@ export const authentificationSwagger = {
           description: "Reset password successfully",
           content: {
             "application/json": {
-              schema: resetPasswordAuthentificationSchemas.response,
+              example: { message: "Reset password successfully" },
+            },
+          },
+        },
+        "400": {
+          description: "Reset password failed",
+          content: {
+            "application/json": {
+              example: { message: "Translate error message" },
             },
           },
         },
@@ -170,7 +186,67 @@ export const authentificationSwagger = {
           description: "Sign out successfully",
           content: {
             "application/json": {
-              schema: signOutAuthentificationSchemas.response,
+              example: { message: "Sign out successfully" },
+            },
+          },
+        },
+        "400": {
+          description: "Sign out failed",
+          content: {
+            "application/json": {
+              example: { message: "Translate error message" },
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.AUTHENTIFICATION_EMAIL_VERIFICATION)]: {
+    get: {
+      summary: "Email verification",
+      tags: ["Auth"],
+      parameters: [
+        {
+          in: "query",
+          name: "callbackURL",
+          required: true,
+          schema:
+            emailVerificationAuthentificationSchemas.searchParams.shape
+              .callbackURL,
+        },
+        {
+          in: "query",
+          name: "token",
+          required: true,
+          schema:
+            emailVerificationAuthentificationSchemas.searchParams.shape.token,
+        },
+      ],
+      responses: {
+        "302": {
+          description: "Email verification success",
+        },
+        "400": {
+          description: "Invalid token",
+          content: {
+            "application/json": {
+              example: { message: "Invalid token" },
+            },
+          },
+        },
+        "403": {
+          description: "Expiration time",
+          content: {
+            "application/json": {
+              example: { message: "Expiration time" },
+            },
+          },
+        },
+        "404": {
+          description: "User not found",
+          content: {
+            "application/json": {
+              example: { message: "User not found" },
             },
           },
         },
@@ -185,7 +261,6 @@ export const authentificationSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: linkProviderAuthentificationSchemas.requirements,
             example: {
               providerId: "",
             },
@@ -197,7 +272,18 @@ export const authentificationSwagger = {
           description: "Link provider successfully",
           content: {
             "application/json": {
-              schema: linkProviderAuthentificationSchemas.response,
+              example: {
+                url: "https://accounts.google.com/o/oauth2/v2/auth?client_id=123456.apps.googleusercontent.com&redirect_uri=http://localhost:3000/api/auth/callback/google&response_type=code&scope=openid%20profile%20email&state=abc123xyz",
+                message: "Link provider successfully",
+              },
+            },
+          },
+        },
+        "400": {
+          description: "Link provider failed",
+          content: {
+            "application/json": {
+              example: { url: "", message: "Translate error message" },
             },
           },
         },
@@ -208,13 +294,34 @@ export const authentificationSwagger = {
     delete: {
       summary: "Unlink provider",
       tags: ["Auth"],
-      parameters: [unlinkPathParam],
+      parameters: [
+        {
+          in: "path",
+          name: "providerId",
+          required: true,
+          schema: {
+            type: "string",
+            enum: typedValues(
+              unlinkProviderAuthentificationSchemas.urlParams.shape.providerId
+                .enum
+            ),
+          },
+        },
+      ],
       responses: {
         "200": {
           description: "Unlink provider successfully",
           content: {
             "application/json": {
-              schema: unlinkProviderAuthentificationSchemas.response,
+              example: { message: "Unlink provider successfully" },
+            },
+          },
+        },
+        "400": {
+          description: "Unlink provider failed",
+          content: {
+            "application/json": {
+              example: { message: "Translate error message" },
             },
           },
         },
