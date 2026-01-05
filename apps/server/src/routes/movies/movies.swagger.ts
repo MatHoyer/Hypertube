@@ -11,7 +11,6 @@ import {
   postMovieDownloadSubtitlesSchemas,
   postMovieLikeSchemas,
   postMovieSubscribeSchemas,
-  putMovieWatchTimerSchemas,
   ROUTES,
   tmdbGenres,
   typedKeys,
@@ -636,7 +635,6 @@ export const moviesSwagger = {
           description: "Comment posted successfully",
           content: {
             "application/json": {
-              schema: postMovieCommentSchemas.response,
               example: {
                 message: "Comment succesfully posted on Movie",
               },
@@ -665,16 +663,30 @@ export const moviesSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: putMovieWatchTimerSchemas.requirements,
+            example: {
+              timestamp: 0,
+            },
           },
         },
       },
       responses: {
         "200": {
-          description: "OK",
+          description: "Movie watch timer updated",
           content: {
             "application/json": {
-              schema: putMovieWatchTimerSchemas.response,
+              example: {
+                message: "Movie watch timer updated",
+              },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
             },
           },
         },
@@ -692,6 +704,38 @@ export const moviesSwagger = {
           content: {
             "application/json": {
               schema: getMovieCastingSchema.response,
+              example: {
+                id: 550,
+                cast: [
+                  {
+                    adult: false,
+                    gender: 2,
+                    id: 287,
+                    name: "Brad Pitt",
+                    original_name: "Brad Pitt",
+                    popularity: 78.2,
+                    profile_path: "/kU3B75TyRiCgE270EyZnHjfivoq.jpg",
+                    credit_id: "52fe4250c3a36847f80149f7",
+                    cast_id: 5,
+                    character: "Tyler Durden",
+                    order: 0,
+                  },
+                ],
+                crew: [
+                  {
+                    adult: false,
+                    gender: 2,
+                    id: 7467,
+                    name: "David Fincher",
+                    original_name: "David Fincher",
+                    popularity: 52.3,
+                    profile_path: "/tpEczFclQZeKAiCeKZZ0adRvtfz.jpg",
+                    credit_id: "52fe4250c3a36847f8014a05",
+                    department: "Directing",
+                    job: "Director",
+                  },
+                ],
+              },
             },
           },
         },
