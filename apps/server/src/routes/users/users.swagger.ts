@@ -117,7 +117,6 @@ export const usersSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: patchUsersSchemas.requirements,
             example: {
               name: "",
               email: "",
@@ -137,7 +136,32 @@ export const usersSwagger = {
           description: "User updated successfully",
           content: {
             "application/json": {
-              schema: patchUsersSchemas.response,
+              example: { message: "User updated successfully" },
+            },
+          },
+        },
+        "400": {
+          description: "User updated failed",
+          content: {
+            "application/json": {
+              example: { message: "Translate error message" },
+            },
+          },
+        },
+        "401": {
+          description: "Unauthorized to modify information",
+          content: {
+            "application/json": {
+              message:
+                "You are not authorized to modify information that is not yours",
+            },
+          },
+        },
+        "429": {
+          description: "Too many emails sent",
+          content: {
+            "application/json": {
+              message: "Too many emails sent",
             },
           },
         },

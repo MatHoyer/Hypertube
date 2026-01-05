@@ -114,14 +114,14 @@ export const patchUser = async (
     return c.json(
       {
         message:
-          "You are not authorized to modify information that is not yours.",
+          "You are not authorized to modify information that is not yours",
       },
       401
     );
   }
 
-  if (body.oldPassword && body.password) {
-    try {
+  try {
+    if (body.oldPassword && body.password) {
       await auth.api.changePassword({
         body: {
           currentPassword: body.oldPassword,
@@ -129,18 +129,14 @@ export const patchUser = async (
         },
         headers: c.req.raw.headers,
       });
-    } catch (e) {
-      return c.json({ message: betterAuthErrorTranslation(e) }, 400);
-    }
-  } else if (body.password) {
-    try {
+    } else if (body.password) {
       await auth.api.setPassword({
         body: { newPassword: body.password },
         headers: c.req.raw.headers,
       });
-    } catch (e) {
-      return c.json({ message: betterAuthErrorTranslation(e) }, 400);
     }
+  } catch (e) {
+    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
   }
 
   delete body.oldPassword;
@@ -209,7 +205,7 @@ export const patchUser = async (
     where: { id: userId },
     data: body,
   });
-  return c.json({ message: "OK" }, 200);
+  return c.json({ message: "User updated successfully" }, 200);
 };
 
 export const getAccounts = async (c: Context<TIsLogged>) => {
