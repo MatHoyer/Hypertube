@@ -5,13 +5,10 @@ import {
   playlistMovieSchema,
   playlistSchema,
 } from "../database/playlist.schema.js";
+import { getPaginationSchemas } from "../utils/pagination.schema.js";
 import { tmdbMovieCompleteSchema } from "./movie.schema.js";
 
-export const getPlaylistsSchemas = {
-  searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
-    pageSize: z.coerce.number().int().positive().default(10),
-  }),
+export const getPlaylistsSchemas = getPaginationSchemas({
   response: z.object({
     playlists: z.array(
       z.object({
@@ -24,10 +21,8 @@ export const getPlaylistsSchemas = {
         ),
       })
     ),
-    totalCount: z.number(),
   }),
-};
-
+});
 export type TGetPlaylistsSchemas = {
   searchParams: z.infer<typeof getPlaylistsSchemas.searchParams>;
   response: z.infer<typeof getPlaylistsSchemas.response>;
@@ -50,7 +45,6 @@ export const getPlaylistSchemas = {
     totalCount: z.number(),
   }),
 };
-
 export type TGetPlaylistSchemas = {
   urlParams: z.infer<typeof getPlaylistSchemas.urlParams>;
   searchParams: z.infer<typeof getPlaylistSchemas.searchParams>;
@@ -65,7 +59,6 @@ export const postPlaylistSchemas = {
     message: z.string(),
   }),
 };
-
 export type TPostPlaylistSchemas = {
   requirements: z.infer<typeof postPlaylistSchemas.requirements>;
   response: z.infer<typeof postPlaylistSchemas.response>;
@@ -77,7 +70,6 @@ export const deletePlaylistSchemas = {
     message: z.string(),
   }),
 };
-
 export type TDeletePlaylistSchemas = {
   urlParams: z.infer<typeof deletePlaylistSchemas.urlParams>;
   response: z.infer<typeof deletePlaylistSchemas.response>;
@@ -92,7 +84,6 @@ export const postMovieToPlaylistSchemas = {
     message: z.string(),
   }),
 };
-
 export type TPostMovieToPlaylistSchemas = {
   urlParams: z.infer<typeof postMovieToPlaylistSchemas.urlParams>;
   requirements: z.infer<typeof postMovieToPlaylistSchemas.requirements>;
@@ -108,7 +99,6 @@ export const deleteMovieFromPlaylistSchemas = {
     message: z.string(),
   }),
 };
-
 export type TDeleteMovieFromPlaylistSchemas = {
   urlParams: z.infer<typeof deleteMovieFromPlaylistSchemas.urlParams>;
   response: z.infer<typeof deleteMovieFromPlaylistSchemas.response>;

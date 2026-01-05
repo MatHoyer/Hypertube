@@ -47,10 +47,7 @@ export const PlaylistsPage = () => {
   return (
     <Layout>
       <LayoutHeader>
-        <LayoutHeaderResource
-          resource="playlists"
-          count={data?.totalCount ?? 0}
-        />
+        <LayoutHeaderResource resource="playlists" count={data?.total ?? 0} />
         <LayoutActions>
           <Button onClick={() => openDialog("playlist")}>
             <Plus />
@@ -64,7 +61,7 @@ export const PlaylistsPage = () => {
           <LoadingResource resource="playlists" />
         )}
         {isError && <ErrorResource resource="playlists" />}
-        {(data?.totalCount ?? 0) > playlistsPageSize && (
+        {(data?.total ?? 0) > playlistsPageSize && (
           <FloatingBar>
             <PagePagination
               page={page}
@@ -72,7 +69,7 @@ export const PlaylistsPage = () => {
                 setPage(value);
                 scrollTo({ top: 0, behavior: "smooth" });
               }}
-              maxPage={Math.ceil((data?.totalCount ?? 0) / playlistsPageSize)}
+              maxPage={data?.totalPages ?? 0}
             />
           </FloatingBar>
         )}

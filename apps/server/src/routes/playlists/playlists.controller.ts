@@ -1,6 +1,7 @@
 import {
   DownloadStates,
   getPlaylistSchemas,
+  getPlaylistsSchemas,
   languageCodes,
   TDeleteMovieFromPlaylistSchemas,
   TDeletePlaylistSchemas,
@@ -38,11 +39,17 @@ export const getPlaylists = async (
       },
     },
   });
-  if (!playlists) return c.json({ playlists: [], totalCount: 0 }, 200);
+  if (!playlists) {
+    return c.json(
+      { playlists: [], page, pageSize, total: 0, totalPages: 0 },
+      200
+    );
+  }
 
-  const totalCount = await prisma.playlist.count({
+  const total = await prisma.playlist.count({
     where: { userId: user.id },
   });
+  const totalPages = Math.ceil(total / pageSize);
 
   const playlistsWithFlatMovies = playlists.playlists.map((playlist) => {
     return {
@@ -54,7 +61,16 @@ export const getPlaylists = async (
     };
   });
 
-  return c.json({ playlists: playlistsWithFlatMovies, totalCount }, 200);
+  return c.json(
+    getPlaylistsSchemas.response.parse({
+      playlists: playlistsWithFlatMovies,
+      page,
+      pageSize,
+      total,
+      totalPages,
+    }),
+    200
+  );
 };
 
 export const getPlaylist = async (
