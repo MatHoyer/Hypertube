@@ -1,6 +1,7 @@
 import {
   DownloadStates,
   getMovieCastingSchema,
+  getMovieCommentSchemas,
   getMovieSchemas,
   getMoviesSchemas,
   hypertubeLogger,
@@ -492,8 +493,7 @@ export const getMovieComments = async (
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const { page, pageSize } = c.get("validatedSearchParams");
-  const user = c.get("user");
-  const userId = user?.id;
+  const { id: userId } = c.get("user");
 
   const movie = await prisma.movie.findUnique({ where: { tmdbId } });
   if (!movie) {
@@ -508,10 +508,13 @@ export const getMovieComments = async (
     pageSize
   );
 
-  if (result.data) {
-    return c.json({ ...result.data, total: result.data.totalComments }, 200);
-  }
-  return c.json({ message: result.message }, result.status);
+  return c.json(
+    getMovieCommentSchemas.response.parse({
+      ...result.data,
+      total: result.data.totalComments,
+    }),
+    200
+  );
 };
 
 export const commentMovie = async (

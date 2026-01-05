@@ -158,16 +158,13 @@ export const getCommentReplies = async (
     pageSize
   );
 
-  if (result.data) {
-    return c.json(
-      getCommentRepliesSchemas.response.parse({
-        ...result.data,
-        total: result.data.totalComments,
-      }),
-      200
-    );
-  }
-  return c.json({ message: result.message }, result.status);
+  return c.json(
+    getCommentRepliesSchemas.response.parse({
+      ...result.data,
+      total: result.data.totalComments,
+    }),
+    200
+  );
 };
 
 export const replyToComment = async (

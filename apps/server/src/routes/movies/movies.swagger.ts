@@ -548,10 +548,63 @@ export const moviesSwagger = {
       ],
       responses: {
         "200": {
-          description: "OK",
+          description: "Movie comments got get successfully",
           content: {
             "application/json": {
-              schema: getMovieCommentSchemas.response,
+              example: {
+                comments: [
+                  {
+                    id: "550e8400-e29b-41d4-a716-446655440000",
+                    userId: "user123",
+                    createdAt: "2026-01-05T10:30:00Z",
+                    updatedAt: "2026-01-05T10:30:00Z",
+                    content:
+                      "Great movie! I really enjoyed the cinematography.",
+                    deletedAt: null,
+                    user: {
+                      id: "user123",
+                      name: "John Doe",
+                      image: "https://example.com/avatars/john.jpg",
+                    },
+                    likesNumber: 15,
+                    isLikedByUser: true,
+                    isOwnComment: false,
+                    hasReplies: true,
+                  },
+                  {
+                    id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+                    userId: "user456",
+                    createdAt: "2026-01-04T15:20:00Z",
+                    updatedAt: "2026-01-04T16:45:00Z",
+                    content:
+                      "The plot was a bit confusing but the acting was top-notch.",
+                    deletedAt: null,
+                    user: {
+                      id: "user456",
+                      name: "Jane Smith",
+                      image: null,
+                    },
+                    likesNumber: 8,
+                    isLikedByUser: false,
+                    isOwnComment: true,
+                    hasReplies: false,
+                  },
+                ],
+                page: 1,
+                pageSize: 2,
+                total: 42,
+                totalPages: 21,
+              },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
             },
           },
         },
@@ -572,20 +625,34 @@ export const moviesSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: postMovieCommentSchemas.requirements,
+            example: {
+              content: "",
+            },
           },
         },
       },
       responses: {
         "201": {
-          description: "Created",
+          description: "Comment posted successfully",
           content: {
             "application/json": {
               schema: postMovieCommentSchemas.response,
+              example: {
+                message: "Comment succesfully posted on Movie",
+              },
             },
           },
         },
-        "400": { description: "Error creating comment " },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
+            },
+          },
+        },
       },
     },
   },

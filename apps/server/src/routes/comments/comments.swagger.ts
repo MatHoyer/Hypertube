@@ -275,16 +275,6 @@ export const commentsSwagger = {
             },
           },
         },
-        "400": {
-          description: "Unexpected error when getting comments on {parentId}",
-          content: {
-            "application/json": {
-              example: {
-                message: "Unexpected error when getting comments on {parentId}",
-              },
-            },
-          },
-        },
         "404": {
           description: "Comment not found",
           content: {
@@ -333,11 +323,11 @@ export const commentsSwagger = {
           },
         },
         "404": {
-          description: "{parentType} not found",
+          description: "Comment or Movie not found",
           content: {
             "application/json": {
               example: {
-                message: "{parentType} not found",
+                message: "Comment or Movie not found",
               },
             },
           },
