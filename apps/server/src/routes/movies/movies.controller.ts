@@ -1,6 +1,7 @@
 import {
   DownloadStates,
   getMovieCastingSchema,
+  getMovieCommentSchemas,
   getMovieSchemas,
   getMoviesSchemas,
   hypertubeLogger,
@@ -60,9 +61,9 @@ export const getMovies = async (
   const language = c.get("language");
 
   const genresTyped = tmdbGenresSchemas.safeParse(
-    genres ? genres.split("+") : []
+    genres ? genres.split(",") : []
   );
-  if (!genresTyped.success) return c.json(genresTyped.error, 404);
+  if (!genresTyped.success) return c.json(genresTyped.error, 400);
   const genreIds = genresTyped.data.map((filter) => tmdbGenres[filter]);
 
   const moviesPagination = await tmdbApi.getMovies({
@@ -91,11 +92,14 @@ export const getMovies = async (
     }),
   };
 
-  return c.json(getMoviesSchemas.response.parse(moviesWithStatutPagination));
+  return c.json(
+    getMoviesSchemas.response.parse(moviesWithStatutPagination),
+    200
+  );
 };
 
 export const getMovie = async (
-  c: Context<TUrlParamsParser<TGetMovieSchemas["urlParams"]> & TIsLogged>
+  c: Context<TIsLogged & TUrlParamsParser<TGetMovieSchemas["urlParams"]>>
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const language = c.get("language");
@@ -207,7 +211,8 @@ export const getMovie = async (
       isSubscribed,
       likesNumber,
       isLikedByUser,
-    })
+    }),
+    200
   );
 };
 
@@ -312,7 +317,7 @@ export const downloadMovie = async (
     hypertubeLogger.error(`Error downloading movie ${JSON.stringify(error)}`);
   }
 
-  return c.json({ message: "Movie downloaded started" });
+  return c.json({ message: "Movie downloaded started" }, 200);
 };
 
 export const downloadSubtitles = async (
@@ -371,7 +376,7 @@ export const downloadSubtitles = async (
     },
   });
 
-  return c.json({ message: "Subtitles downloaded" });
+  return c.json({ message: "Subtitles downloaded" }, 200);
 };
 
 export const subscribeToMovie = async (
@@ -391,6 +396,13 @@ export const subscribeToMovie = async (
     return c.json({ message: "Movie not found" }, 404);
   }
 
+  const movieSub = await prisma.movieSubscription.findUnique({
+    where: { movieId_userId: { movieId: dbMovie.id, userId } },
+  });
+  if (movieSub) {
+    return c.json({ message: "Already subscribe to this movie" }, 409);
+  }
+
   await prisma.movieSubscription.create({
     data: {
       movieId: dbMovie.id,
@@ -398,7 +410,7 @@ export const subscribeToMovie = async (
     },
   });
 
-  return c.json({ message: "Movie subscribed" });
+  return c.json({ message: "Movie subscribed" }, 200);
 };
 
 export const unsubscribeFromMovie = async (
@@ -418,6 +430,13 @@ export const unsubscribeFromMovie = async (
     return c.json({ message: "Movie not found" }, 404);
   }
 
+  const movieSub = await prisma.movieSubscription.findUnique({
+    where: { movieId_userId: { movieId: dbMovie.id, userId } },
+  });
+  if (!movieSub) {
+    return c.json({ message: "Already unsubscribe of this movie" }, 409);
+  }
+
   await prisma.movieSubscription.delete({
     where: {
       movieId_userId: {
@@ -427,7 +446,7 @@ export const unsubscribeFromMovie = async (
     },
   });
 
-  return c.json({ message: "Movie unsubscribed" });
+  return c.json({ message: "Movie unsubscribed" }, 200);
 };
 
 export const likeMovie = async (
@@ -461,7 +480,7 @@ export const deleteMovieLike = async (
     return c.json({ message: "Movie not found" }, 404);
   }
 
-  const result = await unlikeParent(id, movie.id);
+  const result = await unlikeParent(id, movie.id, ParentTypes.MOVIE);
   return c.json({ message: result.message }, result.status);
 };
 
@@ -474,8 +493,7 @@ export const getMovieComments = async (
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const { page, pageSize } = c.get("validatedSearchParams");
-  const user = c.get("user");
-  const userId = user?.id;
+  const { id: userId } = c.get("user");
 
   const movie = await prisma.movie.findUnique({ where: { tmdbId } });
   if (!movie) {
@@ -490,10 +508,13 @@ export const getMovieComments = async (
     pageSize
   );
 
-  if (result.data) {
-    return c.json(result.data);
-  }
-  return c.json({ message: result.message }, result.status);
+  return c.json(
+    getMovieCommentSchemas.response.parse({
+      ...result.data,
+      total: result.data.totalComments,
+    }),
+    200
+  );
 };
 
 export const commentMovie = async (
@@ -548,7 +569,7 @@ export const getMovieCasting = async (
 
   const tmdbApi = new TmdbApi();
   const casting = tmdbId ? await tmdbApi.getMovieCasting(tmdbId) : null;
-  if (!casting)
+  if (!casting) {
     return c.json(
       {
         id: tmdbId,
@@ -557,6 +578,7 @@ export const getMovieCasting = async (
       },
       200
     );
+  }
 
   casting.crew.map((person) => {
     // @ts-expect-error - i18next is not typed

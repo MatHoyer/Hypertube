@@ -170,8 +170,9 @@ export class TmdbApi {
     return {
       movies,
       page: rawMovies.page,
+      pageSize: 20,
+      total: rawMovies.total_results,
       totalPages: rawMovies.total_pages,
-      totalResults: rawMovies.total_results,
     };
   }
 

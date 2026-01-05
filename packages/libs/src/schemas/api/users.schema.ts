@@ -2,6 +2,54 @@ import z from "zod";
 import { accountsSchema } from "../database/accounts.schema.js";
 import { sessionSchema } from "../database/session.schema.js";
 import { userSchema } from "../database/user.schema.js";
+import { getPaginationSchemas } from "../utils/pagination.schema.js";
+
+export const getUsersSchemas = getPaginationSchemas({
+  response: z.object({
+    users: z.array(
+      userSchema.pick({
+        id: true,
+        name: true,
+        username: true,
+        displayUsername: true,
+        firstName: true,
+        lastName: true,
+        image: true,
+        createdAt: true,
+      })
+    ),
+  }),
+});
+
+export type TGetUsersSchemas = {
+  searchParams: z.infer<typeof getUsersSchemas.searchParams>;
+  response: z.infer<typeof getUsersSchemas.response>;
+};
+
+export const getUserSchemas = {
+  urlParams: z.object({ userId: userSchema.shape.id }),
+  response: z.object({
+    user: userSchema.pick({
+      id: true,
+      name: true,
+      username: true,
+      displayUsername: true,
+      firstName: true,
+      lastName: true,
+      image: true,
+      createdAt: true,
+    }),
+    stats: z.object({
+      totalLikes: z.number(),
+      totalComments: z.number(),
+    }),
+  }),
+};
+
+export type TGetUserSchemas = {
+  urlParams: z.infer<typeof getUserSchemas.urlParams>;
+  response: z.infer<typeof getUserSchemas.response>;
+};
 
 export const patchUsersSchemas = {
   urlParams: z.object({ userId: userSchema.shape.id }),
@@ -31,11 +79,9 @@ export type TPatchUsersSchemas = {
 };
 
 export const getAccountsUsersSchemas = {
-  response: z
-    .object({
-      accounts: accountsSchema,
-    })
-    .nullable(),
+  response: z.object({
+    accounts: accountsSchema,
+  }),
 };
 
 export type TGetAccountsUsersSchemas = {
@@ -43,40 +89,12 @@ export type TGetAccountsUsersSchemas = {
 };
 
 export const getSessionUsersSchemas = {
-  response: z
-    .object({
-      session: sessionSchema,
-      user: userSchema,
-    })
-    .nullable(),
+  response: z.object({
+    session: sessionSchema,
+    user: userSchema,
+  }),
 };
 
 export type TGetSessionUsersSchemas = {
   response: z.infer<typeof getSessionUsersSchemas.response>;
-};
-
-export const getUserSchemas = {
-  urlParams: z.object({ userId: userSchema.shape.id }),
-  response: z
-    .object({
-      user: userSchema.pick({
-        id: true,
-        name: true,
-        displayUsername: true,
-        firstName: true,
-        lastName: true,
-        image: true,
-        createdAt: true,
-      }),
-      stats: z.object({
-        totalLikes: z.number(),
-        totalComments: z.number(),
-      }),
-    })
-    .nullable(),
-};
-
-export type TGetUserSchemas = {
-  urlParams: z.infer<typeof getUserSchemas.urlParams>;
-  response: z.infer<typeof getUserSchemas.response>;
 };

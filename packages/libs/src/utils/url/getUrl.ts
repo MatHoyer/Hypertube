@@ -190,7 +190,9 @@ const routeSchemas = {
         .optional(),
     }),
     [ROUTES.API.COMMENTS]: z.object({
-      commentId: z.union([commentSchema.shape.id, z.literal("{commentId}")]),
+      commentId: z
+        .union([commentSchema.shape.id, z.literal("{commentId}")])
+        .optional(),
     }),
     [ROUTES.API.COMMENTS_REPLIES]: z.object({
       commentId: z.union([commentSchema.shape.id, z.literal("{commentId}")]),
@@ -290,12 +292,12 @@ const routes: {
       : "/api/oauth/credentials",
 
   [ROUTES.API.USERS]: ({ userId }) =>
-    "/api/users" + (userId ? `/${userId}` : ""),
+    userId ? `/api/users/${userId}` : "/api/users",
   [ROUTES.API.USERS_ACCOUNTS]: () => "/api/users/me/accounts",
   [ROUTES.API.USERS_SESSION]: () => "/api/users/me/session",
 
   [ROUTES.API.IMAGES]: ({ imageId }) =>
-    "/api/images" + (imageId ? `/${imageId}` : ""),
+    imageId ? `/api/images/${imageId}` : "/api/images",
 
   [ROUTES.API.MOVIES]: ({ tmdbId, resolution, subtitlesLanguage }) => {
     if (resolution && subtitlesLanguage) {
@@ -317,16 +319,21 @@ const routes: {
     `/api/movies/${tmdbId}/subscription`,
 
   [ROUTES.API.NOTIFICATIONS]: ({ notificationId }) =>
-    `/api/notifications` + (notificationId ? `/${notificationId}` : ""),
+    notificationId
+      ? `/api/notifications/${notificationId}`
+      : "/api/notifications",
   [ROUTES.API.NOTIFICATIONS_STATS]: () => "/api/notifications/stats",
   [ROUTES.API.NOTIFICATIONS_TEST]: () => "/api/notifications/test",
 
   [ROUTES.API.MOVIES_LIKE]: ({ tmdbId }) => `/api/movies/${tmdbId}/like`,
 
   [ROUTES.API.MOVIES_COMMENT]: ({ tmdbId, commentId }) =>
-    `/api/movies/${tmdbId}/comments${commentId ? `/${commentId}` : ""}`,
+    commentId
+      ? `/api/movies/${tmdbId}/comments/${commentId}`
+      : `/api/movies/${tmdbId}/comments`,
 
-  [ROUTES.API.COMMENTS]: ({ commentId }) => `/api/comments/${commentId}`,
+  [ROUTES.API.COMMENTS]: ({ commentId }) =>
+    commentId ? `/api/comments/${commentId}` : "/api/comments",
 
   [ROUTES.API.COMMENTS_REPLIES]: ({ commentId }) =>
     `/api/comments/${commentId}/replies`,

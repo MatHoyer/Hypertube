@@ -2,6 +2,7 @@ import {
   getNotificationsSchemas,
   getNotificationsSSESchemas,
   getNotificationsStatsSchemas,
+  groupBy,
   hypertubeLogger,
   notificationReadStatuses,
   notifications,
@@ -63,8 +64,11 @@ export const getNotifications = async (
     getNotificationsSchemas.response.parse({
       notifications,
       page,
+      pageSize,
+      total: notificationsCount,
       totalPages: Math.ceil(notificationsCount / pageSize),
-    })
+    }),
+    200
   );
 };
 
@@ -77,7 +81,7 @@ export const patchNotifications = async (
   const { id } = c.get("user");
 
   await prisma.notification.updateMany({
-    where: { userId: id, read: false },
+    where: { userId: id, read: !read },
     data: { read },
   });
 
@@ -120,11 +124,24 @@ export const getNotificationsSSE = async (c: Context<TIsLogged>) => {
 export const getNotificationsStats = async (c: Context<TIsLogged>) => {
   const { id } = c.get("user");
 
-  const totalUnreadNotifications = await prisma.notification.count({
-    where: { userId: id, read: false },
+  const notifications = await prisma.notification.groupBy({
+    where: { userId: id },
+    by: "read",
+    _count: true,
   });
+  const groupedNotifications = groupBy(notifications, "read");
+
+  const totalUnreadNotifications =
+    groupedNotifications["false"]?.[0]._count ?? 0;
+  const totalReadNotifications = groupedNotifications["true"]?.[0]._count ?? 0;
+  const totalNotifications = totalReadNotifications + totalUnreadNotifications;
+
   return c.json(
-    getNotificationsStatsSchemas.response.parse({ totalUnreadNotifications })
+    getNotificationsStatsSchemas.response.parse({
+      totalNotifications,
+      totalReadNotifications,
+      totalUnreadNotifications,
+    })
   );
 };
 

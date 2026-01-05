@@ -1,8 +1,12 @@
 import {
+  getAccountsUsersSchemas,
+  getSessionUsersSchemas,
   getUrl,
-  hypertubeLogger,
+  getUserSchemas,
+  getUsersSchemas,
   newUTCDate,
   ROUTES,
+  TGetUsersSchemas,
   TPatchUsersSchemas,
 } from "@hypertube/libs";
 import { TGetUserSchemas } from "@hypertube/libs/src/schemas/api/users.schema";
@@ -17,13 +21,89 @@ import { auth } from "../../lib/auth";
 import { betterAuthErrorTranslation } from "../../lib/better-auth/constants";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
+import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
+
+export const getUsers = async (
+  c: Context<TIsLogged & TSearchParamsParser<TGetUsersSchemas["searchParams"]>>
+) => {
+  const { page, pageSize } = c.get("validatedSearchParams");
+
+  const users = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      displayUsername: true,
+      firstName: true,
+      lastName: true,
+      image: true,
+      createdAt: true,
+    },
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+  });
+
+  const total = await prisma.user.count();
+  const totalPages = Math.ceil(total / pageSize);
+
+  return c.json(
+    getUsersSchemas.response.parse({
+      users,
+      page,
+      pageSize,
+      total,
+      totalPages,
+    }),
+    200
+  );
+};
+
+export const getUser = async (
+  c: Context<TIsLogged & TUrlParamsParser<TGetUserSchemas["urlParams"]>>
+) => {
+  const { userId } = c.get("validatedUrlParams");
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      displayUsername: true,
+      firstName: true,
+      lastName: true,
+      image: true,
+      createdAt: true,
+    },
+  });
+  if (!user) return c.json(null, 404);
+
+  const totalLikes = await prisma.like.count({
+    where: { userId },
+  });
+
+  const totalComments = await prisma.comment.count({
+    where: { userId },
+  });
+
+  return c.json(
+    getUserSchemas.response.parse({
+      user,
+      stats: {
+        totalLikes,
+        totalComments,
+      },
+    }),
+    200
+  );
+};
 
 export const patchUser = async (
   c: Context<
-    TUrlParamsParser<TPatchUsersSchemas["urlParams"]> &
-      TBodyParser<TPatchUsersSchemas["requirements"]> &
-      TIsLogged
+    TIsLogged &
+      TUrlParamsParser<TPatchUsersSchemas["urlParams"]> &
+      TBodyParser<TPatchUsersSchemas["requirements"]>
   >
 ) => {
   const body = c.get("validatedBody");
@@ -31,11 +111,17 @@ export const patchUser = async (
   const user = c.get("user");
 
   if (user.id !== userId) {
-    return c.json({ message: i18next.t("httpCode.401") }, 401);
+    return c.json(
+      {
+        message:
+          "You are not authorized to modify information that is not yours",
+      },
+      401
+    );
   }
 
-  if (body.oldPassword && body.password) {
-    try {
+  try {
+    if (body.oldPassword && body.password) {
       await auth.api.changePassword({
         body: {
           currentPassword: body.oldPassword,
@@ -43,18 +129,14 @@ export const patchUser = async (
         },
         headers: c.req.raw.headers,
       });
-    } catch (e) {
-      return c.json({ message: betterAuthErrorTranslation(e) }, 400);
-    }
-  } else if (body.password) {
-    try {
+    } else if (body.password) {
       await auth.api.setPassword({
         body: { newPassword: body.password },
         headers: c.req.raw.headers,
       });
-    } catch (e) {
-      return c.json({ message: betterAuthErrorTranslation(e) }, 400);
     }
+  } catch (e) {
+    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
   }
 
   delete body.oldPassword;
@@ -123,74 +205,21 @@ export const patchUser = async (
     where: { id: userId },
     data: body,
   });
-  return c.json({ message: "OK" }, 200);
+  return c.json({ message: "User updated successfully" }, 200);
 };
 
 export const getAccounts = async (c: Context<TIsLogged>) => {
-  try {
-    const accounts = await auth.api.listUserAccounts({
-      headers: c.req.raw.headers,
-    });
-    return c.json({ accounts }, 200);
-  } catch {
-    return c.json(null, 400);
-  }
+  const accounts = await auth.api.listUserAccounts({
+    headers: c.req.raw.headers,
+  });
+  return c.json(getAccountsUsersSchemas.response.parse({ accounts }), 200);
 };
 
 export const getSession = async (c: Context<TIsLogged>) => {
-  try {
-    const session = await auth.api.getSession({
-      headers: c.req.raw.headers,
-    });
-    return c.json(session, 200);
-  } catch {
-    return c.json(null, 400);
-  }
-};
+  const session = await auth.api.getSession({
+    headers: c.req.raw.headers,
+  });
+  if (!session) return c.json(null, 400);
 
-export const getUser = async (
-  c: Context<TUrlParamsParser<TGetUserSchemas["urlParams"]> & TIsLogged>
-) => {
-  const { userId } = c.get("validatedUrlParams");
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        username: true,
-        displayUsername: true,
-        firstName: true,
-        lastName: true,
-        image: true,
-        createdAt: true,
-      },
-    });
-
-    if (!user) {
-      return c.json(null, 404);
-    }
-
-    const totalLikes = await prisma.like.count({
-      where: { userId },
-    });
-
-    const totalComments = await prisma.comment.count({
-      where: { userId },
-    });
-    return c.json(
-      {
-        user,
-        stats: {
-          totalLikes,
-          totalComments,
-        },
-      },
-      200
-    );
-  } catch (e) {
-    hypertubeLogger.error(`Error getting user profile: ${e}`);
-    return c.json(null, 400);
-  }
+  return c.json(getSessionUsersSchemas.response.parse(session), 200);
 };

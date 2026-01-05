@@ -1,5 +1,4 @@
 import {
-  deleteCredentialsSchemas,
   getCredentialsSchemas,
   newUTCDate,
   postCredentialsSchemas,
@@ -30,7 +29,7 @@ export const getCredentials = async (c: Context<TIsLogged>) => {
     },
   });
 
-  return c.json(getCredentialsSchemas.response.parse(credentials));
+  return c.json(getCredentialsSchemas.response.parse(credentials), 200);
 };
 
 export const postCredentials = async (
@@ -54,7 +53,8 @@ export const postCredentials = async (
   });
 
   return c.json(
-    postCredentialsSchemas.response.parse({ clientId, clientSecret })
+    postCredentialsSchemas.response.parse({ clientId, clientSecret }),
+    200
   );
 };
 
@@ -66,13 +66,16 @@ export const deleteCredentials = async (
   const { credentialId } = c.get("validatedUrlParams");
   const { id: userId } = c.get("user");
 
+  const credential = await prisma.credential.findUnique({
+    where: { id: credentialId, userId },
+  });
+  if (!credential) return c.json({ message: "Credential not found" }, 404);
+
   await prisma.credential.delete({
     where: { id: credentialId, userId },
   });
 
-  return c.json(
-    deleteCredentialsSchemas.response.parse({ message: "Credential deleted" })
-  );
+  return c.json({ message: "Credential deleted" }, 200);
 };
 
 export const postToken = async (
@@ -113,6 +116,7 @@ export const postToken = async (
       expires_in: expiresIn * 60,
       token_type: "Bearer",
       expires_at: expiresAtSeconds,
-    })
+    }),
+    200
   );
 };

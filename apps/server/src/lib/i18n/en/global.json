@@ -2,11 +2,6 @@
   "global": {
     "hello": "Hello"
   },
-  "images": {
-    "notFound": "Image not found",
-    "invalidFile": "Invalid file",
-    "deleteFail": "Failed to delete image"
-  },
   "email": {
     "ignoreEmail": "If you did not request this email, you can safely ignore it.",
     "allRightsReserved": "All rights reserved.",

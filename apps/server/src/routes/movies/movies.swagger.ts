@@ -1,18 +1,20 @@
 import {
-  deleteMovieCommentSchemas,
   deleteMovieLikeSchemas,
+  deleteMovieSubscribeSchemas,
   getMovieCastingSchema,
   getMovieCommentSchemas,
   getMovieSchemas,
   getMoviesSchemas,
   getUrl,
   postMovieCommentSchemas,
+  postMovieDownloadResolutionSchemas,
+  postMovieDownloadSubtitlesSchemas,
   postMovieLikeSchemas,
-  putMovieWatchTimerSchemas,
+  postMovieSubscribeSchemas,
   ROUTES,
-  tmdbCategories,
   tmdbGenres,
-  tmdbSorts,
+  typedKeys,
+  typedValues,
 } from "@hypertube/libs";
 
 const tmdbIdPathParam = {
@@ -46,26 +48,37 @@ export const moviesSwagger = {
           in: "query",
           name: "category",
           required: false,
-          schema: getMoviesSchemas.searchParams.shape.category,
-          description: `Category : ${tmdbCategories
-            .map((category) => category)
-            .join(" / ")}`,
+          schema: {
+            type: "string",
+            enum: typedValues(
+              getMoviesSchemas.searchParams.shape.category.unwrap().enum
+            ),
+          },
         },
         {
           in: "query",
           name: "sort",
           required: false,
-          schema: getMoviesSchemas.searchParams.shape.sort,
-          description: `Sort : ${tmdbSorts.map((sort) => sort).join(" / ")}`,
+          schema: {
+            type: "string",
+            enum: typedValues(
+              getMoviesSchemas.searchParams.shape.sort.unwrap().enum
+            ),
+          },
         },
         {
           in: "query",
           name: "genres",
           required: false,
-          schema: getMoviesSchemas.searchParams.shape.genres,
-          description: `Genres : ${Object.keys(tmdbGenres)
-            .map((genre) => genre)
-            .join(" / ")}`,
+          schema: {
+            type: "array",
+            items: {
+              type: "string",
+              enum: typedKeys(tmdbGenres),
+            },
+          },
+          style: "form",
+          explode: false,
         },
       ],
       responses: {
@@ -73,7 +86,73 @@ export const moviesSwagger = {
           description: "OK",
           content: {
             "application/json": {
-              schema: getMoviesSchemas.response,
+              example: {
+                movies: [
+                  {
+                    id: 550,
+                    imdb_id: "tt0137523",
+                    original_title: "Fight Club",
+                    original_language: "en",
+                    title: "Fight Club",
+                    overview:
+                      "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.",
+                    genres: [
+                      {
+                        id: 18,
+                        name: "Drama",
+                      },
+                      {
+                        id: 53,
+                        name: "Thriller",
+                      },
+                    ],
+                    vote_average: 8.4,
+                    vote_count: 27500,
+                    popularity: 85.3,
+                    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+                    backdrop_path: "/fCayJrkfRaCRCTh8GqN30f8oyQF.jpg",
+                    release_date: "1999-10-15",
+                    adult: false,
+                    status: "DOWNLOADED",
+                  },
+                  {
+                    id: 155,
+                    imdb_id: "tt0468569",
+                    original_title: "The Dark Knight",
+                    original_language: "en",
+                    title: "The Dark Knight",
+                    overview:
+                      "Batman raises the stakes in his war on crime with the help of Lt. Jim Gordon and District Attorney Harvey Dent.",
+                    genres: [
+                      {
+                        id: 28,
+                        name: "Action",
+                      },
+                      {
+                        id: 80,
+                        name: "Crime",
+                      },
+                      {
+                        id: 18,
+                        name: "Drama",
+                      },
+                    ],
+                    vote_average: 9.0,
+                    vote_count: 31200,
+                    popularity: 120.5,
+                    poster_path: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+                    backdrop_path: "/hkBaDkMWbLaf8B1lsWsKX7Ew3Xq.jpg",
+                    release_date: "2008-07-18",
+                    adult: false,
+                    status: "NOT_DOWNLOADED",
+                  },
+                  null,
+                ],
+                page: 12,
+                pageSize: 20,
+                total: 835,
+                totalPages: 42,
+              },
             },
           },
         },
@@ -94,10 +173,266 @@ export const moviesSwagger = {
       ],
       responses: {
         "200": {
-          description: "OK",
+          description: "Get movie successfully",
           content: {
             "application/json": {
-              schema: getMovieSchemas.response,
+              example: {
+                resolutions: [
+                  {
+                    id: "cm5a8b9c1d2e3f4g5h6i7j8k9",
+                    resolution: "720p",
+                    size: "950MB",
+                    downloadState: "DOWNLOADED",
+                    provider: "YTS",
+                  },
+                  {
+                    id: "cm5a8b9c1d2e3f4g5h6i7j8k0",
+                    resolution: "1080p",
+                    size: "2.1GB",
+                    downloadState: "NOT_DOWNLOADED",
+                    provider: "YTS",
+                  },
+                ],
+                subtitles: [
+                  {
+                    id: "cm5sub1a2b3c4d5e6f7g8h9i0",
+                    language: "en",
+                    rating: 5,
+                    downloadLink:
+                      "https://yifysubtitles.org/subtitle/123456.zip",
+                    downloadState: "DOWNLOADED",
+                  },
+                  {
+                    id: "cm5sub1a2b3c4d5e6f7g8h9i1",
+                    language: "fr",
+                    rating: 4,
+                    downloadLink:
+                      "https://yifysubtitles.org/subtitle/123457.zip",
+                    downloadState: "NOT_DOWNLOADED",
+                  },
+                ],
+                isSubscribed: true,
+                likesNumber: 245,
+                isLikedByUser: true,
+                id: "cm5movie1a2b3c4d5e6f7g8h9",
+                tmdbId: 550,
+                imdbId: "tt0137523",
+                original_title: "Fight Club",
+                original_language: "en",
+                title: "Fight Club",
+                overview:
+                  "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.",
+                genres: [
+                  {
+                    id: 18,
+                    name: "Drama",
+                  },
+                ],
+                vote_average: 8.4,
+                vote_count: 27500,
+                popularity: 85.3,
+                poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+                backdrop_path: "/fCayJrkfRaCRCTh8GqN30f8oyQF.jpg",
+                release_date: "1999-10-15",
+                adult: false,
+              },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: null,
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.MOVIES, {
+    tmdbId: "{tmdbId}",
+    resolution: "{resolution}",
+  })]: {
+    post: {
+      summary: "Start movie resolution download (VPN required)",
+      tags: ["Movies"],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: postMovieDownloadResolutionSchemas.urlParams.shape.tmdbId,
+        },
+        {
+          in: "path",
+          name: "resolution",
+          required: true,
+          schema: {
+            type: "string",
+            enum: typedValues(
+              postMovieDownloadResolutionSchemas.urlParams.shape.resolution.enum
+            ),
+          },
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Movie downloaded started",
+          content: {
+            "application/json": {
+              example: { message: "Movie downloaded started" },
+            },
+          },
+        },
+        "400": {
+          description: "Resolution already downloaded or in downloading queue",
+          content: {
+            "application/json": {
+              example: {
+                message:
+                  "Resolution already downloaded or in downloading queue",
+              },
+            },
+          },
+        },
+        "404": {
+          description: "Movie or Resolution not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie or Resolution not found",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.MOVIES, {
+    tmdbId: "{tmdbId}",
+    subtitlesLanguage: "{subtitlesLanguage}",
+  })]: {
+    post: {
+      summary: "Download movie subtitles language (VPN required)",
+      tags: ["Movies"],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: postMovieDownloadSubtitlesSchemas.urlParams.shape.tmdbId,
+        },
+        {
+          in: "path",
+          name: "subtitlesLanguage",
+          required: true,
+          schema:
+            postMovieDownloadSubtitlesSchemas.urlParams.shape.subtitlesLanguage,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Subtitles downloaded",
+          content: {
+            "application/json": {
+              example: { message: "Subtitles downloaded" },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.MOVIES_SUBSCRIPTION, { tmdbId: "{tmdbId}" })]: {
+    post: {
+      summary: "Subscribe to movie",
+      tags: ["Movies"],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: postMovieSubscribeSchemas.urlParams.shape.tmdbId,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Movie subscribed",
+          content: {
+            "application/json": {
+              example: { message: "Movie subscribed" },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
+            },
+          },
+        },
+        "409": {
+          description: "Already subscribe to this movie",
+          content: {
+            "application/json": {
+              example: {
+                message: "Already subscribe to this movie",
+              },
+            },
+          },
+        },
+      },
+    },
+    delete: {
+      summary: "Unsubscribe to movie",
+      tags: ["Movies"],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: deleteMovieSubscribeSchemas.urlParams.shape.tmdbId,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Movie unsubscribed",
+          content: {
+            "application/json": {
+              example: { message: "Movie unsubscribed" },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
+            },
+          },
+        },
+        "409": {
+          description: "Already unsubscribe of this movie",
+          content: {
+            "application/json": {
+              example: {
+                message: "Already unsubscribe of this movie",
+              },
             },
           },
         },
@@ -108,36 +443,80 @@ export const moviesSwagger = {
     post: {
       summary: "Like a movie",
       tags: ["Movies"],
-      parameters: [tmdbIdPathParam],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: postMovieLikeSchemas.urlParams.shape.tmdbId,
+        },
+      ],
       responses: {
         "201": {
-          description: "Created",
+          description: "Movie liked successfully",
           content: {
             "application/json": {
-              schema: postMovieLikeSchemas.response,
+              example: { message: "Movie liked successfully" },
             },
           },
         },
-        "400": {
-          description: "Error on like movie",
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
+            },
+          },
+        },
+        "409": {
+          description: "Movie already liked",
+          content: {
+            "application/json": {
+              example: { message: "Movie already liked" },
+            },
+          },
         },
       },
     },
     delete: {
       summary: "Dislike a movie",
       tags: ["Movies"],
-      parameters: [tmdbIdPathParam],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: deleteMovieLikeSchemas.urlParams.shape.tmdbId,
+        },
+      ],
       responses: {
         "200": {
-          description: "OK",
+          description: "Movie unliked successfully",
           content: {
             "application/json": {
-              schema: deleteMovieLikeSchemas.response,
+              example: { message: "Movie unliked successfully" },
             },
           },
         },
-        "400": {
-          description: "Error on dislike a movie",
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
+            },
+          },
+        },
+        "409": {
+          description: "Movie already unliked",
+          content: {
+            "application/json": {
+              example: { message: "Movie already unliked" },
+            },
+          },
         },
       },
     },
@@ -168,10 +547,63 @@ export const moviesSwagger = {
       ],
       responses: {
         "200": {
-          description: "OK",
+          description: "Movie comments got get successfully",
           content: {
             "application/json": {
-              schema: getMovieCommentSchemas.response,
+              example: {
+                comments: [
+                  {
+                    id: "550e8400-e29b-41d4-a716-446655440000",
+                    userId: "user123",
+                    createdAt: "2026-01-05T10:30:00Z",
+                    updatedAt: "2026-01-05T10:30:00Z",
+                    content:
+                      "Great movie! I really enjoyed the cinematography.",
+                    deletedAt: null,
+                    user: {
+                      id: "user123",
+                      name: "John Doe",
+                      image: "https://example.com/avatars/john.jpg",
+                    },
+                    likesNumber: 15,
+                    isLikedByUser: true,
+                    isOwnComment: false,
+                    hasReplies: true,
+                  },
+                  {
+                    id: "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+                    userId: "user456",
+                    createdAt: "2026-01-04T15:20:00Z",
+                    updatedAt: "2026-01-04T16:45:00Z",
+                    content:
+                      "The plot was a bit confusing but the acting was top-notch.",
+                    deletedAt: null,
+                    user: {
+                      id: "user456",
+                      name: "Jane Smith",
+                      image: null,
+                    },
+                    likesNumber: 8,
+                    isLikedByUser: false,
+                    isOwnComment: true,
+                    hasReplies: false,
+                  },
+                ],
+                page: 1,
+                pageSize: 2,
+                total: 42,
+                totalPages: 21,
+              },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
             },
           },
         },
@@ -192,54 +624,33 @@ export const moviesSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: postMovieCommentSchemas.requirements,
+            example: {
+              content: "",
+            },
           },
         },
       },
       responses: {
         "201": {
-          description: "Created",
+          description: "Comment posted successfully",
           content: {
             "application/json": {
-              schema: postMovieCommentSchemas.response,
+              example: {
+                message: "Comment succesfully posted on Movie",
+              },
             },
           },
         },
-        "400": { description: "Error creating comment " },
-      },
-    },
-  },
-  [getUrl(ROUTES.API.MOVIES_COMMENT, {
-    tmdbId: "{tmdbId}",
-    commentId: "{commentId}",
-  })]: {
-    delete: {
-      summary: "Delete a movie comment",
-      tags: ["Movies"],
-      parameters: [
-        {
-          in: "path",
-          name: "tmdbId",
-          required: true,
-          schema: deleteMovieCommentSchemas.urlParams.shape.tmdbId,
-        },
-        {
-          in: "path",
-          name: "commentId",
-          required: true,
-          schema: deleteMovieCommentSchemas.urlParams.shape.commentId,
-        },
-      ],
-      responses: {
-        "200": {
-          description: "Comment deleted",
+        "404": {
+          description: "Movie not found",
           content: {
             "application/json": {
-              schema: deleteMovieCommentSchemas.response,
+              example: {
+                message: "Movie not found",
+              },
             },
           },
         },
-        "400": { description: "Error deleting comment" },
       },
     },
   },
@@ -252,16 +663,30 @@ export const moviesSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: putMovieWatchTimerSchemas.requirements,
+            example: {
+              timestamp: 0,
+            },
           },
         },
       },
       responses: {
         "200": {
-          description: "OK",
+          description: "Movie watch timer updated",
           content: {
             "application/json": {
-              schema: putMovieWatchTimerSchemas.response,
+              example: {
+                message: "Movie watch timer updated",
+              },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
             },
           },
         },
@@ -279,6 +704,38 @@ export const moviesSwagger = {
           content: {
             "application/json": {
               schema: getMovieCastingSchema.response,
+              example: {
+                id: 550,
+                cast: [
+                  {
+                    adult: false,
+                    gender: 2,
+                    id: 287,
+                    name: "Brad Pitt",
+                    original_name: "Brad Pitt",
+                    popularity: 78.2,
+                    profile_path: "/kU3B75TyRiCgE270EyZnHjfivoq.jpg",
+                    credit_id: "52fe4250c3a36847f80149f7",
+                    cast_id: 5,
+                    character: "Tyler Durden",
+                    order: 0,
+                  },
+                ],
+                crew: [
+                  {
+                    adult: false,
+                    gender: 2,
+                    id: 7467,
+                    name: "David Fincher",
+                    original_name: "David Fincher",
+                    popularity: 52.3,
+                    profile_path: "/tpEczFclQZeKAiCeKZZ0adRvtfz.jpg",
+                    credit_id: "52fe4250c3a36847f8014a05",
+                    department: "Directing",
+                    job: "Director",
+                  },
+                ],
+              },
             },
           },
         },

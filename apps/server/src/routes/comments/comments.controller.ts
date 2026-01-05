@@ -1,10 +1,15 @@
 import {
-  hypertubeLogger,
+  getCommentRepliesSchemas,
+  getCommentSchemas,
+  getCommentsSchemas,
   notifications,
   ParentTypes,
+  patchCommentSchemas,
   TDeleteCommentLike,
   TDeleteCommentSchemas,
   TGetCommentRepliesSchemas,
+  TGetCommentSchemas,
+  TGetCommentsSchemas,
   TPatchCommentSchemas,
   TPostCommentLikeSchemas,
   TPostCommentReplySchemas,
@@ -17,6 +22,117 @@ import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import { commentParent, getParentComments } from "../global/comment.global";
 import { likeParent, unlikeParent } from "../global/like.global";
+
+export const getComments = async (
+  c: Context<
+    TIsLogged & TSearchParamsParser<TGetCommentsSchemas["searchParams"]>
+  >
+) => {
+  const { page, pageSize } = c.get("validatedSearchParams");
+
+  const comments = await prisma.comment.findMany({
+    skip: (page - 1) * pageSize,
+    take: pageSize,
+  });
+
+  const total = await prisma.comment.count();
+  const totalPages = Math.ceil(total / pageSize);
+
+  return c.json(
+    getCommentsSchemas.response.parse({
+      comments,
+      page,
+      pageSize,
+      total,
+      totalPages,
+    }),
+    200
+  );
+};
+
+export const getComment = async (
+  c: Context<TIsLogged & TUrlParamsParser<TGetCommentSchemas["urlParams"]>>
+) => {
+  const { commentId } = c.get("validatedUrlParams");
+
+  const comment = await prisma.comment.findUnique({ where: { id: commentId } });
+  if (!comment) return c.json(null, 404);
+
+  return c.json(getCommentSchemas.response.parse(comment), 200);
+};
+
+export const patchComment = async (
+  c: Context<
+    TIsLogged &
+      TUrlParamsParser<TPatchCommentSchemas["urlParams"]> &
+      TBodyParser<TPatchCommentSchemas["requirements"]>
+  >
+) => {
+  const body = c.get("validatedBody");
+  const user = c.get("user");
+  const { commentId } = c.get("validatedUrlParams");
+
+  const comment = await prisma.comment.findUnique({
+    where: { id: commentId },
+  });
+
+  if (!comment) {
+    return c.json({ message: "Comment not found" }, 404);
+  }
+  if (comment.deletedAt) {
+    return c.json({ message: "Comment is already deleted" }, 410);
+  }
+
+  if (comment.userId !== user.id) {
+    return c.json({ message: "You can only edit your own comment" }, 401);
+  }
+
+  await prisma.comment.update({
+    where: { id: commentId },
+    data: {
+      content: body.content,
+      updatedAt: new Date(),
+    },
+  });
+
+  return c.json(
+    patchCommentSchemas.response.parse({
+      message: "Comment updated successfully",
+    }),
+    200
+  );
+};
+
+export const deleteComment = async (
+  c: Context<TIsLogged & TUrlParamsParser<TDeleteCommentSchemas["urlParams"]>>
+) => {
+  const { commentId } = c.get("validatedUrlParams");
+  const user = c.get("user");
+
+  const comment = await prisma.comment.findFirst({
+    where: { id: commentId },
+  });
+
+  if (!comment) {
+    return c.json({ message: "Comment not found" }, 404);
+  }
+  if (comment.userId !== user.id) {
+    return c.json({ message: "You can only delete your own comment" }, 401);
+  }
+  if (comment.deletedAt) {
+    return c.json({ message: "Comment is already deleted" }, 410);
+  }
+
+  await prisma.comment.update({
+    where: { id: commentId },
+    data: {
+      content: "comments.deleted",
+      deletedAt: new Date(),
+    },
+  });
+
+  return c.json({ message: "Comment deleted successfully" }, 200);
+};
 
 export const getCommentReplies = async (
   c: Context<
@@ -31,7 +147,7 @@ export const getCommentReplies = async (
 
   const comment = await prisma.comment.findUnique({ where: { id: commentId } });
   if (!comment) {
-    return c.json({ message: "Comment not found " }, 404);
+    return c.json({ message: "Comment not found" }, 404);
   }
 
   const result = await getParentComments(
@@ -42,47 +158,13 @@ export const getCommentReplies = async (
     pageSize
   );
 
-  if (result.data) {
-    return c.json(result.data);
-  }
-  return c.json({ message: result.message }, result.status);
-};
-
-export const likeComment = async (
-  c: Context<TIsLogged & TUrlParamsParser<TPostCommentLikeSchemas["urlParams"]>>
-) => {
-  const { commentId } = c.get("validatedUrlParams");
-  const { id } = c.get("user");
-
-  const comment = await prisma.comment.findUnique({ where: { id: commentId } });
-  if (!comment) {
-    return c.json({ message: "Comment not found" }, 404);
-  }
-  if (comment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 400);
-  }
-
-  if (comment.parentType === ParentTypes.MOVIE) {
-    const movie = await prisma.movie.findUnique({
-      where: { id: comment.parentId },
-    });
-    if (!movie) {
-      return c.json({ message: "Movie not found" }, 404);
-    }
-
-    if (comment.userId !== id) {
-      await generateNotification(
-        comment.userId,
-        notifications.NEW_COMMENT_LIKE,
-        {
-          tmdbId: movie.tmdbId,
-        }
-      );
-    }
-  }
-
-  const result = await likeParent(id, comment.id, ParentTypes.COMMENT);
-  return c.json({ message: result.message }, result.status);
+  return c.json(
+    getCommentRepliesSchemas.response.parse({
+      ...result.data,
+      total: result.data.totalComments,
+    }),
+    200
+  );
 };
 
 export const replyToComment = async (
@@ -103,7 +185,7 @@ export const replyToComment = async (
     return c.json({ message: "Comment not found" }, 404);
   }
   if (parentComment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 400);
+    return c.json({ message: "Comment is already deleted" }, 410);
   }
 
   if (parentComment.parentType !== ParentTypes.MOVIE) {
@@ -135,6 +217,43 @@ export const replyToComment = async (
   return c.json({ message: result.message }, result.status);
 };
 
+export const likeComment = async (
+  c: Context<TIsLogged & TUrlParamsParser<TPostCommentLikeSchemas["urlParams"]>>
+) => {
+  const { commentId } = c.get("validatedUrlParams");
+  const { id } = c.get("user");
+
+  const comment = await prisma.comment.findUnique({ where: { id: commentId } });
+  if (!comment) {
+    return c.json({ message: "Comment not found" }, 404);
+  }
+  if (comment.deletedAt) {
+    return c.json({ message: "Comment is already deleted" }, 410);
+  }
+
+  if (comment.parentType === ParentTypes.MOVIE) {
+    const movie = await prisma.movie.findUnique({
+      where: { id: comment.parentId },
+    });
+    if (!movie) {
+      return c.json({ message: "Movie not found" }, 404);
+    }
+
+    if (comment.userId !== id) {
+      await generateNotification(
+        comment.userId,
+        notifications.NEW_COMMENT_LIKE,
+        {
+          tmdbId: movie.tmdbId,
+        }
+      );
+    }
+  }
+
+  const result = await likeParent(id, comment.id, ParentTypes.COMMENT);
+  return c.json({ message: result.message }, result.status);
+};
+
 export const deleteCommentLike = async (
   c: Context<TIsLogged & TUrlParamsParser<TDeleteCommentLike["urlParams"]>>
 ) => {
@@ -147,84 +266,9 @@ export const deleteCommentLike = async (
     return c.json({ message: "Comment not found" }, 404);
   }
   if (comment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 400);
+    return c.json({ message: "Comment is already deleted" }, 410);
   }
 
-  const result = await unlikeParent(id, commentId);
+  const result = await unlikeParent(id, commentId, ParentTypes.COMMENT);
   return c.json({ message: result.message }, result.status);
-};
-
-export const deleteComment = async (
-  c: Context<TIsLogged & TUrlParamsParser<TDeleteCommentSchemas["urlParams"]>>
-) => {
-  const { commentId } = c.get("validatedUrlParams");
-  const { id } = c.get("user");
-
-  const comment = await prisma.comment.findFirst({
-    where: {
-      id: commentId,
-      userId: id,
-    },
-  });
-
-  if (!comment) {
-    return c.json({ message: "Comment not found or unauthorized" }, 404);
-  }
-  if (comment.deletedAt) {
-    return c.json({ message: "Comment already deleted" }, 400);
-  }
-
-  try {
-    await prisma.comment.update({
-      where: { id: commentId },
-      data: {
-        content: "comments.deleted",
-        deletedAt: new Date(),
-      },
-    });
-    return c.json({ message: "Comment deleted successfully" }, 200);
-  } catch (error) {
-    hypertubeLogger.error(`Error when deleting comment: ${error}`);
-    return c.json({ message: "Failed to delete comment" }, 500);
-  }
-};
-
-export const patchComment = async (
-  c: Context<
-    TIsLogged &
-      TUrlParamsParser<TPatchCommentSchemas["urlParams"]> &
-      TBodyParser<TPatchCommentSchemas["requirements"]>
-  >
-) => {
-  const body = c.get("validatedBody");
-  const { id } = c.get("user");
-  const { commentId } = c.get("validatedUrlParams");
-
-  const comment = await prisma.comment.findUnique({
-    where: { id: commentId },
-  });
-
-  if (!comment) {
-    return c.json({ message: "Comment not found" }, 404);
-  }
-  if (comment.deletedAt) {
-    return c.json({ message: "Comment is deleted" }, 400);
-  }
-
-  if (comment.userId !== id) {
-    return c.json({ message: "You can only edit your own comment" }, 401);
-  }
-
-  const updatedComment = await prisma.comment.update({
-    where: { id: commentId },
-    data: {
-      content: body.content,
-      updatedAt: new Date(),
-    },
-  });
-
-  return c.json({
-    message: "Comment updated successfully",
-    comment: updatedComment,
-  });
 };

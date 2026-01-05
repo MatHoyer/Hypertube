@@ -6,15 +6,13 @@ import {
   tmdbSorts,
 } from "../../const/tmdb.const.js";
 import { typedKeys } from "../../utils/object.utils.js";
-import {
-  commentResponseSchema,
-  commentSchema,
-} from "../database/comments.schema.js";
+import { commentResponseSchema } from "../database/comments.schema.js";
 import {
   movieSchema,
   resolutionSchema,
   subtitleSchema,
 } from "../database/movie.schema.js";
+import { getPaginationSchemas } from "../utils/pagination.schema.js";
 
 export const tmdbMovieSchema = z.object({
   id: z.coerce.number().int().nonnegative(),
@@ -45,9 +43,8 @@ export const tmdbMovieSchema = z.object({
 
 export type TTmdbMovieSchema = z.infer<typeof tmdbMovieSchema>;
 
-export const getMoviesSchemas = {
+export const getMoviesSchemas = getPaginationSchemas({
   searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
     query: z.string().optional(),
     category: z.enum(tmdbCategories).optional(),
     sort: z.enum(tmdbSorts).optional(),
@@ -55,22 +52,21 @@ export const getMoviesSchemas = {
       .string()
       .regex(
         new RegExp(
-          `^(${typedKeys(tmdbGenres).join("|")})(\\+(${typedKeys(
+          `^(${typedKeys(tmdbGenres).join("|")})(\\,(${typedKeys(
             tmdbGenres
           ).join("|")}))*$`
         )
       )
-      .optional(),
+      .optional()
+      .catch(undefined),
   }),
   response: z.object({
     movies: z.array(
       tmdbMovieSchema.extend({ status: z.enum(DownloadStates) }).nullable()
     ),
-    page: z.number(),
-    totalPages: z.number(),
-    totalResults: z.number(),
   }),
-};
+  options: { withPageSize: false },
+});
 export type TGetMoviesSchemas = {
   searchParams: z.infer<typeof getMoviesSchemas.searchParams>;
   response: z.infer<typeof getMoviesSchemas.response>;
@@ -80,34 +76,32 @@ export const getMovieSchemas = {
   urlParams: z.object({
     tmdbId: movieSchema.shape.tmdbId,
   }),
-  response: z
-    .object({
-      ...tmdbMovieSchema.pick({
-        original_title: true,
-        original_language: true,
-        title: true,
-        overview: true,
+  response: z.object({
+    ...tmdbMovieSchema.pick({
+      original_title: true,
+      original_language: true,
+      title: true,
+      overview: true,
 
-        genres: true,
+      genres: true,
 
-        vote_average: true,
-        vote_count: true,
-        popularity: true,
+      vote_average: true,
+      vote_count: true,
+      popularity: true,
 
-        poster_path: true,
-        backdrop_path: true,
+      poster_path: true,
+      backdrop_path: true,
 
-        release_date: true,
-        adult: true,
-      }).shape,
-      ...movieSchema.shape,
-      resolutions: z.array(resolutionSchema),
-      subtitles: z.array(subtitleSchema),
-      isSubscribed: z.boolean(),
-      likesNumber: z.number().int().nonnegative(),
-      isLikedByUser: z.boolean(),
-    })
-    .nullable(),
+      release_date: true,
+      adult: true,
+    }).shape,
+    ...movieSchema.shape,
+    resolutions: z.array(resolutionSchema),
+    subtitles: z.array(subtitleSchema),
+    isSubscribed: z.boolean(),
+    likesNumber: z.number().int().nonnegative(),
+    isLikedByUser: z.boolean(),
+  }),
 };
 export type TGetMovieSchemas = {
   urlParams: z.infer<typeof getMovieSchemas.urlParams>;
@@ -169,6 +163,33 @@ export type TPostMovieDownloadSubtitlesSchemas = {
   response: z.infer<typeof postMovieDownloadSubtitlesSchemas.response>;
 };
 
+export const postMovieSubscribeSchemas = {
+  urlParams: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+
+export type TPostMovieSubscribeSchemas = {
+  urlParams: z.infer<typeof postMovieSubscribeSchemas.urlParams>;
+  response: z.infer<typeof postMovieSubscribeSchemas.response>;
+};
+
+export const deleteMovieSubscribeSchemas = {
+  urlParams: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+export type TDeleteMovieSubscribeSchemas = {
+  urlParams: z.infer<typeof deleteMovieSubscribeSchemas.urlParams>;
+  response: z.infer<typeof deleteMovieSubscribeSchemas.response>;
+};
+
 export const postMovieLikeSchemas = {
   urlParams: z.object({ tmdbId: movieSchema.shape.tmdbId }),
   response: z.object({
@@ -193,22 +214,14 @@ export type TDeleteMovieLikeSchemas = {
   response: z.infer<typeof deleteMovieLikeSchemas.response>;
 };
 
-export const getMovieCommentSchemas = {
+export const getMovieCommentSchemas = getPaginationSchemas({
   urlParams: z.object({
     tmdbId: movieSchema.shape.tmdbId,
   }),
-  searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
-    pageSize: z.coerce.number().int().positive().max(100).default(10),
-  }),
   response: z.object({
     comments: z.array(commentResponseSchema),
-    page: z.number(),
-    pageSize: z.number(),
-    totalComments: z.number(),
-    totalPages: z.number(),
   }),
-};
+});
 
 export type TGetMovieCommentsSchemas = {
   urlParams: z.infer<typeof getMovieCommentSchemas.urlParams>;
@@ -232,48 +245,6 @@ export type TPostMovieCommentSchemas = {
   urlParams: z.infer<typeof postMovieCommentSchemas.urlParams>;
   requirements: z.infer<typeof postMovieCommentSchemas.requirements>;
   response: z.infer<typeof postMovieCommentSchemas.response>;
-};
-
-export const deleteMovieCommentSchemas = {
-  urlParams: z.object({
-    tmdbId: movieSchema.shape.tmdbId,
-    commentId: commentSchema.shape.id,
-  }),
-  response: z.object({
-    message: z.string(),
-  }),
-};
-
-export type TDeleteMovieCommentSchemas = {
-  urlParams: z.infer<typeof deleteMovieCommentSchemas.urlParams>;
-  response: z.infer<typeof deleteMovieCommentSchemas.response>;
-};
-
-export const deleteMovieSubscribeSchemas = {
-  urlParams: z.object({
-    tmdbId: movieSchema.shape.tmdbId,
-  }),
-  response: z.object({
-    message: z.string(),
-  }),
-};
-export type TDeleteMovieSubscribeSchemas = {
-  urlParams: z.infer<typeof deleteMovieSubscribeSchemas.urlParams>;
-  response: z.infer<typeof deleteMovieSubscribeSchemas.response>;
-};
-
-export const postMovieSubscribeSchemas = {
-  urlParams: z.object({
-    tmdbId: movieSchema.shape.tmdbId,
-  }),
-  response: z.object({
-    message: z.string(),
-  }),
-};
-
-export type TPostMovieSubscribeSchemas = {
-  urlParams: z.infer<typeof postMovieSubscribeSchemas.urlParams>;
-  response: z.infer<typeof postMovieSubscribeSchemas.response>;
 };
 
 export const putMovieWatchTimerSchemas = {

@@ -2,6 +2,8 @@ import {
   deleteCommentLikeSchemas,
   deleteCommentSchemas,
   getCommentRepliesSchemas,
+  getCommentSchemas,
+  getCommentsSchemas,
   patchCommentSchemas,
   postCommentLikeSchemas,
   postCommentReplySchemas,
@@ -14,13 +16,44 @@ import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
   deleteComment,
   deleteCommentLike,
+  getComment,
   getCommentReplies,
+  getComments,
   likeComment,
   patchComment,
   replyToComment,
 } from "./comments.controller";
 
 const commentsRouter = new Hono();
+
+commentsRouter.get(
+  "/",
+  isLogged,
+  searchParamsParser(getCommentsSchemas.searchParams),
+  getComments
+);
+
+commentsRouter.get(
+  "/:commentId",
+  isLogged,
+  urlParamsParser(getCommentSchemas.urlParams),
+  getComment
+);
+
+commentsRouter.patch(
+  "/:commentId",
+  isLogged,
+  urlParamsParser(patchCommentSchemas.urlParams),
+  bodyParser(patchCommentSchemas.requirements),
+  patchComment
+);
+
+commentsRouter.delete(
+  "/:commentId",
+  isLogged,
+  urlParamsParser(deleteCommentSchemas.urlParams),
+  deleteComment
+);
 
 commentsRouter.get(
   "/:commentId/replies",
@@ -31,13 +64,6 @@ commentsRouter.get(
 );
 
 commentsRouter.post(
-  "/:commentId/like",
-  isLogged,
-  urlParamsParser(postCommentLikeSchemas.urlParams),
-  likeComment
-);
-
-commentsRouter.post(
   "/:commentId/replies",
   isLogged,
   urlParamsParser(postCommentReplySchemas.urlParams),
@@ -45,26 +71,18 @@ commentsRouter.post(
   replyToComment
 );
 
+commentsRouter.post(
+  "/:commentId/like",
+  isLogged,
+  urlParamsParser(postCommentLikeSchemas.urlParams),
+  likeComment
+);
+
 commentsRouter.delete(
   "/:commentId/like",
   isLogged,
   urlParamsParser(deleteCommentLikeSchemas.urlParams),
   deleteCommentLike
-);
-
-commentsRouter.delete(
-  "/:commentId",
-  isLogged,
-  urlParamsParser(deleteCommentSchemas.urlParams),
-  deleteComment
-);
-
-commentsRouter.patch(
-  "/:commentId",
-  isLogged,
-  urlParamsParser(patchCommentSchemas.urlParams),
-  bodyParser(patchCommentSchemas.requirements),
-  patchComment
 );
 
 export default commentsRouter;
