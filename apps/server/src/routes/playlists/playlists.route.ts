@@ -29,19 +29,19 @@ playlistsRouter.get(
   getPlaylists
 );
 
+playlistsRouter.post(
+  "/",
+  isLogged,
+  bodyParser(postPlaylistSchemas.requirements),
+  postPlaylist
+);
+
 playlistsRouter.get(
   "/:playlistId",
   isLogged,
   urlParamsParser(getPlaylistSchemas.urlParams),
   searchParamsParser(getPlaylistSchemas.searchParams),
   getPlaylist
-);
-
-playlistsRouter.post(
-  "/",
-  isLogged,
-  bodyParser(postPlaylistSchemas.requirements),
-  postPlaylist
 );
 
 playlistsRouter.delete(

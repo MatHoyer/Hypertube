@@ -28,6 +28,19 @@ export type TGetPlaylistsSchemas = {
   response: z.infer<typeof getPlaylistsSchemas.response>;
 };
 
+export const postPlaylistSchemas = {
+  requirements: z.object({
+    playlistName: playlistSchema.shape.name.trim().min(1),
+  }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+export type TPostPlaylistSchemas = {
+  requirements: z.infer<typeof postPlaylistSchemas.requirements>;
+  response: z.infer<typeof postPlaylistSchemas.response>;
+};
+
 export const getPlaylistSchemas = {
   urlParams: z.object({ playlistId: playlistSchema.shape.id }),
   searchParams: z.object({
@@ -49,19 +62,6 @@ export type TGetPlaylistSchemas = {
   urlParams: z.infer<typeof getPlaylistSchemas.urlParams>;
   searchParams: z.infer<typeof getPlaylistSchemas.searchParams>;
   response: z.infer<typeof getPlaylistSchemas.response>;
-};
-
-export const postPlaylistSchemas = {
-  requirements: z.object({
-    playlistName: playlistSchema.shape.name.trim().min(1),
-  }),
-  response: z.object({
-    message: z.string(),
-  }),
-};
-export type TPostPlaylistSchemas = {
-  requirements: z.infer<typeof postPlaylistSchemas.requirements>;
-  response: z.infer<typeof postPlaylistSchemas.response>;
 };
 
 export const deletePlaylistSchemas = {

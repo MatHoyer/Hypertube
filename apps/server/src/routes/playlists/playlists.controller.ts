@@ -73,6 +73,26 @@ export const getPlaylists = async (
   );
 };
 
+export const postPlaylist = async (
+  c: Context<TIsLogged & TBodyParser<TPostPlaylistSchemas["requirements"]>>
+) => {
+  const { playlistName } = c.get("validatedBody");
+  const user = c.get("user");
+
+  const findPlaylist = await prisma.playlist.findUnique({
+    where: { name_userId: { name: playlistName, userId: user.id } },
+  });
+  if (findPlaylist) {
+    return c.json({ message: "Already have a playlist with this name" }, 409);
+  }
+
+  await prisma.playlist.create({
+    data: { name: playlistName, userId: user.id },
+  });
+
+  return c.json({ message: "User's playlist successfully created" }, 200);
+};
+
 export const getPlaylist = async (
   c: Context<
     TIsLogged &
@@ -132,26 +152,6 @@ export const getPlaylist = async (
     }),
     200
   );
-};
-
-export const postPlaylist = async (
-  c: Context<TIsLogged & TBodyParser<TPostPlaylistSchemas["requirements"]>>
-) => {
-  const { playlistName } = c.get("validatedBody");
-  const user = c.get("user");
-
-  const findPlaylist = await prisma.playlist.findUnique({
-    where: { name_userId: { name: playlistName, userId: user.id } },
-  });
-  if (findPlaylist) {
-    return c.json({ message: "Already have a playlist with this name" }, 409);
-  }
-
-  await prisma.playlist.create({
-    data: { name: playlistName, userId: user.id },
-  });
-
-  return c.json({ message: "OK" }, 200);
 };
 
 export const deletePlaylist = async (

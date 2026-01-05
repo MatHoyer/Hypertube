@@ -5,7 +5,6 @@ import {
   getPlaylistsSchemas,
   getUrl,
   postMovieToPlaylistSchemas,
-  postPlaylistSchemas,
   ROUTES,
 } from "@hypertube/libs";
 
@@ -86,7 +85,6 @@ export const playlistsSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: postPlaylistSchemas.requirements,
             example: {
               playlistName: "",
             },
@@ -98,7 +96,15 @@ export const playlistsSwagger = {
           description: "User's playlist successfully created",
           content: {
             "application/json": {
-              schema: postPlaylistSchemas.response,
+              example: { message: "User's playlist successfully created" },
+            },
+          },
+        },
+        "409": {
+          description: "Already have a playlist with this name",
+          content: {
+            "application/json": {
+              example: { message: "Already have a playlist with this name" },
             },
           },
         },
