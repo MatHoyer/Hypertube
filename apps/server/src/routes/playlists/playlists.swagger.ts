@@ -140,7 +140,72 @@ export const playlistsSwagger = {
           description: "User's playlist got get successfully",
           content: {
             "application/json": {
-              schema: getPlaylistSchemas.response,
+              example: {
+                name: "My Favorite Action Movies",
+                movies: [
+                  {
+                    details: {
+                      id: 155,
+                      imdb_id: "tt0468569",
+                      original_title: "The Dark Knight",
+                      original_language: "en",
+                      title: "The Dark Knight",
+                      overview:
+                        "Batman raises the stakes in his war on crime with the help of Lt. Jim Gordon and District Attorney Harvey Dent.",
+                      genres: [
+                        {
+                          id: 28,
+                          name: "Action",
+                        },
+                        {
+                          id: 80,
+                          name: "Crime",
+                        },
+                        {
+                          id: 18,
+                          name: "Drama",
+                        },
+                      ],
+                      vote_average: 9.0,
+                      vote_count: 31200,
+                      popularity: 120.5,
+                      poster_path: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
+                      backdrop_path: "/hkBaDkMWbLaf8B1lsWsKX7Ew3Xq.jpg",
+                      release_date: "2008-07-18",
+                      adult: false,
+                      hasDetails: true,
+                    },
+                    downloadState: "DOWNLOADED",
+                  },
+                  {
+                    details: {
+                      id: 550,
+                      hasDetails: false,
+                    },
+                    downloadState: "NOT_DOWNLOADED",
+                  },
+                ],
+                page: 1,
+                pageSize: 2,
+                total: 5,
+                totalPages: 3,
+              },
+            },
+          },
+        },
+        "401": {
+          description: "Not your playlist",
+          content: {
+            "application/json": {
+              example: { message: "Not your playlist" },
+            },
+          },
+        },
+        "404": {
+          description: "Playlist not found",
+          content: {
+            "application/json": {
+              example: { message: "Playlist not found" },
             },
           },
         },
@@ -162,7 +227,23 @@ export const playlistsSwagger = {
           description: "User's playlist get successfully deleted",
           content: {
             "application/json": {
-              schema: deletePlaylistSchemas.response,
+              example: { message: "User's playlist get successfully deleted" },
+            },
+          },
+        },
+        "401": {
+          description: "Not your playlist",
+          content: {
+            "application/json": {
+              example: { message: "Not your playlist" },
+            },
+          },
+        },
+        "404": {
+          description: "Playlist not found",
+          content: {
+            "application/json": {
+              example: { message: "Playlist not found" },
             },
           },
         },
@@ -185,7 +266,6 @@ export const playlistsSwagger = {
         required: true,
         content: {
           "application/json": {
-            schema: postMovieToPlaylistSchemas.requirements,
             example: {
               tmdbId: "",
             },
@@ -197,7 +277,33 @@ export const playlistsSwagger = {
           description: "Movie get successfully added to user's playlist",
           content: {
             "application/json": {
-              schema: postMovieToPlaylistSchemas.response,
+              example: {
+                message: "Movie get successfully added to user's playlist",
+              },
+            },
+          },
+        },
+        "401": {
+          description: "Not your playlist",
+          content: {
+            "application/json": {
+              example: { message: "Not your playlist" },
+            },
+          },
+        },
+        "404": {
+          description: "Playlist or Movie not found",
+          content: {
+            "application/json": {
+              example: { message: "Playlist or Movie not found" },
+            },
+          },
+        },
+        "409": {
+          description: "Movie already in playlist",
+          content: {
+            "application/json": {
+              example: { message: "Movie already in playlist" },
             },
           },
         },
@@ -230,7 +336,33 @@ export const playlistsSwagger = {
           description: "Movie get successfully deleted of user's playlist",
           content: {
             "application/json": {
-              schema: deleteMovieFromPlaylistSchemas.response,
+              example: {
+                message: "Movie get successfully deleted of user's playlist",
+              },
+            },
+          },
+        },
+        "400": {
+          description: "This movie is not in your playlist",
+          content: {
+            "application/json": {
+              example: { message: "This movie is not in your playlist" },
+            },
+          },
+        },
+        "401": {
+          description: "Not your playlist",
+          content: {
+            "application/json": {
+              example: { message: "Not your playlist" },
+            },
+          },
+        },
+        "404": {
+          description: "Playlist or Movie not found",
+          content: {
+            "application/json": {
+              example: { message: "Playlist or Movie not found" },
             },
           },
         },

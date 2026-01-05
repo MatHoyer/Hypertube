@@ -108,11 +108,10 @@ export const getPlaylist = async (
   const playlist = await prisma.playlist.findUnique({
     where: { id: playlistId },
   });
-  if (!playlist) {
-    return c.json({ name: undefined, movies: [], totalCount: 0 }, 404);
-  }
+  if (!playlist) return c.json({ message: "Playlist not found" }, 404);
+
   if (user.id !== playlist.userId) {
-    return c.json({ name: undefined, movies: [], totalCount: 0 }, 401);
+    return c.json({ message: "Not your playlist" }, 401);
   }
 
   const movies = await prisma.playlistMovie.findMany({
@@ -125,9 +124,10 @@ export const getPlaylist = async (
     take: pageSize,
   });
 
-  const totalCount = await prisma.playlistMovie.count({
+  const total = await prisma.playlistMovie.count({
     where: { playlistId: playlist.id },
   });
+  const totalPages = Math.ceil(total / pageSize);
 
   const movieDownloadStatesByTmdbIds = await getMovieDownloadStatesByTmdbIds(
     movies.map(({ movie }) => movie.tmdbId)
@@ -148,7 +148,10 @@ export const getPlaylist = async (
           movieDownloadStatesByTmdbIds.get(tmdbMovie.id) ??
           DownloadStates.NOT_DOWNLOADED,
       })),
-      totalCount,
+      page,
+      pageSize,
+      total,
+      totalPages,
     }),
     200
   );
@@ -172,7 +175,7 @@ export const deletePlaylist = async (
     where: { name_userId: { name: playlist.name, userId: user.id } },
   });
 
-  return c.json({ message: "OK" }, 200);
+  return c.json({ message: "User's playlist get successfully deleted" }, 200);
 };
 
 export const postMovieToPlaylist = async (
@@ -223,7 +226,10 @@ export const postMovieToPlaylist = async (
     data: { playlistId, movieId: movie.id },
   });
 
-  return c.json({ message: "OK" }, 200);
+  return c.json(
+    { message: "Movie get successfully added to user's playlist" },
+    200
+  );
 };
 
 export const deleteMovieFromPlaylist = async (
@@ -245,13 +251,19 @@ export const deleteMovieFromPlaylist = async (
   const movie = await prisma.movie.findFirst({ where: { tmdbId } });
   if (!movie) return c.json({ message: "Movie not found" }, 404);
 
-  try {
-    await prisma.playlistMovie.delete({
-      where: { playlistId_movieId: { playlistId, movieId: movie.id } },
-    });
-
-    return c.json({ message: "OK" }, 200);
-  } catch {
-    return c.json({ message: "Movie was not in playlist" }, 404);
+  const moviePlaylist = await prisma.playlistMovie.findUnique({
+    where: { playlistId_movieId: { playlistId, movieId: movie.id } },
+  });
+  if (!moviePlaylist) {
+    return c.json({ message: "This movie is not in your playlist" }, 400);
   }
+
+  await prisma.playlistMovie.delete({
+    where: { playlistId_movieId: { playlistId, movieId: movie.id } },
+  });
+
+  return c.json(
+    { message: "Movie get successfully deleted of user's playlist" },
+    200
+  );
 };

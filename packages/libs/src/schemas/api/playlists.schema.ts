@@ -41,12 +41,8 @@ export type TPostPlaylistSchemas = {
   response: z.infer<typeof postPlaylistSchemas.response>;
 };
 
-export const getPlaylistSchemas = {
+export const getPlaylistSchemas = getPaginationSchemas({
   urlParams: z.object({ playlistId: playlistSchema.shape.id }),
-  searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
-    pageSize: z.coerce.number().int().positive().default(10),
-  }),
   response: z.object({
     name: playlistSchema.shape.name,
     movies: z.array(
@@ -55,9 +51,8 @@ export const getPlaylistSchemas = {
         downloadState: z.enum(DownloadStates),
       })
     ),
-    totalCount: z.number(),
   }),
-};
+});
 export type TGetPlaylistSchemas = {
   urlParams: z.infer<typeof getPlaylistSchemas.urlParams>;
   searchParams: z.infer<typeof getPlaylistSchemas.searchParams>;
