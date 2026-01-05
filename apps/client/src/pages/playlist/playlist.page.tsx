@@ -81,7 +81,7 @@ export const PlaylistPage = () => {
       <LayoutHeader>
         <LayoutHeaderResource
           resource="playlist"
-          count={data?.totalCount ?? 0}
+          count={data?.total ?? 0}
           dynamicTitle={data?.name ?? t("global.loadingRessource")}
         />
       </LayoutHeader>
@@ -97,7 +97,7 @@ export const PlaylistPage = () => {
           <LoadingResource resource="playlist" />
         )}
         {isError && <ErrorResource resource="playlist" />}
-        {(data?.totalCount ?? 0) > playlistPageSize && (
+        {(data?.total ?? 0) > playlistPageSize && (
           <FloatingBar>
             <PagePagination
               page={page}
@@ -105,7 +105,7 @@ export const PlaylistPage = () => {
                 setPage(value);
                 scrollTo({ top: 0, behavior: "smooth" });
               }}
-              maxPage={Math.ceil((data?.totalCount ?? 0) / playlistPageSize)}
+              maxPage={data?.totalPages ?? 0}
             />
           </FloatingBar>
         )}
