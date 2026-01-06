@@ -177,6 +177,30 @@ export const moviesSwagger = {
           content: {
             "application/json": {
               example: {
+                details: {
+                  id: 550,
+                  imdb_id: "tt0137523",
+                  original_title: "Fight Club",
+                  original_language: "en",
+                  title: "Fight Club",
+                  overview:
+                    "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.",
+                  genres: [
+                    {
+                      id: 18,
+                      name: "Drama",
+                    },
+                  ],
+                  vote_average: 8.4,
+                  vote_count: 27500,
+                  popularity: 85.3,
+                  poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+                  backdrop_path: "/fCayJrkfRaCRCTh8GqN30f8oyQF.jpg",
+                  release_date: "1999-10-15",
+                  adult: false,
+                  hasDetails: true,
+                },
+                id: "33cd4882-eedd-4dd0-b7a6-790dbf15f7fa",
                 resolutions: [
                   {
                     id: "cm5a8b9c1d2e3f4g5h6i7j8k9",
@@ -214,27 +238,6 @@ export const moviesSwagger = {
                 isSubscribed: true,
                 likesNumber: 245,
                 isLikedByUser: true,
-                id: "cm5movie1a2b3c4d5e6f7g8h9",
-                tmdbId: 550,
-                imdbId: "tt0137523",
-                original_title: "Fight Club",
-                original_language: "en",
-                title: "Fight Club",
-                overview:
-                  "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.",
-                genres: [
-                  {
-                    id: 18,
-                    name: "Drama",
-                  },
-                ],
-                vote_average: 8.4,
-                vote_count: 27500,
-                popularity: 85.3,
-                poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
-                backdrop_path: "/fCayJrkfRaCRCTh8GqN30f8oyQF.jpg",
-                release_date: "1999-10-15",
-                adult: false,
               },
             },
           },
