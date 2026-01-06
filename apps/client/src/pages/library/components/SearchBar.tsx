@@ -83,10 +83,10 @@ export const SearchBar = () => {
           <ScrollArea scrollToTopOnChildrenChange>
             <CommandList className="overflow-visible">
               <CommandGroup className="bg-card">
-                {!!data?.movies.length &&
+                {!!data?.data.length &&
                   !isPending &&
                   isSuccess &&
-                  data?.movies.filter(Boolean).map((movie, i) => (
+                  data?.data.filter(Boolean).map((movie, i) => (
                     <CommandItem
                       key={i}
                       value={

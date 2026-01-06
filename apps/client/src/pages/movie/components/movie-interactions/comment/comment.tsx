@@ -23,7 +23,7 @@ import { CommentActionsDropdown, EditCommentInput } from "./comment.actions";
 import { PostReplyComment } from "./post-comment";
 
 export const Comment: React.FC<{
-  comment: TGetMovieCommentsSchemas["response"]["comments"][number];
+  comment: TGetMovieCommentsSchemas["response"]["data"][number];
   parent: TQueryParent;
   depth?: number;
 }> = ({ comment, parent, depth = 0 }) => {

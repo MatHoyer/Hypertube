@@ -41,7 +41,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
 export const Thumbnail: React.FC<{
-  movie: TGetMoviesSchemas["response"]["movies"][number];
+  movie: TGetMoviesSchemas["response"]["data"][number];
 }> = memo(({ movie }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();

@@ -87,71 +87,71 @@ export const moviesSwagger = {
           content: {
             "application/json": {
               example: {
-                movies: [
+                data: [
                   {
-                    id: 550,
-                    imdb_id: "tt0137523",
-                    original_title: "Fight Club",
-                    original_language: "en",
-                    title: "Fight Club",
-                    overview:
-                      "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.",
-                    genres: [
-                      {
-                        id: 18,
-                        name: "Drama",
-                      },
-                      {
-                        id: 53,
-                        name: "Thriller",
-                      },
-                    ],
-                    vote_average: 8.4,
-                    vote_count: 27500,
-                    popularity: 85.3,
-                    poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
-                    backdrop_path: "/fCayJrkfRaCRCTh8GqN30f8oyQF.jpg",
-                    release_date: "1999-10-15",
-                    adult: false,
-                    status: "DOWNLOADED",
+                    details: {
+                      id: 550,
+                      imdb_id: "tt0137523",
+                      original_title: "Fight Club",
+                      original_language: "en",
+                      title: "Fight Club",
+                      overview:
+                        "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy.",
+                      genres: [
+                        { id: 18, name: "Drama" },
+                        { id: 53, name: "Thriller" },
+                      ],
+                      vote_average: 8.4,
+                      vote_count: 26280,
+                      popularity: 61.416,
+                      poster_path: "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+                      backdrop_path: "/fCayJrkfRaCRCTh8GqN30f8oyQF.jpg",
+                      release_date: "1999-10-15",
+                      adult: false,
+                      hasDetails: true,
+                    },
+                    downloadState: "DOWNLOADED",
+                    isSeen: true,
                   },
                   {
-                    id: 155,
-                    imdb_id: "tt0468569",
-                    original_title: "The Dark Knight",
-                    original_language: "en",
-                    title: "The Dark Knight",
-                    overview:
-                      "Batman raises the stakes in his war on crime with the help of Lt. Jim Gordon and District Attorney Harvey Dent.",
-                    genres: [
-                      {
-                        id: 28,
-                        name: "Action",
-                      },
-                      {
-                        id: 80,
-                        name: "Crime",
-                      },
-                      {
-                        id: 18,
-                        name: "Drama",
-                      },
-                    ],
-                    vote_average: 9.0,
-                    vote_count: 31200,
-                    popularity: 120.5,
-                    poster_path: "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
-                    backdrop_path: "/hkBaDkMWbLaf8B1lsWsKX7Ew3Xq.jpg",
-                    release_date: "2008-07-18",
-                    adult: false,
-                    status: "NOT_DOWNLOADED",
+                    details: {
+                      id: 157336,
+                      imdb_id: "tt2380307",
+                      original_title: "Interstellar",
+                      original_language: "en",
+                      title: "Interstellar",
+                      overview:
+                        "The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel.",
+                      genres: [
+                        { id: 12, name: "Adventure" },
+                        { id: 18, name: "Drama" },
+                        { id: 878, name: "Science Fiction" },
+                      ],
+                      vote_average: 8.4,
+                      vote_count: 32562,
+                      popularity: 146.981,
+                      poster_path: "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+                      backdrop_path: "/pbrkL804c8yAv3zBZR4QPEafpAR.jpg",
+                      release_date: "2014-11-05",
+                      adult: false,
+                      hasDetails: true,
+                    },
+                    downloadState: "WAITING",
+                    isSeen: false,
                   },
-                  null,
+                  {
+                    details: {
+                      id: 999999,
+                      hasDetails: false,
+                    },
+                    downloadState: "NOT_DOWNLOADED",
+                    isSeen: false,
+                  },
                 ],
-                page: 12,
+                page: 1,
                 pageSize: 20,
-                total: 835,
-                totalPages: 42,
+                total: 1543,
+                totalPages: 78,
               },
             },
           },
@@ -551,7 +551,7 @@ export const moviesSwagger = {
           content: {
             "application/json": {
               example: {
-                comments: [
+                data: [
                   {
                     id: "550e8400-e29b-41d4-a716-446655440000",
                     userId: "user123",

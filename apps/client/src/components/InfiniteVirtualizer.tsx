@@ -32,7 +32,7 @@ export const InfiniteVirtualizer: React.FC<
       overscan: number;
     };
     children: (
-      movie: TGetMoviesSchemas["response"]["movies"][number]
+      data: TGetMoviesSchemas["response"]["data"][number]
     ) => React.ReactNode;
   }
 > = ({
@@ -65,8 +65,8 @@ export const InfiniteVirtualizer: React.FC<
     enabled,
   });
 
-  const allMovies = data ? data.pages.flatMap((page) => page.movies) : [];
-  const totalRows = Math.ceil(allMovies.length / columns);
+  const allData = data ? data.pages.flatMap((page) => page.data) : [];
+  const totalRows = Math.ceil(allData.length / columns);
 
   const virtualizer = useVirtualizer({
     count: totalRows,
@@ -136,14 +136,14 @@ export const InfiniteVirtualizer: React.FC<
           >
             {Array.from({ length: columns }, (_, colIndex) => {
               const itemIndex = virtualRow.index * columns + colIndex;
-              const movie = allMovies[itemIndex];
+              const item = allData[itemIndex];
 
               if (itemIndex >= data.pages[0].total) {
                 return <div key={`${virtualRow.index}-${colIndex}`} />;
               }
               return (
                 <div key={`${virtualRow.index}-${colIndex}`}>
-                  {children(movie)}
+                  {children(item)}
                 </div>
               );
             })}

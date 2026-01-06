@@ -68,7 +68,7 @@ export const getMoviesSchemas = getPaginationSchemas({
       .catch(undefined),
   }),
   response: z.object({
-    movies: z.array(
+    data: z.array(
       z.object({
         details: tmdbMovieCompleteSchema,
         downloadState: z.enum(DownloadStates),
@@ -215,7 +215,7 @@ export const getMovieCommentSchemas = getPaginationSchemas({
     tmdbId: movieSchema.shape.tmdbId,
   }),
   response: z.object({
-    comments: z.array(commentResponseSchema),
+    data: z.array(commentResponseSchema),
   }),
 });
 

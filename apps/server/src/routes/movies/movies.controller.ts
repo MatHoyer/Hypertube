@@ -100,8 +100,9 @@ export const getMovies = async (
     }),
   };
 
+  const { movies, ...paginationData } = moviesWithStatutPagination;
   return c.json(
-    getMoviesSchemas.response.parse(moviesWithStatutPagination),
+    getMoviesSchemas.response.parse({ data: movies, ...paginationData }),
     200
   );
 };
@@ -517,10 +518,12 @@ export const getMovieComments = async (
     pageSize
   );
 
+  const { comments, totalComments, ...paginationData } = result.data;
   return c.json(
     getMovieCommentSchemas.response.parse({
-      ...result.data,
-      total: result.data.totalComments,
+      data: comments,
+      total: totalComments,
+      ...paginationData,
     }),
     200
   );
