@@ -32,7 +32,7 @@ export const InfiniteVirtualizer: React.FC<
       overscan: number;
     };
     children: (
-      data: TGetMoviesSchemas["response"]["data"][number]
+      data: TGetMoviesSchemas["response"]["movies"][number]
     ) => React.ReactNode;
   }
 > = ({
@@ -65,7 +65,7 @@ export const InfiniteVirtualizer: React.FC<
     enabled,
   });
 
-  const allData = data ? data.pages.flatMap((page) => page.data) : [];
+  const allData = data ? data.pages.flatMap((page) => page.movies) : [];
   const totalRows = Math.ceil(allData.length / columns);
 
   const virtualizer = useVirtualizer({

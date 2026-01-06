@@ -132,7 +132,7 @@ export const MovieInteraction = ({
       <PostMovieComment tmdbId={movie.details.id} />
       <div>
         {data?.pages.map((page) =>
-          page.data.map((comment) => (
+          page.comments.map((comment) => (
             <Comment
               key={comment.id}
               comment={comment}

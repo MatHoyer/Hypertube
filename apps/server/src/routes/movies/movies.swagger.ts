@@ -87,7 +87,7 @@ export const moviesSwagger = {
           content: {
             "application/json": {
               example: {
-                data: [
+                movies: [
                   {
                     details: {
                       id: 550,
@@ -551,7 +551,7 @@ export const moviesSwagger = {
           content: {
             "application/json": {
               example: {
-                data: [
+                comments: [
                   {
                     id: "550e8400-e29b-41d4-a716-446655440000",
                     userId: "user123",
