@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
   type ComponentProps,
+  type JSX,
 } from "react";
 import { useTranslation } from "react-i18next";
 import { LoadingResource } from "./LoadingResource";
@@ -21,28 +22,6 @@ export type TInfiniteVirtualizerFetchResponse<T> = {
   totalPages: number;
 };
 
-// : React.FC<
-//   Omit<ComponentProps<"div">, "children"> & {
-//     queryFn: ({
-//       pageParam,
-//     }: {
-//       pageParam: number;
-//     }) => Promise<TInfiniteVirtualizerFetchResponse<T>>;
-//     queryKey: QueryKey;
-//     initialPageParam?: number;
-//     enabled?: boolean;
-//     withColumns?: boolean;
-//     virtualizerOptions: {
-//       getScrollElement: () => HTMLElement | null;
-//       estimateSize: () => number;
-//       gap: number;
-//       overscan: number;
-//     };
-//     children: (
-//       data: TInfiniteVirtualizerFetchResponse<T>["data"][number]
-//     ) => React.ReactNode;
-//   }
-// >
 export const InfiniteVirtualizer = <T,>({
   queryFn,
   queryKey,
@@ -51,7 +30,8 @@ export const InfiniteVirtualizer = <T,>({
   withColumns = false,
   virtualizerOptions,
   props,
-  children,
+  renderChild,
+  emptyChild,
 }: {
   props: Omit<ComponentProps<"div">, "children">;
   queryFn: ({
@@ -69,9 +49,10 @@ export const InfiniteVirtualizer = <T,>({
     gap: number;
     overscan: number;
   };
-  children: (
+  renderChild: (
     data: TInfiniteVirtualizerFetchResponse<T>["data"][number]
   ) => React.ReactNode;
+  emptyChild: JSX.Element;
 }) => {
   const { t } = useTranslation();
   const listRef = useRef<HTMLDivElement>(null);
@@ -171,7 +152,7 @@ export const InfiniteVirtualizer = <T,>({
               }
               return (
                 <div key={`${virtualRow.index}-${colIndex}`}>
-                  {children(item)}
+                  {renderChild(item)}
                 </div>
               );
             })}
@@ -180,9 +161,7 @@ export const InfiniteVirtualizer = <T,>({
       </div>
       <div className="flex w-full justify-center">
         {isFetchingNextPage && <AppLoader />}
-        {!data.pages[0].total && (
-          <Typography textSize="lg">{t("movie.page.noFound")}</Typography> // todo
-        )}
+        {!data.pages[0].total && emptyChild}
       </div>
     </>
   );

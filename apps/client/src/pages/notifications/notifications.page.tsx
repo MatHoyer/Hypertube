@@ -1,11 +1,12 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
 import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
+import { InfiniteVirtualizer } from "@/components/InfiniteVirtualizer";
 import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
-import { AppLoader } from "@/components/ui/app-loader";
 import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
 import { UniqueFilter } from "@/components/UniqueFilter";
 import { useNotificationsStats } from "@/hooks/use-notifications-stats";
+import { useMainScrollElement } from "@/layouts/BaseLayout";
 import {
   Layout,
   LayoutActions,
@@ -21,7 +22,6 @@ import {
   ROUTES,
   type NotificationReadStatus,
 } from "@hypertube/libs";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -30,10 +30,26 @@ import { Notification } from "./components/notification";
 import { NotificationsActions } from "./components/notifications-actions";
 import { NotificationsEmpty } from "./components/notifications-empty";
 
+const fetchNotifications = async ({
+  pageParam,
+  readStatus,
+}: {
+  pageParam: number;
+  readStatus: NotificationReadStatus;
+}) => {
+  const res = await axiosFetch({
+    method: "GET",
+    url: getUrl(ROUTES.API.NOTIFICATIONS, {
+      searchParams: { readStatus, page: `${pageParam}` },
+    }),
+    schemas: getNotificationsSchemas,
+  });
+  return { data: res.notifications, ...res };
+};
+
 export const NotificationsPage = () => {
   const { t } = useTranslation();
   const topRef = useRef<HTMLDivElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
   const [showScrollToTopButton, setShowScrollToTopButton] =
     useState<boolean>(false);
@@ -44,50 +60,21 @@ export const NotificationsPage = () => {
 
   const { stats, isUnreadNotifications } = useNotificationsStats();
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: getQueryKey(ROUTES.API.NOTIFICATIONS, { type: readStatus }),
-      queryFn: ({ pageParam }) => {
-        return axiosFetch({
-          method: "GET",
-          url: getUrl(ROUTES.API.NOTIFICATIONS, {
-            searchParams: { readStatus, page: `${pageParam}` },
-          }),
-          schemas: getNotificationsSchemas,
-        });
-      },
-      initialPageParam: 1,
-      getNextPageParam: (lastPage) => {
-        return lastPage.totalPages > lastPage.page
-          ? lastPage.page + 1
-          : undefined;
-      },
-      getPreviousPageParam: (lastPage) => {
-        return lastPage.page > 1 ? lastPage.page - 1 : undefined;
-      },
-    });
+  const mainScrollElement = useMainScrollElement();
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const target = entries[0];
-        if (target.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      {
-        root: null,
-        rootMargin: "0px 0px 1000px 0px",
-        threshold: 0,
-      }
-    );
-    if (bottomRef.current) {
-      observer.observe(bottomRef.current);
-    }
-    return () => {
-      observer.disconnect();
-    };
-  }, [bottomRef, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const queryFn = ({ pageParam }: { pageParam: number }) =>
+    fetchNotifications({ pageParam, readStatus });
+
+  const queryKey = getQueryKey(ROUTES.API.NOTIFICATIONS, {
+    type: readStatus,
+  });
+
+  const virtualizerOptions = {
+    getScrollElement: () => mainScrollElement,
+    estimateSize: () => 90,
+    gap: 16,
+    overscan: 5,
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -165,31 +152,24 @@ export const NotificationsPage = () => {
         </LayoutActions>
       </LayoutHeader>
       <LayoutContent>
-        <div className="flex flex-col gap-4">
-          {data?.pages[0]?.notifications?.length ? (
-            data?.pages.map((page) => (
-              <div key={page.page} className="flex flex-col gap-4">
-                {page.notifications.map((notification) => {
-                  return notification.resourceUrl ? (
-                    <Link to={notification.resourceUrl} key={notification.id}>
-                      <Notification notification={notification} />
-                    </Link>
-                  ) : (
-                    <Notification
-                      key={notification.id}
-                      notification={notification}
-                    />
-                  );
-                })}
-              </div>
-            ))
-          ) : (
-            <NotificationsEmpty />
-          )}
-        </div>
-        <div className="flex justify-center" ref={bottomRef}>
-          {isFetchingNextPage ? <AppLoader /> : null}
-        </div>
+        <InfiniteVirtualizer
+          queryFn={queryFn}
+          queryKey={queryKey}
+          virtualizerOptions={virtualizerOptions}
+          props={{
+            className: "flex flex-col w-full gap-4",
+          }}
+          renderChild={(notification) =>
+            notification.resourceUrl ? (
+              <Link to={notification.resourceUrl}>
+                <Notification notification={notification} />
+              </Link>
+            ) : (
+              <Notification notification={notification} />
+            )
+          }
+          emptyChild={<NotificationsEmpty />}
+        />
       </LayoutContent>
     </Layout>
   );
