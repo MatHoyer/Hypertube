@@ -99,7 +99,7 @@ export const Thumbnail: React.FC<{
   return (
     <div>
       <Card
-        className="flex gap-0 p-2 md:p-4 items-center rounded-b-none hover:bg-card/20 cursor-pointer"
+        className="flex gap-0 p-2 md:p-4 items-center rounded-b-none hover:bg-card/20 cursor-pointer min-h-[332px]"
         onClick={() => openDialog("movie", movie.details)}
       >
         <MovieBaseInfo movie={movie.details} posterSize="md" info="partial" />
