@@ -39,7 +39,7 @@ const fetchMovies = async ({
       },
     }),
   });
-  return res;
+  return { data: res.movies, ...res };
 };
 
 export const Library = () => {
@@ -78,7 +78,10 @@ export const Library = () => {
       enabled={!!query || !!category || !!sort || !!genres}
       withColumns
       virtualizerOptions={virtualizerOptions}
-      className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 w-full top-0 left-0"
+      props={{
+        className:
+          "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 w-full top-0 left-0",
+      }}
     >
       {(movie) => <Thumbnail movie={movie} />}
     </InfiniteVirtualizer>

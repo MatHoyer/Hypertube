@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import type { TGetMoviesSchemas } from "@hypertube/libs";
 import { useInfiniteQuery, type QueryKey } from "@tanstack/react-query";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
@@ -14,36 +13,65 @@ import { LoadingResource } from "./LoadingResource";
 import { AppLoader } from "./ui/app-loader";
 import { Typography } from "./ui/typography";
 
-export const InfiniteVirtualizer: React.FC<
-  Omit<ComponentProps<"div">, "children"> & {
-    queryFn: ({
-      pageParam,
-    }: {
-      pageParam: number;
-    }) => Promise<TGetMoviesSchemas["response"]>;
-    queryKey: QueryKey;
-    initialPageParam?: number;
-    enabled?: boolean;
-    withColumns?: boolean;
-    virtualizerOptions: {
-      getScrollElement: () => HTMLElement | null;
-      estimateSize: () => number;
-      gap: number;
-      overscan: number;
-    };
-    children: (
-      data: TGetMoviesSchemas["response"]["movies"][number]
-    ) => React.ReactNode;
-  }
-> = ({
+export type TInfiniteVirtualizerFetchResponse<T> = {
+  data: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+};
+
+// : React.FC<
+//   Omit<ComponentProps<"div">, "children"> & {
+//     queryFn: ({
+//       pageParam,
+//     }: {
+//       pageParam: number;
+//     }) => Promise<TInfiniteVirtualizerFetchResponse<T>>;
+//     queryKey: QueryKey;
+//     initialPageParam?: number;
+//     enabled?: boolean;
+//     withColumns?: boolean;
+//     virtualizerOptions: {
+//       getScrollElement: () => HTMLElement | null;
+//       estimateSize: () => number;
+//       gap: number;
+//       overscan: number;
+//     };
+//     children: (
+//       data: TInfiniteVirtualizerFetchResponse<T>["data"][number]
+//     ) => React.ReactNode;
+//   }
+// >
+export const InfiniteVirtualizer = <T,>({
   queryFn,
   queryKey,
   initialPageParam = 1,
   enabled = true,
   withColumns = false,
   virtualizerOptions,
-  className,
+  props,
   children,
+}: {
+  props: Omit<ComponentProps<"div">, "children">;
+  queryFn: ({
+    pageParam,
+  }: {
+    pageParam: number;
+  }) => Promise<TInfiniteVirtualizerFetchResponse<T>>;
+  queryKey: QueryKey;
+  initialPageParam?: number;
+  enabled?: boolean;
+  withColumns?: boolean;
+  virtualizerOptions: {
+    getScrollElement: () => HTMLElement | null;
+    estimateSize: () => number;
+    gap: number;
+    overscan: number;
+  };
+  children: (
+    data: TInfiniteVirtualizerFetchResponse<T>["data"][number]
+  ) => React.ReactNode;
 }) => {
   const { t } = useTranslation();
   const listRef = useRef<HTMLDivElement>(null);
@@ -65,7 +93,7 @@ export const InfiniteVirtualizer: React.FC<
     enabled,
   });
 
-  const allData = data ? data.pages.flatMap((page) => page.movies) : [];
+  const allData = data ? data.pages.flatMap((page) => page.data) : [];
   const totalRows = Math.ceil(allData.length / columns);
 
   const virtualizer = useVirtualizer({
@@ -128,7 +156,7 @@ export const InfiniteVirtualizer: React.FC<
             key={virtualRow.key}
             data-index={virtualRow.index}
             ref={virtualizer.measureElement}
-            className={cn(className, "absolute")}
+            className={cn(props.className, "absolute")}
             style={{
               height: `${virtualRow.size}px`,
               transform: `translateY(${virtualRow.start}px)`,
