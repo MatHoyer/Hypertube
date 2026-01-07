@@ -43,8 +43,8 @@ export const PlaylistPage = () => {
         url: getUrl(ROUTES.API.PLAYLISTS, {
           playlistId,
           searchParams: {
-            page: page.toString(),
-            pageSize: playlistPageSize.toString(),
+            page,
+            pageSize: playlistPageSize,
           },
         }),
         schemas: getPlaylistSchemas,

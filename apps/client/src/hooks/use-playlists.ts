@@ -10,8 +10,8 @@ const fetchPlaylists = async (pageParam: number) => {
     method: "GET",
     url: getUrl(ROUTES.API.PLAYLISTS, {
       searchParams: {
-        page: pageParam.toString(),
-        pageSize: playlistsPageSize.toString(),
+        page: pageParam,
+        pageSize: playlistsPageSize,
       },
     }),
     schemas: getPlaylistsSchemas,

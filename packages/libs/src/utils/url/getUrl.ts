@@ -404,7 +404,7 @@ type TSearchParams =
 
 type TSearchParamsProvided =
   | string[][]
-  | Record<string, string | null | undefined>
+  | Record<string, string | number | null | undefined>
   | string
   | URLSearchParams;
 
@@ -463,7 +463,10 @@ export const getUrl = <T extends TRoute>(
 
   if (isPurObject(searchParams)) {
     searchParams = typedEntries(searchParams).reduce((acc, [key, value]) => {
-      if (value) acc[key] = value;
+      if (value) {
+        if (typeof value === "number") acc[key] = value.toString();
+        else acc[key] = value;
+      }
       return acc;
     }, {} as Record<string, string>);
   }

@@ -33,7 +33,7 @@ const fetchMovies = async ({
     schemas: getMoviesSchemas,
     url: getUrl(ROUTES.API.MOVIES, {
       searchParams: {
-        page: pageParam.toString(),
+        page: pageParam,
         query,
         category,
         sort,

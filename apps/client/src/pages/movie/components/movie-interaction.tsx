@@ -99,7 +99,7 @@ export const MovieInteraction = ({
         method: "GET",
         url: getUrl(ROUTES.API.MOVIES_COMMENT, {
           tmdbId: movie.details.id,
-          searchParams: { page: pageParam.toString(), pageSize: "10" },
+          searchParams: { page: pageParam, pageSize: "10" },
         }),
         schemas: getMovieCommentSchemas,
       }),

@@ -35,8 +35,8 @@ export const HistoricPage = () => {
         method: "GET",
         url: getUrl(ROUTES.API.HISTORY, {
           searchParams: {
-            page: page.toString(),
-            pageSize: historicPageSize.toString(),
+            page,
+            pageSize: historicPageSize,
           },
         }),
         schemas: getHistorySchemas,

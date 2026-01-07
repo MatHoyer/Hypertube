@@ -40,7 +40,7 @@ const fetchNotifications = async ({
   const res = await axiosFetch({
     method: "GET",
     url: getUrl(ROUTES.API.NOTIFICATIONS, {
-      searchParams: { readStatus, page: `${pageParam}` },
+      searchParams: { readStatus, page: pageParam },
     }),
     schemas: getNotificationsSchemas,
   });

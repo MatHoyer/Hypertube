@@ -35,8 +35,8 @@ export const PlaylistsPage = () => {
         method: "GET",
         url: getUrl(ROUTES.API.PLAYLISTS, {
           searchParams: {
-            page: page.toString(),
-            pageSize: playlistsPageSize.toString(),
+            page,
+            pageSize: playlistsPageSize,
           },
         }),
         schemas: getPlaylistsSchemas,
