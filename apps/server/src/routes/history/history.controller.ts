@@ -16,7 +16,7 @@ import { getMovieDownloadStatesByTmdbIds } from "../global/movie.global";
 export const getHistory = async (
   c: Context<
     TIsLogged & TSearchParamsParser<TGetHistorySchemas["searchParams"]>
-  >,
+  >
 ) => {
   const { id: userId } = c.get("user");
   const language = c.get("language");
@@ -34,32 +34,39 @@ export const getHistory = async (
     take: pageSize,
   });
 
+  const total = await prisma.movieHistory.count({ where: { userId } });
+  const totalPages = Math.ceil(total / pageSize);
+
   const movieDownloadStatesByTmdbIds = await getMovieDownloadStatesByTmdbIds(
-    history.map((history) => history.movie.tmdbId),
+    history.map((history) => history.movie.tmdbId)
   );
   const watchTimersByMovieId = new Map(
-    history.map((history) => [history.movie.tmdbId, history.timestamp]),
+    history.map((history) => [history.movie.tmdbId, history.timestamp])
   );
 
   const tmdbApi = new TmdbApi();
   const tmdbMovies = (
     await tmdbApi.getAllMovieDetails(
       history.map((history) => history.movie.tmdbId),
-      language as keyof typeof languageCodes,
+      language as keyof typeof languageCodes
     )
   ).filter(Boolean);
 
   return c.json(
     getHistorySchemas.response.parse({
       movies: tmdbMovies.map((tmdbMovie) => ({
-        ...tmdbMovie,
+        details: tmdbMovie,
         downloadState:
           movieDownloadStatesByTmdbIds.get(tmdbMovie!.id) ??
           DownloadStates.NOT_DOWNLOADED,
         watchTimer: watchTimersByMovieId.get(tmdbMovie!.id) ?? 0,
       })),
+      page,
+      pageSize,
+      total,
+      totalPages,
     }),
-    200,
+    200
   );
 };
 
@@ -76,7 +83,7 @@ export const deleteHistory = async (c: Context<TIsLogged>) => {
 export const deleteMovieFromHistory = async (
   c: Context<
     TIsLogged & TUrlParamsParser<TDeleteMovieFromHistorySchemas["urlParams"]>
-  >,
+  >
 ) => {
   const { id } = c.get("user");
   const { tmdbId } = c.get("validatedUrlParams");

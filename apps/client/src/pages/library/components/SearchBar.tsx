@@ -89,7 +89,11 @@ export const SearchBar = () => {
                   data?.movies.filter(Boolean).map((movie, i) => (
                     <CommandItem
                       key={i}
-                      value={movie!.title + movie!.id}
+                      value={
+                        movie.details.hasDetails
+                          ? movie.details.title + movie.details.id
+                          : movie.details.id.toString()
+                      }
                       onMouseDown={(event) => {
                         event.preventDefault();
                         event.stopPropagation();
@@ -97,11 +101,13 @@ export const SearchBar = () => {
                     >
                       <Link
                         className="w-full"
-                        to={getUrl(ROUTES.CLIENT.MOVIE, { tmdbId: movie!.id })}
+                        to={getUrl(ROUTES.CLIENT.MOVIE, {
+                          tmdbId: movie.details.id,
+                        })}
                       >
                         <MovieBaseInfo
-                          className="flex flex-col sm:grid sm:grid-cols-[1fr_4fr_1fr_1fr] items-center w-full gap-2"
-                          movie={movie!}
+                          movie={movie.details}
+                          dir="col"
                           posterSize="sm"
                           info="partial"
                         />
@@ -114,7 +120,7 @@ export const SearchBar = () => {
                     value="no_result"
                     disabled
                   >
-                    <Typography>{t("movie.page.noFound")}</Typography>
+                    <Typography>{t("library.noFound")}</Typography>
                   </CommandItem>
                 )}
                 {isPending && (

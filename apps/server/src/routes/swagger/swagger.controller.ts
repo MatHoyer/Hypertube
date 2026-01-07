@@ -6,6 +6,7 @@ import { imagesSwagger } from "../images/images.swagger";
 import { moviesSwagger } from "../movies/movies.swagger";
 import { notificationsSwagger } from "../notifications/notifications.swagger";
 import { oauthSwagger } from "../oauth/oauth.swagger";
+import { playlistsSwagger } from "../playlists/playlists.swagger";
 import { usersSwagger } from "../users/users.swagger";
 
 const openApiDoc = {
@@ -46,6 +47,10 @@ const openApiDoc = {
       description: "Comments endpoints",
     },
     {
+      name: "Playlists",
+      description: "Playlists endpoints",
+    },
+    {
       name: "Notifications",
       description: "Notifications endpoints",
     },
@@ -73,6 +78,8 @@ const openApiDoc = {
     ...imagesSwagger,
     ...moviesSwagger,
     ...commentsSwagger,
+    ...authentificationSwagger,
+    ...playlistsSwagger,
     ...notificationsSwagger,
     ...historySwagger,
   },

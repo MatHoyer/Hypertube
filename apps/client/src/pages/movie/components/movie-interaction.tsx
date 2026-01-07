@@ -16,9 +16,9 @@ import {
   ParentTypes,
   postMovieSubscribeSchemas,
   ROUTES,
-  type TGetMovieSchemas,
   type TMovieSchema,
 } from "@hypertube/libs";
+import type { TGetMovieSchemas } from "@hypertube/libs/src/schemas/api/movie.schema";
 import {
   useInfiniteQuery,
   useMutation,
@@ -91,13 +91,15 @@ export const MovieInteraction = ({
     isFetchingNextPage,
     status: _,
   } = useInfiniteQuery({
-    queryKey: getQueryKey(ROUTES.API.MOVIES_COMMENT, { tmdbId: movie.tmdbId }),
+    queryKey: getQueryKey(ROUTES.API.MOVIES_COMMENT, {
+      tmdbId: movie.details.id,
+    }),
     queryFn: ({ pageParam }) =>
       axiosFetch({
         method: "GET",
         url: getUrl(ROUTES.API.MOVIES_COMMENT, {
-          tmdbId: movie.tmdbId,
-          searchParams: { page: pageParam.toString(), pageSize: "10" },
+          tmdbId: movie.details.id,
+          searchParams: { page: pageParam, pageSize: "10" },
         }),
         schemas: getMovieCommentSchemas,
       }),
@@ -118,23 +120,23 @@ export const MovieInteraction = ({
         </Typography>
         <div className="flex-1" />
         <SubscriptionButton
-          tmdbId={movie.tmdbId}
+          tmdbId={movie.details.id}
           isSubscribed={movie.isSubscribed}
         />
         <MovieLikeButton
-          tmdbId={movie.tmdbId}
+          tmdbId={movie.details.id}
           isLiked={movie.isLikedByUser}
           likesNumber={movie.likesNumber}
         />
       </div>
-      <PostMovieComment tmdbId={movie.tmdbId} />
+      <PostMovieComment tmdbId={movie.details.id} />
       <div>
         {data?.pages.map((page) =>
           page.comments.map((comment) => (
             <Comment
               key={comment.id}
               comment={comment}
-              parent={{ id: movie.tmdbId, type: ParentTypes.MOVIE }}
+              parent={{ id: movie.details.id, type: ParentTypes.MOVIE }}
             />
           ))
         )}

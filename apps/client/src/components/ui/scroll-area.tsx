@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import { useLocation } from "react-router-dom";
+import { ScrollAreaProvider } from "../contexts/scroll-area/scroll-area.provider";
 
 // Do not overwrite this component it have custom logic to scroll to top on change
 
@@ -19,17 +20,23 @@ function ScrollArea({
   const viewportRef = React.useRef<HTMLDivElement>(null);
   const location = useLocation();
 
+  const scrollTo = React.useCallback((options: ScrollToOptions) => {
+    if (viewportRef.current) {
+      viewportRef.current.scrollTo(options);
+    }
+  }, []);
+
   React.useEffect(() => {
     if (scrollToTopOnChildrenChange && viewportRef.current) {
-      viewportRef.current.scrollTop = 0;
+      scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [children, scrollToTopOnChildrenChange]);
+  }, [children, scrollToTopOnChildrenChange, scrollTo]);
 
   React.useEffect(() => {
     if (scrollToTopOnUrlChange && viewportRef.current) {
-      viewportRef.current.scrollTop = 0;
+      scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [location.pathname, scrollToTopOnUrlChange]);
+  }, [location.pathname, location.search, scrollToTopOnUrlChange, scrollTo]);
 
   return (
     <ScrollAreaPrimitive.Root
@@ -42,7 +49,7 @@ function ScrollArea({
         data-slot="scroll-area-viewport"
         className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
       >
-        {children}
+        <ScrollAreaProvider scrollTo={scrollTo}>{children}</ScrollAreaProvider>
       </ScrollAreaPrimitive.Viewport>
       <ScrollBar />
       <ScrollAreaPrimitive.Corner />

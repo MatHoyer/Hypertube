@@ -79,12 +79,12 @@
       "message": "Tu película se está descargando"
     },
     "newCommentReply": {
-      "title": "",
-      "message": ""
+      "title": "Nueva respuesta a comentario",
+      "message": "Se ha publicado una respuesta a uno de tus comentarios"
     },
     "newCommentLike": {
-      "title": "",
-      "message": ""
+      "title": "Nuevo me gusta en comentario",
+      "message": "Uno de tus comentarios ha recibido un me gusta"
     }
   },
   "likes": {
@@ -94,7 +94,7 @@
   },
   "comments": {
     "deleted": "[Este comentario ha sido eliminado]",
-    "notFound": "Commentario no encontrado"
+    "notFound": "Comentario no encontrado"
   },
   "movies": {
     "notFound": "Película no encontrada"

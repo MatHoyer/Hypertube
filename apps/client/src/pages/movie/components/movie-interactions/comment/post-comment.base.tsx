@@ -25,6 +25,7 @@ export const BasePostComment: React.FC<{
   return (
     <InputGroup>
       <InputGroupTextarea
+        name="comment"
         maxLength={maxLength}
         autoFocus={autoFocus}
         placeholder={t("movie.comments.addComment")}

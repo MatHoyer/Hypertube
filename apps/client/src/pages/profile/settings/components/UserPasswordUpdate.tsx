@@ -52,7 +52,7 @@ export const UserPasswordUpdate = () => {
 
   const hasCredential = useMemo(
     () => accounts.map((account) => account.provider).includes(credentialId),
-    [accounts],
+    [accounts]
   );
 
   const needBlur = useMemo(() => !user.username, [user.username]);
@@ -104,7 +104,7 @@ export const UserPasswordUpdate = () => {
           <div
             className={cn(
               "flex flex-col gap-6",
-              needBlur && "blur-xs pointer-events-none",
+              needBlur && "blur-xs pointer-events-none"
             )}
           >
             <CardContent>
@@ -112,12 +112,22 @@ export const UserPasswordUpdate = () => {
                 <FieldGroup className="flex md:flex-row">
                   {hasCredential && (
                     <Field>
-                      <FieldLabel htmlFor="input-old-password">
+                      {/* Prevent warning about password without username field */}
+                      <input
+                        type="text"
+                        name="username"
+                        autoComplete="username"
+                        value={user.username || ""}
+                        readOnly
+                        hidden
+                      />
+                      <FieldLabel htmlFor="oldPassword">
                         {t("settings.oldPassword")}
                       </FieldLabel>
                       <InputPassword
                         id="oldPassword"
                         {...form.register("oldPassword")}
+                        autoComplete="current-password"
                       />
                       <FieldError>
                         {form.formState.errors.oldPassword?.message}
@@ -125,12 +135,22 @@ export const UserPasswordUpdate = () => {
                     </Field>
                   )}
                   <Field>
-                    <FieldLabel htmlFor="input-password">
+                    {/* Prevent warning about password without username field */}
+                    <input
+                      type="text"
+                      name="username"
+                      autoComplete="username"
+                      value={user.username || ""}
+                      readOnly
+                      hidden
+                    />
+                    <FieldLabel htmlFor="password">
                       {t("settings.newPassword")}
                     </FieldLabel>
                     <InputPassword
                       id="password"
                       {...form.register("password")}
+                      autoComplete="new-password"
                     />
                     <FieldError>
                       {form.formState.errors.password?.message}

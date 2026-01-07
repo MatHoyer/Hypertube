@@ -27,7 +27,7 @@ export const LayoutHeader: React.FC<ComponentPropsWithoutRef<"div">> = (
     <div
       {...props}
       className={cn(
-        "flex items-start gap-2 flex-col w-full md:flex-1 min-w-[200px]",
+        "flex items-start gap-2 flex-col w-full md:flex-1 min-w-[200px] mb-6",
         props.className
       )}
     />

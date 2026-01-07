@@ -5,5 +5,6 @@ export * from "./image.schema.js";
 export * from "./likes.schema.js";
 export * from "./movie.schema.js";
 export * from "./notifications.schema.js";
+export * from "./playlist.schema.js";
 export * from "./session.schema.js";
 export * from "./user.schema.js";

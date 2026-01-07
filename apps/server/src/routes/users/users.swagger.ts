@@ -152,8 +152,10 @@ export const usersSwagger = {
           description: "Unauthorized to modify information",
           content: {
             "application/json": {
-              message:
-                "You are not authorized to modify information that is not yours",
+              example: {
+                message:
+                  "You are not authorized to modify information that is not yours",
+              },
             },
           },
         },
@@ -161,7 +163,9 @@ export const usersSwagger = {
           description: "Too many emails sent",
           content: {
             "application/json": {
-              message: "Too many emails sent",
+              example: {
+                message: "Too many emails sent",
+              },
             },
           },
         },

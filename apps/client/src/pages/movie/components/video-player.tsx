@@ -9,6 +9,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
+import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import {
   DownloadStates,
@@ -19,6 +20,7 @@ import {
   secondsToHMS,
   ytsQualities,
 } from "@hypertube/libs";
+import { useQueryClient } from "@tanstack/react-query";
 import { Expand, Pause, Play, Shrink, Volume2, VolumeX } from "lucide-react";
 import React, {
   useCallback,
@@ -29,6 +31,7 @@ import React, {
   type ComponentProps,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 import { useVideoPlayer } from "../contexts/video-player/video-player.context";
 import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 import SettingsButton from "./dropdown-menu-navigating/dropdown-menu-navigating";
@@ -116,7 +119,7 @@ const VolumeControl = () => {
       <div
         className={cn(
           "flex items-center overflow-hidden transition-all duration-300",
-          mouseIn ? "w-24 opacity-100" : "w-0 opacity-0",
+          mouseIn ? "w-24 opacity-100" : "w-0 opacity-0"
         )}
       >
         <AnimateApparition
@@ -143,13 +146,13 @@ const Timer = () => {
   const { videoRef, progress } = useVideoPlayer();
 
   const currentTime = secondsToHMS(
-    (progress * (videoRef.current?.duration ?? 0)) / 100,
+    (progress * (videoRef.current?.duration ?? 0)) / 100
   );
   const duration = useMemo(
     () => secondsToHMS(videoRef.current?.duration ?? 0),
     // eslint doesn't understand that videoRef.current?.duration is a dependency of the function and not only videoRef
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [videoRef.current?.duration],
+    [videoRef.current?.duration]
   );
 
   return (
@@ -213,7 +216,7 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
           onChange={(e) => handleSeek(e.target.valueAsNumber)}
           className={cn(
             "absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10",
-            !isExplorable ? "cursor-not-allowed" : "cursor-pointer",
+            !isExplorable ? "cursor-not-allowed" : "cursor-pointer"
           )}
           disabled={!isExplorable}
         />
@@ -310,6 +313,7 @@ const ControlsBar = () => {
 const VideoPlayer = () => {
   const { tmdbId } = useConvertParams(MoviePageParamsSchema);
   const { t } = useTranslation();
+  const location = useLocation();
 
   const {
     videoRef,
@@ -333,6 +337,7 @@ const VideoPlayer = () => {
   } = useVideoPlayer();
 
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
 
   const { value: middleScreenInfo, setValue: setMiddleScreenInfo } =
     useTimeoutResetState<"volume" | "play" | null>(null, 1000);
@@ -357,16 +362,23 @@ const VideoPlayer = () => {
       url: getUrl(ROUTES.API.MOVIES_WATCH_TIMER, { tmdbId }),
       schemas: putMovieWatchTimerSchemas,
       data: {
-        timestamp: (progress * (videoRef.current?.duration ?? 0)) / 100,
+        duration: Math.round(videoRef.current?.duration ?? 0),
+        timestamp: Math.round(
+          (progress * (videoRef.current?.duration ?? 0)) / 100
+        ),
       },
     });
-  }, [tmdbId, progress, videoRef]);
+    queryClient.invalidateQueries({
+      queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER),
+    });
+  }, [tmdbId, progress, videoRef, queryClient]);
+
+  useEffect(() => updateWatchTimer(), [location.pathname, updateWatchTimer]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", updateWatchTimer);
 
     return () => {
-      updateWatchTimer();
       window.removeEventListener("beforeunload", updateWatchTimer);
     };
   }, [updateWatchTimer]);

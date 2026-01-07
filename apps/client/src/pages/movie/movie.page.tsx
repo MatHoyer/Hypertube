@@ -1,6 +1,6 @@
-import { UniqueFilter } from "@/components/animated/UniqueFilter";
 import { LoadingResource } from "@/components/LoadingResource";
 import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
+import { UniqueFilter } from "@/components/UniqueFilter";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
@@ -17,7 +17,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NotFoundPage } from "../notFound/NotFound.page";
 import { DownloadsSelector } from "./components/downloads-selector/download-selector";
-import { Casting } from "./components/movie-casting";
 import MovieInfo from "./components/movie-info";
 import { MovieInteraction } from "./components/movie-interaction";
 import VideoPlayer from "./components/video-player";
@@ -37,7 +36,11 @@ const MoviePage = () => {
 
   const queryClient = useQueryClient();
 
-  const { data: movie, isLoading } = useQuery({
+  const {
+    data: movie,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
     queryFn: () =>
       axiosFetch({
@@ -148,13 +151,8 @@ const MoviePage = () => {
     };
   }, [tmdbId, queryClient]);
 
-  if (isLoading) {
-    return <LoadingResource resource="movie" />;
-  }
-
-  if (!movie) {
-    return <NotFoundPage />;
-  }
+  if (isLoading) return <LoadingResource resource="movie" />;
+  if (isError || !movie) return <NotFoundPage />;
 
   return (
     <VideoPlayerProvider
@@ -163,15 +161,15 @@ const MoviePage = () => {
     >
       <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 relative">
         <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-4 h-fit">
-          <MovieInfo movie={movie} />
-          <Casting tmdbId={movie.tmdbId} />
+          <MovieInfo movie={movie.details} />
         </div>
-
         <div className="flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:col-span-2 p-4">
           <div className="flex flex-col gap-1">
             <Tabs value={selectedTab}>
               <TabsList className="bg-transparent">
                 <UniqueFilter
+                  layoutId="movie-tabs"
+                  className="bg-muted/50"
                   value={selectedTab}
                   onChange={(value) => setSelectedTab(value as TMovieTabs)}
                   values={{

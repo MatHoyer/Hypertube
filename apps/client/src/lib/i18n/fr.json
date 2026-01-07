@@ -5,13 +5,33 @@
     "or": "Ou",
     "loadingMessage": "Chargement {{resource}}",
     "errorMessage": "Erreur {{resource}}",
-    "loadingRessource": "...",
-    "errorRessource": "ressource non trouvée",
     "unexpected-error": "Erreur inattendue",
     "homepage": "Page d'accueil",
     "submit": "Soumettre",
     "userNotFound": "utilisateur non trouvé",
     "close": "Fermer"
+  },
+  "loadingResource": {
+    "global": "...",
+    "profile": "du profil",
+    "movie": "du film",
+    "movies": "des films",
+    "casting": "du casting",
+    "historic": "de l'historique",
+    "notifications": "des notifications",
+    "playlists": "des playlists",
+    "playlist": "de la playlist"
+  },
+  "errorResource": {
+    "global": "ressource non trouvée",
+    "profile": "profil non trouvé",
+    "movie": "film non trouvé",
+    "movies": "films non trouvés",
+    "casting": "casting non trouvé",
+    "historic": "historique non trouvé",
+    "notifications": "notifications non trouvées",
+    "playlists": "playlists non trouvées",
+    "playlist": "playlist non trouvée"
   },
   "footer": {
     "sourceCode": "Code source",
@@ -88,12 +108,10 @@
   "profile": {
     "likes": "Likes",
     "leftComments": "Commentaires postés",
-    "joined": "Inscrit",
-    "loadingRessource": "profil",
-    "errorRessource": "profil non trouvé"
+    "joined": "Inscrit"
   },
   "movie": {
-    "loadingRessource": "du film",
+    "noDetails": "Nous ne disposons plus des informations relatives à ce film.",
     "tabs": {
       "video": "Vidéo",
       "downloads": "Téléchargements"
@@ -153,17 +171,6 @@
         "subscribe": "Vous êtes maintenant abonné aux notifications pour ce film",
         "unsubscribe": "Vous êtes maintenant désabonné des notifications pour ce film"
       }
-    },
-    "page": {
-      "missing": {
-        "desc": "Pas description",
-        "genres": "Pas de genres",
-        "date": "Pas de date"
-      },
-      "seen": "Vu",
-      "evaluation": "évaluation",
-      "evaluations": "évaluations",
-      "noFound": "Aucun film trouvé..."
     },
     "filter": {
       "title": "Filtres",
@@ -240,11 +247,61 @@
       }
     }
   },
+  "library": {
+    "missing": {
+      "desc": "Pas description",
+      "genres": "Pas de genres",
+      "date": "Pas de date"
+    },
+    "seen": "Vu",
+    "evaluation": "évaluation",
+    "evaluations": "évaluations",
+    "noFound": "Aucun film trouvé...",
+    "noMovies": "Aucun film",
+    "noMoviesDescription": "Aucun film trouvé avec votre recherche."
+  },
   "casting": {
     "casting": "Casting",
-    "crew": "Equipe",
-    "loadingRessource": "casting",
-    "errorRessource": "casting non trouvé"
+    "crew": "Equipe"
+  },
+  "historic": {
+    "title": "Votre historique",
+    "empty": "Votre historique est vide.",
+    "emptyDescription": "Vous n'avez pas encore regardé de film.",
+    "deleteSuccess": "La suppression du film de votre historique a réussi.",
+    "deleteFailed": "La suppression du film de votre historique a échoué.",
+    "deleteAll": "Supprimer tout l'historique",
+    "deleteAllSuccess": "Votre historique a été supprimé.",
+    "deleteAllFailed": "La suppression de votre historique a échoué.",
+    "descriptionResource": "{{count}} films dans l'historique"
+  },
+  "playlists": {
+    "title": "Vos playlists",
+    "descriptionResource": "{{count}} playlists"
+  },
+  "playlist": {
+    "title": "Votre playlist",
+    "none": "Vous n'avez pas de playlists.",
+    "noneDescription": "Vous n'avez pas encore créé de playlist.",
+    "empty": "Vous n'avez aucun film dans cette playlist.",
+    "emptyDescription": "Vous n'avez pas encore ajouté de film à cette playlist.",
+    "save": "Enregistrer dans...",
+    "new": "Nouvelle playlist",
+    "dialog": {
+      "title": "Choisissez le nom pour votre future playlist",
+      "desc": "Vous ne pouvez pas avoir deux playlists portant le même nom.",
+      "placeholder": "Nom de votre playlist",
+      "button": "Créer votre playlist"
+    },
+    "deleteSuccess": "La suppression de votre playlist a réussi.",
+    "deleteFailed": "La suppression de votre playlist a échoué.",
+    "addMovieSuccess": "L'ajout du film à votre playlist a réussi.",
+    "addMovieFailed": "L'ajout du film à votre playlist a échoué.",
+    "deleteMovieSuccess": "La suppression du film de votre playlist a réussi.",
+    "deleteMovieFailed": "La suppression du film de votre playlist a échoué.",
+    "creationSuccess": "La playlist a été créée avec succès.",
+    "creationFailed": "La création de la playlist a échoué.",
+    "descriptionResource": "{{count}} films dans votre playlist"
   },
   "oauthCredentials": {
     "title": "Credentials",
@@ -288,7 +345,7 @@
     "markAllAsRead": "Marquer toutes comme lues",
     "markedAsRead": "Notification marquée comme lue",
     "markedAllAsRead": "Toutes les notifications marquées comme lues",
-    "unreadNotifications": "notifications non lues",
+    "descriptionResource": "{{count}} notifications non lues",
     "goToResource": "Cliquez pour voir plus",
     "sendTestNotification": "Envoyer une notification de test"
   },
@@ -297,7 +354,9 @@
     "account": "Mon compte",
     "notifications": "Notifications",
     "profile": "Profil",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "historic": "Historique",
+    "playlists": "Playlists"
   },
   "error": {
     "UNEXPECTED_ERROR": "Erreur inattendue.",

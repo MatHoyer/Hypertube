@@ -1,24 +1,20 @@
 import z from "zod";
 import { DownloadStates } from "../../const/global.const.js";
 import { movieSchema } from "../database/movie.schema.js";
-import { tmdbMovieSchema } from "./movie.schema.js";
+import { getPaginationSchemas } from "../utils/pagination.schema.js";
+import { tmdbMovieCompleteSchema } from "./movie.schema.js";
 
-export const getHistorySchemas = {
-  searchParams: z.object({
-    page: z.coerce.number().int().positive().default(1),
-    pageSize: z.coerce.number().int().positive().default(10),
-  }),
+export const getHistorySchemas = getPaginationSchemas({
   response: z.object({
     movies: z.array(
-      tmdbMovieSchema
-        .extend({
-          downloadState: z.enum(DownloadStates),
-          watchTimer: z.number(),
-        })
-        .nullable(),
+      z.object({
+        details: tmdbMovieCompleteSchema,
+        downloadState: z.enum(DownloadStates),
+        watchTimer: z.number(),
+      })
     ),
   }),
-};
+});
 export type TGetHistorySchemas = {
   searchParams: z.infer<typeof getHistorySchemas.searchParams>;
   response: z.infer<typeof getHistorySchemas.response>;

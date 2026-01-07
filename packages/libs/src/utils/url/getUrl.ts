@@ -9,6 +9,7 @@ import { credentialSchema } from "../../schemas/database/credential.schema.js";
 import { imageSchema } from "../../schemas/database/image.schema.js";
 import { movieSchema } from "../../schemas/database/movie.schema.js";
 import { notificationSchema } from "../../schemas/database/notifications.schema.js";
+import { playlistSchema } from "../../schemas/database/playlist.schema.js";
 import { userSchema } from "../../schemas/database/user.schema.js";
 import { isPurObject, typedEntries } from "../object.utils.js";
 import { getClientUrl } from "./getClientUrl.js";
@@ -27,6 +28,9 @@ export const ROUTES = {
     ERROR: "client-error",
     NOTIFICATIONS: "client-notifications",
     PROFILE: "client-profile",
+    HISTORIC: "client-historic",
+    PLAYLISTS: "client-playlists",
+    PLAYLIST: "client-playlist",
   },
   API: {
     SWAGGER: "api-swagger",
@@ -50,6 +54,8 @@ export const ROUTES = {
     IMAGES: "api-images",
     MOVIES: "api-movies",
     MOVIES_SUBSCRIPTION: "api-movies-subscription",
+    PLAYLISTS: "api-playlists",
+    PLAYLISTS_MOVIE: "api-playlists-movie",
     NOTIFICATIONS: "api-notifications",
     NOTIFICATIONS_STATS: "api-notifications-stats",
     NOTIFICATIONS_TEST: "api-notifications-test",
@@ -95,6 +101,11 @@ const routeSchemas = {
     [ROUTES.CLIENT.NOTIFICATIONS]: z.object({}),
     [ROUTES.CLIENT.PROFILE]: z.object({
       userId: z.union([userSchema.shape.id, z.literal(":userId")]),
+    }),
+    [ROUTES.CLIENT.HISTORIC]: z.object({}),
+    [ROUTES.CLIENT.PLAYLISTS]: z.object({}),
+    [ROUTES.CLIENT.PLAYLIST]: z.object({
+      playlistId: z.union([playlistSchema.shape.id, z.literal(":playlistId")]),
     }),
   },
   API: {
@@ -143,6 +154,17 @@ const routeSchemas = {
         .optional(),
     }),
     [ROUTES.API.MOVIES_SUBSCRIPTION]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
+        .optional(),
+    }),
+    [ROUTES.API.PLAYLISTS]: z.object({
+      playlistId: z
+        .union([playlistSchema.shape.id, z.literal("{playlistId}")])
+        .optional(),
+    }),
+    [ROUTES.API.PLAYLISTS_MOVIE]: z.object({
+      playlistId: z.union([playlistSchema.shape.id, z.literal("{playlistId}")]),
       tmdbId: z
         .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
         .optional(),
@@ -263,6 +285,9 @@ const routes: {
   [ROUTES.CLIENT.ERROR]: () => "/error",
   [ROUTES.CLIENT.NOTIFICATIONS]: () => "/notifications",
   [ROUTES.CLIENT.PROFILE]: ({ userId }) => `/profile/${userId}`,
+  [ROUTES.CLIENT.HISTORIC]: () => "/historic",
+  [ROUTES.CLIENT.PLAYLISTS]: () => "/playlists",
+  [ROUTES.CLIENT.PLAYLIST]: ({ playlistId }) => `/playlists/${playlistId}`,
 
   // API routes
   [ROUTES.API.SWAGGER]: ({ mode }) =>
@@ -318,6 +343,13 @@ const routes: {
   [ROUTES.API.MOVIES_SUBSCRIPTION]: ({ tmdbId }) =>
     `/api/movies/${tmdbId}/subscription`,
 
+  [ROUTES.API.PLAYLISTS]: ({ playlistId }) =>
+    playlistId ? `/api/playlists/${playlistId}` : "/api/playlists",
+  [ROUTES.API.PLAYLISTS_MOVIE]: ({ playlistId, tmdbId }) =>
+    tmdbId !== undefined
+      ? `/api/playlists/${playlistId}/movie/${tmdbId}`
+      : `/api/playlists/${playlistId}/movie`,
+
   [ROUTES.API.NOTIFICATIONS]: ({ notificationId }) =>
     notificationId
       ? `/api/notifications/${notificationId}`
@@ -351,7 +383,7 @@ const routes: {
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
 
   [ROUTES.API.HISTORY]: ({ tmdbId }) =>
-    tmdbId ? `/api/history/${tmdbId}` : `/api/history`,
+    tmdbId !== undefined ? `/api/history/${tmdbId}` : `/api/history`,
 
   [ROUTES.API.MOVIES_WATCH_TIMER]: ({ tmdbId }) =>
     `/api/movies/${tmdbId}/watch-timer`,
@@ -372,7 +404,7 @@ type TSearchParams =
 
 type TSearchParamsProvided =
   | string[][]
-  | Record<string, string | null | undefined>
+  | Record<string, string | number | null | undefined>
   | string
   | URLSearchParams;
 
@@ -431,7 +463,10 @@ export const getUrl = <T extends TRoute>(
 
   if (isPurObject(searchParams)) {
     searchParams = typedEntries(searchParams).reduce((acc, [key, value]) => {
-      if (value) acc[key] = value;
+      if (value) {
+        if (typeof value === "number") acc[key] = value.toString();
+        else acc[key] = value;
+      }
       return acc;
     }, {} as Record<string, string>);
   }

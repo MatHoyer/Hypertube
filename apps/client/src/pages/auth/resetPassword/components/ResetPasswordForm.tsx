@@ -66,10 +66,20 @@ export const ResetPasswordForm = () => {
       <FieldSet>
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="input-password">
-              {t("sign.password")}
-            </FieldLabel>
-            <InputPassword id="password" {...form.register("newPassword")} />
+            {/* Prevent warning about password without username field */}
+            <input
+              type="text"
+              name="username"
+              autoComplete="username"
+              readOnly
+              hidden
+            />
+            <FieldLabel htmlFor="password">{t("sign.password")}</FieldLabel>
+            <InputPassword
+              id="password"
+              autoComplete="new-password"
+              {...form.register("newPassword")}
+            />
             <FieldDescription>{t("sign.resetPasswordDesc")}</FieldDescription>
             <FieldError>
               {form.formState.errors.newPassword?.message}

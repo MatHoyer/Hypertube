@@ -1,12 +1,11 @@
+import { RESOURCE_TYPES } from "@/lib/const";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AppLoader } from "./ui/app-loader";
 import { Typography } from "./ui/typography";
 
-const loadingResources = ["global", "movie", "profile", "casting"] as const;
-
 export const LoadingResource: React.FC<{
-  resource: (typeof loadingResources)[number];
+  resource: (typeof RESOURCE_TYPES)[number];
 }> = ({ resource }) => {
   const { t } = useTranslation();
   const [showLoader, setShowLoader] = useState(false);
@@ -19,7 +18,7 @@ export const LoadingResource: React.FC<{
     return () => clearTimeout(timer);
   }, []);
 
-  if (!loadingResources.includes(resource) || !showLoader) {
+  if (!RESOURCE_TYPES.includes(resource) || !showLoader) {
     return null;
   }
 
@@ -28,7 +27,7 @@ export const LoadingResource: React.FC<{
       <AppLoader size={60} />
       <Typography variant="h3">
         {t("global.loadingMessage", {
-          resource: t(`${resource}.loadingRessource`),
+          resource: t(`loadingResource.${resource}`),
         })}
       </Typography>
     </div>

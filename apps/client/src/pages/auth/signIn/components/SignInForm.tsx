@@ -63,17 +63,21 @@ export const SignInForm = () => {
       <FieldSet>
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="input-username">
-              {t("sign.username")}
-            </FieldLabel>
-            <Input id="username" {...form.register("username")} />
+            <FieldLabel htmlFor="username">{t("sign.username")}</FieldLabel>
+            <Input
+              id="username"
+              autoComplete="username"
+              {...form.register("username")}
+            />
             <FieldError>{form.formState.errors.username?.message}</FieldError>
           </Field>
           <Field>
-            <FieldLabel htmlFor="input-password">
-              {t("sign.password")}
-            </FieldLabel>
-            <InputPassword id="password" {...form.register("password")} />
+            <FieldLabel htmlFor="password">{t("sign.password")}</FieldLabel>
+            <InputPassword
+              id="password"
+              autoComplete="current-password"
+              {...form.register("password")}
+            />
             <FieldError>{form.formState.errors.password?.message}</FieldError>
           </Field>
           <Field>

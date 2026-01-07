@@ -16,11 +16,7 @@ const InputPassword: React.FC<Omit<ComponentProps<typeof Input>, "type">> = ({
 
   return (
     <InputGroup>
-      <InputGroupInput
-        {...field}
-        type={showPassword ? "text" : "password"}
-        autoComplete="password"
-      />
+      <InputGroupInput {...field} type={showPassword ? "text" : "password"} />
       <InputGroupAddon align="inline-end">
         <InputGroupButton onClick={toggleShowPassword}>
           {showPassword ? <EyeOff /> : <Eye />}

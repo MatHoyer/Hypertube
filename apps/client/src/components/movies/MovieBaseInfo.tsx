@@ -1,13 +1,35 @@
 import { cn } from "@/lib/utils";
-import { getUrl, ROUTES, type TTmdbMovieSchema } from "@hypertube/libs";
+import { getUrl, ROUTES } from "@hypertube/libs";
+import type { TTmdbMovieCompleteSchema } from "@hypertube/libs/src/schemas/api/movie.schema";
 import { ExternalLink } from "lucide-react";
-import type { ComponentProps } from "react";
+import type { ComponentProps, PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ImageContainer } from "../images/ImageContainer";
 import { Badge } from "../ui/badge";
 import { Typography } from "../ui/typography";
 import { ScoreRated } from "./ScoreRated";
+
+const MovieBaseInfoLayout: React.FC<
+  {
+    dir: "row" | "col";
+  } & ComponentProps<"div"> &
+    PropsWithChildren
+> = ({ dir, className, children, ...props }) => {
+  return (
+    <div
+      className={cn(
+        dir === "row" && "flex flex-col items-center w-full gap-2 text-center",
+        dir === "col" &&
+          "flex flex-col sm:grid sm:grid-cols-[1fr_4fr_1fr_1fr] items-center w-full gap-2",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
 
 const DisplayGenresMovie: React.FC<{
   genres: { name: string; id: number }[];
@@ -18,9 +40,7 @@ const DisplayGenresMovie: React.FC<{
   if (!genres.length)
     return (
       <div className="flex flex-wrap gap-2 justify-center">
-        <Typography textColor="muted">
-          {t("movie.page.missing.genres")}
-        </Typography>
+        <Typography textColor="muted">{t("library.missing.genres")}</Typography>
       </div>
     );
 
@@ -46,13 +66,15 @@ const DisplayGenresMovie: React.FC<{
 
 export const MovieBaseInfo: React.FC<
   ComponentProps<"div"> & {
-    movie: Omit<TTmdbMovieSchema, "id">;
+    movie: TTmdbMovieCompleteSchema;
+    dir?: "row" | "col";
     posterSize?: "lg" | "md" | "sm";
     info?: "all" | "partial";
     truncate?: boolean;
   }
 > = ({
   movie,
+  dir = "row",
   posterSize = "lg",
   info = "all",
   truncate = false,
@@ -61,14 +83,22 @@ export const MovieBaseInfo: React.FC<
 }) => {
   const { t } = useTranslation();
 
+  if (!movie.hasDetails) {
+    return (
+      <MovieBaseInfoLayout dir={dir} className={className} {...props}>
+        <ImageContainer imageSrc={null} altImage={"?"} size={posterSize} />
+        <Typography
+          textSize="lg"
+          className="sm:col-span-3 text-center sm:text-start"
+        >
+          {t("movie.noDetails")}
+        </Typography>
+      </MovieBaseInfoLayout>
+    );
+  }
+
   return (
-    <div
-      className={cn(
-        "flex flex-col items-center w-full gap-2 text-center",
-        className,
-      )}
-      {...props}
-    >
+    <MovieBaseInfoLayout dir={dir} className={className} {...props}>
       <ImageContainer
         imageSrc={movie.poster_path}
         altImage={movie.title}
@@ -106,7 +136,7 @@ export const MovieBaseInfo: React.FC<
             )}
           </div>
           <Typography className={cn(truncate && "line-clamp-5")}>
-            {movie.overview || t("movie.page.missing.desc")}
+            {movie.overview || t("library.missing.desc")}
           </Typography>
         </>
       )}
@@ -115,9 +145,9 @@ export const MovieBaseInfo: React.FC<
         displayOnlyOne={info === "partial"}
       />
       <div className="flex justify-between w-full gap-2">
-        <Badge>{movie.release_date || t("movie.page.missing.date")}</Badge>
+        <Badge>{movie.release_date || t("library.missing.date")}</Badge>
         <ScoreRated score={movie.vote_average} voteCount={movie.vote_count} />
       </div>
-    </div>
+    </MovieBaseInfoLayout>
   );
 };

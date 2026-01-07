@@ -1,6 +1,5 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { getDownloadStateIcon } from "@/components/download-state/getDownloadStateIcon";
-import { Logo } from "@/components/images/Logo";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -9,6 +8,8 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -16,62 +17,77 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Typography } from "@/components/ui/typography";
 import { type TGetMoviesSchemas } from "@hypertube/libs";
-import { Check, EllipsisVertical } from "lucide-react";
-import { memo } from "react";
+import { Check, EllipsisVertical, Plus } from "lucide-react";
+import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { PlaylistList } from "./PlaylistList";
 
 export const Thumbnail: React.FC<{
   movie: TGetMoviesSchemas["response"]["movies"][number];
 }> = memo(({ movie }) => {
-  const movieSeen = true; //TODO : movieSeen by user
   const { t } = useTranslation();
-
-  if (!movie)
-    return (
-      <Card className="flex flex-col justify-center items-center">
-        <Logo size="lg" />
-      </Card>
-    );
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
     <div>
       <Card
-        className="flex gap-0 p-2 md:p-4 items-center rounded-b-none hover:bg-card/20 cursor-pointer"
-        onClick={() => openDialog("movie", movie)}
+        className="flex gap-0 p-2 md:p-4 items-center rounded-b-none hover:bg-card/20 cursor-pointer min-h-[332px]"
+        onClick={() => openDialog("movie", movie.details)}
       >
-        <MovieBaseInfo movie={movie} posterSize="md" info="partial" />
+        <MovieBaseInfo movie={movie.details} posterSize="md" info="partial" />
       </Card>
       <Card className="p-2 rounded-t-none border-t-0">
         <div className="flex gap-2 w-full items-center justify-between">
           <Tooltip>
             <TooltipTrigger className="flex items-center">
-              {getDownloadStateIcon(movie.status)}
+              {getDownloadStateIcon(movie.downloadState)}
             </TooltipTrigger>
             <TooltipContent>
-              {t(`movie.downloadPage.tooltip.${movie.status}`)}
+              {t(`movie.downloadPage.tooltip.${movie.downloadState}`)}
             </TooltipContent>
           </Tooltip>
           <div className="flex items-center gap-2">
-            {movieSeen && (
+            {movie.isSeen && (
               <Tooltip>
                 <TooltipTrigger>
                   <Badge variant={"success"}>
                     <Check />
                   </Badge>
                 </TooltipTrigger>
-                <TooltipContent>{t("movie.page.seen")}</TooltipContent>
+                <TooltipContent>{t("library.seen")}</TooltipContent>
               </Tooltip>
             )}
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
+            <DropdownMenu
+              open={isDropdownOpen}
+              onOpenChange={setIsDropdownOpen}
+            >
+              <DropdownMenuTrigger asChild className="cursor-pointer">
                 <EllipsisVertical size={15} />
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent
+                className="w-[208px]"
+                side="top"
+                align="start"
+              >
+                <DropdownMenuLabel>
+                  <Typography textSize="lg">{t("playlist.save")}</Typography>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <DropdownMenuItem>Default playlist</DropdownMenuItem>
-                  <DropdownMenuItem>Choose playlist</DropdownMenuItem>
+                  <PlaylistList movie={movie} />
                 </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    setTimeout(() => openDialog("playlist"), 200);
+                  }}
+                >
+                  <Plus />
+                  {t("playlist.new")}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

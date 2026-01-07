@@ -75,10 +75,12 @@ export const UserEmailUpdate = () => {
         <CardContent>
           <FieldSet>
             <Field>
-              <FieldLabel htmlFor="input-email">
-                {t("settings.email")}
-              </FieldLabel>
-              <Input id="email" {...form.register("email")} />
+              <FieldLabel htmlFor="email">{t("settings.email")}</FieldLabel>
+              <Input
+                id="email"
+                autoComplete="email"
+                {...form.register("email")}
+              />
               <FieldError>{form.formState.errors.email?.message}</FieldError>
             </Field>
           </FieldSet>

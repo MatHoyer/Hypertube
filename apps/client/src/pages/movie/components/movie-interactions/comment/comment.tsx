@@ -41,7 +41,7 @@ export const Comment: React.FC<{
           method: "GET",
           url: getUrl(ROUTES.API.COMMENTS_REPLIES, {
             commentId: comment.id,
-            searchParams: { page: pageParam.toString(), pageSize: "10" },
+            searchParams: { page: pageParam, pageSize: "10" },
           }),
           schemas: getCommentRepliesSchemas,
         }),

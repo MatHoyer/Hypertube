@@ -4,8 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 type TImageSize = "xs" | "sm" | "md" | "lg";
 
-// TODO : get UserImage with userId when GET user/:id done
-
 export const UserImageAvatar: React.FC<{
   size?: TImageSize;
 }> = ({ size = "sm" }) => {

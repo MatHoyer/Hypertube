@@ -5,13 +5,33 @@
     "or": "O",
     "loadingMessage": "Cargando {{resource}}",
     "errorMessage": "Error {{resource}}",
-    "loadingRessource": "...",
-    "errorRessource": "recurso no encontrado",
     "unexpected-error": "Error inesperado",
     "homepage": "Página principal",
     "submit": "Enviar",
     "userNotFound": "Usuario no encontrado",
-    "close": ""
+    "close": "Cerrar"
+  },
+  "loadingResource": {
+    "global": "...",
+    "profile": "perfil",
+    "movie": "película",
+    "movies": "películas",
+    "casting": "reparto",
+    "historic": "historial",
+    "notifications": "notificaciones",
+    "playlists": "listas de reproducción",
+    "playlist": "lista de reproducción"
+  },
+  "errorResource": {
+    "global": "recurso no encontrado",
+    "profile": "perfil no encontrado",
+    "movie": "película no encontrada",
+    "movies": "películas no encontradas",
+    "casting": "reparto no encontrado",
+    "historic": "historial no encontrado",
+    "notifications": "notificaciones no encontradas",
+    "playlists": "listas de reproducción no encontradas",
+    "playlist": "lista de reproducción no encontrada"
   },
   "footer": {
     "sourceCode": "Código fuente",
@@ -88,12 +108,10 @@
   "profile": {
     "likes": "Le gusta",
     "leftComments": "Comentarios realizados",
-    "joined": "Registrado",
-    "loadingRessource": "perfil",
-    "errorRessource": "perfil no encontrado"
+    "joined": "Registrado"
   },
   "movie": {
-    "loadingRessource": "película",
+    "noDetails": "Ya no tenemos información sobre esta película.",
     "tabs": {
       "video": "Vídeo",
       "downloads": "Descargas"
@@ -113,21 +131,21 @@
         "DOWNLOADED": "Ya descargado"
       },
       "downloadResolution": {
-        "title": "",
+        "title": "Descargar resolución",
         "description": {
-          "1": "",
-          "2": ""
+          "1": "Esta acción iniciará la descarga en el servidor.",
+          "2": "Esto puede tardar un tiempo. Puedes suscribirte a las notificaciones de la película para ser notificado cuando la descarga avance."
         },
-        "size": "",
-        "submit": ""
+        "size": "Tamaño",
+        "submit": "Iniciar descarga"
       },
       "downloadSubtitle": {
-        "title": "",
+        "title": "Descargar subtítulos",
         "description": {
-          "1": "",
-          "2": ""
+          "1": "Esta acción iniciará la descarga en el servidor.",
+          "2": "Esto es bastante rápido."
         },
-        "submit": ""
+        "submit": "Iniciar descarga"
       }
     },
     "playerSettings": {
@@ -154,61 +172,50 @@
         "unsubscribe": "Te has dado de baja de las notificaciones de esta película"
       }
     },
-    "page": {
-      "missing": {
-        "desc": "",
-        "genres": "",
-        "date": ""
-      },
-      "seen": "",
-      "evaluation": "",
-      "evaluations": "",
-      "noFound": ""
-    },
     "filter": {
-      "title": "",
-      "desc": "",
-      "descNote": "",
-      "reset": "",
+      "title": "Filtros",
+      "desc": "Filtrar películas por opciones de ordenamiento y géneros.",
+      "descNote": "Nota: Los filtros de categoría y las búsquedas son independientes - las categorías y búsquedas no se aplican al usar opciones de ordenamiento o filtros de género",
+      "reset": "Restablecer filtros",
       "category": {
-        "title": "",
-        "now_playing": "",
-        "popular": "",
-        "top_rated": "",
-        "upcoming": ""
+        "title": "Categoría",
+        "now_playing": "En cartelera",
+        "popular": "Populares",
+        "top_rated": "Mejor valoradas",
+        "upcoming": "Próximas"
       },
       "sort": {
-        "title": "",
-        "popularity.desc": "",
-        "popularity.asc": "",
-        "original_title.desc": "",
-        "original_title.asc": "",
-        "primary_release_date.desc": "",
-        "primary_release_date.asc": "",
-        "vote_count.desc": "",
-        "vote_count.asc": ""
+        "title": "Ordenar por",
+        "popularity.desc": "Más populares",
+        "popularity.asc": "Menos populares",
+        "original_title.desc": "Título Z-A",
+        "original_title.asc": "Título A-Z",
+        "primary_release_date.desc": "Más recientes",
+        "primary_release_date.asc": "Más antiguas",
+        "vote_count.desc": "Más votadas",
+        "vote_count.asc": "Menos votadas"
       },
       "genres": {
-        "title": "",
-        "Action": "",
-        "Adventure": "",
-        "Animation": "",
-        "Comedy": "",
-        "Crime": "",
-        "Documentary": "",
-        "Drama": "",
-        "Family": "",
-        "Fantasy": "",
-        "History": "",
-        "Horror": "",
-        "Music": "",
-        "Mystery": "",
-        "Romance": "",
-        "Science Fiction": "",
-        "TV Movie": "",
-        "Thriller": "",
-        "War": "",
-        "Western": ""
+        "title": "Géneros",
+        "Action": "Acción",
+        "Adventure": "Aventura",
+        "Animation": "Animación",
+        "Comedy": "Comedia",
+        "Crime": "Crimen",
+        "Documentary": "Documental",
+        "Drama": "Drama",
+        "Family": "Familia",
+        "Fantasy": "Fantasía",
+        "History": "Historia",
+        "Horror": "Terror",
+        "Music": "Música",
+        "Mystery": "Misterio",
+        "Romance": "Romance",
+        "Science Fiction": "Ciencia ficción",
+        "TV Movie": "Película de TV",
+        "Thriller": "Suspenso",
+        "War": "Guerra",
+        "Western": "Western"
       }
     },
     "likes": {
@@ -225,8 +232,8 @@
       "addComment": "Añadir un comentario...",
       "deleteComment": "Eliminar",
       "editComment": "Cambiar el comentario",
-      "cancel": "Cancel",
-      "save": "Save",
+      "cancel": "Cancelar",
+      "save": "Guardar",
       "loadMore": "Cargar más comentarios",
       "likes": {
         "likeComment": "Me gusta este comentario",
@@ -240,11 +247,61 @@
       }
     }
   },
+  "library": {
+    "missing": {
+      "desc": "Sin descripción",
+      "genres": "Sin género",
+      "date": "Sin fecha"
+    },
+    "seen": "Visto",
+    "evaluation": "evaluación",
+    "evaluations": "evaluaciones",
+    "noFound": "No se encontraron películas...",
+    "noMovies": "No hay películas",
+    "noMoviesDescription": "No se encontraron películas con tu búsqueda."
+  },
   "casting": {
-    "casting": "",
-    "crew": "",
-    "loadingRessource": "",
-    "errorRessource": ""
+    "casting": "Reparto",
+    "crew": "Equipo"
+  },
+  "historic": {
+    "title": "Tu historial",
+    "empty": "Tu historial está vacío.",
+    "emptyDescription": "Aún no has visto ninguna película.",
+    "deleteSuccess": "La película se eliminó correctamente de tu historial.",
+    "deleteFailed": "No se pudo eliminar la película de tu historial.",
+    "deleteAll": "Eliminar todo el historial",
+    "deleteAllSuccess": "Su historial ha sido eliminado.",
+    "deleteAllFailed": "La eliminación de su historial falló.",
+    "descriptionResource": "{{count}} películas en el historial"
+  },
+  "playlists": {
+    "title": "Tus listas de reproducción",
+    "descriptionResource": "{{count}} listas de reproducción"
+  },
+  "playlist": {
+    "title": "Tu lista de reproducción",
+    "none": "No tienes listas de reproducción.",
+    "noneDescription": "Aún no has creado una lista de reproducción.",
+    "empty": "No tienes películas en esta lista de reproducción.",
+    "emptyDescription": "Aún no has agregado películas a esta lista de reproducción.",
+    "save": "Guardar en...",
+    "new": "Nueva lista de reproducción",
+    "dialog": {
+      "title": "Elige un nombre para tu futura lista de reproducción",
+      "desc": "No puedes tener dos listas de reproducción con el mismo nombre.",
+      "placeholder": "Nombre de tu lista de reproducción",
+      "button": "Crear tu lista de reproducción"
+    },
+    "deleteSuccess": "La lista de reproducción se eliminó correctamente.",
+    "deleteFailed": "No se pudo eliminar la lista de reproducción.",
+    "addMovieSuccess": "La película se agregó correctamente a tu lista de reproducción.",
+    "addMovieFailed": "No se pudo agregar la película a tu lista de reproducción.",
+    "deleteMovieSuccess": "La película se eliminó correctamente de tu lista de reproducción.",
+    "deleteMovieFailed": "No se pudo eliminar la película de tu lista de reproducción.",
+    "creationSuccess": "Lista de reproducción creada correctamente.",
+    "creationFailed": "No se pudo crear la lista de reproducción.",
+    "descriptionResource": "{{count}} películas en tu lista de reproducción"
   },
   "oauthCredentials": {
     "title": "Credenciales",
@@ -288,7 +345,7 @@
     "markAllAsRead": "Marcar todas como leídas",
     "markedAsRead": "Notificación marcada como leída",
     "markedAllAsRead": "Todas las notificaciones marcadas como leídas",
-    "unreadNotifications": "notificaciones sin leer",
+    "descriptionResource": "notificaciones sin leer",
     "goToResource": "Haz clic para más",
     "sendTestNotification": "Enviar notificación de prueba"
   },
@@ -297,7 +354,9 @@
     "account": "Mi cuenta",
     "notifications": "Notificaciones",
     "profile": "Perfil",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "historic": "Historial",
+    "playlists": "Listas de reproducción"
   },
   "error": {
     "UNEXPECTED_ERROR": "Error inesperado.",

@@ -3,3 +3,22 @@ export const LOCAL_STORAGE_KEYS = {
 } as const;
 export type TLocalStorageKeys =
   (typeof LOCAL_STORAGE_KEYS)[keyof typeof LOCAL_STORAGE_KEYS];
+
+export const WINDOW_MIN_WIDTH = {
+  LG: 1024,
+  MD: 768,
+  SM: 640,
+} as const;
+
+export const RESOURCE_TYPES = [
+  "global",
+  "profile",
+  "movie",
+  "movies",
+  "casting",
+  "historic",
+  "notifications",
+  "playlists",
+  "playlist",
+] as const;
+export type TResourceType = (typeof RESOURCE_TYPES)[number];
