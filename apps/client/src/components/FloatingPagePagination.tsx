@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { ActivePill } from "./animated/ActivePill";
 import { FloatingBar } from "./ui/FloatingBar";
 import {
@@ -14,10 +13,6 @@ export const FloatingPagePagination: React.FC<{
   setPage: (value: number | ((old: number) => number)) => void;
   maxPage: number;
 }> = ({ page, setPage, maxPage }) => {
-  useEffect(() => {
-    if (page > maxPage) setPage(1);
-  }, [page, maxPage, setPage]);
-
   if (maxPage <= 1) return null;
 
   return (

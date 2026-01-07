@@ -20,6 +20,7 @@ import {
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ListVideo, Video, X } from "lucide-react";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -29,6 +30,7 @@ export const Playlists: React.FC<{
 }> = ({ playlists }) => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
+  const [_, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
   const { mutate: deleteMutate } = useMutation({
     mutationFn: (
@@ -43,6 +45,7 @@ export const Playlists: React.FC<{
       queryClient.invalidateQueries({
         queryKey: getQueryKey(ROUTES.API.PLAYLISTS),
       });
+      if (playlists.length === 1) setPage(1);
       toast.success(t("playlist.deleteSuccess"));
     },
     onError: () => {

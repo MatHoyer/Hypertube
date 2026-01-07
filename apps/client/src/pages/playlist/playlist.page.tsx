@@ -22,8 +22,6 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { PlaylistPageParamsSchema } from "./schemas/urlParams.schema";
 
-const playlistPageSize = 10;
-
 export const PlaylistPage = () => {
   const { scrollTo } = useScrollArea();
   const queryClient = useQueryClient();
@@ -31,7 +29,7 @@ export const PlaylistPage = () => {
   const { playlistId } = useConvertParams(PlaylistPageParamsSchema);
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
-  const { data, isLoading, isPlaceholderData, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.PLAYLISTS, {
       playlistId,
       page,
@@ -41,14 +39,10 @@ export const PlaylistPage = () => {
         method: "GET",
         url: getUrl(ROUTES.API.PLAYLISTS, {
           playlistId,
-          searchParams: {
-            page,
-            pageSize: playlistPageSize,
-          },
+          searchParams: { page },
         }),
         schemas: getPlaylistSchemas,
       }),
-    placeholderData: (previousData) => previousData,
   });
 
   const { mutate } = useMutation({
@@ -68,6 +62,7 @@ export const PlaylistPage = () => {
       queryClient.invalidateQueries({
         queryKey: getQueryKey(ROUTES.API.PLAYLISTS),
       });
+      if (data?.movies.length === 1) setPage(1);
       toast.success(t("playlist.deleteMovieSuccess"));
     },
     onError: () => {
@@ -85,16 +80,14 @@ export const PlaylistPage = () => {
         />
       </LayoutHeader>
       <LayoutContent>
-        {data && !isPlaceholderData && (
+        {data && (
           <MovieList
             movieListType="playlist"
             movies={data.movies}
             deleteFn={(tmdbId) => mutate({ playlistId, tmdbId })}
           />
         )}
-        {(isLoading || isPlaceholderData) && (
-          <LoadingResource resource="playlist" />
-        )}
+        {isLoading && <LoadingResource resource="playlist" />}
         {isError && <ErrorResource resource="playlist" />}
         <FloatingPagePagination
           page={page}

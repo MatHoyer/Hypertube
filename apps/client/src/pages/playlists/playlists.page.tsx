@@ -20,27 +20,21 @@ import { parseAsInteger, useQueryState } from "nuqs";
 import { useTranslation } from "react-i18next";
 import { Playlists } from "./components/Playlists";
 
-const playlistsPageSize = 10;
-
 export const PlaylistsPage = () => {
   const { scrollTo } = useScrollArea();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
-  const { data, isLoading, isPlaceholderData, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.PLAYLISTS, { page }),
     queryFn: () =>
       axiosFetch({
         method: "GET",
         url: getUrl(ROUTES.API.PLAYLISTS, {
-          searchParams: {
-            page,
-            pageSize: playlistsPageSize,
-          },
+          searchParams: { page },
         }),
         schemas: getPlaylistsSchemas,
       }),
-    placeholderData: (previousData) => previousData,
   });
 
   return (
@@ -55,10 +49,8 @@ export const PlaylistsPage = () => {
         </LayoutActions>
       </LayoutHeader>
       <LayoutContent>
-        {data && !isPlaceholderData && <Playlists playlists={data.playlists} />}
-        {(isLoading || isPlaceholderData) && (
-          <LoadingResource resource="playlists" />
-        )}
+        {data && <Playlists playlists={data.playlists} />}
+        {isLoading && <LoadingResource resource="playlists" />}
         {isError && <ErrorResource resource="playlists" />}
         <FloatingPagePagination
           page={page}

@@ -27,24 +27,19 @@ import { parseAsInteger, useQueryState } from "nuqs";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 
-const historicPageSize = 10;
-
 export const HistoricPage = () => {
   const { scrollTo } = useScrollArea();
   const queryClient = useQueryClient();
   const { t } = useTranslation();
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
-  const { data, isLoading, isPlaceholderData, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER, { page }),
     queryFn: () =>
       axiosFetch({
         method: "GET",
         url: getUrl(ROUTES.API.HISTORY, {
-          searchParams: {
-            page,
-            pageSize: historicPageSize,
-          },
+          searchParams: { page },
         }),
         schemas: getHistorySchemas,
       }),
@@ -62,6 +57,7 @@ export const HistoricPage = () => {
       queryClient.invalidateQueries({
         queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER),
       });
+      if (data?.movies.length === 1) setPage(1);
       toast.success(t("historic.deleteSuccess"));
     },
     onError: () => {
@@ -80,6 +76,7 @@ export const HistoricPage = () => {
       queryClient.invalidateQueries({
         queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER),
       });
+      setPage(1);
       toast.success(t("historic.deleteAllSuccess"));
     },
     onError: () => {
@@ -103,16 +100,14 @@ export const HistoricPage = () => {
         </LayoutActions>
       </LayoutHeader>
       <LayoutContent>
-        {data && !isPlaceholderData && (
+        {data && (
           <MovieList
             movieListType="historic"
             movies={data.movies}
             deleteFn={(tmdbId) => deleteMutation({ tmdbId })}
           />
         )}
-        {(isLoading || isPlaceholderData) && (
-          <LoadingResource resource="historic" />
-        )}
+        {isLoading && <LoadingResource resource="historic" />}
         {isError && <ErrorResource resource="historic" />}
         <FloatingPagePagination
           page={page}
