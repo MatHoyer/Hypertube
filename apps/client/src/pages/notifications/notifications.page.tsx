@@ -20,9 +20,11 @@ import {
   getUrl,
   notificationReadStatuses,
   ROUTES,
+  typedValues,
   type NotificationReadStatus,
 } from "@hypertube/libs";
 import { ChevronUp } from "lucide-react";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -53,8 +55,11 @@ export const NotificationsPage = () => {
   const filterRef = useRef<HTMLDivElement>(null);
   const [showScrollToTopButton, setShowScrollToTopButton] =
     useState<boolean>(false);
-  const [readStatus, setReadStatus] = useState<NotificationReadStatus>(
-    notificationReadStatuses.UNREAD
+  const [readStatus, setReadStatus] = useQueryState<NotificationReadStatus>(
+    "readStatus",
+    parseAsStringLiteral(typedValues(notificationReadStatuses)).withDefault(
+      notificationReadStatuses.UNREAD
+    )
   );
   const { scrollTo } = useScrollArea();
 

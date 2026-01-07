@@ -14,10 +14,9 @@ import {
   type ComponentProps,
   type JSX,
 } from "react";
-import { useTranslation } from "react-i18next";
+import { ErrorResource } from "./ErrorResource";
 import { LoadingResource } from "./LoadingResource";
 import { AppLoader } from "./ui/app-loader";
-import { Typography } from "./ui/typography";
 
 type TInfiniteVirtualizerFetchResponse<T> = {
   data: T[];
@@ -61,7 +60,6 @@ export const InfiniteVirtualizer = <T,>({
   renderChild,
   emptyChild,
 }: TInfiniteVirtualizerProps<T>) => {
-  const { t } = useTranslation();
   const listRef = useRef<HTMLDivElement>(null);
   const [columns, setColumns] = useState(withColumns ? 5 : 1);
 
@@ -125,13 +123,7 @@ export const InfiniteVirtualizer = <T,>({
   ]);
 
   if (isPending) return <LoadingResource resource="global" />;
-  if (isError) {
-    return (
-      <div className="flex justify-center items-center">
-        <Typography textSize="lg">{t("global.error")}</Typography>
-      </div>
-    );
-  }
+  if (isError) return <ErrorResource resource="global" />;
 
   return (
     <>
