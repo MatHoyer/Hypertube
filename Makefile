@@ -1,6 +1,6 @@
 .PHONY: vpn stop-vpn logs-vpn infra stop-infra logs-infra helpers stop-helpers logs-helpers dev stop-dev logs-dev prod stop-prod logs-prod stop-all rebuild-dev rebuild-prod
 
-# VPN (doit être lancé en premier)
+# VPN
 vpn:
 	docker compose -f docker-compose-vpn.yml -f docker-compose-vpn.override.yml up -d
 
