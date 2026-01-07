@@ -5,13 +5,33 @@
     "or": "O",
     "loadingMessage": "Cargando {{resource}}",
     "errorMessage": "Error {{resource}}",
-    "loadingRessource": "...",
-    "errorRessource": "recurso no encontrado",
     "unexpected-error": "Error inesperado",
     "homepage": "Página principal",
     "submit": "Enviar",
     "userNotFound": "Usuario no encontrado",
     "close": ""
+  },
+  "loadingResource": {
+    "global": "...",
+    "profile": "perfil",
+    "movie": "película",
+    "movies": "películas",
+    "casting": "reparto",
+    "historic": "historial",
+    "notifications": "notificaciones",
+    "playlists": "listas de reproducción",
+    "playlist": "lista de reproducción"
+  },
+  "errorResource": {
+    "global": "recurso no encontrado",
+    "profile": "perfil no encontrado",
+    "movie": "película no encontrada",
+    "movies": "películas no encontradas",
+    "casting": "reparto no encontrado",
+    "historic": "historial no encontrado",
+    "notifications": "notificaciones no encontradas",
+    "playlists": "listas de reproducción no encontradas",
+    "playlist": "lista de reproducción no encontrada"
   },
   "footer": {
     "sourceCode": "Código fuente",
@@ -88,12 +108,9 @@
   "profile": {
     "likes": "Le gusta",
     "leftComments": "Comentarios realizados",
-    "joined": "Registrado",
-    "loadingRessource": "perfil",
-    "errorRessource": "perfil no encontrado"
+    "joined": "Registrado"
   },
   "movie": {
-    "loadingRessource": "película",
     "noDetails": "",
     "tabs": {
       "video": "Vídeo",
@@ -245,9 +262,7 @@
   },
   "casting": {
     "casting": "",
-    "crew": "",
-    "loadingRessource": "",
-    "errorRessource": ""
+    "crew": ""
   },
   "historic": {
     "title": "",
@@ -258,15 +273,11 @@
     "deleteAll": "Eliminar todo el historial",
     "deleteAllSuccess": "Su historial ha sido eliminado.",
     "deleteAllFailed": "La eliminación de su historial falló.",
-    "descriptionResource": "",
-    "loadingRessource": "",
-    "errorRessource": ""
+    "descriptionResource": ""
   },
   "playlists": {
     "title": "",
-    "descriptionResource": "",
-    "loadingRessource": "",
-    "errorRessource": ""
+    "descriptionResource": ""
   },
   "playlist": {
     "title": "",
@@ -290,9 +301,7 @@
     "deleteMovieFailed": "",
     "creationSuccess": "",
     "creationFailed": "",
-    "descriptionResource": "",
-    "loadingRessource": "",
-    "errorRessource": ""
+    "descriptionResource": ""
   },
   "oauthCredentials": {
     "title": "Credenciales",

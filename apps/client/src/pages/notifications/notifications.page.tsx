@@ -172,6 +172,7 @@ export const NotificationsPage = () => {
             )
           }
           emptyChild={<NotificationsEmpty />}
+          resourceTypes="notifications"
         />
       </LayoutContent>
     </Layout>

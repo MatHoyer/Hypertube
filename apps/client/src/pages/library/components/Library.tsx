@@ -89,6 +89,7 @@ export const Library = () => {
       virtualizerOptions={virtualizerOptions}
       renderChild={(movie) => <Thumbnail movie={movie} />}
       emptyChild={<LibraryEmpty />}
+      resourceTypes="movies"
     />
   );
 };

@@ -82,7 +82,7 @@ export const PlaylistPage = () => {
         <LayoutHeaderResource
           resource="playlist"
           count={data?.total ?? 0}
-          dynamicTitle={data?.name ?? t("global.loadingRessource")}
+          dynamicTitle={data?.name ?? t("loadingResource.global")}
         />
       </LayoutHeader>
       <LayoutContent>

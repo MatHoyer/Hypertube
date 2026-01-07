@@ -1,21 +1,13 @@
+import { resourceTypes } from "@/lib/const";
 import { useTranslation } from "react-i18next";
 import { Typography } from "./ui/typography";
 
-const errorResources = [
-  "global",
-  "profile",
-  "casting",
-  "historic",
-  "playlists",
-  "playlist",
-] as const;
-
 export const ErrorResource: React.FC<{
-  resource: (typeof errorResources)[number];
+  resource: (typeof resourceTypes)[number];
 }> = ({ resource }) => {
   const { t } = useTranslation();
 
-  if (!errorResources.includes(resource)) {
+  if (!resourceTypes.includes(resource)) {
     return null;
   }
 
@@ -23,7 +15,7 @@ export const ErrorResource: React.FC<{
     <div className="size-full flex flex-col justify-center items-center gap-4">
       <Typography variant="h3">
         {t("global.errorMessage", {
-          resource: t(`${resource}.errorRessource`),
+          resource: t(`errorResource.${resource}`),
         })}
       </Typography>
     </div>

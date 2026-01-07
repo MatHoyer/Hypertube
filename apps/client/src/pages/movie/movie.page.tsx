@@ -36,7 +36,11 @@ const MoviePage = () => {
 
   const queryClient = useQueryClient();
 
-  const { data: movie, isLoading } = useQuery({
+  const {
+    data: movie,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
     queryFn: () =>
       axiosFetch({
@@ -147,13 +151,8 @@ const MoviePage = () => {
     };
   }, [tmdbId, queryClient]);
 
-  if (isLoading) {
-    return <LoadingResource resource="movie" />;
-  }
-
-  if (!movie) {
-    return <NotFoundPage />;
-  }
+  if (isLoading) return <LoadingResource resource="movie" />;
+  if (isError || !movie) return <NotFoundPage />;
 
   return (
     <VideoPlayerProvider

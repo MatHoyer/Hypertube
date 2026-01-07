@@ -1,3 +1,4 @@
+import type { TResourceType } from "@/lib/const";
 import { cn } from "@/lib/utils";
 import { useInfiniteQuery, type QueryKey } from "@tanstack/react-query";
 import {
@@ -39,6 +40,7 @@ type TInfiniteVirtualizerProps<T> = {
     data: TInfiniteVirtualizerFetchResponse<T>["data"][number]
   ) => React.ReactNode;
   emptyChild: JSX.Element;
+  resourceTypes?: TResourceType;
 };
 
 export const InfiniteVirtualizer = <T,>({
@@ -51,6 +53,7 @@ export const InfiniteVirtualizer = <T,>({
   virtualizerOptions,
   renderChild,
   emptyChild,
+  resourceTypes = "global",
 }: TInfiniteVirtualizerProps<T>) => {
   const listRef = useRef<HTMLDivElement>(null);
   const [columns, setColumns] = useState(getColumns ? 5 : 1);
@@ -112,8 +115,8 @@ export const InfiniteVirtualizer = <T,>({
     virtualizer.getVirtualItems(),
   ]);
 
-  if (isPending) return <LoadingResource resource="global" />;
-  if (isError) return <ErrorResource resource="global" />;
+  if (isPending) return <LoadingResource resource={resourceTypes} />;
+  if (isError) return <ErrorResource resource={resourceTypes} />;
 
   return (
     <>

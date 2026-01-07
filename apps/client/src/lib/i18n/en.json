@@ -5,13 +5,33 @@
     "or": "Or",
     "loadingMessage": "Loading {{resource}}",
     "errorMessage": "Error {{resource}}",
-    "loadingRessource": "...",
-    "errorRessource": "resource not found",
     "unexpected-error": "Unexpected error",
     "homepage": "Homepage",
     "submit": "Submit",
     "userNotFound": "User not found",
     "close": "Close"
+  },
+  "loadingResource": {
+    "global": "...",
+    "profile": "profile",
+    "movie": "movie",
+    "movies": "movies",
+    "casting": "casting",
+    "historic": "historic",
+    "notifications": "notifications",
+    "playlists": "playlists",
+    "playlist": "playlist"
+  },
+  "errorResource": {
+    "global": "resource not found",
+    "profile": "profile not found",
+    "movie": "movie not found",
+    "movies": "movies not found",
+    "casting": "casting not found",
+    "historic": "historic not found",
+    "notifications": "notifications not found",
+    "playlists": "playlists not found",
+    "playlist": "playlist not found"
   },
   "footer": {
     "sourceCode": "Source code",
@@ -88,12 +108,9 @@
   "profile": {
     "likes": "Likes",
     "leftComments": "Comments Left",
-    "joined": "Joined",
-    "loadingRessource": "profile",
-    "errorRessource": "profile not found"
+    "joined": "Joined"
   },
   "movie": {
-    "loadingRessource": "movie",
     "noDetails": "We no longer have information about this film.",
     "tabs": {
       "video": "Video",
@@ -245,9 +262,7 @@
   },
   "casting": {
     "casting": "Casting",
-    "crew": "Crew",
-    "loadingRessource": "casting",
-    "errorRessource": "casting not found"
+    "crew": "Crew"
   },
   "historic": {
     "title": "Your historic",
@@ -258,15 +273,11 @@
     "deleteAll": "Delete all history",
     "deleteAllSuccess": "Your historic has been deleted.",
     "deleteAllFailed": "Deleting of your historic failed.",
-    "descriptionResource": "{{count}} movies in the historic",
-    "loadingRessource": "historic",
-    "errorRessource": "historic not found"
+    "descriptionResource": "{{count}} movies in the historic"
   },
   "playlists": {
     "title": "Your playlists",
-    "descriptionResource": "{{count}} playlists",
-    "loadingRessource": "playlists",
-    "errorRessource": "playlists not found"
+    "descriptionResource": "{{count}} playlists"
   },
   "playlist": {
     "title": "Your playlist",
@@ -290,9 +301,7 @@
     "deleteMovieFailed": "Deleting the movie of your playlist failed.",
     "creationSuccess": "Playlist successfully created.",
     "creationFailed": "Playlist creation failed.",
-    "descriptionResource": "{{count}} movies in your playlist",
-    "loadingRessource": "playlist",
-    "errorRessource": "playlist not found"
+    "descriptionResource": "{{count}} movies in your playlist"
   },
   "oauthCredentials": {
     "title": "Credentials",

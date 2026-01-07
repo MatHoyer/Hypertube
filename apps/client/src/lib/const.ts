@@ -9,3 +9,16 @@ export const WINDOW_MIN_WIDTH = {
   MD: 768,
   SM: 640,
 } as const;
+
+export const resourceTypes = [
+  "global",
+  "profile",
+  "movie",
+  "movies",
+  "casting",
+  "historic",
+  "notifications",
+  "playlists",
+  "playlist",
+] as const;
+export type TResourceType = (typeof resourceTypes)[number];

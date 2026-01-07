@@ -178,6 +178,7 @@ export const PlaylistList: React.FC<{
               {t("playlist.none")}
             </DropdownMenuItem>
           }
+          resourceTypes="playlists"
         />
       </ScrollArea>
     </ScrollContext.Provider>
