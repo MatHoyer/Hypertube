@@ -1,4 +1,5 @@
 import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
+import { openAlertDialog } from "@/components/dialogs/alert-dialog.store";
 import { ErrorResource } from "@/components/ErrorResource";
 import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { LoadingResource } from "@/components/LoadingResource";
@@ -92,7 +93,12 @@ export const HistoricPage = () => {
       <LayoutHeader>
         <LayoutHeaderResource resource="historic" count={data?.total ?? 0} />
         <LayoutActions className="w-full">
-          <Button onClick={() => deleteAllMutation()}>
+          <Button
+            disabled={!data?.total}
+            onClick={() => {
+              openAlertDialog(() => deleteAllMutation());
+            }}
+          >
             {t("historic.deleteAll")}
           </Button>
         </LayoutActions>

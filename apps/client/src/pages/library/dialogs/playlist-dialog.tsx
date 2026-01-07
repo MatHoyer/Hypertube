@@ -52,7 +52,7 @@ export const PlaylistDialog = () => {
   });
 
   return (
-    <DialogContent className="flex flex-col items-center">
+    <DialogContent className="flex flex-col">
       <DialogTitle>{t("playlist.dialog.title")}</DialogTitle>
       <DialogDescription>{t("playlist.dialog.desc")}</DialogDescription>
       <form
@@ -62,7 +62,7 @@ export const PlaylistDialog = () => {
         <FieldSet>
           <Field>
             <FieldLabel htmlFor="input-playlistName">
-              {t("sign.email")}
+              {t("playlist.dialog.placeholder")}
             </FieldLabel>
             <InputGroup>
               <InputGroupInput

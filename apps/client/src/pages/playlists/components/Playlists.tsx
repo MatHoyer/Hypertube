@@ -1,3 +1,4 @@
+import { openAlertDialog } from "@/components/dialogs/alert-dialog.store";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -74,7 +75,11 @@ export const Playlists: React.FC<{
                   variant={"destructive"}
                   onClick={(event) => {
                     event.preventDefault();
-                    deleteMutate(playlist.id);
+                    if (playlist.movies.length) {
+                      openAlertDialog(() => deleteMutate(playlist.id), {
+                        confirmTextToType: playlist.name,
+                      });
+                    } else deleteMutate(playlist.id);
                   }}
                 >
                   <X />
