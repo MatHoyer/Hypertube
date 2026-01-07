@@ -15,19 +15,19 @@ export const NotFoundPage = () => {
   return (
     <div className="relative h-[calc(100dvh-65px)] overflow-hidden">
       <div className="absolute flex justify-center items-center inset-0">
-        <div
-          className="z-10 size-52 rounded-full text-center content-center select-none bg-primary/60 backdrop-blur-sm"
+        <button
+          className="z-10 size-52 rounded-full text-center content-center select-none bg-primary/60 backdrop-blur-sm cursor-pointer"
           ref={ref}
           onClick={() => navigate(getUrl(ROUTES.CLIENT.HOME))}
         >
           <Typography variant="h1">404</Typography>
           <Typography variant="h3">{t("global.homepage")}</Typography>
-        </div>
+        </button>
       </div>
       <div
         className={cn(
           "flex flex-col size-full justify-center items-center transition-all animate-spin",
-          mouseIn ? "gap-0" : "gap-60",
+          mouseIn ? "gap-0" : "gap-60"
         )}
         style={{ animationDuration: "15s" }}
       >
