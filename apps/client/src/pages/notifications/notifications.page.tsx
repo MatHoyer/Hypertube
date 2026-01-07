@@ -158,12 +158,10 @@ export const NotificationsPage = () => {
       </LayoutHeader>
       <LayoutContent>
         <InfiniteVirtualizer
+          className="flex flex-col w-full gap-4"
           queryFn={queryFn}
           queryKey={queryKey}
           virtualizerOptions={virtualizerOptions}
-          props={{
-            className: "flex flex-col w-full gap-4",
-          }}
           renderChild={(notification) =>
             notification.resourceUrl ? (
               <Link to={notification.resourceUrl}>

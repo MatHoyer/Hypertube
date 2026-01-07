@@ -74,15 +74,12 @@ export const Library = () => {
 
   return (
     <InfiniteVirtualizer
+      className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 w-full top-0 left-0"
       queryFn={queryFn}
       queryKey={queryKey}
       enabled={!!query || !!category || !!sort || !!genres}
       withColumns
       virtualizerOptions={virtualizerOptions}
-      props={{
-        className:
-          "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 w-full top-0 left-0",
-      }}
       renderChild={(movie) => <Thumbnail movie={movie} />}
       emptyChild={<LibraryEmpty />}
     />

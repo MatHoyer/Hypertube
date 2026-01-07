@@ -11,7 +11,6 @@ import {
   useMemo,
   useRef,
   useState,
-  type ComponentProps,
   type JSX,
 } from "react";
 import { ErrorResource } from "./ErrorResource";
@@ -32,7 +31,7 @@ type TVirtualizerOptions = PartialKeys<
 >;
 
 type TInfiniteVirtualizerProps<T> = {
-  props: Omit<ComponentProps<"div">, "children">;
+  className: string;
   queryFn: ({
     pageParam,
   }: {
@@ -50,13 +49,13 @@ type TInfiniteVirtualizerProps<T> = {
 };
 
 export const InfiniteVirtualizer = <T,>({
+  className,
   queryFn,
   queryKey,
   initialPageParam = 1,
   enabled = true,
   withColumns = false,
   virtualizerOptions,
-  props,
   renderChild,
   emptyChild,
 }: TInfiniteVirtualizerProps<T>) => {
@@ -139,7 +138,7 @@ export const InfiniteVirtualizer = <T,>({
             key={virtualRow.key}
             data-index={virtualRow.index}
             ref={virtualizer.measureElement}
-            className={cn(props.className, "absolute")}
+            className={cn(className, "absolute")}
             style={{
               height: `${virtualRow.size}px`,
               transform: `translateY(${virtualRow.start}px)`,
