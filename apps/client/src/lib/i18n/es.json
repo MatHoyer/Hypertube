@@ -164,7 +164,9 @@
       "seen": "",
       "evaluation": "",
       "evaluations": "",
-      "noFound": ""
+      "noFound": "",
+      "noMovies": "No hay películas",
+      "noMoviesDescription": "No se encontraron películas con tu búsqueda."
     },
     "filter": {
       "title": "",

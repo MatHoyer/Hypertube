@@ -164,7 +164,9 @@
       "seen": "Seen",
       "evaluation": "evaluation",
       "evaluations": "evaluations",
-      "noFound": "No films found..."
+      "noFound": "No films found...",
+      "noMovies": "No movies",
+      "noMoviesDescription": "No movies find with your research."
     },
     "filter": {
       "title": "Filters",

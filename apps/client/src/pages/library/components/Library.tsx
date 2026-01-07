@@ -1,5 +1,4 @@
 import { InfiniteVirtualizer } from "@/components/InfiniteVirtualizer";
-import { Typography } from "@/components/ui/typography";
 import { useMainScrollElement } from "@/layouts/BaseLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
@@ -11,7 +10,7 @@ import {
   type TTmdbGenresKey,
   type TTmdbSort,
 } from "@hypertube/libs";
-import { useTranslation } from "react-i18next";
+import { LibraryEmpty } from "./LibraryEmpty";
 import { useLibrary } from "./LibraryProvider";
 import { Thumbnail } from "./Thumbnail";
 
@@ -45,7 +44,6 @@ const fetchMovies = async ({
 };
 
 export const Library = () => {
-  const { t } = useTranslation();
   const mainScrollElement = useMainScrollElement();
   const { query, category, sort, genres } = useLibrary();
 
@@ -86,9 +84,7 @@ export const Library = () => {
           "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 w-full top-0 left-0",
       }}
       renderChild={(movie) => <Thumbnail movie={movie} />}
-      emptyChild={
-        <Typography textSize="lg">{t("movie.page.noFound")}</Typography>
-      }
+      emptyChild={<LibraryEmpty />}
     />
   );
 };

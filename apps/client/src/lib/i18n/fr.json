@@ -164,7 +164,9 @@
       "seen": "Vu",
       "evaluation": "évaluation",
       "evaluations": "évaluations",
-      "noFound": "Aucun film trouvé..."
+      "noFound": "Aucun film trouvé...",
+      "noMovies": "Aucun film",
+      "noMoviesDescription": "Aucun film trouvé avec votre recherche."
     },
     "filter": {
       "title": "Filtres",
