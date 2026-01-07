@@ -253,6 +253,9 @@
     "emptyDescription": "You haven't watched a movie yet.",
     "deleteSuccess": "The movie has been successfully deleted of your historic.",
     "deleteFailed": "Deleting the movie of your historic failed.",
+    "deleteAll": "Delete all history",
+    "deleteAllSuccess": "Your historic has been deleted.",
+    "deleteAllFailed": "Deleting of your historic failed.",
     "descriptionResource": "{{count}} movies in the historic",
     "loadingRessource": "historic",
     "errorRessource": "historic not found"

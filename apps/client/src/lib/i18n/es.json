@@ -253,6 +253,9 @@
     "emptyDescription": "",
     "deleteSuccess": "",
     "deleteFailed": "",
+    "deleteAll": "Eliminar todo el historial",
+    "deleteAllSuccess": "Su historial ha sido eliminado.",
+    "deleteAllFailed": "La eliminación de su historial falló.",
     "descriptionResource": "",
     "loadingRessource": "",
     "errorRessource": ""

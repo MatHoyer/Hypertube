@@ -253,6 +253,9 @@
     "emptyDescription": "Vous n'avez pas encore regardé de film.",
     "deleteSuccess": "La suppression du film de votre historique a réussi.",
     "deleteFailed": "La suppression du film de votre historique a échoué.",
+    "deleteAll": "Supprimer tout l'historique",
+    "deleteAllSuccess": "Votre historique a été supprimé.",
+    "deleteAllFailed": "La suppression de votre historique a échoué.",
     "descriptionResource": "{{count}} films dans l'historique",
     "loadingRessource": "historique",
     "errorRessource": "historique non trouvé"

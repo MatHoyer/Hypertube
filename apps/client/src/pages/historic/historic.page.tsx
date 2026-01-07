@@ -4,11 +4,18 @@ import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { LoadingResource } from "@/components/LoadingResource";
 import { MovieList } from "@/components/movies/MovieList";
 import { PagePagination } from "@/components/Pagination";
+import { Button } from "@/components/ui/button";
 import { FloatingBar } from "@/components/ui/FloatingBar";
-import { Layout, LayoutContent, LayoutHeader } from "@/layouts/PageLayout";
+import {
+  Layout,
+  LayoutActions,
+  LayoutContent,
+  LayoutHeader,
+} from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import {
+  deleteHistorySchemas,
   deleteMovieFromHistorySchemas,
   getHistorySchemas,
   getUrl,
@@ -44,7 +51,7 @@ export const HistoricPage = () => {
     placeholderData: (previousData) => previousData,
   });
 
-  const { mutate } = useMutation({
+  const { mutate: deleteMutation } = useMutation({
     mutationFn: ({ tmdbId }: { tmdbId: TTmdbMovieSchema["id"] }) =>
       axiosFetch({
         method: "DELETE",
@@ -62,17 +69,40 @@ export const HistoricPage = () => {
     },
   });
 
+  const { mutate: deleteAllMutation } = useMutation({
+    mutationFn: () =>
+      axiosFetch({
+        method: "DELETE",
+        url: getUrl(ROUTES.API.HISTORY),
+        schemas: deleteHistorySchemas,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER),
+      });
+      toast.success(t("historic.deleteAllSuccess"));
+    },
+    onError: () => {
+      toast.error(t("historic.deleteAllFailed"));
+    },
+  });
+
   return (
     <Layout>
       <LayoutHeader>
         <LayoutHeaderResource resource="historic" count={data?.total ?? 0} />
+        <LayoutActions className="w-full">
+          <Button onClick={() => deleteAllMutation()}>
+            {t("historic.deleteAll")}
+          </Button>
+        </LayoutActions>
       </LayoutHeader>
       <LayoutContent>
         {data && !isPlaceholderData && (
           <MovieList
             movieListType="historic"
             movies={data.movies}
-            deleteFn={(tmdbId) => mutate({ tmdbId })}
+            deleteFn={(tmdbId) => deleteMutation({ tmdbId })}
           />
         )}
         {(isLoading || isPlaceholderData) && (

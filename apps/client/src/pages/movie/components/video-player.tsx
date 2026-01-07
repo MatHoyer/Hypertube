@@ -31,6 +31,7 @@ import React, {
   type ComponentProps,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
 import { useVideoPlayer } from "../contexts/video-player/video-player.context";
 import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 import SettingsButton from "./dropdown-menu-navigating/dropdown-menu-navigating";
@@ -312,6 +313,7 @@ const ControlsBar = () => {
 const VideoPlayer = () => {
   const { tmdbId } = useConvertParams(MoviePageParamsSchema);
   const { t } = useTranslation();
+  const location = useLocation();
 
   const {
     videoRef,
@@ -370,6 +372,8 @@ const VideoPlayer = () => {
       queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER),
     });
   }, [tmdbId, progress, videoRef, queryClient]);
+
+  useEffect(() => updateWatchTimer(), [location.pathname, updateWatchTimer]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", updateWatchTimer);
