@@ -8,6 +8,7 @@ import {
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ComponentProps,
@@ -80,7 +81,10 @@ export const InfiniteVirtualizer = <T,>({
     enabled,
   });
 
-  const allData = data ? data.pages.flatMap((page) => page.data) : [];
+  const allData = useMemo(
+    () => (data ? data.pages.flatMap((page) => page.data) : []),
+    [data]
+  );
   const totalRows = Math.ceil(allData.length / columns);
 
   const virtualizer = useVirtualizer({
