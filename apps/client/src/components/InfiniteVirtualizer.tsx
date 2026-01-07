@@ -5,14 +5,7 @@ import {
   type PartialKeys,
   type VirtualizerOptions,
 } from "@tanstack/react-virtual";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type JSX,
-} from "react";
+import { useEffect, useMemo, useRef, useState, type JSX } from "react";
 import { ErrorResource } from "./ErrorResource";
 import { LoadingResource } from "./LoadingResource";
 import { AppLoader } from "./ui/app-loader";
@@ -40,7 +33,7 @@ type TInfiniteVirtualizerProps<T> = {
   queryKey: QueryKey;
   initialPageParam?: number;
   enabled?: boolean;
-  withColumns?: boolean;
+  getColumns?: () => number;
   virtualizerOptions: TVirtualizerOptions;
   renderChild: (
     data: TInfiniteVirtualizerFetchResponse<T>["data"][number]
@@ -54,13 +47,13 @@ export const InfiniteVirtualizer = <T,>({
   queryKey,
   initialPageParam = 1,
   enabled = true,
-  withColumns = false,
+  getColumns,
   virtualizerOptions,
   renderChild,
   emptyChild,
 }: TInfiniteVirtualizerProps<T>) => {
   const listRef = useRef<HTMLDivElement>(null);
-  const [columns, setColumns] = useState(withColumns ? 5 : 1);
+  const [columns, setColumns] = useState(getColumns ? 5 : 1);
 
   const {
     data,
@@ -89,20 +82,18 @@ export const InfiniteVirtualizer = <T,>({
     ...virtualizerOptions,
   });
 
-  const updateColumns = useCallback(() => {
-    if (withColumns) {
-      if (window.innerWidth >= 1024) setColumns(5);
-      else if (window.innerWidth >= 768) setColumns(4);
-      else if (window.innerWidth >= 640) setColumns(2);
-      else setColumns(2);
-    }
-  }, [withColumns]);
-
   useEffect(() => {
+    if (!getColumns) return;
+
+    const updateColumns = () => {
+      setColumns(getColumns());
+    };
+
     updateColumns();
     window.addEventListener("resize", updateColumns);
+
     return () => window.removeEventListener("resize", updateColumns);
-  }, [updateColumns]);
+  }, [getColumns]);
 
   useEffect(() => {
     const [lastItem] = [...virtualizer.getVirtualItems()].reverse();
