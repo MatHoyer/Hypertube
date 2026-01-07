@@ -23,7 +23,19 @@ cp .env.example .env
 docker network create hypertube-network
 ```
 
-### 3. Start the infra
+### 3. [OPTIONAL] Start the vpn
+
+```bash
+docker compose -f docker-compose-vpn.yml -f docker-compose-vpn.override.yml up -d
+```
+
+or
+
+```bash
+make vpn
+```
+
+### 4. Start the infra
 
 ```bash
 docker compose up
@@ -35,7 +47,7 @@ or
 make infra
 ```
 
-### 4. [OPTIONAL] Start infra helpers
+### 5. [OPTIONAL] Start infra helpers
 
 ```bash
 docker compose -f docker-compose-helpers.yml up
