@@ -115,7 +115,7 @@ export const NotificationsPage = () => {
           />
         </div>
         <div
-          className="absolute overflow-hidden flex items-center inset-0"
+          className="absolute overflow-hidden flex items-center inset-0 pointer-events-none"
           style={{
             left: `${
               (filterRef.current?.getBoundingClientRect()?.left ?? 0) +
@@ -131,7 +131,7 @@ export const NotificationsPage = () => {
               onClick={() => {
                 scrollTo({ top: 0, behavior: "smooth" });
               }}
-              className="ml-2"
+              className="ml-2 pointer-events-auto"
             >
               <ChevronUp size={20} />
             </Button>
