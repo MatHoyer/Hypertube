@@ -1,6 +1,10 @@
 import { cn } from "@/lib/utils";
 import { useInfiniteQuery, type QueryKey } from "@tanstack/react-query";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import {
+  useVirtualizer,
+  type PartialKeys,
+  type VirtualizerOptions,
+} from "@tanstack/react-virtual";
 import {
   useCallback,
   useEffect,
@@ -14,12 +18,35 @@ import { LoadingResource } from "./LoadingResource";
 import { AppLoader } from "./ui/app-loader";
 import { Typography } from "./ui/typography";
 
-export type TInfiniteVirtualizerFetchResponse<T> = {
+type TInfiniteVirtualizerFetchResponse<T> = {
   data: T[];
   page: number;
   pageSize: number;
   total: number;
   totalPages: number;
+};
+
+type TVirtualizerOptions = PartialKeys<
+  VirtualizerOptions<HTMLElement, Element>,
+  "observeElementRect" | "observeElementOffset" | "scrollToFn" | "count"
+>;
+
+type TInfiniteVirtualizerProps<T> = {
+  props: Omit<ComponentProps<"div">, "children">;
+  queryFn: ({
+    pageParam,
+  }: {
+    pageParam: number;
+  }) => Promise<TInfiniteVirtualizerFetchResponse<T>>;
+  queryKey: QueryKey;
+  initialPageParam?: number;
+  enabled?: boolean;
+  withColumns?: boolean;
+  virtualizerOptions: TVirtualizerOptions;
+  renderChild: (
+    data: TInfiniteVirtualizerFetchResponse<T>["data"][number]
+  ) => React.ReactNode;
+  emptyChild: JSX.Element;
 };
 
 export const InfiniteVirtualizer = <T,>({
@@ -32,28 +59,7 @@ export const InfiniteVirtualizer = <T,>({
   props,
   renderChild,
   emptyChild,
-}: {
-  props: Omit<ComponentProps<"div">, "children">;
-  queryFn: ({
-    pageParam,
-  }: {
-    pageParam: number;
-  }) => Promise<TInfiniteVirtualizerFetchResponse<T>>;
-  queryKey: QueryKey;
-  initialPageParam?: number;
-  enabled?: boolean;
-  withColumns?: boolean;
-  virtualizerOptions: {
-    getScrollElement: () => HTMLElement | null;
-    estimateSize: () => number;
-    gap: number;
-    overscan: number;
-  };
-  renderChild: (
-    data: TInfiniteVirtualizerFetchResponse<T>["data"][number]
-  ) => React.ReactNode;
-  emptyChild: JSX.Element;
-}) => {
+}: TInfiniteVirtualizerProps<T>) => {
   const { t } = useTranslation();
   const listRef = useRef<HTMLDivElement>(null);
   const [columns, setColumns] = useState(withColumns ? 5 : 1);
