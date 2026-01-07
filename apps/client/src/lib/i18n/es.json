@@ -172,19 +172,6 @@
         "unsubscribe": "Te has dado de baja de las notificaciones de esta película"
       }
     },
-    "page": {
-      "missing": {
-        "desc": "Sin descripción",
-        "genres": "Sin género",
-        "date": "Sin fecha"
-      },
-      "seen": "Visto",
-      "evaluation": "evaluación",
-      "evaluations": "evaluaciones",
-      "noFound": "No se encontraron películas...",
-      "noMovies": "No hay películas",
-      "noMoviesDescription": "No se encontraron películas con tu búsqueda."
-    },
     "filter": {
       "title": "Filtros",
       "desc": "Filtrar películas por opciones de ordenamiento y géneros.",
@@ -259,6 +246,19 @@
         "updateError": "No se ha podido actualizar el comentario."
       }
     }
+  },
+  "library": {
+    "missing": {
+      "desc": "Sin descripción",
+      "genres": "Sin género",
+      "date": "Sin fecha"
+    },
+    "seen": "Visto",
+    "evaluation": "evaluación",
+    "evaluations": "evaluaciones",
+    "noFound": "No se encontraron películas...",
+    "noMovies": "No hay películas",
+    "noMoviesDescription": "No se encontraron películas con tu búsqueda."
   },
   "casting": {
     "casting": "Reparto",

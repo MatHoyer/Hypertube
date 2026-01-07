@@ -120,7 +120,7 @@ export const SearchBar = () => {
                     value="no_result"
                     disabled
                   >
-                    <Typography>{t("movie.page.noFound")}</Typography>
+                    <Typography>{t("library.noFound")}</Typography>
                   </CommandItem>
                 )}
                 {isPending && (

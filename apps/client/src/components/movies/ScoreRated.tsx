@@ -22,9 +22,7 @@ export const ScoreRated: React.FC<
       <TooltipContent>
         <Typography>
           {voteCount}{" "}
-          {voteCount > 1
-            ? t("movie.page.evaluations")
-            : t("movie.page.evaluation")}
+          {voteCount > 1 ? t("library.evaluations") : t("library.evaluation")}
         </Typography>
       </TooltipContent>
     </Tooltip>

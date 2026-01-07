@@ -56,7 +56,7 @@ export const Thumbnail: React.FC<{
                     <Check />
                   </Badge>
                 </TooltipTrigger>
-                <TooltipContent>{t("movie.page.seen")}</TooltipContent>
+                <TooltipContent>{t("library.seen")}</TooltipContent>
               </Tooltip>
             )}
             <DropdownMenu

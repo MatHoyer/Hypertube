@@ -172,19 +172,6 @@
         "unsubscribe": "Vous êtes maintenant désabonné des notifications pour ce film"
       }
     },
-    "page": {
-      "missing": {
-        "desc": "Pas description",
-        "genres": "Pas de genres",
-        "date": "Pas de date"
-      },
-      "seen": "Vu",
-      "evaluation": "évaluation",
-      "evaluations": "évaluations",
-      "noFound": "Aucun film trouvé...",
-      "noMovies": "Aucun film",
-      "noMoviesDescription": "Aucun film trouvé avec votre recherche."
-    },
     "filter": {
       "title": "Filtres",
       "desc": "Filtrez les films par options de tri et genres.",
@@ -259,6 +246,19 @@
         "updateError": "Le commentaire n'a pas pu être mis à jour."
       }
     }
+  },
+  "library": {
+    "missing": {
+      "desc": "Pas description",
+      "genres": "Pas de genres",
+      "date": "Pas de date"
+    },
+    "seen": "Vu",
+    "evaluation": "évaluation",
+    "evaluations": "évaluations",
+    "noFound": "Aucun film trouvé...",
+    "noMovies": "Aucun film",
+    "noMoviesDescription": "Aucun film trouvé avec votre recherche."
   },
   "casting": {
     "casting": "Casting",

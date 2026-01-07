@@ -40,9 +40,7 @@ const DisplayGenresMovie: React.FC<{
   if (!genres.length)
     return (
       <div className="flex flex-wrap gap-2 justify-center">
-        <Typography textColor="muted">
-          {t("movie.page.missing.genres")}
-        </Typography>
+        <Typography textColor="muted">{t("library.missing.genres")}</Typography>
       </div>
     );
 
@@ -138,7 +136,7 @@ export const MovieBaseInfo: React.FC<
             )}
           </div>
           <Typography className={cn(truncate && "line-clamp-5")}>
-            {movie.overview || t("movie.page.missing.desc")}
+            {movie.overview || t("library.missing.desc")}
           </Typography>
         </>
       )}
@@ -147,7 +145,7 @@ export const MovieBaseInfo: React.FC<
         displayOnlyOne={info === "partial"}
       />
       <div className="flex justify-between w-full gap-2">
-        <Badge>{movie.release_date || t("movie.page.missing.date")}</Badge>
+        <Badge>{movie.release_date || t("library.missing.date")}</Badge>
         <ScoreRated score={movie.vote_average} voteCount={movie.vote_count} />
       </div>
     </MovieBaseInfoLayout>

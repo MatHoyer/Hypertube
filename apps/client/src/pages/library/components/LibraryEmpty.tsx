@@ -17,10 +17,8 @@ export const LibraryEmpty = () => {
         <EmptyMedia variant="icon">
           <Video />
         </EmptyMedia>
-        <EmptyTitle>{t("movie.page.noMovies")}</EmptyTitle>
-        <EmptyDescription>
-          {t("movie.page.noMoviesDescription")}
-        </EmptyDescription>
+        <EmptyTitle>{t("library.noMovies")}</EmptyTitle>
+        <EmptyDescription>{t("library.noMoviesDescription")}</EmptyDescription>
       </EmptyHeader>
     </Empty>
   );

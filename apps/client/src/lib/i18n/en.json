@@ -172,19 +172,6 @@
         "unsubscribe": "You are now unsubscribed from notifications for this movie"
       }
     },
-    "page": {
-      "missing": {
-        "desc": "No description",
-        "genres": "No genre",
-        "date": "No date"
-      },
-      "seen": "Seen",
-      "evaluation": "evaluation",
-      "evaluations": "evaluations",
-      "noFound": "No films found...",
-      "noMovies": "No movies",
-      "noMoviesDescription": "No movies find with your research."
-    },
     "filter": {
       "title": "Filters",
       "desc": "Filter movies by sort options and genres.",
@@ -259,6 +246,19 @@
         "updateError": "The comment could not be updated."
       }
     }
+  },
+  "library": {
+    "missing": {
+      "desc": "No description",
+      "genres": "No genre",
+      "date": "No date"
+    },
+    "seen": "Seen",
+    "evaluation": "evaluation",
+    "evaluations": "evaluations",
+    "noFound": "No films found...",
+    "noMovies": "No movies",
+    "noMoviesDescription": "No movies find with your research."
   },
   "casting": {
     "casting": "Casting",
