@@ -1,7 +1,5 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { getDownloadStateIcon } from "@/components/download-state/getDownloadStateIcon";
-import { ErrorResource } from "@/components/ErrorResource";
-import { LoadingResource } from "@/components/LoadingResource";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -14,87 +12,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Typography } from "@/components/ui/typography";
-import { useUserPlaylists } from "@/hooks/use-playlists";
-import { axiosFetch } from "@/lib/fetch/axiosFetch";
-import { getQueryKey } from "@/lib/getQueryKey";
-import { cn } from "@/lib/utils";
-import {
-  deleteMovieFromPlaylistSchemas,
-  getUrl,
-  postMovieToPlaylistSchemas,
-  ROUTES,
-  type TDeleteMovieFromPlaylistSchemas,
-  type TGetMoviesSchemas,
-  type TPostMovieToPlaylistSchemas,
-} from "@hypertube/libs";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Bookmark, Check, EllipsisVertical, Plus } from "lucide-react";
+import { type TGetMoviesSchemas } from "@hypertube/libs";
+import { Check, EllipsisVertical, Plus } from "lucide-react";
 import { memo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { PlaylistList } from "./PlaylistList";
 
 export const Thumbnail: React.FC<{
   movie: TGetMoviesSchemas["response"]["movies"][number];
 }> = memo(({ movie }) => {
-  const queryClient = useQueryClient();
   const { t } = useTranslation();
-  const { data, isFetchingNextPage, isError } = useUserPlaylists();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  const addMovieToPlaylistMutation = useMutation({
-    mutationFn: (data: {
-      playlistId: TPostMovieToPlaylistSchemas["urlParams"]["playlistId"];
-      tmdbId: TPostMovieToPlaylistSchemas["requirements"]["tmdbId"];
-    }) =>
-      axiosFetch({
-        method: "POST",
-        url: getUrl(ROUTES.API.PLAYLISTS_MOVIE, {
-          playlistId: data.playlistId,
-        }),
-        schemas: postMovieToPlaylistSchemas,
-        data,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getQueryKey(ROUTES.API.PLAYLISTS),
-      });
-      toast.success(t("playlist.addMovieSuccess"));
-    },
-    onError: () => {
-      toast.error(t("playlist.addMovieFailed"));
-    },
-  });
-
-  const deleteMovieFromPlaylistMutation = useMutation({
-    mutationFn: (data: {
-      playlistId: TDeleteMovieFromPlaylistSchemas["urlParams"]["playlistId"];
-      tmdbId: TDeleteMovieFromPlaylistSchemas["urlParams"]["tmdbId"];
-    }) =>
-      axiosFetch({
-        method: "DELETE",
-        url: getUrl(ROUTES.API.PLAYLISTS_MOVIE, {
-          playlistId: data.playlistId,
-          tmdbId: data.tmdbId,
-        }),
-        schemas: deleteMovieFromPlaylistSchemas,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getQueryKey(ROUTES.API.PLAYLISTS),
-      });
-      toast.success(t("playlist.deleteMovieSuccess"));
-    },
-    onError: () => {
-      toast.error(t("playlist.deleteMovieFailed"));
-    },
-  });
 
   return (
     <div>
@@ -132,74 +66,17 @@ export const Thumbnail: React.FC<{
               <DropdownMenuTrigger asChild className="cursor-pointer">
                 <EllipsisVertical size={15} />
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-72" side="top" align="start">
+              <DropdownMenuContent
+                className="w-[208px]"
+                side="top"
+                align="start"
+              >
                 <DropdownMenuLabel>
                   <Typography textSize="lg">{t("playlist.save")}</Typography>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                  <ScrollArea className="h-36">
-                    {data.playlists.map((playlist) => {
-                      const isPlaylistHasMovie = playlist.movies.has(
-                        movie.details.id
-                      );
-                      return (
-                        <DropdownMenuItem
-                          key={playlist.id}
-                          className="flex justify-between"
-                          onClick={(event) => {
-                            event.preventDefault();
-                            if (isPlaylistHasMovie) {
-                              deleteMovieFromPlaylistMutation.mutate({
-                                playlistId: playlist.id,
-                                tmdbId: movie.details.id,
-                              });
-                            } else {
-                              addMovieToPlaylistMutation.mutate({
-                                playlistId: playlist.id,
-                                tmdbId: movie.details.id,
-                              });
-                            }
-                          }}
-                        >
-                          <Typography functionnal={"truncate"} className="w-40">
-                            {playlist.name}
-                          </Typography>
-                          <Bookmark
-                            className={cn(
-                              isPlaylistHasMovie && "fill-primary text-primary"
-                            )}
-                          />
-                        </DropdownMenuItem>
-                      );
-                    })}
-                    {isFetchingNextPage && (
-                      <DropdownMenuItem
-                        className="flex justify-center"
-                        disabled
-                      >
-                        <LoadingResource resource="playlists" />
-                      </DropdownMenuItem>
-                    )}
-                    {isError && (
-                      <DropdownMenuItem
-                        className="flex justify-center"
-                        disabled
-                      >
-                        <ErrorResource resource="playlists" />
-                      </DropdownMenuItem>
-                    )}
-                    {!isFetchingNextPage &&
-                      !isError &&
-                      !data.playlists.length && (
-                        <DropdownMenuItem
-                          className="flex justify-center"
-                          disabled
-                        >
-                          {t("playlist.none")}
-                        </DropdownMenuItem>
-                      )}
-                  </ScrollArea>
+                  <PlaylistList movie={movie} />
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
