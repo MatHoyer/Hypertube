@@ -10,7 +10,7 @@ export const WINDOW_MIN_WIDTH = {
   SM: 640,
 } as const;
 
-export const resourceTypes = [
+export const RESOURCE_TYPES = [
   "global",
   "profile",
   "movie",
@@ -21,4 +21,4 @@ export const resourceTypes = [
   "playlists",
   "playlist",
 ] as const;
-export type TResourceType = (typeof resourceTypes)[number];
+export type TResourceType = (typeof RESOURCE_TYPES)[number];
