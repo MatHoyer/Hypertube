@@ -70,9 +70,10 @@ export const SignUpForm = () => {
       <FieldSet>
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="input-email">{t("sign.email")}</FieldLabel>
+            <FieldLabel htmlFor="email">{t("sign.email")}</FieldLabel>
             <Input
               id="email"
+              autoComplete="email"
               placeholder={t("sign.emailExample")}
               {...form.register("email")}
             />
@@ -80,11 +81,10 @@ export const SignUpForm = () => {
           </Field>
           <FieldGroup className="flex flex-row">
             <Field>
-              <FieldLabel htmlFor="input-first-name">
-                {t("sign.firstName")}
-              </FieldLabel>
+              <FieldLabel htmlFor="firstName">{t("sign.firstName")}</FieldLabel>
               <Input
                 id="firstName"
+                autoComplete="given-name"
                 placeholder={t("sign.firstName")}
                 {...form.register("firstName")}
               />
@@ -93,11 +93,10 @@ export const SignUpForm = () => {
               </FieldError>
             </Field>
             <Field>
-              <FieldLabel htmlFor="input-last-name">
-                {t("sign.lastName")}
-              </FieldLabel>
+              <FieldLabel htmlFor="lastName">{t("sign.lastName")}</FieldLabel>
               <Input
                 id="lastName"
+                autoComplete="family-name"
                 placeholder={t("sign.lastName")}
                 {...form.register("lastName")}
               />
@@ -105,22 +104,20 @@ export const SignUpForm = () => {
             </Field>
           </FieldGroup>
           <Field>
-            <FieldLabel htmlFor="input-username">
-              {t("sign.username")}
-            </FieldLabel>
+            <FieldLabel htmlFor="username">{t("sign.username")}</FieldLabel>
             <Input
               id="username"
+              autoComplete="username"
               placeholder={t("sign.username")}
               {...form.register("username")}
             />
             <FieldError>{form.formState.errors.username?.message}</FieldError>
           </Field>
           <Field>
-            <FieldLabel htmlFor="input-password">
-              {t("sign.password")}
-            </FieldLabel>
+            <FieldLabel htmlFor="password">{t("sign.password")}</FieldLabel>
             <InputPassword
               id="password"
+              autoComplete="current-password"
               placeholder={t("sign.password")}
               {...form.register("password")}
             />

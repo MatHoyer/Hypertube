@@ -91,36 +91,52 @@ export const UserInfoUpdate = () => {
           <FieldSet>
             <FieldGroup>
               <Field>
-                <FieldLabel htmlFor="input-username">
+                <FieldLabel htmlFor="username">
                   {t("settings.username")}
                 </FieldLabel>
-                <Input id="username" {...form.register("username")} />
+                <Input
+                  id="username"
+                  autoComplete="username"
+                  {...form.register("username")}
+                />
                 <FieldError>
                   {form.formState.errors.username?.message}
                 </FieldError>
               </Field>
               <Field>
-                <FieldLabel htmlFor="input-name">
+                <FieldLabel htmlFor="name">
                   {t("settings.displayName")}
                 </FieldLabel>
-                <Input id="name" {...form.register("name")} />
+                <Input
+                  id="name"
+                  autoComplete="name"
+                  {...form.register("name")}
+                />
                 <FieldError>{form.formState.errors.name?.message}</FieldError>
               </Field>
               <FieldGroup className="flex md:flex-row">
                 <Field>
-                  <FieldLabel htmlFor="input-firstname">
+                  <FieldLabel htmlFor="firstname">
                     {t("settings.firstName")}
                   </FieldLabel>
-                  <Input id="firstname" {...form.register("firstName")} />
+                  <Input
+                    id="firstname"
+                    autoComplete="given-name"
+                    {...form.register("firstName")}
+                  />
                   <FieldError>
                     {form.formState.errors.firstName?.message}
                   </FieldError>
                 </Field>
                 <Field>
-                  <FieldLabel htmlFor="input-lastname">
+                  <FieldLabel htmlFor="lastname">
                     {t("settings.lastName")}
                   </FieldLabel>
-                  <Input id="lastname" {...form.register("lastName")} />
+                  <Input
+                    id="lastname"
+                    autoComplete="family-name"
+                    {...form.register("lastName")}
+                  />
                   <FieldError>
                     {form.formState.errors.lastName?.message}
                   </FieldError>

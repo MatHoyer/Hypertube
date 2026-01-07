@@ -58,9 +58,10 @@ export const ForgetPasswordForm = () => {
       <FieldSet>
         <FieldGroup>
           <Field>
-            <FieldLabel htmlFor="input-email">{t("sign.email")}</FieldLabel>
+            <FieldLabel htmlFor="email">{t("sign.email")}</FieldLabel>
             <Input
               id="email"
+              autoComplete="email"
               placeholder={t("sign.emailExample")}
               {...form.register("email")}
             />
