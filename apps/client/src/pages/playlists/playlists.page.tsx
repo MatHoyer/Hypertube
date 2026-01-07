@@ -1,11 +1,10 @@
 import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { ErrorResource } from "@/components/ErrorResource";
+import { FloatingPagePagination } from "@/components/FloatingPagePagination";
 import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { LoadingResource } from "@/components/LoadingResource";
-import { PagePagination } from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
-import { FloatingBar } from "@/components/ui/FloatingBar";
 import {
   Layout,
   LayoutActions,
@@ -61,18 +60,14 @@ export const PlaylistsPage = () => {
           <LoadingResource resource="playlists" />
         )}
         {isError && <ErrorResource resource="playlists" />}
-        {(data?.total ?? 0) > playlistsPageSize && (
-          <FloatingBar>
-            <PagePagination
-              page={page}
-              setPage={(value) => {
-                setPage(value);
-                scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              maxPage={data?.totalPages ?? 0}
-            />
-          </FloatingBar>
-        )}
+        <FloatingPagePagination
+          page={page}
+          setPage={(value) => {
+            setPage(value);
+            scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          maxPage={data?.totalPages ?? 0}
+        />
       </LayoutContent>
     </Layout>
   );

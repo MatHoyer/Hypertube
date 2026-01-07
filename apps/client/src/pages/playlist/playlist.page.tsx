@@ -1,10 +1,9 @@
 import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
 import { ErrorResource } from "@/components/ErrorResource";
+import { FloatingPagePagination } from "@/components/FloatingPagePagination";
 import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { LoadingResource } from "@/components/LoadingResource";
 import { MovieList } from "@/components/movies/MovieList";
-import { PagePagination } from "@/components/Pagination";
-import { FloatingBar } from "@/components/ui/FloatingBar";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { Layout, LayoutContent, LayoutHeader } from "@/layouts/PageLayout";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
@@ -97,18 +96,14 @@ export const PlaylistPage = () => {
           <LoadingResource resource="playlist" />
         )}
         {isError && <ErrorResource resource="playlist" />}
-        {(data?.total ?? 0) > playlistPageSize && (
-          <FloatingBar>
-            <PagePagination
-              page={page}
-              setPage={(value) => {
-                setPage(value);
-                scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              maxPage={data?.totalPages ?? 0}
-            />
-          </FloatingBar>
-        )}
+        <FloatingPagePagination
+          page={page}
+          setPage={(value) => {
+            setPage(value);
+            scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          maxPage={data?.totalPages ?? 0}
+        />
       </LayoutContent>
     </Layout>
   );

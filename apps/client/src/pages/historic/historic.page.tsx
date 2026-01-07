@@ -1,12 +1,11 @@
 import { useScrollArea } from "@/components/contexts/scroll-area/scroll-area.context";
 import { openAlertDialog } from "@/components/dialogs/alert-dialog.store";
 import { ErrorResource } from "@/components/ErrorResource";
+import { FloatingPagePagination } from "@/components/FloatingPagePagination";
 import { LayoutHeaderResource } from "@/components/LayoutHeaderResource";
 import { LoadingResource } from "@/components/LoadingResource";
 import { MovieList } from "@/components/movies/MovieList";
-import { PagePagination } from "@/components/Pagination";
 import { Button } from "@/components/ui/button";
-import { FloatingBar } from "@/components/ui/FloatingBar";
 import {
   Layout,
   LayoutActions,
@@ -115,18 +114,14 @@ export const HistoricPage = () => {
           <LoadingResource resource="historic" />
         )}
         {isError && <ErrorResource resource="historic" />}
-        {(data?.total ?? 0) > historicPageSize && (
-          <FloatingBar>
-            <PagePagination
-              page={page}
-              setPage={(value) => {
-                setPage(value);
-                scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              maxPage={data?.totalPages ?? 0}
-            />
-          </FloatingBar>
-        )}
+        <FloatingPagePagination
+          page={page}
+          setPage={(value) => {
+            setPage(value);
+            scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          maxPage={data?.totalPages ?? 0}
+        />
       </LayoutContent>
     </Layout>
   );
