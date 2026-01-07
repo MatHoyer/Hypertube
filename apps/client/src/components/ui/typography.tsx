@@ -9,7 +9,7 @@ import React, { forwardRef } from "react";
 
 // Source : https://www.totaltypescript.com/pass-component-as-prop-react
 type FixedForwardRef = <T, P = object>(
-  render: (props: P, ref: React.Ref<T>) => React.ReactNode,
+  render: (props: P, ref: React.Ref<T>) => React.ReactNode
 ) => (props: P & React.RefAttributes<T>) => React.ReactNode;
 
 const fixedForwardRef = forwardRef as FixedForwardRef;
@@ -29,6 +29,7 @@ export const typographyVariants = cva("", {
       quote: "mt-6 border-l-2 pl-6 italic",
       code: "relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold",
       link: "hover:underline",
+      span: "",
     },
     textSize: {
       xl: "text-xl font-semibold",
@@ -62,6 +63,7 @@ const defaultElementMapping = {
   quote: "p",
   code: "code",
   link: "a",
+  span: "span",
 } satisfies Record<NonNullable<TypographyCvaProps["variant"]>, ElementType>;
 
 type ElementMapping = typeof defaultElementMapping;
@@ -89,7 +91,7 @@ type ElementTypeForVariant<TVariant extends keyof ElementMapping> =
  */
 const InnerTypography = <
   TAs extends ElementType,
-  TVariant extends TypographyCvaProps["variant"] = "default",
+  TVariant extends TypographyCvaProps["variant"] = "default"
 >(
   {
     variant = "default",
@@ -113,7 +115,7 @@ const InnerTypography = <
     >,
     "as"
   >,
-  ref: ForwardedRef<any>,
+  ref: ForwardedRef<any>
 ) => {
   const Comp = as ?? defaultElementMapping[variant ?? "default"];
   return (
@@ -121,7 +123,7 @@ const InnerTypography = <
       {...props}
       className={cn(
         typographyVariants({ variant, textSize, textColor, functionnal }),
-        className,
+        className
       )}
       ref={ref}
     ></Comp>

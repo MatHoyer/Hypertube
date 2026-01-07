@@ -20,13 +20,13 @@ export const NewCredentialsDialog: React.FC<{
         <DialogTitle>{t("oauthCredentials.newCredential.title")}</DialogTitle>
       </DialogHeader>
       <DialogDescription className="flex flex-col gap-1">
-        <Typography>
+        <Typography variant="span">
           {t("oauthCredentials.newCredential.description.1")}
         </Typography>
-        <Typography>
+        <Typography variant="span">
           {t("oauthCredentials.newCredential.description.2")}
         </Typography>
-        <Typography>
+        <Typography variant="span">
           {t("oauthCredentials.newCredential.description.3")}
         </Typography>
       </DialogDescription>
