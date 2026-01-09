@@ -46,7 +46,7 @@ app.use(
   async (c, next) => {
     i18next.changeLanguage(c.get("language"));
     await next();
-  },
+  }
 );
 
 const apiRouter = new Hono();
@@ -72,15 +72,15 @@ app.use("/public/*", serveStatic({ root: "./" }));
 if (env.NODE_ENV === "PROD") {
   app.use(
     serveStatic({
-      root: "./dist/public",
-    }),
+      root: "./dist/apps/public",
+    })
   );
   app.use(
     "*",
     serveStatic({
-      root: "./dist/public",
+      root: "./dist/apps/public",
       path: "index.html",
-    }),
+    })
   );
 }
 
@@ -91,5 +91,5 @@ serve(
   },
   (info) => {
     hypertubeLogger.info(`Server is running on http://localhost:${info.port}`);
-  },
+  }
 );

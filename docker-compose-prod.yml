@@ -32,7 +32,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
       - REDIS_HOST=hypertube_redis
       - NODE_ENV=PROD
-      - TRANSMISSION_HOST=transmission
+      - TRANSMISSION_HOST=vpn
     volumes:
       - movies_data:/hypertube/apps/downloader/downloads
     networks:
