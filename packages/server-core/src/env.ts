@@ -36,6 +36,8 @@ const envSchema = z.object({
   YTS_PROXY_PORT: z.coerce.number(),
   REDIS_HOST: z.string(),
   REDIS_PORT: z.coerce.number(),
+  MINIO_ACCESS_KEY: z.string(),
+  MINIO_SECRET_KEY: z.string(),
   VPN_IS_ACTIVE: z.coerce.boolean().default(false),
   NODE_ENV: z.enum(["DEV", "PROD"]).default("DEV"),
 });
