@@ -1,9 +1,7 @@
-FROM node:22
+FROM node:22 AS builder
 
 # Enable pnpm via corepack
 RUN corepack enable && corepack prepare pnpm@latest --activate
-
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /hypertube
 
@@ -22,4 +20,27 @@ RUN pnpm lint
 RUN pnpm --filter server-core prisma:generate
 RUN pnpm build:downloader
 
-CMD ["pnpm", "start:downloader"]
+FROM node:22-alpine AS runner
+
+RUN apk add --no-cache ffmpeg
+
+WORKDIR /hypertube
+
+COPY --from=builder --chown=node:node /hypertube/node_modules ./node_modules
+COPY --from=builder --chown=node:node /hypertube/apps/downloader/node_modules ./apps/downloader/node_modules
+COPY --from=builder --chown=node:node /hypertube/packages/libs/node_modules ./packages/libs/node_modules
+COPY --from=builder --chown=node:node /hypertube/packages/server-core/node_modules ./packages/server-core/node_modules
+
+COPY --from=builder --chown=node:node /hypertube/apps/downloader/dist ./apps/downloader/dist
+COPY --from=builder --chown=node:node /hypertube/packages/libs/dist ./packages/libs/dist
+COPY --from=builder --chown=node:node /hypertube/packages/server-core/dist ./packages/server-core/dist
+
+COPY --from=builder --chown=node:node /hypertube/apps/downloader/package.json ./apps/downloader/package.json
+COPY --from=builder --chown=node:node /hypertube/packages/libs/package.json ./packages/libs/package.json
+COPY --from=builder --chown=node:node /hypertube/packages/server-core/package.json ./packages/server-core/package.json
+
+WORKDIR /hypertube/apps/downloader
+
+USER node
+
+CMD ["node", "./dist/main.js"]
