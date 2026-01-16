@@ -43,4 +43,4 @@ WORKDIR /hypertube/apps/yts-api-proxy
 
 USER node
 
-CMD ["node", "./dist/main.js"]
+CMD ["node", "./dist/apps/yts-api-proxy/src/main.js"]
