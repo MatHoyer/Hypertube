@@ -74,6 +74,10 @@ Initialize the database:
 ```bash
 pnpm --filter server-core prisma:migrate
 ```
+or
+```bash
+docker compose -f docker-compose-prod.yml run --rm migrate
+```
 
 Create downloads symlink (simulate docker volume)
 
