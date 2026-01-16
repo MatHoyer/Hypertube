@@ -79,6 +79,11 @@ or
 docker compose -f docker-compose-prod.yml run --rm migrate
 ```
 
+to run a custom cmd use:
+```bash
+docker compose -f docker-compose-prod.yml run --rm migrate <custom_cmd>
+```
+
 Create downloads symlink (simulate docker volume)
 
 ```bash

@@ -27,8 +27,6 @@ RUN apk add --no-cache curl
 
 WORKDIR /hypertube
 
-COPY --from=builder --chown=node:node /hypertube/apps/server/Dockerfile.migration ./apps/server/Dockerfile.migration
-
 COPY --from=builder --chown=node:node /hypertube/node_modules ./node_modules
 COPY --from=builder --chown=node:node /hypertube/apps/server/node_modules ./apps/server/node_modules
 COPY --from=builder --chown=node:node /hypertube/packages/libs/node_modules ./packages/libs/node_modules
