@@ -9,7 +9,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
-    "clear": "rm -rf node_modules dist prisma/schema/migrations src/generated",
+    "clear": "rm -rf node_modules dist prisma/migrations src/generated",
     "build": "tsc --build",
     "dev": "tsc -w --preserveWatchOutput",
     "prisma:generate": "pnpm dlx prisma generate",
