@@ -1,4 +1,4 @@
-FROM node:22
+FROM node:22 AS builder
 
 # Enable pnpm via corepack
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -21,4 +21,27 @@ RUN pnpm lint
 RUN pnpm --filter server-core prisma:generate
 RUN pnpm build:app
 
-CMD ["pnpm", "start:app"]
+FROM node:22-alpine AS runner
+
+RUN apk add --no-cache curl
+
+WORKDIR /hypertube
+
+COPY --from=builder --chown=node:node /hypertube/node_modules ./node_modules
+COPY --from=builder --chown=node:node /hypertube/apps/server/node_modules ./apps/server/node_modules
+COPY --from=builder --chown=node:node /hypertube/packages/libs/node_modules ./packages/libs/node_modules
+COPY --from=builder --chown=node:node /hypertube/packages/server-core/node_modules ./packages/server-core/node_modules
+
+COPY --from=builder --chown=node:node /hypertube/apps/server/dist ./apps/server/dist
+COPY --from=builder --chown=node:node /hypertube/packages/libs/dist ./packages/libs/dist
+COPY --from=builder --chown=node:node /hypertube/packages/server-core/dist ./packages/server-core/dist
+
+COPY --from=builder --chown=node:node /hypertube/apps/server/package.json ./apps/server/package.json
+COPY --from=builder --chown=node:node /hypertube/packages/libs/package.json ./packages/libs/package.json
+COPY --from=builder --chown=node:node /hypertube/packages/server-core/package.json ./packages/server-core/package.json
+
+WORKDIR /hypertube/apps/server
+
+USER node
+
+CMD ["node", "./dist/apps/server/src/main.js"]
