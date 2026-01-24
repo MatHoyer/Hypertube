@@ -16,8 +16,8 @@ COPY packages/libs ./packages/libs
 COPY packages/server-core ./packages/server-core
 
 RUN pnpm i --frozen-lockfile
-RUN pnpm --filter server-core prisma:generate
 RUN pnpm lint
+RUN pnpm --filter server-core prisma:generate
 RUN pnpm build:yts-api-proxy
 
 FROM node:22-alpine AS runner
