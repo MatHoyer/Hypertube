@@ -58,7 +58,7 @@ export const Comment: React.FC<{
   const canLoadMore = comment.hasReplies && (!data || hasNextPage);
 
   return (
-    <div className="flex-col py-1">
+    <div className="flex flex-col mt-2 gap-2">
       <div className="flex justify-between">
         <div className="flex items-center">
           <ImageAvatar
@@ -95,10 +95,7 @@ export const Comment: React.FC<{
           setIsEditing={setIsEditing}
         />
       ) : (
-        <Typography
-          textSize={"sm"}
-          className="whitespace-pre-wrap break-words mb-2"
-        >
+        <Typography textSize={"sm"} functionnal="wrap">
           {comment.content}
         </Typography>
       )}

@@ -150,7 +150,7 @@ export const UserDropdown = () => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="bg-destructive"
+          variant="destructive"
           onClick={() => signOutMutation.mutate()}
         >
           <LogOut />

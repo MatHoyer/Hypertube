@@ -68,7 +68,10 @@ export const CommentActionsDropdown: React.FC<{
               {t("movie.comments.editComment")}
             </Typography>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => deleteComment()}>
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => deleteComment()}
+          >
             <Typography textSize={"sm"}>
               {t("movie.comments.deleteComment")}
             </Typography>
@@ -129,25 +132,28 @@ export const EditCommentInput: React.FC<{
           }
         }}
         disabled={isPending}
+        className="w-full break-all"
       />
-      <InputGroupAddon align="inline-end">
+      <InputGroupAddon align="block-end" className="flex justify-between">
         <Typography>{maxLength - editedContent.length}</Typography>
-        <Button
-          variant="ghost"
-          disabled={isPending}
-          onClick={() => handleCancel()}
-        >
-          {t("movie.comments.cancel")}
-        </Button>
-        <LoadingButton
-          disabled={!editedContent.trim() || editedContent === initialContent}
-          variant="ghost"
-          success={isSuccess}
-          loading={isPending}
-          onClick={() => patchComment(editedContent)}
-        >
-          {t("movie.comments.save")}
-        </LoadingButton>
+        <div className="flex gap-1">
+          <Button
+            variant="ghost"
+            disabled={isPending}
+            onClick={() => handleCancel()}
+          >
+            {t("movie.comments.cancel")}
+          </Button>
+          <LoadingButton
+            disabled={!editedContent.trim() || editedContent === initialContent}
+            variant="outline"
+            success={isSuccess}
+            loading={isPending}
+            onClick={() => patchComment(editedContent)}
+          >
+            {t("movie.comments.save")}
+          </LoadingButton>
+        </div>
       </InputGroupAddon>
     </InputGroup>
   );
