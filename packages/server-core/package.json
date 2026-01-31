@@ -12,11 +12,11 @@
     "clear": "rm -rf node_modules dist prisma/migrations src/generated",
     "build": "tsc --build",
     "dev": "tsc -w --preserveWatchOutput",
-    "prisma:generate": "pnpm dlx prisma generate",
-    "prisma:migrate": "pnpm dlx prisma migrate dev --name init",
-    "prisma:migrate:reset": "pnpm dlx prisma migrate reset --force",
-    "prisma:seed": "pnpm dlx prisma db seed",
-    "prisma:studio": "pnpm dlx prisma studio"
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev --name init",
+    "prisma:migrate:reset": "prisma migrate reset --force",
+    "prisma:seed": "prisma db seed",
+    "prisma:studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
