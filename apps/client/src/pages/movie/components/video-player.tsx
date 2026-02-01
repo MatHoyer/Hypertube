@@ -357,6 +357,8 @@ const VideoPlayer = () => {
   }, [selectedResolution, resolutions, setSelectedResolution]);
 
   const updateWatchTimer = useCallback(() => {
+    if (!progress) return;
+
     axiosFetch({
       method: "PUT",
       url: getUrl(ROUTES.API.MOVIES_WATCH_TIMER, { tmdbId }),
