@@ -10,7 +10,7 @@ export const StatCard: React.FC<{
   label: string;
 }> = ({ color, icon, count, label }) => {
   return (
-    <Card className="border-2 w-1/4">
+    <Card className="border-2 w-3/4 md:w-1/4">
       <CardContent className="flex items-center gap-3 size-full">
         <div
           className={cn(

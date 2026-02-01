@@ -39,7 +39,7 @@ export const PublicProfilePage = () => {
           lastName={data.user.lastName ?? ""}
           createdAt={data.user.createdAt}
         />
-        <div className="flex gap-4 w-full justify-center">
+        <div className="flex flex-col md:flex-row gap-4 w-full justify-center items-center md:items-stretch">
           <StatCard
             color={StatBackgroundColors[StatTypes.LIKES]}
             icon={getProfileStatIcon(StatTypes.LIKES)}

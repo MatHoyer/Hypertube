@@ -36,6 +36,7 @@ export const BasePostComment: React.FC<{
             handleCancel();
           }
         }}
+        className="w-full break-all"
       />
       <InputGroupAddon align="block-end">
         <Typography>{maxLength - newComment.length}</Typography>

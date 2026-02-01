@@ -42,7 +42,7 @@ export const typographyVariants = cva("", {
     },
     functionnal: {
       truncate: "w-full text-start truncate",
-      wrap: "w-full text-start text-wrap",
+      wrap: "w-full text-start text-wrap break-all",
     },
   },
   defaultVariants: {
