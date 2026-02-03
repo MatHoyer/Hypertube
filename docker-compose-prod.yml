@@ -5,7 +5,7 @@ services:
       dockerfile: ./packages/server-core/Dockerfile.migration
     env_file: .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     restart: "no"
     networks:
       - hypertube-network
@@ -17,7 +17,7 @@ services:
       dockerfile: ./apps/server/Dockerfile.prod
     env_file: .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - NODE_ENV=PROD
       - YTS_PROXY_URL=http://vpn:${YTS_PROXY_PORT}
       - REDIS_HOST=hypertube_redis
@@ -43,7 +43,7 @@ services:
       dockerfile: ./apps/downloader/Dockerfile.prod
     env_file: .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - REDIS_HOST=hypertube_redis
       - NODE_ENV=PROD
       - TRANSMISSION_HOST=vpn
@@ -61,7 +61,7 @@ services:
       dockerfile: ./apps/scheduler/Dockerfile.prod
     env_file: .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - REDIS_HOST=hypertube_redis
       - NODE_ENV=PROD
     networks:
