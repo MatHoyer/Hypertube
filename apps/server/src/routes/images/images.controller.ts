@@ -1,4 +1,5 @@
 import {
+  hypertubeLogger,
   postImageSchemas,
   TDeleteImageSchemas,
   TPostImageSchemas,
@@ -22,6 +23,8 @@ export const postImage = async (
   c: Context<TIsLogged & TBodyParser<TPostImageSchemas["requirements"]>>
 ) => {
   const { file } = c.get("validatedBody");
+
+  hypertubeLogger.info(`POST /images ${file.type}`);
 
   if (!file.type.startsWith("image/")) {
     return c.json({ error: "Invalid file" }, 400);

@@ -43,6 +43,10 @@ logs-prod:
 # Stop everything
 stop-all: stop-prod stop-vpn stop-helpers stop-infra
 
+rebuild-vpn: stop-vpn
+	docker compose -f docker-compose-vpn.yml -f docker-compose-vpn.override.yml build --no-cache
+	$(MAKE) vpn
+
 rebuild-prod: stop-prod
 	docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml build --no-cache
 	$(MAKE) prod

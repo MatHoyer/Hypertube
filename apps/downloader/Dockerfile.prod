@@ -26,21 +26,19 @@ RUN apk add --no-cache ffmpeg
 
 WORKDIR /hypertube
 
-COPY --from=builder --chown=node:node /hypertube/node_modules ./node_modules
-COPY --from=builder --chown=node:node /hypertube/apps/downloader/node_modules ./apps/downloader/node_modules
-COPY --from=builder --chown=node:node /hypertube/packages/libs/node_modules ./packages/libs/node_modules
-COPY --from=builder --chown=node:node /hypertube/packages/server-core/node_modules ./packages/server-core/node_modules
+COPY --from=builder /hypertube/node_modules ./node_modules
+COPY --from=builder /hypertube/apps/downloader/node_modules ./apps/downloader/node_modules
+COPY --from=builder /hypertube/packages/libs/node_modules ./packages/libs/node_modules
+COPY --from=builder /hypertube/packages/server-core/node_modules ./packages/server-core/node_modules
 
-COPY --from=builder --chown=node:node /hypertube/apps/downloader/dist ./apps/downloader/dist
-COPY --from=builder --chown=node:node /hypertube/packages/libs/dist ./packages/libs/dist
-COPY --from=builder --chown=node:node /hypertube/packages/server-core/dist ./packages/server-core/dist
+COPY --from=builder /hypertube/apps/downloader/dist ./apps/downloader/dist
+COPY --from=builder /hypertube/packages/libs/dist ./packages/libs/dist
+COPY --from=builder /hypertube/packages/server-core/dist ./packages/server-core/dist
 
-COPY --from=builder --chown=node:node /hypertube/apps/downloader/package.json ./apps/downloader/package.json
-COPY --from=builder --chown=node:node /hypertube/packages/libs/package.json ./packages/libs/package.json
-COPY --from=builder --chown=node:node /hypertube/packages/server-core/package.json ./packages/server-core/package.json
+COPY --from=builder /hypertube/apps/downloader/package.json ./apps/downloader/package.json
+COPY --from=builder /hypertube/packages/libs/package.json ./packages/libs/package.json
+COPY --from=builder /hypertube/packages/server-core/package.json ./packages/server-core/package.json
 
 WORKDIR /hypertube/apps/downloader
-
-USER node
 
 CMD ["node", "./dist/main.js"]

@@ -27,8 +27,8 @@ services:
       - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=false
     volumes:
       - ./apps/downloader/config:/config:ro
-      - ./apps/downloader/downloads:/downloads
-      - ./apps/downloader/downloads-transmission:/downloads-transmission
+      - movies_data:/downloads
+      - movies_data_transmission:/downloads-transmission
     network_mode: container:vpn
 
   redis:
@@ -41,6 +41,8 @@ services:
 
 volumes:
   hypertube_data:
+  movies_data:
+  movies_data_transmission:
 
 networks:
   hypertube-network:

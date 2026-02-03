@@ -13,10 +13,13 @@ services:
       - ${TRANSMISSION_TORRENT_PORT}/udp
       - ${YTS_PROXY_PORT}
     environment:
-      - VPN_SERVICE_PROVIDER=protonvpn
-      - VPN_TYPE=wireguard
-      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY}
+      - VPN_SERVICE_PROVIDER=nordvpn
+      - VPN_TYPE=openvpn
+      - OPENVPN_USER=${OPENVPN_USER}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
       - SERVER_COUNTRIES=${VPN_COUNTRY:-Netherlands}
+      - OPENVPN_MSSFIX=1280
+      - OPENVPN_TCP=yes
     networks:
       - hypertube-network
 

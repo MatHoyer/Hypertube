@@ -1,9 +1,4 @@
-import {
-  capitalizeAllWords,
-  TMovieSchema,
-  ytsGenres,
-  ytsQualities,
-} from "@hypertube/libs";
+import { TMovieSchema, ytsQualities } from "@hypertube/libs";
 import {
   createResolution,
   env,
@@ -26,37 +21,9 @@ const ytsMovieTorrentSchema = z.object({
   size: z.string(),
 });
 
-const ytsMovieActorSchema = z.object({
-  name: z.string(),
-  character_name: z.string().optional(),
-  imdb_code: z.string(),
-  url_small_image: z.string().optional(),
-});
-
 const ytsMovieSchema = z.object({
   id: z.number(),
-  url: z.url(),
-  imdb_code: z.string(),
-  title_english: z.string(),
-  title_long: z.string(),
-  slug: z.string().refine((slug) => !slug.includes(" "), {
-    message: "Slug must not contain spaces",
-  }),
-  year: z.number(),
-  rating: z.number(),
-  runtime: z.number(),
-  genres: z.array(
-    z.enum(ytsGenres.map((genre) => capitalizeAllWords(genre, "-")))
-  ),
-  description_full: z.string().optional(),
-  yt_trailer_code: z.string().optional(),
-  language: z.string(),
-  background_image: z.string(),
-  small_cover_image: z.string(),
-  medium_cover_image: z.string(),
-  large_cover_image: z.string(),
   torrents: z.array(ytsMovieTorrentSchema),
-  cast: z.array(ytsMovieActorSchema).optional().default([]),
 });
 
 export class YtsApi {
