@@ -50,7 +50,7 @@ export const ProfilePictureUpdate = () => {
         method: "PATCH",
         url: getUrl(ROUTES.API.USERS, { userId: user.id }),
         schemas: patchUsersSchemas,
-        data: { image: image.path, imageId: image.id },
+        data: { imageId: image.id },
       });
     },
     onSuccess: () => {
@@ -81,7 +81,7 @@ export const ProfilePictureUpdate = () => {
         method: "PATCH",
         url: getUrl(ROUTES.API.USERS, { userId: user.id }),
         schemas: patchUsersSchemas,
-        data: { image: null, imageId: null },
+        data: { imageId: null },
       });
     },
     onSuccess: () => {

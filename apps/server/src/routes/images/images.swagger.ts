@@ -30,7 +30,6 @@ export const imagesSwagger = {
           content: {
             "application/json": {
               example: {
-                path: "https://example.com/images/avatars/johndoe.jpg",
                 id: "550e8400-e29b-41d4-a716-446655440000",
               },
             },

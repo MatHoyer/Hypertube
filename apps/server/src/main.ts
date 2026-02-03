@@ -67,8 +67,6 @@ apiRouter.get("/health", (c) => c.text("OK"));
 
 app.route("/api", apiRouter);
 
-app.use("/public/*", serveStatic({ root: "./" }));
-
 if (env.NODE_ENV === "PROD") {
   app.use(
     serveStatic({
@@ -82,7 +80,7 @@ if (env.NODE_ENV === "PROD") {
       path: "index.html",
     })
   );
-}
+} else app.use("/images/*", serveStatic({ root: "./public" }));
 
 serve(
   {

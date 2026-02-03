@@ -4,7 +4,7 @@ import { imageSchema } from "../database/image.schema.js";
 
 export const postImageSchemas = {
   requirements: z.object({ file: z.file().max(sizeMaxFile) }),
-  response: z.object({ path: z.string(), id: z.uuid() }),
+  response: z.object({ id: z.uuid() }),
 };
 
 export type TPostImageSchemas = {
