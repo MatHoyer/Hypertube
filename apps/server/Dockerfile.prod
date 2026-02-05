@@ -27,21 +27,19 @@ RUN apk add --no-cache curl
 
 WORKDIR /hypertube
 
-COPY --from=builder --chown=node:node /hypertube/node_modules ./node_modules
-COPY --from=builder --chown=node:node /hypertube/apps/server/node_modules ./apps/server/node_modules
-COPY --from=builder --chown=node:node /hypertube/packages/libs/node_modules ./packages/libs/node_modules
-COPY --from=builder --chown=node:node /hypertube/packages/server-core/node_modules ./packages/server-core/node_modules
+COPY --from=builder /hypertube/node_modules ./node_modules
+COPY --from=builder /hypertube/apps/server/node_modules ./apps/server/node_modules
+COPY --from=builder /hypertube/packages/libs/node_modules ./packages/libs/node_modules
+COPY --from=builder /hypertube/packages/server-core/node_modules ./packages/server-core/node_modules
 
-COPY --from=builder --chown=node:node /hypertube/apps/server/dist ./apps/server/dist
-COPY --from=builder --chown=node:node /hypertube/packages/libs/dist ./packages/libs/dist
-COPY --from=builder --chown=node:node /hypertube/packages/server-core/dist ./packages/server-core/dist
+COPY --from=builder /hypertube/apps/server/dist ./apps/server/dist
+COPY --from=builder /hypertube/packages/libs/dist ./packages/libs/dist
+COPY --from=builder /hypertube/packages/server-core/dist ./packages/server-core/dist
 
-COPY --from=builder --chown=node:node /hypertube/apps/server/package.json ./apps/server/package.json
-COPY --from=builder --chown=node:node /hypertube/packages/libs/package.json ./packages/libs/package.json
-COPY --from=builder --chown=node:node /hypertube/packages/server-core/package.json ./packages/server-core/package.json
+COPY --from=builder /hypertube/apps/server/package.json ./apps/server/package.json
+COPY --from=builder /hypertube/packages/libs/package.json ./packages/libs/package.json
+COPY --from=builder /hypertube/packages/server-core/package.json ./packages/server-core/package.json
 
 WORKDIR /hypertube/apps/server
-
-USER node
 
 CMD ["node", "./dist/apps/server/src/main.js"]

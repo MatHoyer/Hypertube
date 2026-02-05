@@ -55,7 +55,7 @@ export const patchUsersSchemas = {
   urlParams: z.object({ userId: userSchema.shape.id }),
   requirements: z
     .object({
-      ...userSchema.pick({ email: true, image: true, imageId: true }).shape,
+      ...userSchema.pick({ email: true, imageId: true }).shape,
       name: userSchema.shape.name.min(1),
       username: userSchema.shape.username.unwrap().min(1),
       firstName: userSchema.shape.firstName.unwrap().min(1),

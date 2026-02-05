@@ -78,12 +78,9 @@ jobs:
           REDIS_PORT=${{ secrets.REDIS_PORT }}
 
           VPN_SERVICE_PROVIDER=${{ vars.VPN_SERVICE_PROVIDER }}
-          VPN_TYPE=${{ vars.VPN_TYPE }}
-          WIREGUARD_PRIVATE_KEY=${{ secrets.WIREGUARD_PRIVATE_KEY }}
-          WIREGUARD_ADDRESSES=${{ secrets.WIREGUARD_ADDRESSES }}
-          WIREGUARD_ENDPOINT=${{ secrets.WIREGUARD_ENDPOINT }}
-          WIREGUARD_PUBLIC_KEY=${{ secrets.WIREGUARD_PUBLIC_KEY }}
-          DNS=${{ vars.DNS }}
+
+          OPENVPN_USER=${{ secrets.OPENVPN_USER }}
+          OPENVPN_PASSWORD=${{ secrets.OPENVPN_PASSWORD }}
           EOF
 
       - name: Create Docker network

@@ -5,7 +5,7 @@ services:
       dockerfile: ./packages/server-core/Dockerfile.migration
     env_file: .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
     restart: "no"
     networks:
       - hypertube-network
@@ -17,10 +17,10 @@ services:
       dockerfile: ./apps/server/Dockerfile.prod
     env_file: .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - NODE_ENV=PROD
       - YTS_PROXY_URL=http://vpn:${YTS_PROXY_PORT}
-      - REDIS_HOST=hypertube_redis
+      - REDIS_HOST=redis
       - CLIENT_URL=${SERVER_URL}
       - CLIENT_PORT=${SERVER_PORT}
     volumes:
@@ -43,12 +43,13 @@ services:
       dockerfile: ./apps/downloader/Dockerfile.prod
     env_file: .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
-      - REDIS_HOST=hypertube_redis
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - REDIS_HOST=redis
       - NODE_ENV=PROD
       - TRANSMISSION_HOST=vpn
     volumes:
       - movies_data:/hypertube/apps/downloader/downloads
+      - movies_data_transmission:/hypertube/apps/downloader/downloads-transmission
     networks:
       - hypertube-network
     depends_on:
@@ -61,8 +62,8 @@ services:
       dockerfile: ./apps/scheduler/Dockerfile.prod
     env_file: .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
-      - REDIS_HOST=hypertube_redis
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - REDIS_HOST=redis
       - NODE_ENV=PROD
     networks:
       - hypertube-network
@@ -78,7 +79,7 @@ services:
     environment:
       - PUPPETEER_SKIP_DOWNLOAD=true
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-      - REDIS_HOST=hypertube_redis
+      - REDIS_HOST=redis
       - NODE_ENV=PROD
     volumes:
       - movies_data:/hypertube/apps/yts-api-proxy/downloads
@@ -90,3 +91,4 @@ networks:
 
 volumes:
   movies_data:
+  movies_data_transmission:

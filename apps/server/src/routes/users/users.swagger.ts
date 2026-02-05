@@ -120,7 +120,6 @@ export const usersSwagger = {
             example: {
               name: "",
               email: "",
-              image: "",
               username: "",
               firstName: "",
               lastName: "",
