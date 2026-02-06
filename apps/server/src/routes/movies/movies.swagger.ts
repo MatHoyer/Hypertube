@@ -3,8 +3,10 @@ import {
   deleteMovieSubscribeSchemas,
   getMovieCastingSchema,
   getMovieCommentSchemas,
+  getMovieResolutionsSchemas,
   getMovieSchemas,
   getMoviesSchemas,
+  getMovieSubtitlesSchemas,
   getUrl,
   postMovieCommentSchemas,
   postMovieDownloadResolutionSchemas,
@@ -201,40 +203,6 @@ export const moviesSwagger = {
                   hasDetails: true,
                 },
                 id: "33cd4882-eedd-4dd0-b7a6-790dbf15f7fa",
-                resolutions: [
-                  {
-                    id: "cm5a8b9c1d2e3f4g5h6i7j8k9",
-                    resolution: "720p",
-                    size: "950MB",
-                    downloadState: "DOWNLOADED",
-                    provider: "YTS",
-                  },
-                  {
-                    id: "cm5a8b9c1d2e3f4g5h6i7j8k0",
-                    resolution: "1080p",
-                    size: "2.1GB",
-                    downloadState: "NOT_DOWNLOADED",
-                    provider: "YTS",
-                  },
-                ],
-                subtitles: [
-                  {
-                    id: "cm5sub1a2b3c4d5e6f7g8h9i0",
-                    language: "en",
-                    rating: 5,
-                    downloadLink:
-                      "https://yifysubtitles.org/subtitle/123456.zip",
-                    downloadState: "DOWNLOADED",
-                  },
-                  {
-                    id: "cm5sub1a2b3c4d5e6f7g8h9i1",
-                    language: "fr",
-                    rating: 4,
-                    downloadLink:
-                      "https://yifysubtitles.org/subtitle/123457.zip",
-                    downloadState: "NOT_DOWNLOADED",
-                  },
-                ],
                 isSubscribed: true,
                 likesNumber: 245,
                 isLikedByUser: true,
@@ -247,6 +215,73 @@ export const moviesSwagger = {
           content: {
             "application/json": {
               example: null,
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.MOVIES_RESOLUTIONS, { tmdbId: "{tmdbId}" })]: {
+    get: {
+      summary: "Get movie resolutions",
+      tags: ["Movies"],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: getMovieResolutionsSchemas.urlParams.shape.tmdbId,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Movie resolutions retrieved successfully",
+          content: {
+            "application/json": {
+              example: {
+                resolutions: [
+                  {
+                    id: "cm5a8b9c1d2e3f4g5h6i7j8k9",
+                    movieId: "33cd4882-eedd-4dd0-b7a6-790dbf15f7fa",
+                    resolution: "720p",
+                    size: "950MB",
+                    downloadState: "DOWNLOADED",
+                    provider: "YTS",
+                    createdAt: "2026-01-15T10:30:00Z",
+                    updatedAt: "2026-01-15T12:45:00Z",
+                  },
+                  {
+                    id: "cm5a8b9c1d2e3f4g5h6i7j8k0",
+                    movieId: "33cd4882-eedd-4dd0-b7a6-790dbf15f7fa",
+                    resolution: "1080p",
+                    size: "2.1GB",
+                    downloadState: "NOT_DOWNLOADED",
+                    provider: "YTS",
+                    createdAt: "2026-01-15T10:30:00Z",
+                    updatedAt: "2026-01-15T10:30:00Z",
+                  },
+                  {
+                    id: "cm5a8b9c1d2e3f4g5h6i7j8k1",
+                    movieId: "33cd4882-eedd-4dd0-b7a6-790dbf15f7fa",
+                    resolution: "2160p",
+                    size: "4.5GB",
+                    downloadState: "WAITING",
+                    provider: "YTS",
+                    createdAt: "2026-01-15T10:30:00Z",
+                    updatedAt: "2026-01-15T14:20:00Z",
+                  },
+                ],
+              },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
+              },
             },
           },
         },
@@ -305,6 +340,73 @@ export const moviesSwagger = {
             "application/json": {
               example: {
                 message: "Movie or Resolution not found",
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  [getUrl(ROUTES.API.MOVIES_SUBTITLES, { tmdbId: "{tmdbId}" })]: {
+    get: {
+      summary: "Get movie subtitles",
+      tags: ["Movies"],
+      parameters: [
+        {
+          in: "path",
+          name: "tmdbId",
+          required: true,
+          schema: getMovieSubtitlesSchemas.urlParams.shape.tmdbId,
+        },
+      ],
+      responses: {
+        "200": {
+          description: "Movie subtitles retrieved successfully",
+          content: {
+            "application/json": {
+              example: {
+                subtitles: [
+                  {
+                    id: "cm5sub1a2b3c4d5e6f7g8h9i0",
+                    movieId: "33cd4882-eedd-4dd0-b7a6-790dbf15f7fa",
+                    language: "en",
+                    rating: 5,
+                    downloadLink: "https://example.com",
+                    downloadState: "DOWNLOADED",
+                    createdAt: "2026-01-15T10:30:00Z",
+                    updatedAt: "2026-01-15T12:45:00Z",
+                  },
+                  {
+                    id: "cm5sub1a2b3c4d5e6f7g8h9i1",
+                    movieId: "33cd4882-eedd-4dd0-b7a6-790dbf15f7fa",
+                    language: "fr",
+                    rating: 4,
+                    downloadLink: "https://example.com",
+                    downloadState: "NOT_DOWNLOADED",
+                    createdAt: "2026-01-15T10:30:00Z",
+                    updatedAt: "2026-01-15T10:30:00Z",
+                  },
+                  {
+                    id: "cm5sub1a2b3c4d5e6f7g8h9i2",
+                    movieId: "33cd4882-eedd-4dd0-b7a6-790dbf15f7fa",
+                    language: "es",
+                    rating: 3,
+                    downloadLink: "https://example.com",
+                    downloadState: "DOWNLOADING",
+                    createdAt: "2026-01-15T10:30:00Z",
+                    updatedAt: "2026-01-15T14:20:00Z",
+                  },
+                ],
+              },
+            },
+          },
+        },
+        "404": {
+          description: "Movie not found",
+          content: {
+            "application/json": {
+              example: {
+                message: "Movie not found",
               },
             },
           },

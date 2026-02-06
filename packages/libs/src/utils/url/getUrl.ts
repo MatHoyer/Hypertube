@@ -53,6 +53,8 @@ export const ROUTES = {
     USERS_SESSION: "api-users-session",
     IMAGES: "api-images",
     MOVIES: "api-movies",
+    MOVIES_RESOLUTIONS: "api-movies-resolutions",
+    MOVIES_SUBTITLES: "api-movies-subtitles",
     MOVIES_SUBSCRIPTION: "api-movies-subscription",
     PLAYLISTS: "api-playlists",
     PLAYLISTS_MOVIE: "api-playlists-movie",
@@ -152,6 +154,12 @@ const routeSchemas = {
       subtitlesLanguage: z
         .union([z.enum(languageCodes), z.literal("{subtitlesLanguage}")])
         .optional(),
+    }),
+    [ROUTES.API.MOVIES_RESOLUTIONS]: z.object({
+      tmdbId: z.union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")]),
+    }),
+    [ROUTES.API.MOVIES_SUBTITLES]: z.object({
+      tmdbId: z.union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")]),
     }),
     [ROUTES.API.MOVIES_SUBSCRIPTION]: z.object({
       tmdbId: z
@@ -340,6 +348,10 @@ const routes: {
       return `/api/movies/${tmdbId}`;
     }
   },
+  [ROUTES.API.MOVIES_RESOLUTIONS]: ({ tmdbId }) =>
+    `/api/movies/${tmdbId}/resolutions`,
+  [ROUTES.API.MOVIES_SUBTITLES]: ({ tmdbId }) =>
+    `/api/movies/${tmdbId}/subtitles`,
   [ROUTES.API.MOVIES_SUBSCRIPTION]: ({ tmdbId }) =>
     `/api/movies/${tmdbId}/subscription`,
 
@@ -408,20 +420,21 @@ type TSearchParamsProvided =
   | string
   | URLSearchParams;
 
-type TGetUrlArgs<T extends TRoute> = TRouteDataMap<T> extends undefined
-  ? {
-      withUrl?: "server" | "client";
-      searchParams?: TSearchParamsProvided;
-    }
-  : TRouteDataMap<T> extends Record<string, never>
-  ? {
-      withUrl?: "server" | "client";
-      searchParams?: TSearchParamsProvided;
-    }
-  : TRouteDataMap<T> & {
-      withUrl?: "server" | "client";
-      searchParams?: TSearchParamsProvided;
-    };
+type TGetUrlArgs<T extends TRoute> =
+  TRouteDataMap<T> extends undefined
+    ? {
+        withUrl?: "server" | "client";
+        searchParams?: TSearchParamsProvided;
+      }
+    : TRouteDataMap<T> extends Record<string, never>
+      ? {
+          withUrl?: "server" | "client";
+          searchParams?: TSearchParamsProvided;
+        }
+      : TRouteDataMap<T> & {
+          withUrl?: "server" | "client";
+          searchParams?: TSearchParamsProvided;
+        };
 
 const isClientRoute = (route: any): route is TClientRoute =>
   Object.values(ROUTES.CLIENT).includes(route as TClientRoute);
@@ -462,13 +475,16 @@ export const getUrl = <T extends TRoute>(
     withUrl && !route.startsWith("external-") ? withUrlMapping[withUrl] : "";
 
   if (isPurObject(searchParams)) {
-    searchParams = typedEntries(searchParams).reduce((acc, [key, value]) => {
-      if (value) {
-        if (typeof value === "number") acc[key] = value.toString();
-        else acc[key] = value;
-      }
-      return acc;
-    }, {} as Record<string, string>);
+    searchParams = typedEntries(searchParams).reduce(
+      (acc, [key, value]) => {
+        if (value) {
+          if (typeof value === "number") acc[key] = value.toString();
+          else acc[key] = value;
+        }
+        return acc;
+      },
+      {} as Record<string, string>
+    );
   }
 
   const parsedSearchParams = searchParams
