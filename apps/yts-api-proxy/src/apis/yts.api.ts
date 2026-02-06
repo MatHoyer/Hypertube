@@ -1,4 +1,4 @@
-import { TMovieSchema, ytsQualities } from "@hypertube/libs";
+import { hypertubeLogger, TMovieSchema, ytsQualities } from "@hypertube/libs";
 import {
   createResolution,
   env,
@@ -60,8 +60,15 @@ export class YtsApi {
   }
 
   public async getResolutions(imdbId: string) {
-    const movie = await this.getMovieByImdbId(imdbId);
-    return movie.torrents;
+    try {
+      const movie = await this.getMovieByImdbId(imdbId);
+      return movie.torrents;
+    } catch (error) {
+      hypertubeLogger.error(
+        `Error getting resolutions: ${JSON.stringify(error)}`
+      );
+      return [];
+    }
   }
 
   private async getResolution(imdbId: string, targetResolution: string) {

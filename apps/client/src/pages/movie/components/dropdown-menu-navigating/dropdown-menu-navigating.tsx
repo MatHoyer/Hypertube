@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
+import { useResolutions } from "../../contexts/resolutions/resolutions.context";
+import { useSubtitles } from "../../contexts/subtitles/subtitles.context";
 import { useVideoPlayer } from "../../contexts/video-player/video-player.context";
 import {
   DropdownMenuNavigatingPage,
@@ -114,16 +116,16 @@ const ResolutionsSettings: React.FC<{
   closePopup: () => void;
 }> = ({ goBack, closePopup }) => {
   const { t } = useTranslation();
-  const { resolutions, selectedResolution, setSelectedResolution } =
-    useVideoPlayer();
+  const { streamableResolutions } = useResolutions();
+  const { selectedResolution, setSelectedResolution } = useVideoPlayer();
 
   return (
     <DropdownMenuNavigatingPage
       title={t("movie.playerSettings.resolutions")}
       goBack={goBack}
     >
-      {resolutions.length > 0 ? (
-        resolutions.map((resolution, index) => (
+      {streamableResolutions.length > 0 ? (
+        streamableResolutions.map((resolution, index) => (
           <DropdownMenuSelectedItem
             key={index}
             onClick={() => {
@@ -156,7 +158,8 @@ const SubtitlesSettings: React.FC<{
   closePopup: () => void;
 }> = ({ goBack, closePopup }) => {
   const { t } = useTranslation();
-  const { subtitles, selectedSubtitlesLanguage, setSelectedSubtitlesLanguage } =
+  const { streamableSubtitles } = useSubtitles();
+  const { selectedSubtitlesLanguage, setSelectedSubtitlesLanguage } =
     useVideoPlayer();
 
   return (
@@ -164,7 +167,7 @@ const SubtitlesSettings: React.FC<{
       title={t("movie.playerSettings.subtitles")}
       goBack={goBack}
     >
-      {subtitles.length > 0 && (
+      {streamableSubtitles.length > 0 && (
         <DropdownMenuSelectedItem
           onClick={() => {
             setSelectedSubtitlesLanguage(null);
@@ -176,8 +179,8 @@ const SubtitlesSettings: React.FC<{
           {t("movie.playerSettings.noSelectedSubtitles")}
         </DropdownMenuSelectedItem>
       )}
-      {subtitles.length > 0 ? (
-        subtitles.map((subtitle, index) => (
+      {streamableSubtitles.length > 0 ? (
+        streamableSubtitles.map((subtitle, index) => (
           <DropdownMenuSelectedItem
             key={index}
             onClick={() => {

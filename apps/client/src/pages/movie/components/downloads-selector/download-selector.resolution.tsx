@@ -1,11 +1,13 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { getDownloadStateIcon } from "@/components/download-state/getDownloadStateIcon";
+import { AppLoader } from "@/components/ui/app-loader";
 import { Badge } from "@/components/ui/badge";
 import { Typography } from "@/components/ui/typography";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import { type TResolutionSchema } from "@hypertube/libs";
 import { Video } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useResolutions } from "../../contexts/resolutions/resolutions.context";
 import { MoviePageParamsSchema } from "../../schemas/urlParams.schema";
 import { DownloadButton } from "./download-selector.utils";
 
@@ -33,10 +35,9 @@ const DownloadResolutionButton: React.FC<{
   );
 };
 
-export const DownloadResolutionSelector: React.FC<{
-  resolutions: TResolutionSchema[];
-}> = ({ resolutions }) => {
+export const DownloadResolutionSelector = () => {
   const { t } = useTranslation();
+  const { resolutions, isLoading } = useResolutions();
 
   return (
     <div className="flex flex-col gap-2">
@@ -45,17 +46,19 @@ export const DownloadResolutionSelector: React.FC<{
         <Typography>{t("movie.downloadPage.resolutions")}</Typography>
       </div>
       <div className="flex flex-wrap gap-2">
-        {resolutions.map((resolution) => (
-          <DownloadResolutionButton
-            key={resolution.id}
-            resolution={resolution}
-          />
-        ))}
-        {resolutions.length === 0 && (
+        {!isLoading &&
+          resolutions.map((resolution) => (
+            <DownloadResolutionButton
+              key={resolution.id}
+              resolution={resolution}
+            />
+          ))}
+        {!isLoading && resolutions.length === 0 && (
           <Typography textColor="muted">
             {t("movie.downloadPage.noResolutions")}
           </Typography>
         )}
+        {isLoading && <AppLoader />}
       </div>
     </div>
   );

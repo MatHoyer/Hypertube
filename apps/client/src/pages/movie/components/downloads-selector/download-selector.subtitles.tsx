@@ -1,11 +1,13 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { getDownloadStateIcon } from "@/components/download-state/getDownloadStateIcon";
+import { AppLoader } from "@/components/ui/app-loader";
 import { Badge } from "@/components/ui/badge";
 import { Typography } from "@/components/ui/typography";
 import { useConvertParams } from "@/hooks/use-convert-params";
 import type { TSubtitleSchema } from "@hypertube/libs";
 import { Captions } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSubtitles } from "../../contexts/subtitles/subtitles.context";
 import { MoviePageParamsSchema } from "../../schemas/urlParams.schema";
 import { DownloadButton } from "./download-selector.utils";
 
@@ -30,10 +32,9 @@ const DownloadSubtitleButton: React.FC<{
   );
 };
 
-export const DownloadSubtitleSelector: React.FC<{
-  subtitles: TSubtitleSchema[];
-}> = ({ subtitles }) => {
+export const DownloadSubtitleSelector = () => {
   const { t } = useTranslation();
+  const { subtitles, isLoading } = useSubtitles();
 
   return (
     <div className="flex flex-col gap-2">
@@ -42,14 +43,16 @@ export const DownloadSubtitleSelector: React.FC<{
         <Typography>{t("movie.downloadPage.subtitles")}</Typography>
       </div>
       <div className="flex flex-wrap gap-2">
-        {subtitles.map((subtitle) => (
-          <DownloadSubtitleButton key={subtitle.id} subtitle={subtitle} />
-        ))}
-        {subtitles.length === 0 && (
+        {!isLoading &&
+          subtitles.map((subtitle) => (
+            <DownloadSubtitleButton key={subtitle.id} subtitle={subtitle} />
+          ))}
+        {!isLoading && subtitles.length === 0 && (
           <Typography textColor="muted">
             {t("movie.downloadPage.noSubtitles")}
           </Typography>
         )}
+        {isLoading && <AppLoader />}
       </div>
     </div>
   );
