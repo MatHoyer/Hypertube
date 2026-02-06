@@ -1,7 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
-import { type TResolutionSchema } from "@hypertube/libs";
+import { type LanguageCode, type TResolutionSchema } from "@hypertube/libs";
 import {
   useCallback,
   useEffect,
@@ -49,9 +49,8 @@ export const VideoPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const [selectedResolution, setSelectedResolution] =
     useState<TResolutionSchema | null>(null);
-  const [selectedSubtitlesLanguage, setSelectedSubtitlesLanguage] = useState<
-    string | null
-  >(null);
+  const [selectedSubtitlesLanguage, setSelectedSubtitlesLanguage] =
+    useState<LanguageCode | null>(null);
 
   useEffect(
     () => setSelectedResolution(streamableResolutions[0] ?? null),
