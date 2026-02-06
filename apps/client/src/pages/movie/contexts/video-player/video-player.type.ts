@@ -1,4 +1,4 @@
-import type { LanguageCode, TResolutionSchema } from "@hypertube/libs";
+import type { TResolutionSchema } from "@hypertube/libs";
 import type { KeyboardEvent } from "react";
 
 export type Speed = 0.5 | 1 | 1.5 | 2;
@@ -40,6 +40,6 @@ export type VideoPlayerContextType = {
   selectedResolution: TResolutionSchema | null;
   setSelectedResolution: (resolution: TResolutionSchema) => void;
 
-  selectedSubtitlesLanguage: LanguageCode | null;
-  setSelectedSubtitlesLanguage: (language: LanguageCode | null) => void;
+  selectedSubtitlesLanguage: string | null;
+  setSelectedSubtitlesLanguage: (language: string | null) => void;
 };

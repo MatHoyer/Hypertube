@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import {
   DownloadStates,
   getUrl,
+  languageCodes,
   putMovieWatchTimerSchemas,
   ROUTES,
   secondsToHMS,
@@ -410,7 +411,8 @@ const VideoPlayer = () => {
               <track
                 src={getUrl(ROUTES.API.STREAMING_MOVIE_SUBTITLES, {
                   tmdbId,
-                  subtitlesLanguage: selectedSubtitlesLanguage,
+                  subtitlesLanguage:
+                    selectedSubtitlesLanguage as keyof typeof languageCodes,
                 })}
                 kind="subtitles"
                 srcLang={selectedSubtitlesLanguage}
