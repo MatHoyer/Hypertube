@@ -6,16 +6,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { TGetMovieSchemas } from "@hypertube/libs";
 import { Download } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { DownloadResolutionSelector } from "./download-selector.resolution";
 import { DownloadSubtitleSelector } from "./download-selector.subtitles";
 
-export const DownloadsSelector: React.FC<{
-  resolutions: NonNullable<TGetMovieSchemas["response"]>["resolutions"];
-  subtitlesLanguages: NonNullable<TGetMovieSchemas["response"]>["subtitles"];
-}> = ({ resolutions, subtitlesLanguages }) => {
+export const DownloadsSelector = () => {
   const { t } = useTranslation();
 
   return (
@@ -27,10 +23,10 @@ export const DownloadsSelector: React.FC<{
         </CardTitle>
         <CardDescription>{t("movie.downloadPage.description")}</CardDescription>
       </CardHeader>
-      <ScrollArea className="h-[calc(72dvh-120px)] md:h-[calc(72dvh-100px)]">
+      <ScrollArea className="h-[calc(72dvh-120px)]">
         <CardContent className="flex flex-col gap-4">
-          <DownloadResolutionSelector resolutions={resolutions} />
-          <DownloadSubtitleSelector subtitles={subtitlesLanguages} />
+          <DownloadResolutionSelector />
+          <DownloadSubtitleSelector />
         </CardContent>
       </ScrollArea>
     </Card>

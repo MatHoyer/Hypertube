@@ -2,9 +2,11 @@ import {
   deleteMovieLikeSchemas,
   deleteMovieSubscribeSchemas,
   getMovieCommentSchemas,
+  getMovieResolutionsSchemas,
   getMovieSchemas,
   getMoviesSchemas,
   getMovieSSESchemas,
+  getMovieSubtitlesSchemas,
   postMovieCommentSchemas,
   postMovieDownloadResolutionSchemas,
   postMovieDownloadSubtitlesSchemas,
@@ -26,8 +28,10 @@ import {
   getMovie,
   getMovieCasting,
   getMovieComments,
+  getMovieResolutions,
   getMovies,
   getMovieSSE,
+  getMovieSubtitles,
   likeMovie,
   putMovieWatchTimer,
   subscribeToMovie,
@@ -57,12 +61,28 @@ moviesRouter.get(
   getMovieSSE
 );
 
+moviesRouter.get(
+  "/:tmdbId/resolutions",
+  isVPNActive,
+  isLogged,
+  urlParamsParser(getMovieResolutionsSchemas.urlParams),
+  getMovieResolutions
+);
+
 moviesRouter.post(
   "/:tmdbId/resolutions/:resolution/download",
   isVPNActive,
   isLogged,
   urlParamsParser(postMovieDownloadResolutionSchemas.urlParams),
   downloadMovie
+);
+
+moviesRouter.get(
+  "/:tmdbId/subtitles",
+  isVPNActive,
+  isLogged,
+  urlParamsParser(getMovieSubtitlesSchemas.urlParams),
+  getMovieSubtitles
 );
 
 moviesRouter.post(

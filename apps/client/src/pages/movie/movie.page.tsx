@@ -8,18 +8,19 @@ import {
   getMovieSchemas,
   getMovieSSESchemas,
   getUrl,
-  groupBy,
   MOVIE_EVENTS,
   ROUTES,
 } from "@hypertube/libs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NotFoundPage } from "../notFound/NotFound.page";
 import { DownloadsSelector } from "./components/downloads-selector/download-selector";
 import MovieInfo from "./components/movie-info";
 import { MovieInteraction } from "./components/movie-interaction";
 import VideoPlayer from "./components/video-player";
+import { ResolutionsProvider } from "./contexts/resolutions/resolutions.provider";
+import { SubtitlesProvider } from "./contexts/subtitles/subtitles.provider";
 import { VideoPlayerProvider } from "./contexts/video-player/video-player.provider";
 import { MoviePageParamsSchema } from "./schemas/urlParams.schema";
 
@@ -30,11 +31,10 @@ const MovieTabs = {
 type TMovieTabs = (typeof MovieTabs)[keyof typeof MovieTabs];
 
 const MoviePage = () => {
-  const { t } = useTranslation();
-  const { tmdbId } = useConvertParams(MoviePageParamsSchema);
-  const [selectedTab, setSelectedTab] = useState<TMovieTabs>(MovieTabs.VIDEO);
-
   const queryClient = useQueryClient();
+  const { tmdbId } = useConvertParams(MoviePageParamsSchema);
+  const { t } = useTranslation();
+  const [selectedTab, setSelectedTab] = useState<TMovieTabs>(MovieTabs.VIDEO);
 
   const {
     data: movie,
@@ -51,40 +51,6 @@ const MoviePage = () => {
         schemas: getMovieSchemas,
       }),
   });
-
-  const filteredResolutions = useMemo(() => {
-    if (!movie) return null;
-    return groupBy(movie.resolutions, "downloadState");
-  }, [movie]);
-
-  const filteredSubtitles = useMemo(() => {
-    if (!movie) return null;
-    return groupBy(movie.subtitles, "downloadState");
-  }, [movie]);
-
-  const streamableResolutions = useMemo(() => {
-    return [
-      ...(filteredResolutions?.DOWNLOADED ?? []),
-      ...(filteredResolutions?.DOWNLOADING ?? []),
-    ];
-  }, [filteredResolutions]);
-
-  const streamableSubtitles = useMemo(() => {
-    return [
-      ...(filteredSubtitles?.DOWNLOADED ?? []),
-      ...(filteredSubtitles?.DOWNLOADING ?? []),
-    ];
-  }, [filteredSubtitles]);
-
-  useEffect(() => {
-    if (
-      filteredResolutions &&
-      !filteredResolutions?.DOWNLOADING?.length &&
-      !filteredResolutions?.DOWNLOADED?.length
-    ) {
-      setSelectedTab(MovieTabs.DOWNLOADS);
-    }
-  }, [filteredResolutions]);
 
   useEffect(() => {
     const eventSource = new EventSource(
@@ -155,46 +121,42 @@ const MoviePage = () => {
   if (isError || !movie) return <NotFoundPage />;
 
   return (
-    <VideoPlayerProvider
-      resolutions={streamableResolutions}
-      subtitles={streamableSubtitles}
-    >
-      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 relative">
-        <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-4 h-fit">
-          <MovieInfo movie={movie.details} />
-        </div>
-        <div className="flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:col-span-2 p-4">
-          <div className="flex flex-col gap-1">
-            <Tabs value={selectedTab}>
-              <TabsList className="bg-transparent">
-                <UniqueFilter
-                  layoutId="movie-tabs"
-                  className="bg-muted/50"
-                  value={selectedTab}
-                  onChange={(value) => setSelectedTab(value as TMovieTabs)}
-                  values={{
-                    [MovieTabs.VIDEO]: t(`movie.tabs.${MovieTabs.VIDEO}`),
-                    [MovieTabs.DOWNLOADS]: t(
-                      `movie.tabs.${MovieTabs.DOWNLOADS}`
-                    ),
-                  }}
-                />
-              </TabsList>
-              <TabsContent value={MovieTabs.VIDEO}>
-                <VideoPlayer />
-              </TabsContent>
-              <TabsContent value={MovieTabs.DOWNLOADS}>
-                <DownloadsSelector
-                  resolutions={movie.resolutions}
-                  subtitlesLanguages={movie.subtitles}
-                />
-              </TabsContent>
-            </Tabs>
-          </div>
-          <MovieInteraction movie={movie} />
-        </div>
+    <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 relative">
+      <div className="lg:col-start-3 lg:row-start-1 lg:sticky lg:top-4 h-fit">
+        <MovieInfo movie={movie.details} />
       </div>
-    </VideoPlayerProvider>
+      <div className="flex flex-col gap-4 lg:col-start-1 lg:row-start-1 lg:col-span-2 p-4">
+        <div className="flex flex-col gap-1">
+          <Tabs value={selectedTab}>
+            <TabsList className="bg-transparent">
+              <UniqueFilter
+                layoutId="movie-tabs"
+                className="bg-muted/50"
+                value={selectedTab}
+                onChange={setSelectedTab}
+                values={{
+                  [MovieTabs.VIDEO]: t(`movie.tabs.${MovieTabs.VIDEO}`),
+                  [MovieTabs.DOWNLOADS]: t(`movie.tabs.${MovieTabs.DOWNLOADS}`),
+                }}
+              />
+            </TabsList>
+            <ResolutionsProvider tmdbId={movie.details.id}>
+              <SubtitlesProvider tmdbId={movie.details.id}>
+                <TabsContent value={MovieTabs.VIDEO}>
+                  <VideoPlayerProvider>
+                    <VideoPlayer />
+                  </VideoPlayerProvider>
+                </TabsContent>
+                <TabsContent value={MovieTabs.DOWNLOADS}>
+                  <DownloadsSelector />
+                </TabsContent>
+              </SubtitlesProvider>
+            </ResolutionsProvider>
+          </Tabs>
+        </div>
+        <MovieInteraction movie={movie} />
+      </div>
+    </div>
   );
 };
 

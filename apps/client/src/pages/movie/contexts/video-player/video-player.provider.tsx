@@ -1,7 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
-import { type TResolutionSchema, type TSubtitleSchema } from "@hypertube/libs";
+import { type TResolutionSchema } from "@hypertube/libs";
 import {
   useCallback,
   useEffect,
@@ -9,15 +9,14 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
+import { useResolutions } from "../resolutions/resolutions.context";
 import { usedKeys } from "./video-player.const";
 import { VideoPlayerContext } from "./video-player.context";
 import type { Speed } from "./video-player.type";
 
-export const VideoPlayerProvider: React.FC<{
-  children: React.ReactNode;
-  resolutions: TResolutionSchema[];
-  subtitles: TSubtitleSchema[];
-}> = ({ children, resolutions, subtitles }) => {
+export const VideoPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const isMobile = useIsMobile();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -46,11 +45,18 @@ export const VideoPlayerProvider: React.FC<{
   const { mouseMoving, mouseClicked, triggerMouseMove, triggerMouseClick } =
     useMouse(videoRef, isMobile ? 3000 : undefined);
 
+  const { streamableResolutions } = useResolutions();
+
   const [selectedResolution, setSelectedResolution] =
     useState<TResolutionSchema | null>(null);
   const [selectedSubtitlesLanguage, setSelectedSubtitlesLanguage] = useState<
     string | null
   >(null);
+
+  useEffect(
+    () => setSelectedResolution(streamableResolutions[0] ?? null),
+    [streamableResolutions]
+  );
 
   // Play/Pause
   useEffect(() => {
@@ -89,7 +95,7 @@ export const VideoPlayerProvider: React.FC<{
       else setMute(false);
       setVolume(volume);
     },
-    [videoRef, setMute, setVolume],
+    [videoRef, setMute, setVolume]
   );
 
   // Fullscreen
@@ -150,7 +156,7 @@ export const VideoPlayerProvider: React.FC<{
       if (percent >= 100) setPlaying(false);
       setProgress(percent);
     },
-    [videoRef, setProgress, setPlaying],
+    [videoRef, setProgress, setPlaying]
   );
 
   const handleSetSpeed = useCallback(
@@ -159,7 +165,7 @@ export const VideoPlayerProvider: React.FC<{
       setSpeed(speed);
       videoRef.current.playbackRate = speed;
     },
-    [videoRef, setSpeed],
+    [videoRef, setSpeed]
   );
 
   // Code shortcuts
@@ -169,17 +175,17 @@ export const VideoPlayerProvider: React.FC<{
         (progress * (videoRef.current?.duration ?? 0)) / 100;
       handleSeek(
         ((currentTimeInSeconds + seconds) / (videoRef.current?.duration ?? 0)) *
-          100,
+          100
       );
     },
-    [videoRef, handleSeek, progress],
+    [videoRef, handleSeek, progress]
   );
 
   const handleJumpVolume = useCallback(
     (units: number) => {
       handleVolumeChange(volume + units);
     },
-    [volume, handleVolumeChange],
+    [volume, handleVolumeChange]
   );
 
   const handleKeyDown = useCallback(
@@ -221,7 +227,7 @@ export const VideoPlayerProvider: React.FC<{
       toggleFullscreen,
       handleJumpVideo,
       handleJumpVolume,
-    ],
+    ]
   );
 
   return (
@@ -260,11 +266,9 @@ export const VideoPlayerProvider: React.FC<{
         triggerMouseMove,
         triggerMouseClick,
 
-        resolutions,
         selectedResolution,
         setSelectedResolution,
 
-        subtitles,
         selectedSubtitlesLanguage,
         setSelectedSubtitlesLanguage,
       }}

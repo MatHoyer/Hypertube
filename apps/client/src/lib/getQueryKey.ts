@@ -31,6 +31,12 @@ const apiRouteQueryKeySchemas = {
       })
       .optional(),
   }),
+  [ROUTES.API.MOVIES_RESOLUTIONS]: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  [ROUTES.API.MOVIES_SUBTITLES]: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
   [ROUTES.API.MOVIES_CASTING]: z.object({
     tmdbId: movieSchema.shape.tmdbId,
   }),
@@ -79,6 +85,14 @@ const queryKeys: {
     if (tmdbId) return [ROUTES.API.MOVIES, tmdbId];
     return [ROUTES.API.MOVIES];
   },
+  [ROUTES.API.MOVIES_RESOLUTIONS]: ({ tmdbId }) => [
+    ROUTES.API.MOVIES_RESOLUTIONS,
+    tmdbId,
+  ],
+  [ROUTES.API.MOVIES_SUBTITLES]: ({ tmdbId }) => [
+    ROUTES.API.MOVIES_SUBTITLES,
+    tmdbId,
+  ],
   [ROUTES.API.MOVIES_CASTING]: ({ tmdbId }) => [
     ROUTES.API.MOVIES_CASTING,
     tmdbId,

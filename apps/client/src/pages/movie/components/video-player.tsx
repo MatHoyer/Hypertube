@@ -327,10 +327,7 @@ const VideoPlayer = () => {
     handleProgress,
     triggerMouseClick,
 
-    resolutions,
     selectedResolution,
-    setSelectedResolution,
-
     selectedSubtitlesLanguage,
 
     progress,
@@ -349,12 +346,6 @@ const VideoPlayer = () => {
   useEffect(() => {
     setMiddleScreenInfo("volume");
   }, [volume, setMiddleScreenInfo]);
-
-  useEffect(() => {
-    if (!selectedResolution && resolutions.length > 0) {
-      setSelectedResolution(resolutions[0]);
-    }
-  }, [selectedResolution, resolutions, setSelectedResolution]);
 
   const updateWatchTimer = useCallback(() => {
     if (!progress) return;

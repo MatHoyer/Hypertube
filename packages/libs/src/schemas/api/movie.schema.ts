@@ -91,8 +91,6 @@ export const getMovieSchemas = {
     .object({
       details: tmdbMovieCompleteSchema,
       id: movieSchema.shape.id,
-      resolutions: z.array(resolutionSchema),
-      subtitles: z.array(subtitleSchema),
       isSubscribed: z.boolean(),
       likesNumber: z.number().int().nonnegative(),
       isLikedByUser: z.boolean(),
@@ -131,6 +129,17 @@ export type TGetMovieSSESchemas = {
   };
 };
 
+export const getMovieResolutionsSchemas = {
+  urlParams: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  response: z.object({ resolutions: z.array(resolutionSchema) }),
+};
+export type TGetMovieResolutionsSchemas = {
+  urlParams: z.infer<typeof getMovieResolutionsSchemas.urlParams>;
+  response: z.infer<typeof getMovieResolutionsSchemas.response>;
+};
+
 export const postMovieDownloadResolutionSchemas = {
   urlParams: z.object({
     tmdbId: movieSchema.shape.tmdbId,
@@ -143,6 +152,17 @@ export const postMovieDownloadResolutionSchemas = {
 export type TPostMovieDownloadResolutionSchemas = {
   urlParams: z.infer<typeof postMovieDownloadResolutionSchemas.urlParams>;
   response: z.infer<typeof postMovieDownloadResolutionSchemas.response>;
+};
+
+export const getMovieSubtitlesSchemas = {
+  urlParams: z.object({
+    tmdbId: movieSchema.shape.tmdbId,
+  }),
+  response: z.object({ subtitles: z.array(subtitleSchema) }),
+};
+export type TGetMovieSubtitlesSchemas = {
+  urlParams: z.infer<typeof getMovieSubtitlesSchemas.urlParams>;
+  response: z.infer<typeof getMovieSubtitlesSchemas.response>;
 };
 
 export const postMovieDownloadSubtitlesSchemas = {
