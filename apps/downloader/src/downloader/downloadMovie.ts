@@ -42,48 +42,53 @@ const checkFileReadability = async (filePath: string) => {
   });
 };
 
-const convertWhileDownloading = async (
-  input: {
-    path: string;
-  },
-  output: {
-    path: string;
-  },
+const convertWhileDownloading = (
+  input: { path: string },
+  output: { path: string },
   handler?: {
     onStart?: () => Promise<void>;
     onProgress?: (progress: { percent: number }) => Promise<void>;
     onEnd?: () => Promise<void>;
     onError?: (error: Error) => Promise<void>;
   }
-) => {
-  const isReadable = await checkFileReadability(input.path);
-  if (!isReadable) {
-    throw new Error("File is not readable");
-  }
-
-  ffmpeg(input.path)
-    .output(output.path)
-    .inputOptions(["-fflags +genpts"])
-    .outputOptions(["-c copy"])
-    .on("start", async () => {
-      hypertubeLogger.info(`Conversion started`);
-      await handler?.onStart?.();
-    })
-    .on("progress", async (progress) => {
-      hypertubeLogger.info(
-        `Conversion progress: ${progress.percent?.toFixed(2) || 0}%`
-      );
-      await handler?.onProgress?.({ percent: progress.percent || 0 });
-    })
-    .on("end", async () => {
-      hypertubeLogger.info(`Conversion ended`);
-      await handler?.onEnd?.();
-    })
-    .on("error", async (error) => {
-      hypertubeLogger.error(`Conversion error: ${error}`);
-      await handler?.onError?.(error);
-    })
-    .run();
+): Promise<void> => {
+  return new Promise((resolvePromise, rejectPromise) => {
+    const run = async () => {
+      const isReadable = await checkFileReadability(input.path);
+      if (!isReadable) {
+        rejectPromise(new Error("File is not readable"));
+        return;
+      }
+      ffmpeg(input.path)
+        .output(output.path)
+        .inputOptions(["-fflags +genpts"])
+        .outputOptions(["-c copy"])
+        .on("start", async () => {
+          hypertubeLogger.info(`Conversion started`);
+          await handler?.onStart?.();
+        })
+        .on("progress", async (progress) => {
+          hypertubeLogger.info(
+            `Conversion progress: ${progress.percent?.toFixed(2) || 0}%`
+          );
+          await handler?.onProgress?.({ percent: progress.percent || 0 });
+        })
+        .on("end", async () => {
+          hypertubeLogger.info(`Conversion ended`);
+          await handler?.onEnd?.();
+          resolvePromise();
+        })
+        .on("error", async (error) => {
+          hypertubeLogger.error(`Conversion error: ${error}`);
+          await handler?.onError?.(error);
+          rejectPromise(
+            error instanceof Error ? error : new Error(String(error))
+          );
+        })
+        .run();
+    };
+    void run();
+  });
 };
 
 const handleSrtFile = async (
@@ -173,15 +178,12 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     hypertubeLogger.info(`Waiting for file to be downloaded ${target}`);
     await waitFile(target, 1000000);
 
-    const linkPath = path.join(
-      getResolutionPath({
-        movieId: movie.tmdbId,
-        resolution,
-        forTransmission: true,
-        filename: "movie.mp4",
-      }),
-      mp4File.name
-    );
+    const linkPath = getResolutionPath({
+      movieId: movie.tmdbId,
+      resolution,
+      forTransmission: true,
+      filename: "movie.mp4",
+    });
     try {
       const dir = path.dirname(linkPath);
       await fs.promises.mkdir(dir, { recursive: true });
@@ -226,54 +228,59 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
 
     hypertubeLogger.info(`Movie downloaded started successfully`);
     return new Promise<void>((resolve, reject) => {
-      setInterval(async () => {
+      const intervalId = setInterval(async () => {
         try {
+          hypertubeLogger.info("Checking torrent status");
           const res = await downloader.get(result.id);
           const torrent = res.torrents[0];
-          if (!torrent) reject(new Error("Torrent not found"));
+          if (!torrent) {
+            clearInterval(intervalId);
+            reject(new Error("Torrent not found"));
+            return;
+          }
+          hypertubeLogger.info(`Torrent found: ${torrent.name}`);
 
           const name = torrent.name;
           const percentDone = torrent.percentDone * 100;
           const downloadSpeed = torrent.rateDownload / 1024; // Ko/s
           const status = torrent.status;
 
+          hypertubeLogger.info(`Status: ${status}`);
           if (status === Status.SEEDING || status === Status.STOPPED) {
-            await waitFile(linkPath);
+            const endFile = getResolutionPath({
+              movieId: movie.tmdbId,
+              resolution,
+              forTransmission: true,
+              filename: mp4File.name,
+            });
+            await waitFile(endFile);
+            hypertubeLogger.info("Torrent downloaded, starting cleanup");
 
             isConverting = true;
-            await convertWhileDownloading(
-              {
-                path: linkPath,
-              },
-              {
-                path: path.join(
-                  getResolutionPath({
+            clearInterval(intervalId);
+            try {
+              await convertWhileDownloading(
+                { path: endFile },
+                {
+                  path: getResolutionPath({
                     movieId: movie.tmdbId,
                     resolution,
                     forTransmission: false,
+                    filename: "movie.converted.mp4",
                   }),
-                  "movie.converted.mp4"
-                ),
-              },
-              {
-                onEnd: async () => {
-                  await replaceCurrentMovie();
-                  await fs.promises.rm(linkPath, {
-                    force: true,
-                  });
-                  // To keep the movie for seeding
-                  // await fs.promises.rm(
-                  //   `./downloads-transmission/${movie.tmdbId}`,
-                  //   {
-                  //     recursive: true,
-                  //     force: true,
-                  //   },
-                  // );
                 },
-              }
-            );
-
-            resolve();
+                {
+                  onEnd: async () => {
+                    await replaceCurrentMovie();
+                    await fs.promises.rm(linkPath, { force: true });
+                  },
+                }
+              );
+              resolve();
+            } catch (err) {
+              reject(err instanceof Error ? err : new Error(String(err)));
+            }
+            return;
           }
 
           hypertubeLogger.info(
@@ -287,18 +294,14 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
             isConverting = true;
             try {
               await convertWhileDownloading(
+                { path: linkPath },
                 {
-                  path: linkPath,
-                },
-                {
-                  path: path.join(
-                    getResolutionPath({
-                      movieId: movie.tmdbId,
-                      resolution,
-                      forTransmission: false,
-                    }),
-                    "movie.converted.mp4"
-                  ),
+                  path: getResolutionPath({
+                    movieId: movie.tmdbId,
+                    resolution,
+                    forTransmission: false,
+                    filename: "movie.converted.mp4",
+                  }),
                 },
                 {
                   onEnd: async () => {
@@ -324,15 +327,15 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
                   },
                 }
               );
-              isConverting = false;
             } catch (error) {
               hypertubeLogger.error(
                 `convert on the fly: Error converting movie ${error}`
               );
-              isConverting = false;
             }
+            isConverting = false;
           }
         } catch (error) {
+          clearInterval(intervalId);
           reject(new Error(`Error in ending download: ${error}`));
         }
       }, 30000);
