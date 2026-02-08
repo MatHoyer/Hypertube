@@ -178,6 +178,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
         movieId: movie.tmdbId,
         resolution,
         forTransmission: true,
+        filename: "movie.mp4",
       }),
       mp4File.name
     );
@@ -199,17 +200,6 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       hypertubeLogger.error(`Error handling SRT files ${error}`);
     }
 
-    await prisma.resolution.update({
-      where: {
-        movieId_resolution: {
-          movieId: movie.id,
-          resolution: resolution,
-        },
-      },
-      data: {
-        downloadState: DownloadStates.DOWNLOADING,
-      },
-    });
     job.updateProgress(0);
     let isConverting = false;
     let isFirstConversion = true;
@@ -268,6 +258,9 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
               {
                 onEnd: async () => {
                   await replaceCurrentMovie();
+                  await fs.promises.rm(linkPath, {
+                    force: true,
+                  });
                   // To keep the movie for seeding
                   // await fs.promises.rm(
                   //   `./downloads-transmission/${movie.tmdbId}`,
@@ -312,6 +305,17 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
                     await replaceCurrentMovie();
                     if (isFirstConversion) {
                       isFirstConversion = false;
+                      await prisma.resolution.update({
+                        where: {
+                          movieId_resolution: {
+                            movieId: movie.id,
+                            resolution: resolution,
+                          },
+                        },
+                        data: {
+                          downloadState: DownloadStates.DOWNLOADING,
+                        },
+                      });
                       await notifySubscribers(
                         movie.id,
                         DownloadStates.DOWNLOADING

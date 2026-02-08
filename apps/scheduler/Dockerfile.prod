@@ -24,21 +24,19 @@ FROM node:22-alpine AS runner
 
 WORKDIR /hypertube
 
-COPY --from=builder --chown=node:node /hypertube/node_modules ./node_modules
-COPY --from=builder --chown=node:node /hypertube/apps/scheduler/node_modules ./apps/scheduler/node_modules
-COPY --from=builder --chown=node:node /hypertube/packages/libs/node_modules ./packages/libs/node_modules
-COPY --from=builder --chown=node:node /hypertube/packages/server-core/node_modules ./packages/server-core/node_modules
+COPY --from=builder /hypertube/node_modules ./node_modules
+COPY --from=builder /hypertube/apps/scheduler/node_modules ./apps/scheduler/node_modules
+COPY --from=builder /hypertube/packages/libs/node_modules ./packages/libs/node_modules
+COPY --from=builder /hypertube/packages/server-core/node_modules ./packages/server-core/node_modules
 
-COPY --from=builder --chown=node:node /hypertube/apps/scheduler/dist ./apps/scheduler/dist
-COPY --from=builder --chown=node:node /hypertube/packages/libs/dist ./packages/libs/dist
-COPY --from=builder --chown=node:node /hypertube/packages/server-core/dist ./packages/server-core/dist
+COPY --from=builder /hypertube/apps/scheduler/dist ./apps/scheduler/dist
+COPY --from=builder /hypertube/packages/libs/dist ./packages/libs/dist
+COPY --from=builder /hypertube/packages/server-core/dist ./packages/server-core/dist
 
-COPY --from=builder --chown=node:node /hypertube/apps/scheduler/package.json ./apps/scheduler/package.json
-COPY --from=builder --chown=node:node /hypertube/packages/libs/package.json ./packages/libs/package.json
-COPY --from=builder --chown=node:node /hypertube/packages/server-core/package.json ./packages/server-core/package.json
+COPY --from=builder /hypertube/apps/scheduler/package.json ./apps/scheduler/package.json
+COPY --from=builder /hypertube/packages/libs/package.json ./packages/libs/package.json
+COPY --from=builder /hypertube/packages/server-core/package.json ./packages/server-core/package.json
 
 WORKDIR /hypertube/apps/scheduler
-
-USER node
 
 CMD ["node", "./dist/main.js"]

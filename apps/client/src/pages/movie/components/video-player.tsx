@@ -366,7 +366,11 @@ const VideoPlayer = () => {
     });
   }, [tmdbId, progress, videoRef, queryClient]);
 
-  useEffect(() => updateWatchTimer(), [location.pathname, updateWatchTimer]);
+  useEffect(
+    () => updateWatchTimer(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [location.pathname]
+  );
 
   useEffect(() => {
     window.addEventListener("beforeunload", updateWatchTimer);

@@ -17,6 +17,8 @@ services:
       dockerfile: ./apps/server/Dockerfile.prod
     env_file: .env
     environment:
+      - PUID=1000
+      - PGID=1000
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - NODE_ENV=PROD
       - YTS_PROXY_URL=http://vpn:${YTS_PROXY_PORT}
@@ -43,6 +45,8 @@ services:
       dockerfile: ./apps/downloader/Dockerfile.prod
     env_file: .env
     environment:
+      - PUID=1000
+      - PGID=1000
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - REDIS_HOST=redis
       - NODE_ENV=PROD
@@ -62,6 +66,8 @@ services:
       dockerfile: ./apps/scheduler/Dockerfile.prod
     env_file: .env
     environment:
+      - PUID=1000
+      - PGID=1000
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - REDIS_HOST=redis
       - NODE_ENV=PROD
@@ -77,6 +83,8 @@ services:
       dockerfile: ./apps/yts-api-proxy/Dockerfile.prod
     env_file: .env
     environment:
+      - PUID=1000
+      - PGID=1000
       - PUPPETEER_SKIP_DOWNLOAD=true
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
       - REDIS_HOST=redis
