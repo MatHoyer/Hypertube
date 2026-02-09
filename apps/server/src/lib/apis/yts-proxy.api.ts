@@ -1,4 +1,5 @@
 import {
+  hypertubeLogger,
   TMovieSchema,
   TSubtitleSchema,
   TYtsMovieTorrentSchema,
@@ -18,12 +19,20 @@ export class YtsProxyApi {
     };
   }
 
-  private async fetch<T>(url: string, options: RequestInit = {}): Promise<T> {
-    const response = await fetch(this.ytsApiUrl + url, {
-      ...this.fetchOptions,
-      ...options,
-    });
-    return response.json() as Promise<T>;
+  private async fetch<T>(
+    url: string,
+    options: RequestInit = {}
+  ): Promise<T | null> {
+    try {
+      const response = await fetch(this.ytsApiUrl + url, {
+        ...this.fetchOptions,
+        ...options,
+      });
+      return response.json() as Promise<T>;
+    } catch {
+      hypertubeLogger.error(`Error fetching ${url}`);
+      return null;
+    }
   }
 
   public async getResolutions(imdbId: string) {

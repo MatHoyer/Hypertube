@@ -1,4 +1,5 @@
 import {
+  hypertubeLogger,
   languageCodes,
   tmdbDefaultSort,
   tmdbMovieCastingSchema,
@@ -29,12 +30,20 @@ export class TmdbApi {
     };
   }
 
-  private async fetch<T>(url: string, options: RequestInit = {}): Promise<T> {
-    const response = await fetch(this.apiUrl + url, {
-      ...this.fetchOptions,
-      ...options,
-    });
-    return response.json() as Promise<T>;
+  private async fetch<T>(
+    url: string,
+    options: RequestInit = {}
+  ): Promise<T | null> {
+    try {
+      const response = await fetch(this.apiUrl + url, {
+        ...this.fetchOptions,
+        ...options,
+      });
+      return response.json() as Promise<T>;
+    } catch {
+      hypertubeLogger.error(`Error fetching ${url}`);
+      return null;
+    }
   }
 
   private async getMovieDetailsByTmdbId(
@@ -44,6 +53,7 @@ export class TmdbApi {
     const response = await this.fetch<TTmdbMovieSchema>(
       `/movie/${tmdbId}?language=${language}`
     );
+    if (!response) return { id: tmdbId, hasDetails: false as const };
 
     response.poster_path = response.poster_path
       ? `${this.imgUrl}${response.poster_path}`
@@ -193,6 +203,7 @@ export class TmdbApi {
     const response = await this.fetch<z.infer<typeof responseSchema>>(
       `/movie/${movieId}/credits`
     );
+    if (!response) return null;
 
     response.cast.map((person) => {
       person.profile_path = person.profile_path

@@ -7,4 +7,4 @@ COPY packages/server-core/prisma.config.ts ./prisma.config.ts
 
 RUN npm install prisma@7.0.0 dotenv
 
-CMD ["npx", "prisma", "migrate",  "deploy"]
+CMD ["npx", "prisma", "migrate", "deploy"]

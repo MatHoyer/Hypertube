@@ -249,6 +249,8 @@ export const getMovieResolutions = async (
   const ytsProxyApi = new YtsProxyApi();
 
   const resolutions = await ytsProxyApi.getResolutions(movie.imdbId);
+  if (!resolutions) return c.json({ resolutions: [] }, 200);
+
   await prisma.resolution.createMany({
     data: resolutions.map((resolution) => ({
       movieId: movie.id,
@@ -345,6 +347,8 @@ export const getMovieSubtitles = async (
   const ytsProxyApi = new YtsProxyApi();
 
   const subtitles = await ytsProxyApi.getSubtitles(movie.imdbId);
+  if (!subtitles) return c.json({ subtitles: [] }, 200);
+
   await prisma.subtitle.createMany({
     data: subtitles.map((subtitle) => ({
       movieId: movie.id,
