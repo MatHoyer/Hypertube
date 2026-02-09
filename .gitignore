@@ -7,9 +7,6 @@ dist/
 # Front
 .vite/
 
-# Back
-**/prisma/migrations
-
 # Downloads
 **/downloads/**
 **/server/downloads

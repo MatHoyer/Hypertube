@@ -20,13 +20,13 @@ services:
     image: linuxserver/transmission
     env_file: .env
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=0
+      - PGID=0
       - TZ=Europe/Paris
       - TRANSMISSION_RPC_ENABLED=true
       - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=false
     volumes:
-      - ./apps/downloader/config:/config:ro
+      - ./apps/downloader/config/settings.json:/config/settings.json:ro
       - movies_data:/downloads
       - movies_data_transmission:/downloads-transmission
     network_mode: container:vpn
