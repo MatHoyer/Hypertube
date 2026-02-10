@@ -68,12 +68,9 @@ export const DownloadSubtitleDialog: React.FC<{
         </DialogTitle>
       </DialogHeader>
       <DialogDescription>
-        <Typography functionnal="wrap">
-          {t("movie.downloadPage.downloadSubtitle.description.1")}
-        </Typography>
-        <Typography functionnal="wrap">
-          {t("movie.downloadPage.downloadSubtitle.description.2")}
-        </Typography>
+        {t("movie.downloadPage.downloadSubtitle.description.1")}
+        <br />
+        {t("movie.downloadPage.downloadSubtitle.description.2")}
       </DialogDescription>
       <SubtitleDisplay subtitle={subtitle} />
       <GlobalDialogFooter

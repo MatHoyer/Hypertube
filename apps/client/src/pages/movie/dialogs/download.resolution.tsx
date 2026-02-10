@@ -83,12 +83,9 @@ export const DownloadResolutionDialog: React.FC<{
         </DialogTitle>
       </DialogHeader>
       <DialogDescription>
-        <Typography functionnal="wrap">
-          {t("movie.downloadPage.downloadResolution.description.1")}
-        </Typography>
-        <Typography functionnal="wrap">
-          {t("movie.downloadPage.downloadResolution.description.2")}
-        </Typography>
+        {t("movie.downloadPage.downloadResolution.description.1")}
+        <br />
+        {t("movie.downloadPage.downloadResolution.description.2")}
       </DialogDescription>
       <ResolutionDisplay resolution={resolution} />
       <GlobalDialogFooter
