@@ -1,5 +1,4 @@
 import {
-  hypertubeLogger,
   languageCodes,
   tmdbDefaultSort,
   tmdbMovieCastingSchema,
@@ -9,48 +8,28 @@ import {
   TTmdbMovieSchema,
   TTmdbSort,
 } from "@hypertube/libs";
-import { env } from "@hypertube/server-core";
+import { ApiBase, env } from "@hypertube/server-core";
 import z from "zod";
 
-export class TmdbApi {
-  private readonly apiKey: string;
-  private readonly apiUrl: string;
+export class TmdbApi extends ApiBase {
   private readonly imgUrl: string;
-  private readonly fetchOptions: RequestInit;
 
   constructor() {
-    this.apiKey = env.TMDB_TOKEN;
-    this.apiUrl = "https://api.themoviedb.org/3";
-    this.imgUrl = "https://image.tmdb.org/t/p/w342";
-    this.fetchOptions = {
+    super("https://api.themoviedb.org/3", {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${env.TMDB_TOKEN}`,
       },
-    };
-  }
+    });
 
-  private async fetch<T>(
-    url: string,
-    options: RequestInit = {}
-  ): Promise<T | null> {
-    try {
-      const response = await fetch(this.apiUrl + url, {
-        ...this.fetchOptions,
-        ...options,
-      });
-      return response.json() as Promise<T>;
-    } catch {
-      hypertubeLogger.error(`Error fetching ${url}`);
-      return null;
-    }
+    this.imgUrl = "https://image.tmdb.org/t/p/w342";
   }
 
   private async getMovieDetailsByTmdbId(
     tmdbId: number,
     language: keyof typeof languageCodes
   ) {
-    const response = await this.fetch<TTmdbMovieSchema>(
+    const response = await super.fetch<TTmdbMovieSchema>(
       `/movie/${tmdbId}?language=${language}`
     );
     if (!response) return { id: tmdbId, hasDetails: false as const };
@@ -105,7 +84,7 @@ export class TmdbApi {
     });
 
     if (category) {
-      const response = await this.fetch<z.infer<typeof responseSchema>>(
+      const response = await super.fetch<z.infer<typeof responseSchema>>(
         `/movie/${category}?page=${page}&language=${language}`
       );
       return responseSchema.parse(response);
@@ -113,7 +92,7 @@ export class TmdbApi {
 
     const genresString = genres?.join(",");
 
-    const response = await this.fetch<z.infer<typeof responseSchema>>(
+    const response = await super.fetch<z.infer<typeof responseSchema>>(
       `/discover/movie?language=${language}&page=${page}&sort_by=${sort}&with_genres=${genresString}`
     );
 
@@ -139,7 +118,7 @@ export class TmdbApi {
         })
       ),
     });
-    const response = await this.fetch<z.infer<typeof responseSchema>>(
+    const response = await super.fetch<z.infer<typeof responseSchema>>(
       `/search/movie?query=${query}&language=${language}&page=${page}`
     );
     return responseSchema.parse(response);
@@ -200,7 +179,7 @@ export class TmdbApi {
         .extend({ department: z.string() })
         .array(),
     });
-    const response = await this.fetch<z.infer<typeof responseSchema>>(
+    const response = await super.fetch<z.infer<typeof responseSchema>>(
       `/movie/${movieId}/credits`
     );
     if (!response) return null;

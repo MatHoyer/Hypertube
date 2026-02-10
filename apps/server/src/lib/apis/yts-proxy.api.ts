@@ -1,42 +1,21 @@
 import {
-  hypertubeLogger,
   TMovieSchema,
   TSubtitleSchema,
   TYtsMovieTorrentSchema,
 } from "@hypertube/libs";
-import { env } from "@hypertube/server-core";
+import { ApiBase, env } from "@hypertube/server-core";
 
-export class YtsProxyApi {
-  private readonly ytsApiUrl: string;
-  private readonly fetchOptions: RequestInit;
-
+export class YtsProxyApi extends ApiBase {
   constructor() {
-    this.ytsApiUrl = env.YTS_PROXY_URL;
-    this.fetchOptions = {
+    super(env.YTS_PROXY_URL, {
       headers: {
         "Content-Type": "application/json",
       },
-    };
-  }
-
-  private async fetch<T>(
-    url: string,
-    options: RequestInit = {}
-  ): Promise<T | null> {
-    try {
-      const response = await fetch(this.ytsApiUrl + url, {
-        ...this.fetchOptions,
-        ...options,
-      });
-      return response.json() as Promise<T>;
-    } catch {
-      hypertubeLogger.error(`Error fetching ${url}`);
-      return null;
-    }
+    });
   }
 
   public async getResolutions(imdbId: string) {
-    const response = await this.fetch<TYtsMovieTorrentSchema[]>(
+    const response = await super.fetch<TYtsMovieTorrentSchema[]>(
       `/resolutions/${imdbId}`
     );
     return response;
@@ -50,7 +29,7 @@ export class YtsProxyApi {
     targetResolution: string;
   }) {
     if (!movie.imdbId) throw new Error("Movie has no IMDB ID");
-    await this.fetch<{
+    await super.fetch<{
       message: string;
     }>(`/resolutions/download`, {
       method: "POST",
@@ -62,7 +41,7 @@ export class YtsProxyApi {
   }
 
   public async getSubtitles(imdbId: string) {
-    const response = await this.fetch<
+    const response = await super.fetch<
       {
         language: string;
         rating: number;
@@ -80,7 +59,7 @@ export class YtsProxyApi {
     subtitles: TSubtitleSchema;
     tmdbId: number;
   }) {
-    await this.fetch<{
+    await super.fetch<{
       message: string;
     }>(`/subtitles/download`, {
       method: "POST",
