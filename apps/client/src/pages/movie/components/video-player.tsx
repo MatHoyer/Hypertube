@@ -316,6 +316,7 @@ const VideoPlayer = () => {
 
   const {
     videoRef,
+    setVideoRef,
     containerRef,
 
     handleKeyDown,
@@ -331,6 +332,7 @@ const VideoPlayer = () => {
     selectedSubtitlesLanguage,
 
     progress,
+    setWatchedTimestamp,
   } = useVideoPlayer();
 
   const isMobile = useIsMobile();
@@ -347,31 +349,35 @@ const VideoPlayer = () => {
     setMiddleScreenInfo("volume");
   }, [volume, setMiddleScreenInfo]);
 
+  const progressRef = useRef(progress);
+  progressRef.current = progress;
+
   const updateWatchTimer = useCallback(() => {
-    if (!progress) return;
+    if (!progressRef.current) return;
+
+    const duration = videoRef.current?.duration ?? 0;
+    const timestamp = Math.round((progressRef.current * duration) / 100);
 
     axiosFetch({
       method: "PUT",
       url: getUrl(ROUTES.API.MOVIES_WATCH_TIMER, { tmdbId }),
       schemas: putMovieWatchTimerSchemas,
       data: {
-        duration: Math.round(videoRef.current?.duration ?? 0),
-        timestamp: Math.round(
-          (progress * (videoRef.current?.duration ?? 0)) / 100
-        ),
+        duration: Math.round(duration),
+        timestamp,
       },
     });
+
+    setWatchedTimestamp(timestamp);
     queryClient.invalidateQueries({
       queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER),
     });
-  }, [tmdbId, progress, videoRef, queryClient]);
-
-  const updateWatchTimerRef = useRef(updateWatchTimer);
-  updateWatchTimerRef.current = updateWatchTimer;
+  }, [tmdbId, progressRef, videoRef, queryClient, setWatchedTimestamp]);
 
   useEffect(() => {
-    return () => updateWatchTimerRef.current();
-  }, []);
+    const interval = setInterval(updateWatchTimer, 10000);
+    return () => clearInterval(interval);
+  }, [updateWatchTimer]);
 
   useEffect(() => {
     window.addEventListener("beforeunload", updateWatchTimer);
@@ -399,7 +405,9 @@ const VideoPlayer = () => {
       {selectedResolution ? (
         <>
           <video
-            ref={videoRef}
+            ref={(ref) =>
+              ref && !videoRef.current ? setVideoRef(ref) : undefined
+            }
             className="size-full relative"
             onTimeUpdate={handleProgress}
             controls={false}

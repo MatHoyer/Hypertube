@@ -5,6 +5,7 @@ export type Speed = 0.5 | 1 | 1.5 | 2;
 
 export type VideoPlayerContextType = {
   videoRef: React.RefObject<HTMLVideoElement | null>;
+  setVideoRef: (ref: HTMLVideoElement) => void;
   containerRef: React.RefObject<HTMLDivElement | null>;
 
   handleKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void;
@@ -28,6 +29,8 @@ export type VideoPlayerContextType = {
   handleProgress: () => void;
   handleSeek: (percent: number) => void;
   handleJumpVideo: (seconds: number) => void;
+  watchedTimestamp: number;
+  setWatchedTimestamp: (timestamp: number) => void;
 
   speed: Speed;
   handleSetSpeed: (speed: Speed) => void;

@@ -12,6 +12,7 @@ import {
   ROUTES,
 } from "@hypertube/libs";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NotFoundPage } from "../notFound/NotFound.page";
@@ -36,6 +37,11 @@ const MoviePage = () => {
   const { t } = useTranslation();
   const [selectedTab, setSelectedTab] = useState<TMovieTabs>(MovieTabs.VIDEO);
 
+  const [watchedTimestamp, setWatchedTimestamp] = useQueryState(
+    "t",
+    parseAsInteger.withDefault(0)
+  );
+
   const {
     data: movie,
     isLoading,
@@ -51,6 +57,12 @@ const MoviePage = () => {
         schemas: getMovieSchemas,
       }),
   });
+
+  useEffect(() => {
+    if (!movie) return;
+    if (watchedTimestamp) return;
+    setWatchedTimestamp(movie.watchedTimestamp);
+  }, [movie, watchedTimestamp, setWatchedTimestamp]);
 
   useEffect(() => {
     const eventSource = new EventSource(
@@ -138,7 +150,10 @@ const MoviePage = () => {
             <ResolutionsProvider tmdbId={movie.details.id}>
               <SubtitlesProvider tmdbId={movie.details.id}>
                 <TabsContent value={MovieTabs.VIDEO}>
-                  <VideoPlayerProvider>
+                  <VideoPlayerProvider
+                    watchedTimestamp={watchedTimestamp}
+                    setWatchedTimestamp={setWatchedTimestamp}
+                  >
                     <VideoPlayer />
                   </VideoPlayerProvider>
                 </TabsContent>
