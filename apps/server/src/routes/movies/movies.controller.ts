@@ -249,17 +249,17 @@ export const getMovieResolutions = async (
   const ytsProxyApi = new YtsProxyApi();
 
   const resolutions = await ytsProxyApi.getResolutions(movie.imdbId);
-  if (!resolutions) return c.json({ resolutions: [] }, 200);
-
-  await prisma.resolution.createMany({
-    data: resolutions.map((resolution) => ({
-      movieId: movie.id,
-      resolution: resolution.quality,
-      size: resolution.size,
-      provider: Providers.YTS,
-    })),
-    skipDuplicates: true,
-  });
+  if (resolutions) {
+    await prisma.resolution.createMany({
+      data: resolutions.map((resolution) => ({
+        movieId: movie.id,
+        resolution: resolution.quality,
+        size: resolution.size,
+        provider: Providers.YTS,
+      })),
+      skipDuplicates: true,
+    });
+  }
 
   const dbResolutions = await prisma.resolution.findMany({
     where: {
@@ -347,17 +347,17 @@ export const getMovieSubtitles = async (
   const ytsProxyApi = new YtsProxyApi();
 
   const subtitles = await ytsProxyApi.getSubtitles(movie.imdbId);
-  if (!subtitles) return c.json({ subtitles: [] }, 200);
-
-  await prisma.subtitle.createMany({
-    data: subtitles.map((subtitle) => ({
-      movieId: movie.id,
-      language: subtitle.language,
-      rating: subtitle.rating,
-      downloadLink: subtitle.link,
-    })),
-    skipDuplicates: true,
-  });
+  if (subtitles) {
+    await prisma.subtitle.createMany({
+      data: subtitles.map((subtitle) => ({
+        movieId: movie.id,
+        language: subtitle.language,
+        rating: subtitle.rating,
+        downloadLink: subtitle.link,
+      })),
+      skipDuplicates: true,
+    });
+  }
 
   const dbSubtitles = await prisma.subtitle.findMany({
     where: {
