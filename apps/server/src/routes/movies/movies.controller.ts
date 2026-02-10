@@ -180,6 +180,16 @@ export const getMovie = async (
   });
   const isSubscribed = !!subscription;
 
+  const watchTimer = await prisma.movieHistory.findUnique({
+    where: {
+      movieId_userId: {
+        movieId: dbMovie.id,
+        userId: user.id,
+      },
+    },
+  });
+  const watchedTimestamp = watchTimer ? watchTimer.timestamp : 0;
+
   return c.json(
     getMovieSchemas.response.parse({
       details: tmdbMovie,
@@ -187,6 +197,7 @@ export const getMovie = async (
       isSubscribed,
       likesNumber,
       isLikedByUser,
+      watchedTimestamp,
     }),
     200
   );

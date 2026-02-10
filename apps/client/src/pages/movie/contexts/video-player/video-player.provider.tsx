@@ -14,13 +14,34 @@ import { usedKeys } from "./video-player.const";
 import { VideoPlayerContext } from "./video-player.context";
 import type { Speed } from "./video-player.type";
 
-export const VideoPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const VideoPlayerProvider: React.FC<{
+  watchedTimestamp: number;
+  setWatchedTimestamp: (timestamp: number) => void;
+  children: React.ReactNode;
+}> = ({ watchedTimestamp, setWatchedTimestamp, children }) => {
   const isMobile = useIsMobile();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const setVideoRef = useCallback(
+    (ref: HTMLVideoElement) => {
+      videoRef.current = ref;
+
+      if (watchedTimestamp) {
+        if (videoRef.current.duration < watchedTimestamp) {
+          videoRef.current.currentTime = videoRef.current.duration;
+          setWatchedTimestamp(videoRef.current.duration);
+        } else if (watchedTimestamp < 0) {
+          videoRef.current.currentTime = 0;
+          setWatchedTimestamp(0);
+        } else {
+          videoRef.current.currentTime = watchedTimestamp;
+        }
+      }
+    },
+    [watchedTimestamp, setWatchedTimestamp]
+  );
 
   const {
     value: muted,
@@ -235,6 +256,7 @@ export const VideoPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
     <VideoPlayerContext.Provider
       value={{
         videoRef,
+        setVideoRef,
         containerRef,
 
         handleKeyDown,
@@ -258,6 +280,8 @@ export const VideoPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
         handleProgress,
         handleSeek,
         handleJumpVideo,
+        watchedTimestamp,
+        setWatchedTimestamp,
 
         speed,
         handleSetSpeed,
