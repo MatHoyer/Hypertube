@@ -15,7 +15,7 @@ export class YtsProxyApi extends ApiBase {
   }
 
   public async getResolutions(imdbId: string) {
-    const response = await super.fetch<TYtsMovieTorrentSchema[]>(
+    const response = await this.fetch<TYtsMovieTorrentSchema[]>(
       `/resolutions/${imdbId}`
     );
     return response;
@@ -29,7 +29,7 @@ export class YtsProxyApi extends ApiBase {
     targetResolution: string;
   }) {
     if (!movie.imdbId) throw new Error("Movie has no IMDB ID");
-    await super.fetch<{
+    await this.fetch<{
       message: string;
     }>(`/resolutions/download`, {
       method: "POST",
@@ -41,7 +41,7 @@ export class YtsProxyApi extends ApiBase {
   }
 
   public async getSubtitles(imdbId: string) {
-    const response = await super.fetch<
+    const response = await this.fetch<
       {
         language: string;
         rating: number;
@@ -59,7 +59,7 @@ export class YtsProxyApi extends ApiBase {
     subtitles: TSubtitleSchema;
     tmdbId: number;
   }) {
-    await super.fetch<{
+    await this.fetch<{
       message: string;
     }>(`/subtitles/download`, {
       method: "POST",

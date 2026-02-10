@@ -29,7 +29,7 @@ export class TmdbApi extends ApiBase {
     tmdbId: number,
     language: keyof typeof languageCodes
   ) {
-    const response = await super.fetch<TTmdbMovieSchema>(
+    const response = await this.fetch<TTmdbMovieSchema>(
       `/movie/${tmdbId}?language=${language}`
     );
     if (!response) return { id: tmdbId, hasDetails: false as const };
@@ -84,7 +84,7 @@ export class TmdbApi extends ApiBase {
     });
 
     if (category) {
-      const response = await super.fetch<z.infer<typeof responseSchema>>(
+      const response = await this.fetch<z.infer<typeof responseSchema>>(
         `/movie/${category}?page=${page}&language=${language}`
       );
       return responseSchema.parse(response);
@@ -92,7 +92,7 @@ export class TmdbApi extends ApiBase {
 
     const genresString = genres?.join(",");
 
-    const response = await super.fetch<z.infer<typeof responseSchema>>(
+    const response = await this.fetch<z.infer<typeof responseSchema>>(
       `/discover/movie?language=${language}&page=${page}&sort_by=${sort}&with_genres=${genresString}`
     );
 
@@ -118,7 +118,7 @@ export class TmdbApi extends ApiBase {
         })
       ),
     });
-    const response = await super.fetch<z.infer<typeof responseSchema>>(
+    const response = await this.fetch<z.infer<typeof responseSchema>>(
       `/search/movie?query=${query}&language=${language}&page=${page}`
     );
     return responseSchema.parse(response);
@@ -179,7 +179,7 @@ export class TmdbApi extends ApiBase {
         .extend({ department: z.string() })
         .array(),
     });
-    const response = await super.fetch<z.infer<typeof responseSchema>>(
+    const response = await this.fetch<z.infer<typeof responseSchema>>(
       `/movie/${movieId}/credits`
     );
     if (!response) return null;

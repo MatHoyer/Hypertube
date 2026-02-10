@@ -350,6 +350,12 @@ const VideoPlayer = () => {
   const updateWatchTimer = useCallback(() => {
     if (!progress) return;
 
+    console.log(
+      "updateWatchTimer",
+      Math.round(videoRef.current?.duration ?? 0),
+      Math.round((progress * (videoRef.current?.duration ?? 0)) / 100)
+    );
+
     axiosFetch({
       method: "PUT",
       url: getUrl(ROUTES.API.MOVIES_WATCH_TIMER, { tmdbId }),
