@@ -1,4 +1,5 @@
 import AnimateApparition from "@/components/animated/animate-apparition/AnimateApparition";
+import { AppLoader } from "@/components/ui/app-loader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -325,6 +326,7 @@ const VideoPlayer = () => {
     handleProgress,
     triggerMouseClick,
 
+    isResolutionsLoading,
     selectedResolution,
     selectedSubtitlesLanguage,
 
@@ -436,9 +438,13 @@ const VideoPlayer = () => {
         </>
       ) : (
         <div className="flex items-center justify-center size-full">
-          <Typography textColor="muted">
-            {t("movie.player.noResolutionSelected")}
-          </Typography>
+          {isResolutionsLoading ? (
+            <AppLoader />
+          ) : (
+            <Typography textColor="muted">
+              {t("movie.player.noResolutionSelected")}
+            </Typography>
+          )}
         </div>
       )}
     </div>

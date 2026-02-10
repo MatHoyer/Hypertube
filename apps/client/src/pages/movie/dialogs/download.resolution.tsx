@@ -68,7 +68,7 @@ export const DownloadResolutionDialog: React.FC<{
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
+        queryKey: getQueryKey(ROUTES.API.MOVIES_RESOLUTIONS, { tmdbId }),
       });
       closeDialog();
     },

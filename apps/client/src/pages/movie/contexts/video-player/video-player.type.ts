@@ -37,6 +37,7 @@ export type VideoPlayerContextType = {
   triggerMouseMove: () => void;
   triggerMouseClick: () => void;
 
+  isResolutionsLoading: boolean;
   selectedResolution: TResolutionSchema | null;
   setSelectedResolution: (resolution: TResolutionSchema) => void;
 

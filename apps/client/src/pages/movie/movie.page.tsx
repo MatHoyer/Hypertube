@@ -76,7 +76,7 @@ const MoviePage = () => {
       }
       console.log("downloadStateChange", data);
       queryClient.invalidateQueries({
-        queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
+        queryKey: getQueryKey(ROUTES.API.MOVIES_RESOLUTIONS, { tmdbId }),
       });
     };
     const handleDownloadProgress = (event: MessageEvent<string>) => {
@@ -88,12 +88,7 @@ const MoviePage = () => {
         console.error("invalid downloadProgress data", event.data);
         return;
       }
-      if (data.progress === 0) {
-        console.log("movie download started");
-        queryClient.invalidateQueries({
-          queryKey: getQueryKey(ROUTES.API.MOVIES, { tmdbId }),
-        });
-      }
+      if (data.progress === 0) console.log("movie download started");
     };
     eventSource.addEventListener(
       MOVIE_EVENTS.DOWNLOAD_STATE_CHANGE,

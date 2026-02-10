@@ -45,7 +45,8 @@ export const VideoPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
   const { mouseMoving, mouseClicked, triggerMouseMove, triggerMouseClick } =
     useMouse(videoRef, isMobile ? 3000 : undefined);
 
-  const { streamableResolutions } = useResolutions();
+  const { streamableResolutions, isLoading: isResolutionsLoading } =
+    useResolutions();
 
   const [selectedResolution, setSelectedResolution] =
     useState<TResolutionSchema | null>(null);
@@ -266,6 +267,7 @@ export const VideoPlayerProvider: React.FC<{ children: React.ReactNode }> = ({
         triggerMouseMove,
         triggerMouseClick,
 
+        isResolutionsLoading,
         selectedResolution,
         setSelectedResolution,
 
