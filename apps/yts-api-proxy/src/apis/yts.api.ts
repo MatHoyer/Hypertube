@@ -1,5 +1,6 @@
 import { hypertubeLogger, TMovieSchema, ytsQualities } from "@hypertube/libs";
 import {
+  ApiBase,
   createResolution,
   env,
   getResolutionPath,
@@ -26,25 +27,13 @@ const ytsMovieSchema = z.object({
   torrents: z.array(ytsMovieTorrentSchema),
 });
 
-export class YtsApi {
-  private readonly ytsApiUrl: string;
-  private readonly fetchOptions: RequestInit;
-
+export class YtsApi extends ApiBase {
   constructor() {
-    this.ytsApiUrl = env.YTS_API_URL;
-    this.fetchOptions = {
+    super(env.YTS_API_URL, {
       headers: {
         "Content-Type": "application/json",
       },
-    };
-  }
-
-  private async fetch<T>(url: string, options: RequestInit = {}): Promise<T> {
-    const response = await fetch(this.ytsApiUrl + url, {
-      ...this.fetchOptions,
-      ...options,
     });
-    return response.json() as Promise<T>;
   }
 
   private async getMovieByImdbId(imdbId: string) {
