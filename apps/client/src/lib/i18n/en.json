@@ -9,7 +9,9 @@
     "homepage": "Homepage",
     "submit": "Submit",
     "userNotFound": "User not found",
-    "close": "Close"
+    "close": "Close",
+    "seeMore": "See more ({{count}} remaining)",
+    "seeLess": "See less"
   },
   "loadingResource": {
     "global": "...",
@@ -261,8 +263,13 @@
     "noMoviesDescription": "No movies find with your research."
   },
   "casting": {
+    "cast&Crew": "Cast & Crew",
+    "description": "Discover the talents in front of and behind the camera.",
     "casting": "Casting",
-    "crew": "Crew"
+    "actors": "{{count}} actors",
+    "inRoleOf": "in the role of",
+    "crew": "Crew",
+    "crews": "{{count}} members"
   },
   "historic": {
     "title": "Your historic",

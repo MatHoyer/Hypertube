@@ -9,7 +9,9 @@
     "homepage": "Página principal",
     "submit": "Enviar",
     "userNotFound": "Usuario no encontrado",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "seeMore": "Ver más ({{count}} restantes)",
+    "seeLess": "Ver menos"
   },
   "loadingResource": {
     "global": "...",
@@ -261,8 +263,13 @@
     "noMoviesDescription": "No se encontraron películas con tu búsqueda."
   },
   "casting": {
+    "cast&Crew": "Reparto y Equipo",
+    "description": "Descubre los talentos delante y detrás de la cámara.",
     "casting": "Reparto",
-    "crew": "Equipo"
+    "actors": "{{count}} actores",
+    "inRoleOf": "en el papel de",
+    "crew": "Equipo",
+    "crews": "{{count}} miembros"
   },
   "historic": {
     "title": "Tu historial",

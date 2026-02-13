@@ -42,7 +42,7 @@ export const typographyVariants = cva("", {
     },
     functionnal: {
       truncate: "w-full text-start truncate",
-      wrap: "w-full text-start text-wrap break-all",
+      wrap: "w-full text-start text-wrap",
     },
   },
   defaultVariants: {
@@ -91,7 +91,7 @@ type ElementTypeForVariant<TVariant extends keyof ElementMapping> =
  */
 const InnerTypography = <
   TAs extends ElementType,
-  TVariant extends TypographyCvaProps["variant"] = "default"
+  TVariant extends TypographyCvaProps["variant"] = "default",
 >(
   {
     variant = "default",

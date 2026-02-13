@@ -1,7 +1,9 @@
 import { ErrorResource } from "@/components/ErrorResource";
+import { ExpandableList } from "@/components/ExpandableList";
 import { ImageContainer } from "@/components/images/ImageContainer";
 import { LoadingResource } from "@/components/LoadingResource";
 import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Typography } from "@/components/ui/typography";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
@@ -18,16 +20,28 @@ const PersonCard: React.FC<{
   profile_path: string | null;
   name: string;
   alias: string;
-}> = ({ profile_path, name, alias }) => {
+  isActor?: boolean;
+}> = ({ profile_path, name, alias, isActor }) => {
+  const { t } = useTranslation();
+
   return (
-    <Card className="flex justify-center items-center gap-2 p-2 w-28 md:w-48 lg:w-24 xl:w-32">
+    <Card className="flex flex-row items-center gap-2 p-2">
       <ImageContainer imageSrc={profile_path} altImage={name} size="sm" />
-      <Typography className="text-center" textSize={"sm"}>
-        {name}
-      </Typography>
-      <Typography className="text-center" textSize={"sm"} textColor={"muted"}>
-        {alias}
-      </Typography>
+      <div className="w-full">
+        <Typography textSize={"xl"} className="line-clamp-2">
+          {name}
+        </Typography>
+        <Typography functionnal={"wrap"}>
+          {isActor && (
+            <Typography variant="span" textSize={"sm"} textColor={"muted"}>
+              {t("casting.inRoleOf")}{" "}
+            </Typography>
+          )}
+          <Typography variant="span" textSize={"sm"}>
+            {alias}
+          </Typography>
+        </Typography>
+      </div>
     </Card>
   );
 };
@@ -54,28 +68,55 @@ export const Casting: React.FC<{
   if (isError || !casting) return <ErrorResource resource="casting" />;
 
   return (
-    <div className="flex flex-col items-center gap-2 m-2">
-      <Typography variant="h2">{t("casting.casting")}</Typography>
-      <div className="grid grid-cols-3 gap-2">
-        {casting.cast.map((person, i) => (
-          <PersonCard
-            key={i}
-            profile_path={person.profile_path}
-            name={person.name}
-            alias={person.character}
-          />
-        ))}
+    <div className="flex flex-col gap-8 m-2">
+      <div className="flex flex-col items-center text-center">
+        <Typography variant="h1">{t("casting.cast&Crew")}</Typography>
+        <Typography textColor={"muted"}>{t("casting.description")}</Typography>
       </div>
-      <Typography variant="h2">{t("casting.crew")}</Typography>
-      <div className="grid grid-cols-3 gap-2">
-        {casting.crew.map((person, i) => (
-          <PersonCard
-            key={i}
-            profile_path={person.profile_path}
-            name={person.name}
-            alias={person.job}
-          />
-        ))}
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center gap-2">
+          <Typography variant="h2">{t("casting.casting")}</Typography>
+          <Separator className="flex-1" />
+          <Typography textColor={"muted"}>
+            {t("casting.actors", { count: casting.cast.length })}
+          </Typography>
+        </div>
+        <ExpandableList
+          list={casting.cast}
+          renderChild={(person) => {
+            return (
+              <PersonCard
+                key={person.cast_id}
+                profile_path={person.profile_path}
+                name={person.name}
+                alias={person.character}
+                isActor
+              />
+            );
+          }}
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-row items-center gap-2">
+          <Typography variant="h2">{t("casting.crew")}</Typography>
+          <Separator className="flex-1" />
+          <Typography textColor={"muted"}>
+            {t("casting.crews", { count: casting.crew.length })}
+          </Typography>
+        </div>
+        <ExpandableList
+          list={casting.crew}
+          renderChild={(person) => {
+            return (
+              <PersonCard
+                key={person.credit_id}
+                profile_path={person.profile_path}
+                name={person.name}
+                alias={person.job}
+              />
+            );
+          }}
+        />
       </div>
     </div>
   );

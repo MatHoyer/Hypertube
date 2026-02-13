@@ -9,7 +9,9 @@
     "homepage": "Page d'accueil",
     "submit": "Soumettre",
     "userNotFound": "utilisateur non trouvé",
-    "close": "Fermer"
+    "close": "Fermer",
+    "seeMore": "Voir plus ({{count}} restants)",
+    "seeLess": "Voir moins"
   },
   "loadingResource": {
     "global": "...",
@@ -261,8 +263,13 @@
     "noMoviesDescription": "Aucun film trouvé avec votre recherche."
   },
   "casting": {
-    "casting": "Casting",
-    "crew": "Equipe"
+    "cast&Crew": "Distribution & Équipe",
+    "description": "Découvrez les talents devant et derrière la caméra.",
+    "casting": "Distribution",
+    "actors": "{{count}} acteurs",
+    "inRoleOf": "dans le rôle de",
+    "crew": "Équipe",
+    "crews": "{{count}} membres"
   },
   "historic": {
     "title": "Votre historique",

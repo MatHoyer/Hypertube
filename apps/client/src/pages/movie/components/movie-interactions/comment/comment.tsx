@@ -95,7 +95,7 @@ export const Comment: React.FC<{
           setIsEditing={setIsEditing}
         />
       ) : (
-        <Typography textSize={"sm"} functionnal="wrap">
+        <Typography textSize={"sm"} functionnal="wrap" className="break-all">
           {comment.content}
         </Typography>
       )}
