@@ -9,9 +9,7 @@
     "homepage": "Página principal",
     "submit": "Enviar",
     "userNotFound": "Usuario no encontrado",
-    "close": "Cerrar",
-    "seeMore": "Ver más ({{count}} restantes)",
-    "seeLess": "Ver menos"
+    "close": "Cerrar"
   },
   "loadingResource": {
     "global": "...",
@@ -44,6 +42,10 @@
       "search": "Buscar idioma...",
       "noElementFound": "No se encontró ningún idioma"
     }
+  },
+  "expandablelist": {
+    "seeMore": "Ver más ({{count}} restantes)",
+    "seeLess": "Ver menos"
   },
   "alert-dialog": {
     "title": "¿Estás completamente seguro?",

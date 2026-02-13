@@ -27,7 +27,7 @@ const PersonCard: React.FC<{
   return (
     <Card className="flex flex-row items-center gap-2 p-2">
       <ImageContainer imageSrc={profile_path} altImage={name} size="sm" />
-      <div className="w-full">
+      <div className="flex-1">
         <Typography textSize="xl" className="line-clamp-2">
           {name}
         </Typography>
@@ -69,7 +69,7 @@ export const Casting: React.FC<{
 
   return (
     <div className="flex flex-col gap-8 m-2">
-      <div className="flex flex-col items-center text-center">
+      <div className="flex flex-col text-center">
         <Typography variant="h1">{t("casting.cast&Crew")}</Typography>
         <Typography textColor="muted">{t("casting.description")}</Typography>
       </div>

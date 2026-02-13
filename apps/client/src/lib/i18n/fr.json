@@ -9,9 +9,7 @@
     "homepage": "Page d'accueil",
     "submit": "Soumettre",
     "userNotFound": "utilisateur non trouvé",
-    "close": "Fermer",
-    "seeMore": "Voir plus ({{count}} restants)",
-    "seeLess": "Voir moins"
+    "close": "Fermer"
   },
   "loadingResource": {
     "global": "...",
@@ -44,6 +42,10 @@
       "search": "Rechercher une langue",
       "noElementFound": "Aucune langue trouvée"
     }
+  },
+  "expandablelist": {
+    "seeMore": "Voir plus ({{count}} restants)",
+    "seeLess": "Voir moins"
   },
   "alert-dialog": {
     "title": "Êtes-vous absolument sûr ?",

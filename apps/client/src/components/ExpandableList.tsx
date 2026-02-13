@@ -31,13 +31,13 @@ export const ExpandableList = <T,>({
       ))}
       {total < list.length && (
         <Button variant={"outline"} onClick={setTotalWithInc}>
-          {t("global.seeMore", { count: list.length - total })}
+          {t("expandablelist.seeMore", { count: list.length - total })}
           <ChevronDown />
         </Button>
       )}
       {total > initialDisplayCount && (
         <Button variant={"ghost"} onClick={() => setTotal(initialDisplayCount)}>
-          {t("global.seeLess")}
+          {t("expandablelist.seeLess")}
           <ChevronUp />
         </Button>
       )}

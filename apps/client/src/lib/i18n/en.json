@@ -9,9 +9,7 @@
     "homepage": "Homepage",
     "submit": "Submit",
     "userNotFound": "User not found",
-    "close": "Close",
-    "seeMore": "See more ({{count}} remaining)",
-    "seeLess": "See less"
+    "close": "Close"
   },
   "loadingResource": {
     "global": "...",
@@ -44,6 +42,10 @@
       "search": "Search language...",
       "noElementFound": "No language found"
     }
+  },
+  "expandablelist": {
+    "seeMore": "See more ({{count}} remaining)",
+    "seeLess": "See less"
   },
   "alert-dialog": {
     "title": "Are you absolutely sure?",
