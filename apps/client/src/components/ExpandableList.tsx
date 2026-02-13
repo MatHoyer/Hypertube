@@ -1,19 +1,23 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { Fragment, useState, type Key } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./ui/button";
+
+type TExpandableList<T> = {
+  initialDisplayCount?: number;
+  incrementation?: number;
+  list: T[];
+  renderChild: (list: T) => React.ReactNode;
+  getKey: (list: T) => Key;
+};
 
 export const ExpandableList = <T,>({
   initialDisplayCount = 4,
   incrementation = 4,
   list,
   renderChild,
-}: {
-  initialDisplayCount?: number;
-  incrementation?: number;
-  list: T[];
-  renderChild: (list: T) => React.ReactNode;
-}) => {
+  getKey,
+}: TExpandableList<T>) => {
   const { t } = useTranslation();
   const [total, setTotal] = useState(initialDisplayCount);
   const setTotalWithInc = () => {
@@ -22,7 +26,9 @@ export const ExpandableList = <T,>({
 
   return (
     <div className="flex flex-col gap-2">
-      {list.slice(0, total).map((item) => renderChild(item))}
+      {list.slice(0, total).map((item) => (
+        <Fragment key={getKey(item)}>{renderChild(item)}</Fragment>
+      ))}
       {total < list.length && (
         <Button variant={"outline"} onClick={setTotalWithInc}>
           {t("global.seeMore", { count: list.length - total })}

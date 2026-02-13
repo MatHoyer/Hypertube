@@ -86,7 +86,6 @@ export const Casting: React.FC<{
           renderChild={(person) => {
             return (
               <PersonCard
-                key={person.cast_id}
                 profile_path={person.profile_path}
                 name={person.name}
                 alias={person.character}
@@ -94,6 +93,7 @@ export const Casting: React.FC<{
               />
             );
           }}
+          getKey={(person) => person.cast_id}
         />
       </div>
       <div className="flex flex-col gap-2">
@@ -109,13 +109,13 @@ export const Casting: React.FC<{
           renderChild={(person) => {
             return (
               <PersonCard
-                key={person.credit_id}
                 profile_path={person.profile_path}
                 name={person.name}
                 alias={person.job}
               />
             );
           }}
+          getKey={(person) => person.credit_id}
         />
       </div>
     </div>
