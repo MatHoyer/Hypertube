@@ -66,12 +66,12 @@ export const Playlists: React.FC<{
             >
               <Card className="flex flex-row justify-between items-center p-5 hover:bg-card/20 cursor-pointer">
                 <div className="flex items-center gap-2">
-                  <Typography textSize={"lg"} textColor={"muted"}>
+                  <Typography textSize="lg" textColor="muted">
                     {playlist.movies.length}
                   </Typography>
                   <Video />
                 </div>
-                <Typography functionnal={"truncate"}>
+                <Typography functionnal="truncate">
                   {playlist.name}
                 </Typography>
                 <Button

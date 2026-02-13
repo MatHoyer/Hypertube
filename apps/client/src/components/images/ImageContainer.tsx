@@ -32,11 +32,7 @@ export const ImageContainer: React.FC<
         />
       ) : (
         <div className="absolute size-full inset-0 flex items-center justify-center">
-          <Typography
-            textSize={"xs"}
-            functionnal={"wrap"}
-            className="text-center"
-          >
+          <Typography textSize="xs" functionnal="wrap" className="text-center">
             {altImage}
           </Typography>
         </div>

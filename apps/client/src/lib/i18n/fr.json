@@ -43,6 +43,10 @@
       "noElementFound": "Aucune langue trouvée"
     }
   },
+  "expandablelist": {
+    "seeMore": "Voir plus ({{count}} restants)",
+    "seeLess": "Voir moins"
+  },
   "alert-dialog": {
     "title": "Êtes-vous absolument sûr ?",
     "description": "Cette action ne peut pas être annulée. Cela supprimera définitivement les données de nos serveurs.",
@@ -261,8 +265,13 @@
     "noMoviesDescription": "Aucun film trouvé avec votre recherche."
   },
   "casting": {
-    "casting": "Casting",
-    "crew": "Equipe"
+    "cast&Crew": "Distribution & Équipe",
+    "description": "Découvrez les talents devant et derrière la caméra.",
+    "casting": "Distribution",
+    "actors": "{{count}} acteurs",
+    "inRoleOf": "dans le rôle de",
+    "crew": "Équipe",
+    "crews": "{{count}} membres"
   },
   "historic": {
     "title": "Votre historique",

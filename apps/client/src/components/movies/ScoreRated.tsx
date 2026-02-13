@@ -13,7 +13,7 @@ export const ScoreRated: React.FC<
     <Tooltip>
       <TooltipTrigger>
         <div {...props} className="flex items-center">
-          <Typography textSize={"sm"} className="font-mono">
+          <Typography textSize="sm" className="font-mono">
             {score.toPrecision(2)}/{total}
           </Typography>
           <Star color="black" fill="yellow" size={15} />

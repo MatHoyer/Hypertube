@@ -43,6 +43,10 @@
       "noElementFound": "No language found"
     }
   },
+  "expandablelist": {
+    "seeMore": "See more ({{count}} remaining)",
+    "seeLess": "See less"
+  },
   "alert-dialog": {
     "title": "Are you absolutely sure?",
     "description": "This action cannot be undone. This will permanently delete the data from our servers.",
@@ -261,8 +265,13 @@
     "noMoviesDescription": "No movies find with your research."
   },
   "casting": {
+    "cast&Crew": "Cast & Crew",
+    "description": "Discover the talents in front of and behind the camera.",
     "casting": "Casting",
-    "crew": "Crew"
+    "actors": "{{count}} actors",
+    "inRoleOf": "in the role of",
+    "crew": "Crew",
+    "crews": "{{count}} members"
   },
   "historic": {
     "title": "Your historic",
