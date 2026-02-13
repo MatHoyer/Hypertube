@@ -125,7 +125,7 @@ const Playlist: React.FC<{
         }
       }}
     >
-      <Typography functionnal={"truncate"} className="w-40">
+      <Typography functionnal="truncate" className="w-40">
         {playlist.name}
       </Typography>
       <Bookmark

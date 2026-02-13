@@ -32,24 +32,27 @@ export const typographyVariants = cva("", {
       span: "",
     },
     textSize: {
+      default: "",
       xl: "text-xl font-semibold",
       lg: "text-lg font-semibold",
       sm: "text-sm font-medium leading-none",
       xs: "text-xs font-medium leading-none",
     },
     textColor: {
+      default: "",
       muted: "text-muted-foreground",
     },
     functionnal: {
+      default: "",
       truncate: "w-full text-start truncate",
       wrap: "w-full text-start text-wrap",
     },
   },
   defaultVariants: {
     variant: "default",
-    textSize: null,
-    textColor: null,
-    functionnal: null,
+    textSize: "default",
+    textColor: "default",
+    functionnal: "default",
   },
 });
 type TypographyCvaProps = VariantProps<typeof typographyVariants>;
@@ -95,9 +98,9 @@ const InnerTypography = <
 >(
   {
     variant = "default",
-    textSize = null,
-    textColor = null,
-    functionnal = null,
+    textSize = "default",
+    textColor = "default",
+    functionnal = "default",
     className,
     as,
     ...props

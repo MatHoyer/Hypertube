@@ -64,7 +64,7 @@ export const CommentActionsDropdown: React.FC<{
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => setIsEditing(true)}>
-            <Typography textSize={"sm"}>
+            <Typography textSize="sm">
               {t("movie.comments.editComment")}
             </Typography>
           </DropdownMenuItem>
@@ -72,7 +72,7 @@ export const CommentActionsDropdown: React.FC<{
             variant="destructive"
             onClick={() => deleteComment()}
           >
-            <Typography textSize={"sm"}>
+            <Typography textSize="sm">
               {t("movie.comments.deleteComment")}
             </Typography>
           </DropdownMenuItem>

@@ -28,16 +28,16 @@ const PersonCard: React.FC<{
     <Card className="flex flex-row items-center gap-2 p-2">
       <ImageContainer imageSrc={profile_path} altImage={name} size="sm" />
       <div className="w-full">
-        <Typography textSize={"xl"} className="line-clamp-2">
+        <Typography textSize="xl" className="line-clamp-2">
           {name}
         </Typography>
-        <Typography functionnal={"wrap"}>
+        <Typography functionnal="wrap">
           {isActor && (
-            <Typography variant="span" textSize={"sm"} textColor={"muted"}>
+            <Typography variant="span" textSize="sm" textColor="muted">
               {t("casting.inRoleOf")}{" "}
             </Typography>
           )}
-          <Typography variant="span" textSize={"sm"}>
+          <Typography variant="span" textSize="sm">
             {alias}
           </Typography>
         </Typography>
@@ -71,13 +71,13 @@ export const Casting: React.FC<{
     <div className="flex flex-col gap-8 m-2">
       <div className="flex flex-col items-center text-center">
         <Typography variant="h1">{t("casting.cast&Crew")}</Typography>
-        <Typography textColor={"muted"}>{t("casting.description")}</Typography>
+        <Typography textColor="muted">{t("casting.description")}</Typography>
       </div>
       <div className="flex flex-col gap-2">
         <div className="flex flex-row items-center gap-2">
           <Typography variant="h2">{t("casting.casting")}</Typography>
           <Separator className="flex-1" />
-          <Typography textColor={"muted"}>
+          <Typography textColor="muted">
             {t("casting.actors", { count: casting.cast.length })}
           </Typography>
         </div>
@@ -100,7 +100,7 @@ export const Casting: React.FC<{
         <div className="flex flex-row items-center gap-2">
           <Typography variant="h2">{t("casting.crew")}</Typography>
           <Separator className="flex-1" />
-          <Typography textColor={"muted"}>
+          <Typography textColor="muted">
             {t("casting.crews", { count: casting.crew.length })}
           </Typography>
         </div>

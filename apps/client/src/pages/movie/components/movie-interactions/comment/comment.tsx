@@ -73,7 +73,7 @@ export const Comment: React.FC<{
               <Typography>{comment.user.name}</Typography>
             </Link>
           </Button>
-          <Typography textSize={"xs"} textColor={"muted"}>
+          <Typography textSize="xs" textColor="muted">
             {getNearDateWithLocale({ date: comment.createdAt })}
           </Typography>
         </div>
@@ -95,7 +95,7 @@ export const Comment: React.FC<{
           setIsEditing={setIsEditing}
         />
       ) : (
-        <Typography textSize={"sm"} functionnal="wrap" className="break-all">
+        <Typography textSize="sm" functionnal="wrap" className="break-all">
           {comment.content}
         </Typography>
       )}
