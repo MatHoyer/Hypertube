@@ -100,7 +100,11 @@ const MoviePage = () => {
         console.error("invalid downloadProgress data", event.data);
         return;
       }
-      if (data.progress === 0) console.log("movie download started");
+      if (data.progress) {
+        queryClient.invalidateQueries({
+          queryKey: getQueryKey(ROUTES.API.MOVIES_RESOLUTIONS, { tmdbId }),
+        });
+      }
     };
     eventSource.addEventListener(
       MOVIE_EVENTS.DOWNLOAD_STATE_CHANGE,

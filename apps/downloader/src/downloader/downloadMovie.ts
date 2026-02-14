@@ -202,7 +202,6 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       hypertubeLogger.error(`Error handling SRT files ${error}`);
     }
 
-    job.updateProgress(0);
     let isConverting = false;
     let isFirstConversion = true;
     const replaceCurrentMovie = async () => {
@@ -247,6 +246,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
 
           hypertubeLogger.info(`Status: ${status}`);
           if (status === Status.SEEDING || status === Status.STOPPED) {
+            job.updateProgress(100);
             const endFile = getResolutionPath({
               movieId: movie.tmdbId,
               resolution,
@@ -288,9 +288,9 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
               2
             )}, Download speed: ${downloadSpeed.toFixed(2)}, Status: ${status}`
           );
-          job.updateProgress(percentDone);
 
           if (!isConverting && percentDone > 25) {
+            job.updateProgress(percentDone);
             isConverting = true;
             try {
               await convertWhileDownloading(
