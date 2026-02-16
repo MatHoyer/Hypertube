@@ -152,7 +152,7 @@ const routeSchemas = {
         .union([z.enum(ytsQualities), z.literal("{resolution}")])
         .optional(),
       subtitlesLanguage: z
-        .union([z.enum(languageCodes), z.literal("{subtitlesLanguage}")])
+        .union([z.string(), z.literal("{subtitlesLanguage}")])
         .optional(),
     }),
     [ROUTES.API.MOVIES_RESOLUTIONS]: z.object({
