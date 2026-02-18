@@ -147,6 +147,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
   const result = await downloader.addFile(resolutionPath, {
     "download-dir": `/downloads-transmission/${movie.tmdbId}/resolutions/${resolution}`,
     paused: true,
+    sequentialDownload: true,
   });
   hypertubeLogger.info(`Torrent added with ID: ${result.id}`);
 
