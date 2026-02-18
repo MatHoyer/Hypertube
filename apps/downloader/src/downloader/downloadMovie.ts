@@ -33,10 +33,22 @@ const checkFileReadability = async (filePath: string) => {
         );
         resolve(false);
       } else {
-        hypertubeLogger.info(
-          `File is readable, metadata: ${JSON.stringify(metadata.format)}`
-        );
-        resolve(true);
+        const duration = metadata?.format?.duration;
+        const hasValidDuration =
+          typeof duration === "number" &&
+          Number.isFinite(duration) &&
+          duration > 0;
+        if (!hasValidDuration) {
+          hypertubeLogger.info(
+            `File readable but no valid duration yet (incomplete?): ${JSON.stringify(metadata?.format)}`
+          );
+          resolve(false);
+        } else {
+          hypertubeLogger.info(
+            `File is readable, metadata: ${JSON.stringify(metadata.format)}`
+          );
+          resolve(true);
+        }
       }
     });
   });
@@ -247,7 +259,6 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
 
           hypertubeLogger.info(`Status: ${status}`);
           if (status === Status.SEEDING || status === Status.STOPPED) {
-            job.updateProgress(100);
             const endFile = getResolutionPath({
               movieId: movie.tmdbId,
               resolution,
@@ -291,7 +302,6 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
           );
 
           if (!isConverting && percentDone > 25) {
-            job.updateProgress(percentDone);
             isConverting = true;
             try {
               await convertWhileDownloading(
@@ -320,10 +330,13 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
                           downloadState: DownloadStates.DOWNLOADING,
                         },
                       });
+                      await job.updateProgress(0);
                       await notifySubscribers(
                         movie.id,
                         DownloadStates.DOWNLOADING
                       );
+                    } else {
+                      job.updateProgress(percentDone);
                     }
                   },
                 }
