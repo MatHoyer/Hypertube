@@ -1,7 +1,7 @@
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
-import { type TResolutionSchema } from "@hypertube/libs";
+import { DownloadStates, type TResolutionSchema } from "@hypertube/libs";
 import {
   useCallback,
   useEffect,
@@ -170,6 +170,9 @@ export const VideoPlayerProvider: React.FC<{
 
   const handleSeek = useCallback(
     (percent: number) => {
+      if (selectedResolution?.downloadState !== DownloadStates.DOWNLOADED) {
+        return;
+      }
       if (!videoRef.current) return;
       if (percent < 0) percent = 0;
       if (percent > 100) percent = 100;
@@ -178,7 +181,7 @@ export const VideoPlayerProvider: React.FC<{
       if (percent >= 100) setPlaying(false);
       setProgress(percent);
     },
-    [videoRef, setProgress, setPlaying]
+    [videoRef, setProgress, setPlaying, selectedResolution]
   );
 
   const handleSetSpeed = useCallback(
