@@ -1,7 +1,9 @@
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
-import { type TResolutionSchema } from "@hypertube/libs";
+import { LOCAL_STORAGE_KEYS } from "@/lib/const";
+import { DownloadStates, type TResolutionSchema } from "@hypertube/libs";
 import {
   useCallback,
   useEffect,
@@ -53,7 +55,10 @@ export const VideoPlayerProvider: React.FC<{
     toggle: togglePlay,
     setValue: setPlaying,
   } = useToggle(false);
-  const [volume, setVolume] = useState(20);
+  const [volume, setVolume] = useLocalStorage<number>(
+    LOCAL_STORAGE_KEYS.VOLUME,
+    20
+  );
   const [progress, setProgress] = useState(0);
   const [bufferedProgress, setBufferedProgress] = useState(0);
   const {
@@ -170,6 +175,9 @@ export const VideoPlayerProvider: React.FC<{
 
   const handleSeek = useCallback(
     (percent: number) => {
+      if (selectedResolution?.downloadState !== DownloadStates.DOWNLOADED) {
+        return;
+      }
       if (!videoRef.current) return;
       if (percent < 0) percent = 0;
       if (percent > 100) percent = 100;
@@ -178,7 +186,7 @@ export const VideoPlayerProvider: React.FC<{
       if (percent >= 100) setPlaying(false);
       setProgress(percent);
     },
-    [videoRef, setProgress, setPlaying]
+    [videoRef, setProgress, setPlaying, selectedResolution]
   );
 
   const handleSetSpeed = useCallback(
