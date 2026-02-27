@@ -1,5 +1,20 @@
 # Hypertube
 
+## 📸 Screenshots
+
+<table>
+  <tr>
+    <td align="center"><strong>🏠 Library</strong></td>
+    <td align="center"><strong>🎬 Movie Page</strong></td>
+    <td align="center"><strong>📥 Download Manager</strong></td>
+  </tr>
+  <tr>
+    <td><img src="docs/images/library.png" alt="Library" width="100%"></td>
+    <td><img src="docs/images/movie-page.png" alt="Movie Page" width="100%"></td>
+    <td><img src="docs/images/movie-download-manager.png" alt="Movie Download Manager" width="100%"></td>
+  </tr>
+</table>
+
 ## 📦 Prerequisites
 
 - [Docker](https://www.docker.com/) 🐳
@@ -74,12 +89,15 @@ Initialize the database:
 ```bash
 pnpm --filter server-core prisma:migrate
 ```
+
 or
+
 ```bash
 docker compose -f docker-compose-prod.yml run --rm migrate
 ```
 
 to run a custom cmd use:
+
 ```bash
 docker compose -f docker-compose-prod.yml run --rm migrate <custom_cmd>
 ```
