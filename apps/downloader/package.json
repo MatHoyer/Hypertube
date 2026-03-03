@@ -17,8 +17,7 @@
   "dependencies": {
     "@hypertube/libs": "workspace:*",
     "@hypertube/server-core": "workspace:*",
-    "fluent-ffmpeg": "^2.1.3",
-    "transmission-promise": "^1.1.7"
+    "fluent-ffmpeg": "^2.1.3"
   },
   "devDependencies": {
     "@types/fluent-ffmpeg": "^2.1.28",

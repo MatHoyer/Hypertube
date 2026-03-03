@@ -17,7 +17,7 @@ services:
 
   transmission:
     container_name: transmission
-    image: linuxserver/transmission
+    image: linuxserver/transmission:4.1.0
     env_file: .env
     environment:
       - PUID=0

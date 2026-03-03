@@ -100,7 +100,7 @@ const MoviePage = () => {
         console.error("invalid downloadProgress data", event.data);
         return;
       }
-      if (data.progress) {
+      if (data.progress === 0) {
         queryClient.invalidateQueries({
           queryKey: getQueryKey(ROUTES.API.MOVIES_RESOLUTIONS, { tmdbId }),
         });
