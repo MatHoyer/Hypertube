@@ -12,8 +12,9 @@ import {
 import { Job } from "bullmq";
 import ffmpeg from "fluent-ffmpeg";
 import * as fs from "fs";
-import path from "path";
 import { buffer } from "node:stream/consumers";
+import path from "path";
+import { notifySubscribers } from "../notifications/notifySubscriber.js";
 import { downloader } from "./downloader.js";
 
 const WAIT_FILE_TIMEOUT = 1000000;
@@ -224,6 +225,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       },
       data: { downloadState: DownloadStates.DOWNLOADING },
     });
+    notifySubscribers(movie.id, DownloadStates.DOWNLOADING);
     hypertubeLogger.info(`Movie downloaded started successfully`);
 
     return new Promise<void>((resolve, reject) => {

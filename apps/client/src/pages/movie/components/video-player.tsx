@@ -411,6 +411,9 @@ const VideoPlayer = () => {
             className="size-full relative"
             onTimeUpdate={handleProgress}
             controls={false}
+            playsInline
+            {...{ "webkit-playsinline": "" }}
+            disableRemotePlayback
           >
             <source
               src={getUrl(ROUTES.API.STREAMING_MOVIE_RESOLUTION, {
