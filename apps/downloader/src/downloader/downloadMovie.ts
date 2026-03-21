@@ -14,6 +14,7 @@ import path from "path";
 import { downloader } from "./downloader.js";
 
 const WAIT_FILE_TIMEOUT = 1000000;
+const WAIT_SUBTITLE_TIMEOUT = 10000;
 const CHECK_DOWNLOAD_INTERVAL = 30000;
 
 const Status = {
@@ -116,7 +117,7 @@ const handleSrtFile = async (
     `./downloads-transmission/incomplete/${srtFile.name}`
   );
   hypertubeLogger.info(`Waiting for SRT file to be downloaded ${target}`);
-  await waitFile(target, 100000);
+  await waitFile(target, WAIT_SUBTITLE_TIMEOUT);
   let language = srtFile.name.substring(
     srtFile.name.lastIndexOf("/") + 1,
     srtFile.name.lastIndexOf(".")
@@ -240,31 +241,18 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
             });
             await waitFile(endFile);
 
-            const convertedMoviePath = getResolutionPath({
+            const moviePath = getResolutionPath({
               movieId: movie.tmdbId,
               resolution,
               forTransmission: false,
-              filename: "movie.converted.mp4",
+              filename: "movie.mp4",
             });
 
             try {
               await convertMovie(
                 { path: endFile },
                 {
-                  path: convertedMoviePath,
-                },
-                {
-                  onEnd: async () => {
-                    await fs.promises.rename(
-                      convertedMoviePath,
-                      getResolutionPath({
-                        movieId: movie.tmdbId,
-                        resolution,
-                        forTransmission: false,
-                        filename: "movie.mp4",
-                      })
-                    );
-                  },
+                  path: moviePath,
                 }
               );
               resolve();
