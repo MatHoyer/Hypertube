@@ -30,10 +30,7 @@ export const SubtitlesProvider: React.FC<{
   }, [data]);
 
   const streamableSubtitles = useMemo(() => {
-    return [
-      ...(filteredSubtitles?.DOWNLOADED ?? []),
-      ...(filteredSubtitles?.DOWNLOADING ?? []),
-    ];
+    return [...(filteredSubtitles?.DOWNLOADED ?? [])];
   }, [filteredSubtitles]);
 
   return (
