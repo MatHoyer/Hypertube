@@ -27,8 +27,6 @@ services:
       - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=false
     volumes:
       - ./apps/downloader/config/settings.json:/config/settings.json:ro
-      - movies_data:/downloads
-      - movies_data_transmission:/downloads-transmission
     network_mode: container:vpn
 
   redis:
@@ -39,10 +37,39 @@ services:
     networks:
       - hypertube-network
 
+  minio:
+    container_name: hypertube_minio
+    image: minio/minio:latest
+    ports:
+      - 9000
+      - 9001
+    networks:
+      - hypertube-network
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    networks:
+      - hypertube-network
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        until mc alias set local http://minio:9000 minioadmin minioadmin; do sleep 1; done
+        mc mb -p local/movies || true
+        mc mb -p local/subtitles || true
+    restart: no
+
 volumes:
   hypertube_data:
-  movies_data:
-  movies_data_transmission:
+  minio_data:
 
 networks:
   hypertube-network:
