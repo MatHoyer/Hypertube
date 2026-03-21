@@ -204,7 +204,17 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       hypertubeLogger.error(`Error handling SRT files ${error}`);
     }
 
+    await prisma.resolution.update({
+      where: {
+        movieId_resolution: {
+          movieId: movie.id,
+          resolution,
+        },
+      },
+      data: { downloadState: DownloadStates.DOWNLOADING },
+    });
     hypertubeLogger.info(`Movie downloaded started successfully`);
+
     return new Promise<void>((resolve, reject) => {
       const intervalId = setInterval(async () => {
         try {
