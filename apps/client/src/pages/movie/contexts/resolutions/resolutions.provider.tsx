@@ -30,10 +30,7 @@ export const ResolutionsProvider: React.FC<{
   }, [data]);
 
   const streamableResolutions = useMemo(() => {
-    return [
-      ...(filteredResolutions?.DOWNLOADED ?? []),
-      ...(filteredResolutions?.DOWNLOADING ?? []),
-    ];
+    return [...(filteredResolutions?.DOWNLOADED ?? [])];
   }, [filteredResolutions]);
 
   return (
