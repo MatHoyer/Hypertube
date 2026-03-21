@@ -51,8 +51,6 @@ model Movie {
   subscriptions MovieSubscription[]
   playlists     PlaylistMovie[]
 
-  demoMovie             Boolean @default(false)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
