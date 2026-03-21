@@ -113,26 +113,10 @@ export const getMovie = async (
   const user = c.get("user");
 
   const tmdbApi = new TmdbApi();
-  const tmdbMovie =
-    tmdbId === 0
-      ? {
-          id: 0,
-          imdb_id: null,
-          original_title: "Demo Movie",
-          original_language: "fr",
-          title: "Demo Movie",
-          overview: "This is a demo movie",
-          genres: [{ id: 0, name: "Demo Genre" }],
-          vote_average: 0,
-          vote_count: 0,
-          popularity: 0,
-          poster_path: null,
-          backdrop_path: null,
-          release_date: "2025-01-01",
-          adult: false,
-          hasDetails: true as const,
-        }
-      : await tmdbApi.getMovie(tmdbId, language as keyof typeof languageCodes);
+  const tmdbMovie = await tmdbApi.getMovie(
+    tmdbId,
+    language as keyof typeof languageCodes
+  );
 
   if (!tmdbMovie.hasDetails) return c.json(null, 404);
 

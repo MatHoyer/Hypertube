@@ -69,6 +69,9 @@ class TransmissionClient {
       result?: string | Record<string, unknown>;
       arguments?: Record<string, unknown>;
     };
+    if (typeof data.result === "string" && data.result !== "success") {
+      throw new Error(`Transmission RPC: ${data.result}`);
+    }
     const out =
       data.arguments ??
       (typeof data.result === "object" ? data.result : undefined);
@@ -77,6 +80,7 @@ class TransmissionClient {
     return out as T;
   }
 
+  /** Path must exist on the Transmission container (not the downloader). */
   async addFile(
     filename: string,
     options: TransmissionAddOptions = {}
@@ -87,6 +91,31 @@ class TransmissionClient {
     }>({
       method: "torrent-add",
       arguments: { filename, ...options },
+    });
+    const added = args["torrent-added"] ?? args["torrent-duplicate"];
+    if (!added) {
+      hypertubeLogger.error(
+        `Transmission torrent-add failed: ${JSON.stringify(args)}`
+      );
+      throw new Error("Transmission add failed");
+    }
+    return { id: added.id };
+  }
+
+  /** Cross-container safe: raw .torrent bytes as base64 metainfo. */
+  async addTorrentMetainfo(
+    torrentBuffer: Buffer,
+    options: TransmissionAddOptions = {}
+  ): Promise<{ id: number }> {
+    const args = await this.rpc<{
+      "torrent-added"?: { id: number; name: string; hashString: string };
+      "torrent-duplicate"?: { id: number };
+    }>({
+      method: "torrent-add",
+      arguments: {
+        metainfo: torrentBuffer.toString("base64"),
+        ...options,
+      },
     });
     const added = args["torrent-added"] ?? args["torrent-duplicate"];
     if (!added) {

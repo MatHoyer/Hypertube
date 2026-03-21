@@ -6,3 +6,8 @@ services:
   redis:
     ports:
       - "${EXPOSED_REDIS_PORT}:${REDIS_PORT}"
+
+  minio:
+    ports:
+      - "9000:9000"
+      - "9001:9001"

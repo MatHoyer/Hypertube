@@ -1,7 +1,9 @@
 import { hypertubeLogger, TSubtitleSchema } from "@hypertube/libs";
 import {
+  BUCKETS,
   convertSrtToVtt,
   getSubtitlePath,
+  minio,
   renameFile,
   waitFile,
 } from "@hypertube/server-core";
@@ -31,13 +33,13 @@ export const getSubtitlesDownloadLinks = async ({
         if (tds.length < 5) return null;
 
         const rating = parseInt(
-          await tds[0].$eval("span.label", (el) => el.textContent ?? "0"),
+          await tds[0].$eval("span.label", (el) => el.textContent ?? "0")
         );
         if (rating < 1) return null;
 
         const language = await tds[1].$eval(
           "span.sub-lang",
-          (el) => el.textContent,
+          (el) => el.textContent
         );
         const link = await tds[2].$eval("a", (el) => el.href);
 
@@ -46,7 +48,7 @@ export const getSubtitlesDownloadLinks = async ({
           rating: rating,
           link,
         };
-      }),
+      })
     );
 
     await browser.close();
@@ -55,12 +57,12 @@ export const getSubtitlesDownloadLinks = async ({
     const filtered = subtitlesDownloadLinks
       .filter(
         (
-          subtitle,
+          subtitle
         ): subtitle is { language: string; rating: number; link: string } =>
           !!subtitle &&
           !!subtitle.link &&
           !!subtitle.language &&
-          !!subtitle.rating,
+          !!subtitle.rating
       )
       .reduce(
         (acc, subtitle) => {
@@ -74,31 +76,32 @@ export const getSubtitlesDownloadLinks = async ({
           }
           return acc;
         },
-        [] as { language: string; rating: number; link: string }[],
+        [] as { language: string; rating: number; link: string }[]
       );
     return filtered;
   } catch (error) {
     hypertubeLogger.error(
-      `Error getting subtitles download links: ${JSON.stringify(error)}`,
+      `Error getting subtitles download links: ${JSON.stringify(error)}`
     );
     return [];
   }
 };
 
 export const downloadYifysubtitles = async (
-  subtitles: TSubtitleSchema & { tmdbId: number },
+  subtitles: TSubtitleSchema & { tmdbId: number }
 ) => {
   const browser = await launchPuppeteer();
 
   const page = await browser.newPage();
 
+  const id = `${subtitles.tmdbId}-${subtitles.language}`;
+  const downloadPath = `/downloads/${id}`;
+  await fs.promises.mkdir(downloadPath, { recursive: true });
+
   const client = await page.createCDPSession();
   await client.send("Page.setDownloadBehavior", {
     behavior: "allow",
-    downloadPath: getSubtitlePath({
-      movieId: subtitles.tmdbId,
-      language: subtitles.language,
-    }),
+    downloadPath: downloadPath,
   });
 
   await page.goto(subtitles.downloadLink);
@@ -108,7 +111,7 @@ export const downloadYifysubtitles = async (
   // Get original filename before download
   const originalHref = await page.$eval(
     "a.btn-icon.download-subtitle",
-    (el) => el.href,
+    (el) => el.href
   );
   const originalFilename = originalHref.split("/").pop();
   if (!originalFilename) {
@@ -118,11 +121,7 @@ export const downloadYifysubtitles = async (
   // Download the file
   await page.click("a.btn-icon.download-subtitle");
 
-  const downloadDir = getSubtitlePath({
-    movieId: subtitles.tmdbId,
-    language: subtitles.language,
-  });
-  const originalPath = path.join(downloadDir, originalFilename);
+  const originalPath = path.join(downloadPath, originalFilename);
 
   // Wait for original file to download
   await waitFile(originalPath, 3000);
@@ -130,20 +129,32 @@ export const downloadYifysubtitles = async (
   await browser.close();
 
   renameFile(originalPath, "subtitles.zip");
-  const zipPath = path.join(downloadDir, "subtitles.zip");
+  const zipPath = path.join(downloadPath, "subtitles.zip");
 
   const zipper = new AdmZip(zipPath);
   const entries = zipper.getEntries();
   const srtEntry = entries.find((e) =>
-    e.entryName.toLowerCase().endsWith(".srt"),
+    e.entryName.toLowerCase().endsWith(".srt")
   );
   if (!srtEntry) {
     throw new Error("SRT file not found");
   }
   const srtFilename = path.basename(srtEntry.entryName);
-  const srtFilePath = path.join(downloadDir, srtFilename);
+  const srtFilePath = path.join(downloadPath, srtFilename);
   await fs.promises.writeFile(srtFilePath, srtEntry.getData());
   await fs.promises.unlink(zipPath);
 
   await convertSrtToVtt(srtFilePath);
+
+  await minio.putObject(
+    BUCKETS.SUBTITLES,
+    getSubtitlePath(
+      subtitles.tmdbId.toString(),
+      subtitles.language,
+      "subtitles.vtt"
+    ),
+    await fs.promises.readFile(srtFilePath)
+  );
+
+  await fs.promises.rm(downloadPath, { recursive: true, force: true });
 };
