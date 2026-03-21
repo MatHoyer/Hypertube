@@ -1,5 +1,11 @@
 import { newUTCDate, TLogger } from "@hypertube/libs";
-import { deleteMovieFolder, prisma } from "@hypertube/server-core";
+import {
+  BUCKETS,
+  getMovieRootPath,
+  getSubtitleRootPath,
+  prisma,
+  removeObjectsByPrefix,
+} from "@hypertube/server-core";
 import { subMonths } from "date-fns";
 import { cronUTC } from "../cronUTC.js";
 
@@ -25,10 +31,12 @@ const DELETE_MOVIES_MONTHLY_CRON_CALLBACK = async (localLogger: TLogger) => {
 
   for (const movie of moviesToDelete) {
     try {
-      await deleteMovieFolder({
-        movieId: movie.tmdbId,
-        forTransmission: false,
-      });
+      const movieId = movie.tmdbId.toString();
+      await removeObjectsByPrefix(BUCKETS.MOVIES, getMovieRootPath(movieId));
+      await removeObjectsByPrefix(
+        BUCKETS.SUBTITLES,
+        getSubtitleRootPath(movieId)
+      );
     } catch (error) {
       localLogger.error(`Error deleting movie folder: ${error}`);
     }

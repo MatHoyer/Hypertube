@@ -21,6 +21,7 @@ services:
       - NODE_ENV=PROD
       - YTS_PROXY_URL=http://vpn:${YTS_PROXY_PORT}
       - REDIS_HOST=redis
+      - MINIO_ENDPOINT=minio
       - CLIENT_URL=${SERVER_URL}
       - CLIENT_PORT=${SERVER_PORT}
     networks:
@@ -45,6 +46,9 @@ services:
       - REDIS_HOST=redis
       - NODE_ENV=PROD
       - TRANSMISSION_HOST=vpn
+      - MINIO_ENDPOINT=minio
+    volumes:
+      - downloads_transmission:/downloads-transmission
     networks:
       - hypertube-network
     depends_on:
@@ -60,6 +64,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - REDIS_HOST=redis
       - NODE_ENV=PROD
+      - MINIO_ENDPOINT=minio
     networks:
       - hypertube-network
     depends_on:
@@ -76,8 +81,13 @@ services:
       - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
       - REDIS_HOST=redis
       - NODE_ENV=PROD
+      - MINIO_ENDPOINT=minio
     network_mode: container:vpn
 
 networks:
   hypertube-network:
     external: true
+
+volumes:
+  downloads_transmission:
+    name: hypertube_downloads_transmission

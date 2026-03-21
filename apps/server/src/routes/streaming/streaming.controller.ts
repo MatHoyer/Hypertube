@@ -2,23 +2,48 @@ import {
   TGetStreamingResolutionSchemas,
   TGetStreamingSubtitlesSchemas,
 } from "@hypertube/libs";
-import { getResolutionPath, getSubtitlePath } from "@hypertube/server-core";
-import * as fs from "fs";
+import {
+  BUCKETS,
+  getMoviePath,
+  getSubtitlePath,
+  minio,
+} from "@hypertube/server-core";
 import { Context } from "hono";
+import { buffer } from "node:stream/consumers";
+import { Readable } from "node:stream";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
+
+const isObjectNotFound = (e: unknown): boolean => {
+  if (e == null || typeof e !== "object") return false;
+  const err = e as { code?: string; statusCode?: number };
+  return (
+    err.code === "NotFound" ||
+    err.code === "NoSuchKey" ||
+    err.statusCode === 404
+  );
+};
 
 export const getStreamingResolution = async (
   c: Context<TUrlParamsParser<TGetStreamingResolutionSchemas["urlParams"]>>,
 ) => {
   const { movieId, resolution } = c.get("validatedUrlParams");
-  const filePath = getResolutionPath({
-    movieId,
+  const objectName = getMoviePath(
+    String(movieId),
     resolution,
-    forTransmission: false,
-    filename: "movie.mp4",
-  });
-  const stat = await fs.promises.stat(filePath);
-  const fileSize = stat.size;
+    "movie.mp4"
+  );
+
+  let fileSize: number;
+  try {
+    const stat = await minio.statObject(BUCKETS.MOVIES, objectName);
+    fileSize = stat.size;
+  } catch (e) {
+    if (isObjectNotFound(e)) {
+      return c.json({ message: "Movie file not found" }, 404);
+    }
+    throw e;
+  }
+
   const range = c.req.header("range");
 
   if (range) {
@@ -39,34 +64,48 @@ export const getStreamingResolution = async (
     const safeEnd = Math.min(end, fileSize - 1);
     const chunkSize = safeEnd - start + 1;
 
-    const fileStream = fs.createReadStream(filePath, { start, end: safeEnd });
+    const fileStream = await minio.getPartialObject(
+      BUCKETS.MOVIES,
+      objectName,
+      start,
+      chunkSize
+    );
 
     c.header("Content-Range", `bytes ${start}-${safeEnd}/${fileSize}`);
     c.header("Accept-Ranges", "bytes");
     c.header("Content-Length", chunkSize.toString());
     c.header("Content-Type", "video/mp4");
 
-    return new Response(fileStream as any, { status: 206 });
-  } else {
-    c.header("Content-Length", fileSize.toString());
-    c.header("Content-Type", "video/mp4");
-    const fileStream = fs.createReadStream(filePath);
-    return new Response(fileStream as any);
+    return new Response(Readable.toWeb(fileStream) as BodyInit, { status: 206 });
   }
+
+  const fileStream = await minio.getObject(BUCKETS.MOVIES, objectName);
+  c.header("Content-Length", fileSize.toString());
+  c.header("Content-Type", "video/mp4");
+  c.header("Accept-Ranges", "bytes");
+  return new Response(Readable.toWeb(fileStream) as BodyInit);
 };
 
 export const getStreamingSubtitles = async (
   c: Context<TUrlParamsParser<TGetStreamingSubtitlesSchemas["urlParams"]>>,
 ) => {
   const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
-  const filePath = getSubtitlePath({
-    movieId,
-    language: subtitlesLanguage,
-    filename: "subtitles.vtt",
-  });
-  const file = fs.readFileSync(filePath);
+  const objectName = getSubtitlePath(
+    String(movieId),
+    subtitlesLanguage,
+    "subtitles.vtt"
+  );
 
-  return c.body(file, 200, {
-    "Content-Type": "text/vtt; charset=utf-8",
-  });
+  try {
+    const stream = await minio.getObject(BUCKETS.SUBTITLES, objectName);
+    const file = await buffer(stream);
+    return c.body(file, 200, {
+      "Content-Type": "text/vtt; charset=utf-8",
+    });
+  } catch (e) {
+    if (isObjectNotFound(e)) {
+      return c.json({ message: "Subtitles not found" }, 404);
+    }
+    throw e;
+  }
 };

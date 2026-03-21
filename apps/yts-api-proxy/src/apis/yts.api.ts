@@ -1,11 +1,11 @@
 import { hypertubeLogger, TMovieSchema, ytsQualities } from "@hypertube/libs";
 import {
   ApiBase,
-  createResolution,
+  BUCKETS,
   env,
-  getResolutionPath,
+  getMoviePath,
+  minio,
 } from "@hypertube/server-core";
-import { writeFile } from "fs/promises";
 import z from "zod";
 
 const responseSchema = <T>(dataSchema: z.ZodSchema<T>) =>
@@ -89,18 +89,14 @@ export class YtsApi extends ApiBase {
     const arrayBuffer = await res.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    await createResolution({
-      movieId: movie.tmdbId,
-      resolution: resolution.quality,
-      forTransmission: false,
-    });
-
-    const outputPath = getResolutionPath({
-      movieId: movie.tmdbId,
-      resolution: resolution.quality,
-      forTransmission: false,
-      filename: "resolution.torrent",
-    });
-    await writeFile(outputPath, buffer);
+    minio.putObject(
+      BUCKETS.MOVIES,
+      getMoviePath(
+        movie.tmdbId.toString(),
+        resolution.quality,
+        "resolution.torrent"
+      ),
+      buffer
+    );
   }
 }

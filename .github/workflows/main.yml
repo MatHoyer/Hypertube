@@ -77,6 +77,11 @@ jobs:
           REDIS_HOST=${{ secrets.REDIS_HOST }}
           REDIS_PORT=${{ secrets.REDIS_PORT }}
 
+          MINIO_ENDPOINT=${{ secrets.MINIO_ENDPOINT }}
+          MINIO_PORT=${{ secrets.MINIO_PORT }}
+          MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}
+          MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
+
           VPN_SERVICE_PROVIDER=${{ vars.VPN_SERVICE_PROVIDER }}
 
           OPENVPN_USER=${{ secrets.OPENVPN_USER }}
