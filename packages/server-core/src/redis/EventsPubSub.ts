@@ -1,5 +1,5 @@
 import { Redis } from "ioredis";
-import { getRedisSubscriber, redisPublisher } from "./Redis.js";
+import { getRedisPublisher, getRedisSubscriber } from "./Redis.js";
 
 type TEventsAddOns = {
   notification: {
@@ -46,7 +46,7 @@ export class EventsPublisher<T extends TEvents> {
   private readonly events: string[];
 
   constructor(events: TEventsArgs<T> | TEventsArgs<T>[]) {
-    this.publisher = redisPublisher;
+    this.publisher = getRedisPublisher();
     this.events = getCompleteEvents(events);
   }
 

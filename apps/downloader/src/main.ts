@@ -1,4 +1,8 @@
-import { DownloadStates, hypertubeLogger } from "@hypertube/libs";
+import {
+  DownloadStates,
+  formatUnknownError,
+  hypertubeLogger,
+} from "@hypertube/libs";
 import {
   DOWNLOAD_QUEUE,
   env,
@@ -53,14 +57,14 @@ worker.on("completed", async (job) => {
     await notifySubscribers(job.data.movie.id, DownloadStates.DOWNLOADED);
   } catch (error) {
     hypertubeLogger.error(
-      `Error sending movie downloaded notification: ${error}`
+      `Error sending movie downloaded notification: ${formatUnknownError(error)}`
     );
   }
 });
 
 worker.on("failed", async (job, err) => {
   hypertubeLogger.error(
-    `[${job?.data.movie.id}] Movie download failed : ${JSON.stringify(err)}`
+    `[${job?.data.movie.id}] Movie download failed: ${formatUnknownError(err)}`
   );
   if (!job?.data.movie.id || !job?.data.resolution) {
     hypertubeLogger.error(

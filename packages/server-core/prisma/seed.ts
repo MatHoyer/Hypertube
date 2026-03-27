@@ -1,4 +1,4 @@
-import { hypertubeLogger } from "@hypertube/libs";
+import { formatUnknownError, hypertubeLogger } from "@hypertube/libs";
 import { User } from "@prisma/client";
 import { v4 } from "uuid";
 import { prisma } from "../src/index.js";
@@ -76,7 +76,7 @@ const main = async () => {
     hypertubeLogger.info("Seed completed successfully!");
     process.exit(0);
   } catch (error) {
-    hypertubeLogger.error(`Seed failed: ${error}`);
+    hypertubeLogger.error(`Seed failed: ${formatUnknownError(error)}`);
     process.exit(1);
   }
 };

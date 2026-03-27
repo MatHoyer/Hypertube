@@ -1,4 +1,8 @@
-import { hypertubeLogger, TSubtitleSchema } from "@hypertube/libs";
+import {
+  formatUnknownError,
+  hypertubeLogger,
+  TSubtitleSchema,
+} from "@hypertube/libs";
 import {
   BUCKETS,
   convertSrtToVtt,
@@ -20,13 +24,16 @@ export const getSubtitlesDownloadLinks = async ({
 }: {
   imdbId: string;
 }) => {
+  let browser: Awaited<ReturnType<typeof launchPuppeteer>> | null = null;
+
   try {
-    const browser = await launchPuppeteer();
+    browser = await launchPuppeteer();
     const page = await browser.newPage();
     await page.goto(`${yifysubtitlesUrl}${imdbId}`);
 
     const trs = await page.$$("tr");
 
+    hypertubeLogger.info(`Found ${trs.length} potential subtitles`);
     const subtitlesDownloadLinks = await Promise.all(
       trs.map(async (tr) => {
         const tds = await tr.$$("td");
@@ -43,6 +50,8 @@ export const getSubtitlesDownloadLinks = async ({
         );
         const link = await tds[2].$eval("a", (el) => el.href);
 
+        hypertubeLogger.info(`Found rating ${rating} for language ${language}`);
+
         return {
           language,
           rating: rating,
@@ -50,8 +59,6 @@ export const getSubtitlesDownloadLinks = async ({
         };
       })
     );
-
-    await browser.close();
 
     // Keep only one of each language with the highest rating
     const filtered = subtitlesDownloadLinks
@@ -81,9 +88,11 @@ export const getSubtitlesDownloadLinks = async ({
     return filtered;
   } catch (error) {
     hypertubeLogger.error(
-      `Error getting subtitles download links: ${JSON.stringify(error)}`
+      `Error getting subtitles download links: ${formatUnknownError(error)}`
     );
     return [];
+  } finally {
+    await browser?.close();
   }
 };
 

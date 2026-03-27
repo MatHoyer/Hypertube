@@ -1,4 +1,9 @@
-import { DownloadStates, hypertubeLogger, TMovieSchema } from "@hypertube/libs";
+import {
+  DownloadStates,
+  formatUnknownError,
+  hypertubeLogger,
+  TMovieSchema,
+} from "@hypertube/libs";
 import {
   BUCKETS,
   convertSrtToVtt,
@@ -31,12 +36,19 @@ const Status = {
   SEEDING: 6,
 } as const;
 
+const FFPROBE_LOW_MEM = [
+  "-probesize",
+  "2097152",
+  "-analyzeduration",
+  "1000000",
+];
+
 const checkFileReadability = async (filePath: string) => {
   return new Promise<boolean>((resolve) => {
-    ffmpeg.ffprobe(filePath, (err, metadata) => {
+    ffmpeg.ffprobe(filePath, FFPROBE_LOW_MEM, (err, metadata) => {
       if (err) {
         hypertubeLogger.error(
-          `File is NOT readable by ffmpeg: ${JSON.stringify(err)}`
+          `File is NOT readable by ffmpeg: ${formatUnknownError(err)}`
         );
         resolve(false);
       } else {
@@ -47,13 +59,11 @@ const checkFileReadability = async (filePath: string) => {
           duration > 0;
         if (!hasValidDuration) {
           hypertubeLogger.info(
-            `File readable but no valid duration yet (incomplete?): ${JSON.stringify(metadata?.format)}`
+            `File readable but no valid duration yet (incomplete?): duration=${String(duration)}`
           );
           resolve(false);
         } else {
-          hypertubeLogger.info(
-            `File is readable, metadata: ${JSON.stringify(metadata.format)}`
-          );
+          hypertubeLogger.info(`File is readable, duration: ${duration}s`);
           resolve(true);
         }
       }
@@ -81,8 +91,21 @@ const convertMovie = (
 
       ffmpeg(input.path)
         .output(output.path)
-        .inputOptions(["-fflags +genpts"])
-        .outputOptions(["-c copy"])
+        .inputOptions([
+          "-fflags",
+          "+genpts",
+          "-threads",
+          "1",
+          ...FFPROBE_LOW_MEM,
+        ])
+        .outputOptions([
+          "-c",
+          "copy",
+          "-threads",
+          "1",
+          "-max_muxing_queue_size",
+          "256",
+        ])
         .on("start", async () => {
           hypertubeLogger.info(`Conversion started`);
           await handler?.onStart?.();
@@ -99,7 +122,9 @@ const convertMovie = (
           resolvePromise();
         })
         .on("error", async (error) => {
-          hypertubeLogger.error(`Conversion error: ${error}`);
+          hypertubeLogger.error(
+            `Conversion error: ${formatUnknownError(error)}`
+          );
           await handler?.onError?.(error);
           rejectPromise(
             error instanceof Error ? error : new Error(String(error))
@@ -213,7 +238,9 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       );
       await Promise.allSettled(srtPromises);
     } catch (error) {
-      hypertubeLogger.error(`Error handling SRT files ${error}`);
+      hypertubeLogger.error(
+        `Error handling SRT files: ${formatUnknownError(error)}`
+      );
     }
 
     await prisma.resolution.update({
@@ -288,7 +315,9 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
           }
         } catch (error) {
           clearInterval(intervalId);
-          reject(new Error(`Error in ending download: ${error}`));
+          reject(
+            new Error(`Error in ending download: ${formatUnknownError(error)}`)
+          );
         }
       }, CHECK_DOWNLOAD_INTERVAL);
     });
