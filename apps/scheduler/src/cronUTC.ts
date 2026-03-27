@@ -1,4 +1,4 @@
-import { specificLogger, TLogger } from "@hypertube/libs";
+import { formatUnknownError, specificLogger, TLogger } from "@hypertube/libs";
 import cron from "node-cron";
 
 type TCronUTC = {
@@ -17,7 +17,7 @@ export const cronUTC = ({ cronExpression, callback, cronName }: TCronUTC) => {
         localLogger.info(`Cron job started`);
         await callback(localLogger);
       } catch (error) {
-        localLogger.error(`Error in cron job: ${error}`);
+        localLogger.error(`Error in cron job: ${formatUnknownError(error)}`);
       }
     },
     {

@@ -1,4 +1,4 @@
-import { hypertubeLogger } from "@hypertube/libs";
+import { formatUnknownError, hypertubeLogger } from "@hypertube/libs";
 import { Worker } from "bullmq";
 
 export const gracefulShutdown = async (signal: string, worker: Worker) => {
@@ -9,7 +9,7 @@ export const gracefulShutdown = async (signal: string, worker: Worker) => {
     hypertubeLogger.info("Worker gracefully shut down");
   } catch (error) {
     hypertubeLogger.error(
-      `Error shutting down worker: ${JSON.stringify(error)}`
+      `Error shutting down worker: ${formatUnknownError(error)}`
     );
   } finally {
     process.exit(0);

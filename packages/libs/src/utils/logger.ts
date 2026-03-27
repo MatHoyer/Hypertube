@@ -51,3 +51,15 @@ export const specificLogger = (name: string): TLogger => {
 };
 
 export type TLogger = Record<TLogLevel, (message: string) => void>;
+
+export const formatUnknownError = (error: unknown): string => {
+  if (error instanceof Error) {
+    return `${error.message}${error.stack ? `\n${error.stack}` : ""}`;
+  }
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
+};

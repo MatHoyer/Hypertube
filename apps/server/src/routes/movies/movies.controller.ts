@@ -1,5 +1,6 @@
 import {
   DownloadStates,
+  formatUnknownError,
   getMovieCastingSchema,
   getMovieCommentSchemas,
   getMovieSchemas,
@@ -322,7 +323,9 @@ export const downloadMovie = async (
         downloadState: DownloadStates.NOT_DOWNLOADED,
       },
     });
-    hypertubeLogger.error(`Error downloading movie ${JSON.stringify(error)}`);
+    hypertubeLogger.error(
+      `Error downloading movie ${formatUnknownError(error)}`
+    );
   }
 
   return c.json({ message: "Movie downloaded started" }, 200);

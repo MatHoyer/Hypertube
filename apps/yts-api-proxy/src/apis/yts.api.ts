@@ -1,4 +1,9 @@
-import { hypertubeLogger, TMovieSchema, ytsQualities } from "@hypertube/libs";
+import {
+  formatUnknownError,
+  hypertubeLogger,
+  TMovieSchema,
+  ytsQualities,
+} from "@hypertube/libs";
 import {
   ApiBase,
   BUCKETS,
@@ -54,7 +59,7 @@ export class YtsApi extends ApiBase {
       return movie.torrents;
     } catch (error) {
       hypertubeLogger.error(
-        `Error getting resolutions: ${JSON.stringify(error)}`
+        `Error getting resolutions: ${formatUnknownError(error)}`
       );
       return [];
     }

@@ -1,6 +1,6 @@
 import { hypertubeLogger } from "@hypertube/libs";
 import { Job, Queue, QueueEvents, QueueEventsListener } from "bullmq";
-import { redisConnectionQueues } from "./Redis.js";
+import { getRedisConnectionQueues } from "./Redis.js";
 import { DOWNLOAD_QUEUE, TDownloadJobData } from "./const.js";
 
 type TQueueName = typeof DOWNLOAD_QUEUE;
@@ -16,6 +16,7 @@ export class BullMQ<T extends TQueueName> {
   private readonly events: QueueEvents;
 
   constructor(queueName: T) {
+    const redisConnectionQueues = getRedisConnectionQueues();
     this.queue = new Queue<TQueueJobData[T]>(queueName, {
       connection: redisConnectionQueues,
     });

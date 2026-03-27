@@ -1,4 +1,9 @@
-import { DownloadStates, hypertubeLogger, TMovieSchema } from "@hypertube/libs";
+import {
+  DownloadStates,
+  formatUnknownError,
+  hypertubeLogger,
+  TMovieSchema,
+} from "@hypertube/libs";
 import {
   BUCKETS,
   convertSrtToVtt,
@@ -43,7 +48,7 @@ const checkFileReadability = async (filePath: string) => {
     ffmpeg.ffprobe(filePath, FFPROBE_LOW_MEM, (err, metadata) => {
       if (err) {
         hypertubeLogger.error(
-          `File is NOT readable by ffmpeg: ${JSON.stringify(err)}`
+          `File is NOT readable by ffmpeg: ${formatUnknownError(err)}`
         );
         resolve(false);
       } else {
@@ -117,7 +122,9 @@ const convertMovie = (
           resolvePromise();
         })
         .on("error", async (error) => {
-          hypertubeLogger.error(`Conversion error: ${error}`);
+          hypertubeLogger.error(
+            `Conversion error: ${formatUnknownError(error)}`
+          );
           await handler?.onError?.(error);
           rejectPromise(
             error instanceof Error ? error : new Error(String(error))
@@ -231,7 +238,9 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       );
       await Promise.allSettled(srtPromises);
     } catch (error) {
-      hypertubeLogger.error(`Error handling SRT files ${error}`);
+      hypertubeLogger.error(
+        `Error handling SRT files: ${formatUnknownError(error)}`
+      );
     }
 
     await prisma.resolution.update({
@@ -306,7 +315,9 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
           }
         } catch (error) {
           clearInterval(intervalId);
-          reject(new Error(`Error in ending download: ${error}`));
+          reject(
+            new Error(`Error in ending download: ${formatUnknownError(error)}`)
+          );
         }
       }, CHECK_DOWNLOAD_INTERVAL);
     });

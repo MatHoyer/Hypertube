@@ -1,4 +1,4 @@
-import { newUTCDate, TLogger } from "@hypertube/libs";
+import { formatUnknownError, newUTCDate, TLogger } from "@hypertube/libs";
 import {
   BUCKETS,
   getMovieRootPath,
@@ -38,7 +38,9 @@ const DELETE_MOVIES_MONTHLY_CRON_CALLBACK = async (localLogger: TLogger) => {
         getSubtitleRootPath(movieId)
       );
     } catch (error) {
-      localLogger.error(`Error deleting movie folder: ${error}`);
+      localLogger.error(
+        `Error deleting movie folder: ${formatUnknownError(error)}`
+      );
     }
   }
 
