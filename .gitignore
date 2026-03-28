@@ -21,7 +21,3 @@ dist/
 # Transmission config
 **/apps/downloader/config/**
 !**/apps/downloader/config/settings.json
-
-# Server public
-**/server/public/images/**
-!**/server/public/images/.gitkeep

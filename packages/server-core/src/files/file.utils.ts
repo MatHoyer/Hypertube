@@ -41,4 +41,5 @@ export const convertSrtToVtt = async (srtPath: string) => {
     flag: "w",
   });
   await fs.promises.unlink(srtPath);
+  return vttPath;
 };

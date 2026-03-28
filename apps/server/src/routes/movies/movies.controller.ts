@@ -7,6 +7,7 @@ import {
   getMoviesSchemas,
   hypertubeLogger,
   languageCodes,
+  languageYTSCodes,
   ParentTypes,
   Providers,
   TDeleteMovieLikeSchemas,
@@ -335,27 +336,28 @@ export const getMovieSubtitles = async (
   c: Context<TUrlParamsParser<TGetMovieSubtitlesSchemas["urlParams"]>>
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
+  const language = c.get("language");
 
   const movie = await prisma.movie.findUnique({
     where: { tmdbId },
+    include: { resolutions: true },
   });
   if (!movie) return c.json({ message: "Movie not found" }, 404);
   if (!movie.imdbId) return c.json({ subtitles: [] }, 200);
 
   const ytsProxyApi = new YtsProxyApi();
 
-  const subtitles = await ytsProxyApi.getSubtitles(movie.imdbId);
-  if (subtitles) {
-    await prisma.subtitle.createMany({
-      data: subtitles.map((subtitle) => ({
-        movieId: movie.id,
-        language: subtitle.language,
-        rating: subtitle.rating,
-        downloadLink: subtitle.link,
-      })),
-      skipDuplicates: true,
-    });
-  }
+  const subtitles = (await ytsProxyApi.getSubtitles(movie.imdbId)) ?? [];
+
+  await prisma.subtitle.createMany({
+    data: subtitles.map((subtitle) => ({
+      movieId: movie.id,
+      language: subtitle.language,
+      rating: subtitle.rating,
+      downloadLink: subtitle.link,
+    })),
+    skipDuplicates: true,
+  });
 
   const dbSubtitles = await prisma.subtitle.findMany({
     where: {
@@ -365,6 +367,58 @@ export const getMovieSubtitles = async (
       language: "asc",
     },
   });
+
+  const defaultSubtitles = dbSubtitles.find(
+    (subtitle) =>
+      subtitle.language ===
+      languageYTSCodes[language as keyof typeof languageCodes]
+  );
+  if (
+    !defaultSubtitles ||
+    defaultSubtitles.downloadState === DownloadStates.DOWNLOADED ||
+    movie.resolutions.every(
+      (resolution) => resolution.downloadState === DownloadStates.NOT_DOWNLOADED
+    )
+  ) {
+    return c.json({ subtitles: dbSubtitles }, 200);
+  }
+
+  await prisma.subtitle.update({
+    where: {
+      id: defaultSubtitles.id,
+    },
+    data: {
+      downloadState: DownloadStates.DOWNLOADING,
+    },
+  });
+
+  try {
+    await new YtsProxyApi().downloadSubtitles({
+      subtitles: defaultSubtitles,
+      tmdbId: movie.tmdbId,
+    });
+    await prisma.subtitle.update({
+      where: {
+        id: defaultSubtitles.id,
+      },
+      data: {
+        downloadState: DownloadStates.DOWNLOADED,
+      },
+    });
+  } catch (error) {
+    await prisma.subtitle.update({
+      where: {
+        id: defaultSubtitles.id,
+      },
+      data: {
+        downloadState: DownloadStates.NOT_DOWNLOADED,
+      },
+    });
+    hypertubeLogger.error(
+      `Error downloading default subtitles ${formatUnknownError(error)}`
+    );
+  }
+
   return c.json({ subtitles: dbSubtitles }, 200);
 };
 

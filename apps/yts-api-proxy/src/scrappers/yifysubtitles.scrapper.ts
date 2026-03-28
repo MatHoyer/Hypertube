@@ -153,7 +153,7 @@ export const downloadYifysubtitles = async (
   await fs.promises.writeFile(srtFilePath, srtEntry.getData());
   await fs.promises.unlink(zipPath);
 
-  await convertSrtToVtt(srtFilePath);
+  const vttFilePath = await convertSrtToVtt(srtFilePath);
 
   await minio.putObject(
     BUCKETS.SUBTITLES,
@@ -162,7 +162,7 @@ export const downloadYifysubtitles = async (
       subtitles.language,
       "subtitles.vtt"
     ),
-    await fs.promises.readFile(srtFilePath)
+    await fs.promises.readFile(vttFilePath)
   );
 
   await fs.promises.rm(downloadPath, { recursive: true, force: true });

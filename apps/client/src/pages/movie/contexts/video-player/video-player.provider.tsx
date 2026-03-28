@@ -3,7 +3,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useMouse } from "@/hooks/use-mouse";
 import { useToggle } from "@/hooks/use-toggle";
 import { LOCAL_STORAGE_KEYS } from "@/lib/const";
-import { DownloadStates, type TResolutionSchema } from "@hypertube/libs";
+import {
+  DownloadStates,
+  languageCodes,
+  languageYTSCodes,
+  type TResolutionSchema,
+} from "@hypertube/libs";
 import {
   useCallback,
   useEffect,
@@ -11,7 +16,9 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { useResolutions } from "../resolutions/resolutions.context";
+import { useSubtitles } from "../subtitles/subtitles.context";
 import { usedKeys } from "./video-player.const";
 import { VideoPlayerContext } from "./video-player.context";
 import type { Speed } from "./video-player.type";
@@ -22,6 +29,7 @@ export const VideoPlayerProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ watchedTimestamp, setWatchedTimestamp, children }) => {
   const isMobile = useIsMobile();
+  const { i18n } = useTranslation();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -74,6 +82,8 @@ export const VideoPlayerProvider: React.FC<{
   const { streamableResolutions, isLoading: isResolutionsLoading } =
     useResolutions();
 
+  const { streamableSubtitles } = useSubtitles();
+
   const [selectedResolution, setSelectedResolution] =
     useState<TResolutionSchema | null>(null);
   const [selectedSubtitlesLanguage, setSelectedSubtitlesLanguage] = useState<
@@ -83,6 +93,18 @@ export const VideoPlayerProvider: React.FC<{
   useEffect(
     () => setSelectedResolution(streamableResolutions[0] ?? null),
     [streamableResolutions]
+  );
+
+  useEffect(
+    () =>
+      setSelectedSubtitlesLanguage(
+        streamableSubtitles.find(
+          (subtitle) =>
+            subtitle.language ===
+            languageYTSCodes[i18n.language as keyof typeof languageCodes]
+        )?.language ?? null
+      ),
+    [streamableSubtitles, i18n.language]
   );
 
   // Play/Pause
