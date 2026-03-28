@@ -67,6 +67,7 @@ services:
         mc mb -p local/movies || true
         mc mb -p local/subtitles || true
         mc mb -p local/images || true
+        mc anonymous set download local/images
     restart: no
 
 volumes:

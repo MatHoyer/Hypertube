@@ -36,10 +36,7 @@ export const postImage = async (
     getImagePath(image.id),
     webpBuffer,
     webpBuffer.length,
-    {
-      "Content-Type": "image/webp",
-      "Content-Disposition": "inline",
-    }
+    { "Content-Type": "image/webp" }
   );
 
   return c.json(postImageSchemas.response.parse({ id: image.id }), 200);
