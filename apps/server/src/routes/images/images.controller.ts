@@ -4,20 +4,14 @@ import {
   TDeleteImageSchemas,
   TPostImageSchemas,
 } from "@hypertube/libs";
-import { env, prisma } from "@hypertube/server-core";
-import * as fs from "fs";
+import { BUCKETS, minio, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import sharp from "sharp";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 
-const getImagePath = (imageId: string) => {
-  if (env.NODE_ENV === "PROD") {
-    return `./dist/apps/public/images/${imageId}.webp`;
-  }
-  return `./public/images/${imageId}.webp`;
-};
+const getImagePath = (imageId: string) => `${imageId}.webp`;
 
 export const postImage = async (
   c: Context<TIsLogged & TBodyParser<TPostImageSchemas["requirements"]>>
@@ -37,8 +31,13 @@ export const postImage = async (
 
   const image = await prisma.image.create({ data: {} });
 
-  const path = getImagePath(image.id);
-  await fs.promises.writeFile(path, webpBuffer);
+  await minio.putObject(
+    BUCKETS.IMAGES,
+    getImagePath(image.id),
+    webpBuffer,
+    webpBuffer.length,
+    { "Content-Type": "image/webp" }
+  );
 
   return c.json(postImageSchemas.response.parse({ id: image.id }), 200);
 };
@@ -53,8 +52,7 @@ export const deleteImage = async (
   });
   if (!image) return c.json({ message: "OK" }, 200);
 
-  const path = getImagePath(image.id);
-  if (fs.existsSync(path)) await fs.promises.rm(path);
+  await minio.removeObject(BUCKETS.IMAGES, getImagePath(image.id));
   await prisma.image.delete({ where: { id: imageId } });
 
   return c.json({ message: "OK" }, 200);
