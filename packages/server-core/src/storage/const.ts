@@ -1,6 +1,7 @@
 export const BUCKETS = {
   MOVIES: "movies",
   SUBTITLES: "subtitles",
+  IMAGES: "images",
 };
 
 export const getMovieRootPath = (movieId: string) => {
