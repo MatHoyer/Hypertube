@@ -32,6 +32,7 @@ const envSchema = z.object({
   TRANSMISSION_TORRENT_PORT: z.coerce.number(),
   MINIO_ENDPOINT: z.string(),
   MINIO_PORT: z.coerce.number().optional(),
+  MINIO_URL: z.url(),
   MINIO_USE_SSL: z.coerce.boolean().optional().default(false),
   MINIO_ROOT_USER: z.string(),
   MINIO_ROOT_PASSWORD: z.string(),

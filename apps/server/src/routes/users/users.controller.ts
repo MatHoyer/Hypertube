@@ -202,7 +202,7 @@ export const patchUser = async (
   }
 
   const image = body.imageId
-    ? `${env.MINIO_USE_SSL ? "https" : "http"}://${env.MINIO_ENDPOINT}:${env.MINIO_PORT}/images/${body.imageId}.webp`
+    ? `${env.MINIO_URL}/images/${body.imageId}.webp`
     : body.imageId;
 
   await prisma.user.update({
