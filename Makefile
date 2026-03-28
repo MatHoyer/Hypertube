@@ -47,6 +47,14 @@ rebuild-vpn: stop-vpn
 	docker compose -f docker-compose-vpn.yml -f docker-compose-vpn.override.yml build --no-cache
 	$(MAKE) vpn
 
+rebuild-infra: stop-infra
+	docker compose -f docker-compose.yml -f docker-compose.override.yml build --no-cache
+	$(MAKE) infra
+
+rebuild-helpers: stop-helpers
+	docker compose -f docker-compose-helpers.yml build --no-cache
+	$(MAKE) helpers
+
 rebuild-prod: stop-prod
 	docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml build --no-cache
 	$(MAKE) prod

@@ -19,9 +19,7 @@ services:
 
   bull-board:
     container_name: hypertube_bull-board
-    build:
-      context: ./custom/bull-board-docker
-      dockerfile: Dockerfile
+    image: venatum/bull-board:3.3
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=${REDIS_PORT}

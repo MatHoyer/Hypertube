@@ -296,10 +296,12 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
                 }
               );
 
+              const movieStat = await fs.promises.stat(moviePath);
               await minio.putObject(
                 BUCKETS.MOVIES,
                 getMoviePath(movie.tmdbId.toString(), resolution, "movie.mp4"),
-                await fs.promises.readFile(moviePath)
+                fs.createReadStream(moviePath),
+                movieStat.size
               );
 
               await fs.promises.rm(`/downloads-transmission/${movie.tmdbId}`, {
