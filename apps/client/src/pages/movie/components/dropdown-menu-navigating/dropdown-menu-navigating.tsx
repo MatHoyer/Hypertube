@@ -124,7 +124,7 @@ const ResolutionsSettings: React.FC<{
       title={t("movie.playerSettings.resolutions")}
       goBack={goBack}
     >
-      {streamableResolutions.length > 0 ? (
+      {streamableResolutions.length > 0 &&
         streamableResolutions.map((resolution, index) => (
           <DropdownMenuSelectedItem
             key={index}
@@ -143,10 +143,13 @@ const ResolutionsSettings: React.FC<{
           >
             {resolution.resolution}
           </DropdownMenuSelectedItem>
-        ))
-      ) : isLoading ? (
-        <AppLoader />
-      ) : (
+        ))}
+      {isLoading && (
+        <div className="flex justify-center">
+          <AppLoader />
+        </div>
+      )}
+      {!isLoading && !streamableResolutions.length && (
         <Typography textColor="muted" className="p-2">
           {t("movie.playerSettings.noResolutions")}
         </Typography>
@@ -170,42 +173,46 @@ const SubtitlesSettings: React.FC<{
       goBack={goBack}
     >
       {streamableSubtitles.length > 0 && (
-        <DropdownMenuSelectedItem
-          onClick={() => {
-            setSelectedSubtitlesLanguage(null);
-            closePopup();
-          }}
-          selected={selectedSubtitlesLanguage === null}
-          icon={null}
-        >
-          {t("movie.playerSettings.noSelectedSubtitles")}
-        </DropdownMenuSelectedItem>
-      )}
-      {streamableSubtitles.length > 0 ? (
-        streamableSubtitles.map((subtitle, index) => (
+        <>
           <DropdownMenuSelectedItem
-            key={index}
             onClick={() => {
-              setSelectedSubtitlesLanguage(subtitle.language);
+              setSelectedSubtitlesLanguage(null);
               closePopup();
             }}
-            selected={selectedSubtitlesLanguage === subtitle.language}
-            icon={
-              subtitle.downloadState === DownloadStates.DOWNLOADED ? (
-                <Check color="green" />
-              ) : (
-                <AppLoader color="orange" />
-              )
-            }
+            selected={selectedSubtitlesLanguage === null}
+            icon={null}
           >
-            <Typography className="w-full truncate">
-              {subtitle.language}
-            </Typography>
+            {t("movie.playerSettings.noSelectedSubtitles")}
           </DropdownMenuSelectedItem>
-        ))
-      ) : isLoading ? (
-        <AppLoader />
-      ) : (
+          {streamableSubtitles.map((subtitle, index) => (
+            <DropdownMenuSelectedItem
+              key={index}
+              onClick={() => {
+                setSelectedSubtitlesLanguage(subtitle.language);
+                closePopup();
+              }}
+              selected={selectedSubtitlesLanguage === subtitle.language}
+              icon={
+                subtitle.downloadState === DownloadStates.DOWNLOADED ? (
+                  <Check color="green" />
+                ) : (
+                  <AppLoader color="orange" />
+                )
+              }
+            >
+              <Typography className="w-full truncate">
+                {subtitle.language}
+              </Typography>
+            </DropdownMenuSelectedItem>
+          ))}
+        </>
+      )}
+      {isLoading && (
+        <div className="flex justify-center">
+          <AppLoader />
+        </div>
+      )}
+      {!isLoading && !streamableSubtitles.length && (
         <Typography textColor="muted" className="p-2">
           {t("movie.playerSettings.noSubtitles")}
         </Typography>
