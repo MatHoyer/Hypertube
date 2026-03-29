@@ -59,7 +59,7 @@ export class YtsProxyApi extends ApiBase {
     subtitles: TSubtitleSchema;
     tmdbId: number;
   }) {
-    await this.fetch<{
+    return await this.fetch<{
       message: string;
     }>(`/subtitles/download`, {
       method: "POST",

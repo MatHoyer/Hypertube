@@ -40,6 +40,11 @@ export const languageCodes: Record<LanguageCode, string> = {
   fr: "Français",
   es: "Español",
 } as const;
+export const languageYTSCodes: Record<LanguageCode, string> = {
+  en: "English",
+  fr: "French",
+  es: "Spanish",
+} as const;
 
 export const notificationReadStatuses = {
   ALL: "all",
