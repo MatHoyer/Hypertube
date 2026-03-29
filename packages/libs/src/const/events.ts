@@ -1,6 +1,7 @@
 export const MOVIE_EVENTS = {
-  DOWNLOAD_STATE_CHANGE: "downloadStateChange",
-  DOWNLOAD_PROGRESS: "downloadProgress",
+  RESOLUTION_STATE_CHANGE: "resolutionStateChange",
+  RESOLUTION_DOWNLOAD_PROGRESS: "resolutionDownloadProgress",
+  SUBTITLE_STATE_CHANGE: "subtitleStateChange",
 } as const;
 
 export type TMovieEvents = (typeof MOVIE_EVENTS)[keyof typeof MOVIE_EVENTS];

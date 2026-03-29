@@ -51,7 +51,11 @@ import {
   getMovieDownloadStatesByTmdbIds,
   getMovieSeensByTmdbIds,
 } from "../global/movie.global";
-import { sendSSEDownloadStateChange, sendSSEProgress } from "./movies.helper";
+import {
+  sendSSEDownloadStateChange,
+  sendSSEProgress,
+  sendSSESubtitleStateChange,
+} from "./movies.helper";
 
 const tmdbGenresSchemas = z.array(z.enum(typedKeys(tmdbGenres)));
 
@@ -287,20 +291,11 @@ const downloadSubtitle = async ({
     },
   });
 
-  try {
-    await new YtsProxyApi().downloadSubtitles({
-      subtitles,
-      tmdbId,
-    });
-    await prisma.subtitle.update({
-      where: {
-        id: subtitles.id,
-      },
-      data: {
-        downloadState: DownloadStates.DOWNLOADED,
-      },
-    });
-  } catch (error) {
+  const res = await new YtsProxyApi().downloadSubtitles({
+    subtitles,
+    tmdbId,
+  });
+  if (!res) {
     await prisma.subtitle.update({
       where: {
         id: subtitles.id,
@@ -309,11 +304,18 @@ const downloadSubtitle = async ({
         downloadState: DownloadStates.NOT_DOWNLOADED,
       },
     });
-    hypertubeLogger.error(
-      `Error downloading subtitles ${formatUnknownError(error)}`
-    );
+    hypertubeLogger.error(`Error downloading subtitles`);
     return { success: false };
   }
+
+  await prisma.subtitle.update({
+    where: {
+      id: subtitles.id,
+    },
+    data: {
+      downloadState: DownloadStates.DOWNLOADED,
+    },
+  });
 
   return { success: true };
 };
@@ -332,9 +334,20 @@ const downloadDefaultSubtitle = async ({
   );
 
   if (defaultSubtitle?.downloadState === DownloadStates.NOT_DOWNLOADED) {
-    await downloadSubtitle({
+    const { success } = await downloadSubtitle({
       subtitles: defaultSubtitle!,
       tmdbId,
+    });
+    sseClients.mapClients(tmdbId.toString(), (stream) => {
+      sendSSESubtitleStateChange(
+        {
+          id: defaultSubtitle.id,
+          downloadState: success
+            ? DownloadStates.DOWNLOADED
+            : DownloadStates.NOT_DOWNLOADED,
+        },
+        stream
+      );
     });
   }
 };
@@ -424,18 +437,6 @@ export const getMovieSubtitles = async (
 
   const ytsProxyApi = new YtsProxyApi();
 
-  const subtitles = (await ytsProxyApi.getSubtitles(movie.imdbId)) ?? [];
-
-  await prisma.subtitle.createMany({
-    data: subtitles.map((subtitle) => ({
-      movieId: movie.id,
-      language: subtitle.language,
-      rating: subtitle.rating,
-      downloadLink: subtitle.link,
-    })),
-    skipDuplicates: true,
-  });
-
   const dbSubtitles = await prisma.subtitle.findMany({
     where: {
       movieId: movie.id,
@@ -444,6 +445,23 @@ export const getMovieSubtitles = async (
       language: "asc",
     },
   });
+
+  const getSubtitles = async (imdbId: string) => {
+    const subtitles = (await ytsProxyApi.getSubtitles(imdbId)) ?? [];
+
+    await prisma.subtitle.createMany({
+      data: subtitles.map((subtitle) => ({
+        movieId: movie.id,
+        language: subtitle.language,
+        rating: subtitle.rating,
+        downloadLink: subtitle.link,
+      })),
+      skipDuplicates: true,
+    });
+  };
+
+  if (dbSubtitles.length) getSubtitles(movie.imdbId);
+  else await getSubtitles(movie.imdbId);
 
   if (
     movie.resolutions.every(

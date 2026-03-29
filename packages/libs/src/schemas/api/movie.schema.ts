@@ -1,4 +1,5 @@
 import z from "zod";
+import { MOVIE_EVENTS } from "../../const/events.js";
 import { DownloadStates } from "../../const/global.const.js";
 import {
   tmdbCategories,
@@ -108,24 +109,31 @@ export const getMovieSSESchemas = {
     tmdbId: movieSchema.shape.tmdbId,
   }),
   response: {
-    downloadStateChange: z.object({
+    [MOVIE_EVENTS.RESOLUTION_STATE_CHANGE]: z.object({
       resolution: resolutionSchema.shape.resolution,
       downloadState: z.enum(DownloadStates),
     }),
-    downloadProgress: z.object({
+    [MOVIE_EVENTS.RESOLUTION_DOWNLOAD_PROGRESS]: z.object({
       resolution: resolutionSchema.shape.resolution,
       progress: z.coerce.number(),
+    }),
+    [MOVIE_EVENTS.SUBTITLE_STATE_CHANGE]: z.object({
+      id: subtitleSchema.shape.id,
+      downloadState: subtitleSchema.shape.downloadState,
     }),
   },
 };
 export type TGetMovieSSESchemas = {
   urlParams: z.infer<typeof getMovieSSESchemas.urlParams>;
   response: {
-    downloadStateChange: z.infer<
-      typeof getMovieSSESchemas.response.downloadStateChange
+    [MOVIE_EVENTS.RESOLUTION_STATE_CHANGE]: z.infer<
+      typeof getMovieSSESchemas.response.resolutionStateChange
     >;
-    downloadProgress: z.infer<
-      typeof getMovieSSESchemas.response.downloadProgress
+    [MOVIE_EVENTS.RESOLUTION_DOWNLOAD_PROGRESS]: z.infer<
+      typeof getMovieSSESchemas.response.resolutionDownloadProgress
+    >;
+    [MOVIE_EVENTS.SUBTITLE_STATE_CHANGE]: z.infer<
+      typeof getMovieSSESchemas.response.subtitleStateChange
     >;
   };
 };
