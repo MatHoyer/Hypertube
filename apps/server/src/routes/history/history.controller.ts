@@ -7,7 +7,7 @@ import {
 import { prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
-import { TIsSupportedLanguage } from "../../lib/i18n/utils";
+import { TSupportedLanguage } from "../../lib/i18n/utils";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
@@ -16,7 +16,7 @@ import { getMovieDownloadStatesByTmdbIds } from "../global/movie.global";
 export const getHistory = async (
   c: Context<
     TIsLogged &
-      TIsSupportedLanguage &
+      TSupportedLanguage &
       TSearchParamsParser<TGetHistorySchemas["searchParams"]>
   >
 ) => {

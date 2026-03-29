@@ -12,7 +12,7 @@ import {
 import { prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
-import { TIsSupportedLanguage } from "../../lib/i18n/utils";
+import { TSupportedLanguage } from "../../lib/i18n/utils";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
@@ -97,7 +97,7 @@ export const postPlaylist = async (
 export const getPlaylist = async (
   c: Context<
     TIsLogged &
-      TIsSupportedLanguage &
+      TSupportedLanguage &
       TUrlParamsParser<TGetPlaylistSchemas["urlParams"]> &
       TSearchParamsParser<TGetPlaylistSchemas["searchParams"]>
   >
@@ -183,7 +183,7 @@ export const deletePlaylist = async (
 export const postMovieToPlaylist = async (
   c: Context<
     TIsLogged &
-      TIsSupportedLanguage &
+      TSupportedLanguage &
       TUrlParamsParser<TPostMovieToPlaylistSchemas["urlParams"]> &
       TBodyParser<TPostMovieToPlaylistSchemas["requirements"]>
   >

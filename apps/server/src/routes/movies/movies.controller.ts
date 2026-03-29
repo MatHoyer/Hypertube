@@ -35,7 +35,7 @@ import z from "zod";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
 import { YtsProxyApi } from "../../lib/apis/yts-proxy.api";
 import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
-import { TIsSupportedLanguage } from "../../lib/i18n/utils";
+import { TSupportedLanguage } from "../../lib/i18n/utils";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
@@ -54,7 +54,7 @@ const tmdbGenresSchemas = z.array(z.enum(typedKeys(tmdbGenres)));
 export const getMovies = async (
   c: Context<
     TIsLogged &
-      TIsSupportedLanguage &
+      TSupportedLanguage &
       TSearchParamsParser<TGetMoviesSchemas["searchParams"]>
   >
 ) => {
@@ -112,7 +112,7 @@ export const getMovies = async (
 export const getMovie = async (
   c: Context<
     TIsLogged &
-      TIsSupportedLanguage &
+      TSupportedLanguage &
       TUrlParamsParser<TGetMovieSchemas["urlParams"]>
   >
 ) => {
@@ -252,7 +252,7 @@ export const getMovieResolutions = async (
 
 export const downloadMovie = async (
   c: Context<
-    TIsSupportedLanguage &
+    TSupportedLanguage &
       TUrlParamsParser<TPostMovieDownloadResolutionSchemas["urlParams"]>
   >
 ) => {
@@ -325,7 +325,7 @@ export const downloadMovie = async (
 
 export const getMovieSubtitles = async (
   c: Context<
-    TIsSupportedLanguage &
+    TSupportedLanguage &
       TUrlParamsParser<TGetMovieSubtitlesSchemas["urlParams"]>
   >
 ) => {

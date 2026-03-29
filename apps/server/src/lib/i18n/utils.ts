@@ -1,5 +1,5 @@
 import { languageCodes } from "@hypertube/libs";
 
-export type TIsSupportedLanguage = {
+export type TSupportedLanguage = {
   Variables: { language: keyof typeof languageCodes };
 };
