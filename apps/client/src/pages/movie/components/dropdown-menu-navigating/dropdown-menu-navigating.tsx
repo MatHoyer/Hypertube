@@ -116,7 +116,7 @@ const ResolutionsSettings: React.FC<{
   closePopup: () => void;
 }> = ({ goBack, closePopup }) => {
   const { t } = useTranslation();
-  const { streamableResolutions } = useResolutions();
+  const { streamableResolutions, isLoading } = useResolutions();
   const { selectedResolution, setSelectedResolution } = useVideoPlayer();
 
   return (
@@ -144,6 +144,8 @@ const ResolutionsSettings: React.FC<{
             {resolution.resolution}
           </DropdownMenuSelectedItem>
         ))
+      ) : isLoading ? (
+        <AppLoader />
       ) : (
         <Typography textColor="muted" className="p-2">
           {t("movie.playerSettings.noResolutions")}
@@ -158,7 +160,7 @@ const SubtitlesSettings: React.FC<{
   closePopup: () => void;
 }> = ({ goBack, closePopup }) => {
   const { t } = useTranslation();
-  const { streamableSubtitles } = useSubtitles();
+  const { streamableSubtitles, isLoading } = useSubtitles();
   const { selectedSubtitlesLanguage, setSelectedSubtitlesLanguage } =
     useVideoPlayer();
 
@@ -201,6 +203,8 @@ const SubtitlesSettings: React.FC<{
             </Typography>
           </DropdownMenuSelectedItem>
         ))
+      ) : isLoading ? (
+        <AppLoader />
       ) : (
         <Typography textColor="muted" className="p-2">
           {t("movie.playerSettings.noSubtitles")}
