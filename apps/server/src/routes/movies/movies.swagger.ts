@@ -446,11 +446,11 @@ export const moviesSwagger = {
           },
         },
         "404": {
-          description: "Movie not found",
+          description: "Movie or Subtitle not found",
           content: {
             "application/json": {
               example: {
-                message: "Movie not found",
+                message: "Movie or Subtitle not found",
               },
             },
           },

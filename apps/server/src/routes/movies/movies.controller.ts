@@ -460,7 +460,7 @@ export const getMovieSubtitles = async (
     });
   };
 
-  if (dbSubtitles.length) getSubtitles(movie.imdbId);
+  if (dbSubtitles.length) void getSubtitles(movie.imdbId);
   else await getSubtitles(movie.imdbId);
 
   if (
@@ -498,6 +498,9 @@ export const downloadSubtitles = async (
     },
   });
   if (!dbMovie) return c.json({ message: "Movie not found" }, 404);
+  if (!dbMovie.subtitles.length) {
+    return c.json({ message: "Subtitle not found" }, 404);
+  }
 
   const { success } = await downloadSubtitle({
     subtitles: dbMovie.subtitles[0],
