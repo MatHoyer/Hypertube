@@ -67,22 +67,21 @@ export const downloadDefaultSubtitle = async ({
   const defaultSubtitle = subtitles.find(
     (subtitle) => subtitle.language === languageYTSCodes[language]
   );
+  if (defaultSubtitle?.downloadState !== DownloadStates.NOT_DOWNLOADED) return;
 
-  if (defaultSubtitle?.downloadState === DownloadStates.NOT_DOWNLOADED) {
-    const { success } = await downloadSubtitle({
-      subtitles: defaultSubtitle!,
-      tmdbId,
-    });
-    sseClients.mapClients(tmdbId.toString(), (stream) => {
-      sendSSESubtitleStateChange(
-        {
-          id: defaultSubtitle.id,
-          downloadState: success
-            ? DownloadStates.DOWNLOADED
-            : DownloadStates.NOT_DOWNLOADED,
-        },
-        stream
-      );
-    });
-  }
+  const { success } = await downloadSubtitle({
+    subtitles: defaultSubtitle,
+    tmdbId,
+  });
+  sseClients.mapClients(tmdbId.toString(), (stream) => {
+    sendSSESubtitleStateChange(
+      {
+        id: defaultSubtitle.id,
+        downloadState: success
+          ? DownloadStates.DOWNLOADED
+          : DownloadStates.NOT_DOWNLOADED,
+      },
+      stream
+    );
+  });
 };
