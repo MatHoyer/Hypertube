@@ -7,7 +7,6 @@ import {
   getMoviesSchemas,
   hypertubeLogger,
   languageCodes,
-  languageYTSCodes,
   ParentTypes,
   Providers,
   TDeleteMovieLikeSchemas,
@@ -20,7 +19,6 @@ import {
   TGetMovieSSESchemas,
   TGetMovieSubtitlesSchemas,
   tmdbGenres,
-  TMovieSchema,
   TPostMovieCommentSchemas,
   TPostMovieDownloadResolutionSchemas,
   TPostMovieDownloadSubtitlesSchemas,
@@ -28,7 +26,6 @@ import {
   TPostMovieSubscribeSchemas,
   TPutMovieWatchTimerSchemas,
   TResolutionSchema,
-  TSubtitleSchema,
   typedKeys,
 } from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
@@ -39,8 +36,6 @@ import z from "zod";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
 import { YtsProxyApi } from "../../lib/apis/yts-proxy.api";
 import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
-import { downloaderQueue } from "../../lib/queues/downloader";
-import { SSEClients } from "../../lib/SSEClients";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
@@ -51,11 +46,8 @@ import {
   getMovieDownloadStatesByTmdbIds,
   getMovieSeensByTmdbIds,
 } from "../global/movie.global";
-import {
-  sendSSEDownloadStateChange,
-  sendSSEProgress,
-  sendSSESubtitleStateChange,
-} from "./movies.helper";
+import { sseClients } from "./movie.sse";
+import { downloadDefaultSubtitle, downloadSubtitle } from "./movies.helper";
 
 const tmdbGenresSchemas = z.array(z.enum(typedKeys(tmdbGenres)));
 
@@ -195,28 +187,6 @@ export const getMovie = async (
   );
 };
 
-const sseClients = new SSEClients();
-downloaderQueue.on("completed", (job) => {
-  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-    sendSSEDownloadStateChange(job.data, DownloadStates.DOWNLOADED, stream);
-  });
-});
-downloaderQueue.on("failed", (job) => {
-  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-    sendSSEDownloadStateChange(job.data, DownloadStates.NOT_DOWNLOADED, stream);
-  });
-});
-downloaderQueue.on("waiting", (job) => {
-  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-    sendSSEDownloadStateChange(job.data, DownloadStates.WAITING, stream);
-  });
-});
-downloaderQueue.on("progress", (job) => {
-  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-    sendSSEProgress(job, stream);
-  });
-});
-
 export const getMovieSSE = async (
   c: Context<TUrlParamsParser<TGetMovieSSESchemas["urlParams"]>>
 ) => {
@@ -273,83 +243,6 @@ export const getMovieResolutions = async (
     },
   });
   return c.json({ resolutions: dbResolutions }, 200);
-};
-
-const downloadSubtitle = async ({
-  subtitles,
-  tmdbId,
-}: {
-  subtitles: TSubtitleSchema;
-  tmdbId: TMovieSchema["tmdbId"];
-}) => {
-  await prisma.subtitle.update({
-    where: {
-      id: subtitles.id,
-    },
-    data: {
-      downloadState: DownloadStates.DOWNLOADING,
-    },
-  });
-
-  const res = await new YtsProxyApi().downloadSubtitles({
-    subtitles,
-    tmdbId,
-  });
-  if (!res) {
-    await prisma.subtitle.update({
-      where: {
-        id: subtitles.id,
-      },
-      data: {
-        downloadState: DownloadStates.NOT_DOWNLOADED,
-      },
-    });
-    hypertubeLogger.error(`Error downloading subtitles`);
-    return { success: false };
-  }
-
-  await prisma.subtitle.update({
-    where: {
-      id: subtitles.id,
-    },
-    data: {
-      downloadState: DownloadStates.DOWNLOADED,
-    },
-  });
-
-  return { success: true };
-};
-
-const downloadDefaultSubtitle = async ({
-  subtitles,
-  tmdbId,
-  language,
-}: {
-  subtitles: TSubtitleSchema[];
-  tmdbId: TMovieSchema["tmdbId"];
-  language: keyof typeof languageCodes;
-}) => {
-  const defaultSubtitle = subtitles.find(
-    (subtitle) => subtitle.language === languageYTSCodes[language]
-  );
-
-  if (defaultSubtitle?.downloadState === DownloadStates.NOT_DOWNLOADED) {
-    const { success } = await downloadSubtitle({
-      subtitles: defaultSubtitle!,
-      tmdbId,
-    });
-    sseClients.mapClients(tmdbId.toString(), (stream) => {
-      sendSSESubtitleStateChange(
-        {
-          id: defaultSubtitle.id,
-          downloadState: success
-            ? DownloadStates.DOWNLOADED
-            : DownloadStates.NOT_DOWNLOADED,
-        },
-        stream
-      );
-    });
-  }
 };
 
 export const downloadMovie = async (
