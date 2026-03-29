@@ -2,7 +2,6 @@ import {
   DownloadStates,
   getPlaylistSchemas,
   getPlaylistsSchemas,
-  languageCodes,
   TDeleteMovieFromPlaylistSchemas,
   TDeletePlaylistSchemas,
   TGetPlaylistSchemas,
@@ -13,6 +12,7 @@ import {
 import { prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
+import { TIsSupportedLanguage } from "../../lib/i18n/utils";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
@@ -97,6 +97,7 @@ export const postPlaylist = async (
 export const getPlaylist = async (
   c: Context<
     TIsLogged &
+      TIsSupportedLanguage &
       TUrlParamsParser<TGetPlaylistSchemas["urlParams"]> &
       TSearchParamsParser<TGetPlaylistSchemas["searchParams"]>
   >
@@ -137,7 +138,7 @@ export const getPlaylist = async (
   const tmdbApi = new TmdbApi();
   const tmdbMovies = await tmdbApi.getAllMovieDetails(
     movies.map(({ movie }) => movie.tmdbId),
-    language as keyof typeof languageCodes
+    language
   );
 
   return c.json(
@@ -182,6 +183,7 @@ export const deletePlaylist = async (
 export const postMovieToPlaylist = async (
   c: Context<
     TIsLogged &
+      TIsSupportedLanguage &
       TUrlParamsParser<TPostMovieToPlaylistSchemas["urlParams"]> &
       TBodyParser<TPostMovieToPlaylistSchemas["requirements"]>
   >
@@ -202,10 +204,7 @@ export const postMovieToPlaylist = async (
   let movie = await prisma.movie.findFirst({ where: { tmdbId } });
   if (!movie) {
     const tmdbApi = new TmdbApi();
-    const tmdbMovie = await tmdbApi.getMovie(
-      tmdbId,
-      language as keyof typeof languageCodes
-    );
+    const tmdbMovie = await tmdbApi.getMovie(tmdbId, language);
     if (!tmdbMovie.hasDetails) {
       return c.json({ message: "Movie not found" }, 404);
     }

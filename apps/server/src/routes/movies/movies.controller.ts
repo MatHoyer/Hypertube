@@ -6,7 +6,6 @@ import {
   getMovieSchemas,
   getMoviesSchemas,
   hypertubeLogger,
-  languageCodes,
   ParentTypes,
   Providers,
   TDeleteMovieLikeSchemas,
@@ -36,6 +35,7 @@ import z from "zod";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
 import { YtsProxyApi } from "../../lib/apis/yts-proxy.api";
 import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
+import { TIsSupportedLanguage } from "../../lib/i18n/utils";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
@@ -52,7 +52,11 @@ import { downloadDefaultSubtitle, downloadSubtitle } from "./movies.helper";
 const tmdbGenresSchemas = z.array(z.enum(typedKeys(tmdbGenres)));
 
 export const getMovies = async (
-  c: Context<TIsLogged & TSearchParamsParser<TGetMoviesSchemas["searchParams"]>>
+  c: Context<
+    TIsLogged &
+      TIsSupportedLanguage &
+      TSearchParamsParser<TGetMoviesSchemas["searchParams"]>
+  >
 ) => {
   const tmdbApi = new TmdbApi();
 
@@ -70,7 +74,7 @@ export const getMovies = async (
 
   const moviesPagination = await tmdbApi.getMovies({
     query,
-    language: language as keyof typeof languageCodes,
+    language,
     page,
     category,
     sort,
@@ -106,17 +110,18 @@ export const getMovies = async (
 };
 
 export const getMovie = async (
-  c: Context<TIsLogged & TUrlParamsParser<TGetMovieSchemas["urlParams"]>>
+  c: Context<
+    TIsLogged &
+      TIsSupportedLanguage &
+      TUrlParamsParser<TGetMovieSchemas["urlParams"]>
+  >
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const language = c.get("language");
   const user = c.get("user");
 
   const tmdbApi = new TmdbApi();
-  const tmdbMovie = await tmdbApi.getMovie(
-    tmdbId,
-    language as keyof typeof languageCodes
-  );
+  const tmdbMovie = await tmdbApi.getMovie(tmdbId, language);
 
   if (!tmdbMovie.hasDetails) return c.json(null, 404);
 
@@ -246,7 +251,10 @@ export const getMovieResolutions = async (
 };
 
 export const downloadMovie = async (
-  c: Context<TUrlParamsParser<TPostMovieDownloadResolutionSchemas["urlParams"]>>
+  c: Context<
+    TIsSupportedLanguage &
+      TUrlParamsParser<TPostMovieDownloadResolutionSchemas["urlParams"]>
+  >
 ) => {
   const { tmdbId, resolution } = c.get("validatedUrlParams");
   const language = c.get("language");
@@ -296,7 +304,7 @@ export const downloadMovie = async (
     await downloadDefaultSubtitle({
       subtitles: dbMovie.subtitles,
       tmdbId: dbMovie.tmdbId,
-      language: language as keyof typeof languageCodes,
+      language,
     });
   } catch (error) {
     await prisma.resolution.update({
@@ -316,7 +324,10 @@ export const downloadMovie = async (
 };
 
 export const getMovieSubtitles = async (
-  c: Context<TUrlParamsParser<TGetMovieSubtitlesSchemas["urlParams"]>>
+  c: Context<
+    TIsSupportedLanguage &
+      TUrlParamsParser<TGetMovieSubtitlesSchemas["urlParams"]>
+  >
 ) => {
   const { tmdbId } = c.get("validatedUrlParams");
   const language = c.get("language");
@@ -367,7 +378,7 @@ export const getMovieSubtitles = async (
   await downloadDefaultSubtitle({
     subtitles: dbSubtitles,
     tmdbId: movie.tmdbId,
-    language: language as keyof typeof languageCodes,
+    language,
   });
 
   return c.json({ subtitles: dbSubtitles }, 200);

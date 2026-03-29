@@ -1,13 +1,13 @@
 import {
   DownloadStates,
   getHistorySchemas,
-  languageCodes,
   TDeleteMovieFromHistorySchemas,
   TGetHistorySchemas,
 } from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
+import { TIsSupportedLanguage } from "../../lib/i18n/utils";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
@@ -15,7 +15,9 @@ import { getMovieDownloadStatesByTmdbIds } from "../global/movie.global";
 
 export const getHistory = async (
   c: Context<
-    TIsLogged & TSearchParamsParser<TGetHistorySchemas["searchParams"]>
+    TIsLogged &
+      TIsSupportedLanguage &
+      TSearchParamsParser<TGetHistorySchemas["searchParams"]>
   >
 ) => {
   const { id: userId } = c.get("user");
@@ -48,7 +50,7 @@ export const getHistory = async (
   const tmdbMovies = (
     await tmdbApi.getAllMovieDetails(
       history.map((history) => history.movie.tmdbId),
-      language as keyof typeof languageCodes
+      language
     )
   ).filter(Boolean);
 
