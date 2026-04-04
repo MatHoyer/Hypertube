@@ -144,7 +144,12 @@ export const MovieBaseInfo: React.FC<
         genres={movie.genres}
         displayOnlyOne={info === "partial"}
       />
-      <div className="flex justify-between w-full gap-2">
+      <div
+        className={cn(
+          dir === "row" && info === "partial" && "flex-col sm:flex-row",
+          "flex justify-between items-center w-full gap-2"
+        )}
+      >
         <Badge>{movie.release_date || t("library.missing.date")}</Badge>
         <ScoreRated score={movie.vote_average} voteCount={movie.vote_count} />
       </div>
