@@ -19,7 +19,7 @@ import { v5 } from "uuid";
 import z from "zod";
 import { mailTemplate } from "../emails/import-template";
 import { sendVerificationEmail } from "../emails/sendEmailVerification";
-import { sendEmail } from "./resend";
+import { sendEmail } from "./mail";
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
