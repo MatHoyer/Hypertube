@@ -23,6 +23,27 @@ import { sendEmail } from "./resend";
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
+type AuthMiddleware = MiddlewareContext<
+  MiddlewareOptions,
+  AuthContext & {
+    returned?: unknown;
+    responseHeaders?: Headers;
+  }
+>;
+
+const normalizeUsername = (ctx: AuthMiddleware) => {
+  const username = ctx.body.username as string;
+  return {
+    context: {
+      ...ctx,
+      body: {
+        ...ctx.body,
+        username: username.toLowerCase(),
+      },
+    },
+  };
+};
+
 const updatePassword = (newPassword: string) => {
   if (!newPassword)
     throw new APIError("BAD_REQUEST", {
@@ -35,15 +56,7 @@ const updatePassword = (newPassword: string) => {
   }
 };
 
-const updateUser = async (
-  ctx: MiddlewareContext<
-    MiddlewareOptions,
-    AuthContext & {
-      returned?: unknown;
-      responseHeaders?: Headers;
-    }
-  >
-) => {
+const updateUser = async (ctx: AuthMiddleware) => {
   if (ctx.body.image) return;
   else if (ctx.body.firstName || ctx.body.lastName) {
     const session = await getSessionFromCtx(ctx);
@@ -81,15 +94,7 @@ const updateEmail = (newEmail: string) => {
   }
 };
 
-const handleBetterAuthError = (
-  ctx: MiddlewareContext<
-    MiddlewareOptions,
-    AuthContext & {
-      returned?: unknown;
-      responseHeaders?: Headers;
-    }
-  >
-) => {
+const handleBetterAuthError = (ctx: AuthMiddleware) => {
   throw ctx.redirect(
     getUrl(ROUTES.CLIENT.ERROR, {
       withUrl: "client",
@@ -190,6 +195,8 @@ export const auth = betterAuth({
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       switch (ctx.path) {
+        case "/sign-in/username":
+          return normalizeUsername(ctx);
         case "/sign-up/email":
           return updatePassword(ctx.body.password);
         case "/reset-password":
