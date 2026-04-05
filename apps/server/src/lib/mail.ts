@@ -11,7 +11,7 @@ export type SendEmailPayload = {
 };
 
 const mailpitTransport =
-  env.NODE_ENV === "DEV"
+  env.MAIL_PROVIDER === "mailpit"
     ? nodemailer.createTransport({
         host: env.MAILPIT_SMTP_HOST,
         port: env.MAILPIT_SMTP_PORT,
@@ -28,17 +28,14 @@ function getResend(): Resend {
 }
 
 export const sendEmail = async (payload: SendEmailPayload) => {
-  const subject =
-    env.NODE_ENV === "DEV" ? `[DEV] ${payload.subject}` : payload.subject;
-
-  if (env.NODE_ENV === "DEV") {
+  if (env.MAIL_PROVIDER === "mailpit") {
     await mailpitTransport!.sendMail({
       from:
         payload.from ??
         env.RESEND_API_EMAIL_FROM ??
         "Hypertube <noreply@localhost>",
       to: payload.to,
-      subject,
+      subject: payload.subject,
       html: payload.html,
       text: payload.text,
     });
@@ -48,7 +45,7 @@ export const sendEmail = async (payload: SendEmailPayload) => {
   return getResend().emails.send({
     from: payload.from ?? env.RESEND_API_EMAIL_FROM!,
     to: payload.to,
-    subject,
+    subject: payload.subject,
     html: payload.html,
     text: payload.text,
   });
