@@ -1,4 +1,13 @@
 services:
+  mailpit:
+    container_name: hypertube_mailpit
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - hypertube-network
+
   db:
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"

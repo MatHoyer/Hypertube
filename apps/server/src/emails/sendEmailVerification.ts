@@ -3,7 +3,7 @@ import { prisma } from "@hypertube/server-core";
 import { APIError } from "better-auth/api";
 import { addMinutes, isBefore } from "date-fns";
 import i18next from "i18next";
-import { sendEmail } from "../lib/resend";
+import { sendEmail } from "../lib/mail";
 import { mailTemplate } from "./import-template";
 
 export const sendVerificationEmail = async ({
