@@ -49,8 +49,11 @@ jobs:
           CLIENT_URL=${{ secrets.CLIENT_URL }}
           CLIENT_PORT=${{ secrets.CLIENT_PORT }}
 
-          RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
-          RESEND_API_EMAIL_FROM=${{ secrets.RESEND_API_EMAIL_FROM }}
+          MAIL_PROVIDER=mailpit
+          MAIL_FROM="Hypertube <hypertube@notifications.mathieuhoyer.fr>"
+
+          MAILPIT_SMTP_HOST=localhost
+          MAILPIT_SMTP_PORT=1025
 
           BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
           BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
