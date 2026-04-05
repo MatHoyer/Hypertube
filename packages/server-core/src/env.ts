@@ -17,7 +17,7 @@ const envSchema = z
     CLIENT_PORT: z.coerce.number(),
     MAIL_PROVIDER: z.enum(["resend", "mailpit"]),
     RESEND_API_KEY: z.string().optional(),
-    RESEND_API_EMAIL_FROM: z.string().optional(),
+    MAIL_FROM: z.string(),
     MAILPIT_SMTP_HOST: z.string(),
     MAILPIT_SMTP_PORT: z.coerce.number(),
     BETTER_AUTH_SECRET: z.string(),
@@ -56,13 +56,6 @@ const envSchema = z
             code: "custom",
             message: "RESEND_API_KEY is required when NODE_ENV is PROD",
             path: ["RESEND_API_KEY"],
-          });
-        }
-        if (!data.RESEND_API_EMAIL_FROM) {
-          ctx.addIssue({
-            code: "custom",
-            message: "RESEND_API_EMAIL_FROM is required when NODE_ENV is PROD",
-            path: ["RESEND_API_EMAIL_FROM"],
           });
         }
       }

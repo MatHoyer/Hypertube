@@ -30,10 +30,7 @@ function getResend(): Resend {
 export const sendEmail = async (payload: SendEmailPayload) => {
   if (env.MAIL_PROVIDER === "mailpit") {
     await mailpitTransport!.sendMail({
-      from:
-        payload.from ??
-        env.RESEND_API_EMAIL_FROM ??
-        "Hypertube <noreply@localhost>",
+      from: payload.from ?? env.MAIL_FROM,
       to: payload.to,
       subject: payload.subject,
       html: payload.html,
@@ -43,7 +40,7 @@ export const sendEmail = async (payload: SendEmailPayload) => {
   }
 
   return getResend().emails.send({
-    from: payload.from ?? env.RESEND_API_EMAIL_FROM!,
+    from: payload.from ?? env.MAIL_FROM,
     to: payload.to,
     subject: payload.subject,
     html: payload.html,
