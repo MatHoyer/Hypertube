@@ -7,8 +7,8 @@
     "start": "node dist/apps/server/src/main.js"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.13",
-    "@hono/swagger-ui": "^0.5.2",
+    "@hono/node-server": "^2.0.4",
+    "@hono/swagger-ui": "^0.6.1",
     "@hypertube/libs": "workspace:*",
     "@hypertube/server-core": "workspace:*",
     "@types/jsonwebtoken": "^9.0.10",
@@ -18,15 +18,15 @@
     "hono": "^4.12.18",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^8.0.5",
-    "resend": "^4.7.0",
+    "resend": "^6.12.3",
     "sharp": "^0.34.3",
-    "uuid": "^11.1.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.7",
     "@types/bcrypt": "^6.0.0",
-    "@types/node": "^20.11.17",
-    "@types/nodemailer": "^7.0.11",
+    "@types/node": "^25.9.1",
+    "@types/nodemailer": "^8.0.0",
     "nodemon": "^3.1.14",
     "tsx": "^4.7.1"
   }
