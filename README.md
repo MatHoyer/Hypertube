@@ -144,6 +144,31 @@ or
 make prod
 ```
 
+## 🐳 Pre-built images (GHCR)
+
+Production images are published to [GitHub Container Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) when a version tag is pushed:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+Images are tagged with the git tag (e.g. `v1.0.0`):
+
+- `ghcr.io/mathoyer/hypertube-server:<tag>`
+- `ghcr.io/mathoyer/hypertube-downloader:<tag>`
+- `ghcr.io/mathoyer/hypertube-scheduler:<tag>`
+- `ghcr.io/mathoyer/hypertube-yts-api-proxy:<tag>`
+- `ghcr.io/mathoyer/hypertube-migrate:<tag>`
+
+Example:
+
+```bash
+docker pull ghcr.io/mathoyer/hypertube-server:v1.0.0
+```
+
+After the first publish, set each package to **Public** under GitHub → **Packages** → package → **Package settings** → **Change visibility**, so images can be pulled without authentication.
+
 ## 📜 Dependency Installation Rules
 
 The project is split into **7 workspaces**:

@@ -1,0 +1,71 @@
+name: docker-publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  pre-publish-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Check translation completeness
+        run: ./scripts/check_translation.sh
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: pre-publish-checks
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: server
+            dockerfile: ./apps/server/Dockerfile.prod
+          - name: downloader
+            dockerfile: ./apps/downloader/Dockerfile.prod
+          - name: scheduler
+            dockerfile: ./apps/scheduler/Dockerfile.prod
+          - name: yts-api-proxy
+            dockerfile: ./apps/yts-api-proxy/Dockerfile.prod
+          - name: migrate
+            dockerfile: ./packages/server-core/Dockerfile.migration
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set GHCR owner (lowercase)
+        run: echo "OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_ENV"
+
+      - name: Create .env for Docker build
+        run: cp .env.example .env
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ghcr.io/${{ env.OWNER }}/hypertube-${{ matrix.name }}:${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
