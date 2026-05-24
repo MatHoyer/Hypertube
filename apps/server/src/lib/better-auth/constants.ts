@@ -1,4 +1,4 @@
-import { APIError } from "better-auth/api";
+import { isAPIError } from "better-auth/api";
 import i18next from "i18next";
 
 const keyErrorCodes = [
@@ -47,10 +47,17 @@ export const errorCodes = keyErrorCodes.map(
   (code) => `betterAuthError.${code}` as const
 );
 
+const getApiErrorCode = (error: unknown): string | undefined => {
+  if (!isAPIError(error)) return undefined;
+  const { body } = error as { body?: { code?: string } };
+  return body?.code;
+};
+
 export const betterAuthErrorTranslation = (error: unknown): string => {
   let code = "UNEXPECTED_ERROR";
   try {
-    if (error instanceof APIError && error.body?.code) code = error.body.code;
+    const errorCode = getApiErrorCode(error);
+    if (errorCode) code = errorCode;
 
     if (
       !errorCodes.includes(

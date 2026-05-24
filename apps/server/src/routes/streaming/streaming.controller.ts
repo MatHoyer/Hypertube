@@ -99,8 +99,9 @@ export const getStreamingSubtitles = async (
   try {
     const stream = await minio.getObject(BUCKETS.SUBTITLES, objectName);
     const file = await buffer(stream);
-    return c.body(file, 200, {
-      "Content-Type": "text/vtt; charset=utf-8",
+    return new Response(new Uint8Array(file), {
+      status: 200,
+      headers: { "Content-Type": "text/vtt; charset=utf-8" },
     });
   } catch (e) {
     if (isObjectNotFound(e)) {

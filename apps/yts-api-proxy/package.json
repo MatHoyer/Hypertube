@@ -8,12 +8,12 @@
     "download:puppeteer": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
-    "@hono/node-server": "^1.16.0",
+    "@hono/node-server": "^1.19.13",
     "@hypertube/libs": "workspace:*",
     "@hypertube/server-core": "workspace:*",
     "adm-zip": "^0.5.16",
     "puppeteer": "^24.16.0",
-    "hono": "^4.8.5"
+    "hono": "^4.12.18"
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.7",
