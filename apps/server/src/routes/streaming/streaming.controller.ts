@@ -12,16 +12,7 @@ import { Context } from "hono";
 import { buffer } from "node:stream/consumers";
 import { Readable } from "node:stream";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
-
-const isObjectNotFound = (e: unknown): boolean => {
-  if (e == null || typeof e !== "object") return false;
-  const err = e as { code?: string; statusCode?: number };
-  return (
-    err.code === "NotFound" ||
-    err.code === "NoSuchKey" ||
-    err.statusCode === 404
-  );
-};
+import { isObjectNotFound, parseByteRange } from "./streaming.utils.js";
 
 export const getStreamingResolution = async (
   c: Context<TUrlParamsParser<TGetStreamingResolutionSchemas["urlParams"]>>,
@@ -47,11 +38,9 @@ export const getStreamingResolution = async (
   const range = c.req.header("range");
 
   if (range) {
-    const [rawStart, rawEnd] = range.replace(/bytes=/, "").split("-");
-    const start = parseInt(rawStart, 10);
-    const end = rawEnd ? parseInt(rawEnd, 10) : start + 5000000; // 5MB
+    const parsed = parseByteRange(range, fileSize);
 
-    if (start >= fileSize) {
+    if ("unsatisfiable" in parsed) {
       c.header("Content-Range", `bytes */${fileSize}`);
       return c.json(
         {
@@ -61,8 +50,7 @@ export const getStreamingResolution = async (
       );
     }
 
-    const safeEnd = Math.min(end, fileSize - 1);
-    const chunkSize = safeEnd - start + 1;
+    const { start, chunkSize, safeEnd } = parsed;
 
     const fileStream = await minio.getPartialObject(
       BUCKETS.MOVIES,

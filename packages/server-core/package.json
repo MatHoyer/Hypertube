@@ -10,7 +10,7 @@
   },
   "scripts": {
     "clear": "rm -rf node_modules dist prisma/migrations src/generated",
-    "build": "tsc --build",
+    "build": "prisma generate && tsc --build",
     "dev": "tsc -w --preserveWatchOutput",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev --name init",

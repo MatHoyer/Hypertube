@@ -35,6 +35,9 @@
     "dev": "pnpm build:packages && pnpm -r --parallel dev",
     "build": "pnpm build:packages && pnpm -r --parallel build",
     "start": "pnpm -r --parallel start",
+    "//-- Testing --": "",
+    "test": "pnpm --filter server test",
+    "test:server": "pnpm --filter server test",
     "//-- Linting --": "",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

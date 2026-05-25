@@ -46,7 +46,7 @@ import {
   getMovieDownloadStatesByTmdbIds,
   getMovieSeensByTmdbIds,
 } from "../global/movie.global";
-import { sseClients } from "./movie.sse";
+import { ensureDownloaderQueueListeners, sseClients } from "./movie.sse";
 import { downloadDefaultSubtitle, downloadSubtitle } from "./movies.helper";
 
 const tmdbGenresSchemas = z.array(z.enum(typedKeys(tmdbGenres)));
@@ -198,6 +198,7 @@ export const getMovieSSE = async (
   const { tmdbId } = c.get("validatedUrlParams");
 
   hypertubeLogger.info(`[${tmdbId}] SSE started`);
+  ensureDownloaderQueueListeners();
 
   return streamSSE(c, async (stream) => {
     sseClients.addClient(tmdbId.toString(), stream);

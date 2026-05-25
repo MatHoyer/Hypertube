@@ -20,9 +20,37 @@ jobs:
         run: |
           ./scripts/check_translation.sh
 
+  server-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/hypertube
+        run: pnpm build:packages
+
+      - name: Run server tests
+        run: pnpm --filter server test
+
   docker-startup:
     runs-on: ubuntu-latest
-    needs: pre-build-tests
+    needs: [pre-build-tests, server-tests]
 
     steps:
       - name: Checkout repository

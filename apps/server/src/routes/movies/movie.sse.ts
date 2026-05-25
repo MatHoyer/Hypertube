@@ -7,10 +7,44 @@ import {
 import { TDownloadJobData } from "@hypertube/server-core";
 import { Job } from "bullmq";
 import { SSEStreamingApi } from "hono/streaming";
-import { downloaderQueue } from "../../lib/queues/downloader";
+import { getDownloaderQueue } from "../../lib/queues/downloader";
 import { SSEClients } from "../../lib/SSEClients";
 
 export const sseClients = new SSEClients();
+
+let downloaderListenersRegistered = false;
+
+export const ensureDownloaderQueueListeners = () => {
+  if (downloaderListenersRegistered) return;
+  downloaderListenersRegistered = true;
+
+  const downloaderQueue = getDownloaderQueue();
+
+  downloaderQueue.on("completed", (job) => {
+    sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+      sendSSEDownloadStateChange(job.data, DownloadStates.DOWNLOADED, stream);
+    });
+  });
+  downloaderQueue.on("failed", (job) => {
+    sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+      sendSSEDownloadStateChange(
+        job.data,
+        DownloadStates.NOT_DOWNLOADED,
+        stream
+      );
+    });
+  });
+  downloaderQueue.on("waiting", (job) => {
+    sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+      sendSSEDownloadStateChange(job.data, DownloadStates.WAITING, stream);
+    });
+  });
+  downloaderQueue.on("progress", (job) => {
+    sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+      sendSSEProgress(job, stream);
+    });
+  });
+};
 
 const sendSSEDownloadStateChange = (
   jobData: TDownloadJobData,
@@ -48,24 +82,3 @@ export const sendSSESubtitleStateChange = (
     data: JSON.stringify(subtitle),
   });
 };
-
-downloaderQueue.on("completed", (job) => {
-  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-    sendSSEDownloadStateChange(job.data, DownloadStates.DOWNLOADED, stream);
-  });
-});
-downloaderQueue.on("failed", (job) => {
-  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-    sendSSEDownloadStateChange(job.data, DownloadStates.NOT_DOWNLOADED, stream);
-  });
-});
-downloaderQueue.on("waiting", (job) => {
-  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-    sendSSEDownloadStateChange(job.data, DownloadStates.WAITING, stream);
-  });
-});
-downloaderQueue.on("progress", (job) => {
-  sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-    sendSSEProgress(job, stream);
-  });
-});
