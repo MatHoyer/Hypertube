@@ -4,7 +4,11 @@
     "clear": "rm -rf node_modules dist",
     "dev": "nodemon --watch src --watch ../../packages/server-core/src --watch ../../packages/libs/src --ext ts --exec 'tsx src/main.ts'",
     "build": "tsc && cp -r src/emails/default-email.html dist/apps/server/src/emails",
-    "start": "node dist/apps/server/src/main.js"
+    "start": "node dist/apps/server/src/main.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run --project unit",
+    "test:integration": "vitest run --project integration"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.13",
@@ -23,11 +27,14 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@testcontainers/postgresql": "^10.28.0",
     "@types/adm-zip": "^0.5.7",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^20.11.17",
     "@types/nodemailer": "^7.0.11",
     "nodemon": "^3.1.14",
-    "tsx": "^4.7.1"
+    "testcontainers": "^10.28.0",
+    "tsx": "^4.7.1",
+    "vitest": "^3.2.4"
   }
 }
