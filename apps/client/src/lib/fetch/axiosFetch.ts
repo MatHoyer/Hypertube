@@ -22,7 +22,7 @@ export const axiosFetch = async <
   T extends ZodType<TT>,
   TT,
   D extends ZodType<DD>,
-  DD
+  DD,
 >({
   method,
   config,
@@ -75,6 +75,6 @@ export const axiosFetch = async <
     } else {
       console.log(error);
     }
-    throw new Error(errorStr);
+    throw new Error(errorStr, { cause: error });
   }
 };

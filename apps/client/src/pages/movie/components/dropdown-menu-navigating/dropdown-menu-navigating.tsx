@@ -17,7 +17,7 @@ import {
   Squirrel,
   Turtle,
 } from "lucide-react";
-import { useState, type ComponentProps } from "react";
+import { useEffect, useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { useResolutions } from "../../contexts/resolutions/resolutions.context";
 import { useSubtitles } from "../../contexts/subtitles/subtitles.context";
@@ -244,6 +244,13 @@ const SettingsButton: React.FC<
   };
 
   const { containerRef } = useVideoPlayer();
+  const [container, setContainer] = useState<HTMLDivElement | undefined>();
+
+  useEffect(() => {
+    if (!containerRef) return;
+
+    setContainer(containerRef?.current ?? undefined);
+  }, [containerRef]);
 
   const renderPage = () => {
     switch (type) {
@@ -278,11 +285,7 @@ const SettingsButton: React.FC<
           <Settings color="white" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        side={side}
-        align="end"
-        container={containerRef.current ?? undefined}
-      >
+      <DropdownMenuContent side={side} align="end" container={container}>
         {renderPage()}
       </DropdownMenuContent>
     </DropdownMenu>

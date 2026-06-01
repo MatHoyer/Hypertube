@@ -53,6 +53,7 @@ export const NotificationsPage = () => {
   const { t } = useTranslation();
   const topRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
+  const [filterLeftPosition, setFilterLeftPosition] = useState(0);
   const [showScrollToTopButton, setShowScrollToTopButton] =
     useState<boolean>(false);
   const [readStatus, setReadStatus] = useQueryState<NotificationReadStatus>(
@@ -97,6 +98,15 @@ export const NotificationsPage = () => {
     return () => observer.disconnect();
   }, [topRef]);
 
+  useEffect(() => {
+    if (!filterRef) return;
+
+    const currentLeft = filterRef.current?.getBoundingClientRect()?.left ?? 0;
+    const currentWidth = filterRef.current?.getBoundingClientRect()?.width ?? 0;
+
+    setFilterLeftPosition(currentLeft + currentWidth);
+  }, [filterRef, setFilterLeftPosition]);
+
   return (
     <Layout>
       <FloatingBar>
@@ -121,12 +131,7 @@ export const NotificationsPage = () => {
         </div>
         <div
           className="absolute overflow-hidden flex items-center inset-0 pointer-events-none"
-          style={{
-            left: `${
-              (filterRef.current?.getBoundingClientRect()?.left ?? 0) +
-              (filterRef.current?.getBoundingClientRect()?.width ?? 0)
-            }px`,
-          }}
+          style={{ left: `${filterLeftPosition}px` }}
         >
           <AnimateApparition
             animation="slideToRight"

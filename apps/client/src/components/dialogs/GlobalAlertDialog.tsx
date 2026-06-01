@@ -10,7 +10,7 @@ import {
   AlertDialogPortal,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
@@ -23,15 +23,14 @@ export const GlobalAlertDialog = () => {
   const [doubleConfirm, setDoubleConfirm] = useState(false);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (!isOpen) {
-      setConfirmTextToType("");
-      setDoubleConfirm(false);
-    }
-  }, [isOpen]);
+  const handleClose = () => {
+    setConfirmTextToType("");
+    setDoubleConfirm(false);
+    close();
+  };
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={close}>
+    <AlertDialog open={isOpen} onOpenChange={handleClose}>
       <AlertDialogPortal>
         <AlertDialogOverlay className="z-[60]" />
         <AlertDialogContent className="z-[60]">
@@ -64,9 +63,7 @@ export const GlobalAlertDialog = () => {
                   <Checkbox
                     id="doubleConfirm"
                     checked={doubleConfirm}
-                    onCheckedChange={(checked) =>
-                      setDoubleConfirm(checked as boolean)
-                    }
+                    onCheckedChange={(checked) => setDoubleConfirm(!!checked)}
                   />
                   <Label htmlFor="doubleConfirm">
                     {t("alert-dialog.doubleConfirm")}
@@ -76,7 +73,7 @@ export const GlobalAlertDialog = () => {
             </div>
           )}
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={close}>
+            <AlertDialogCancel onClick={handleClose}>
               {options?.cancelLabel || t("alert-dialog.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
@@ -87,7 +84,7 @@ export const GlobalAlertDialog = () => {
               }
               onClick={() => {
                 cb?.();
-                close();
+                handleClose();
               }}
             >
               {options?.confirmLabel || t("alert-dialog.continue")}

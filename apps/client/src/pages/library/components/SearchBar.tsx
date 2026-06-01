@@ -15,7 +15,7 @@ import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import { getMoviesSchemas, getUrl, ROUTES } from "@hypertube/libs";
 import { useQuery } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useLibrary } from "./LibraryProvider";
@@ -24,10 +24,17 @@ export const SearchBar = () => {
   const { t } = useTranslation();
   const [input, setInput] = useState<string>("");
   const searchBarRef = useRef<HTMLDivElement>(null);
+  const [currentHeight, setCurrentHeight] = useState(0);
   const { query, setQuery } = useLibrary();
   const inputDebounced = useDebounce(input, 500);
   const [isOpen, setIsOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!searchBarRef) return;
+
+    setCurrentHeight(searchBarRef.current?.getBoundingClientRect().height ?? 0);
+  }, [searchBarRef]);
 
   const { data, isPending, isSuccess } = useQuery({
     queryKey: [
@@ -76,9 +83,7 @@ export const SearchBar = () => {
             "absolute h-full inset-0 z-50",
             !(isOpen && inputDebounced) && "hidden"
           )}
-          style={{
-            top: searchBarRef.current?.getBoundingClientRect()?.height,
-          }}
+          style={{ top: currentHeight }}
         >
           <ScrollArea scrollToTopOnChildrenChange>
             <CommandList className="overflow-visible">
