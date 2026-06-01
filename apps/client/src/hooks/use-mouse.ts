@@ -5,6 +5,10 @@ export const useMouse = (
   containerRef: React.RefObject<HTMLElement | null>,
   timeoutDuration = 1000
 ) => {
+  const [currentContainer, setCurrentContainer] = useState<HTMLElement | null>(
+    null
+  );
+
   const { value: mouseMoving, setValue: setMouseMoving } = useTimeoutResetState(
     false,
     timeoutDuration
@@ -22,30 +26,29 @@ export const useMouse = (
   }, [setMouseClicked]);
 
   useEffect(() => {
-    if (!containerRef?.current) return;
-    const container = containerRef.current;
+    if (!containerRef) return;
 
-    const handleMouseEnter = () => {
-      setMouseIn(true);
-    };
-    const handleMouseLeave = () => {
-      setMouseIn(false);
-    };
+    setCurrentContainer(containerRef.current);
+  }, [containerRef]);
 
-    container.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("click", handleMouseClick);
-    container.addEventListener("mouseenter", handleMouseEnter);
-    container.addEventListener("mouseleave", handleMouseLeave);
+  useEffect(() => {
+    if (!currentContainer) return;
+
+    const handleMouseEnter = () => setMouseIn(true);
+    const handleMouseLeave = () => setMouseIn(false);
+
+    currentContainer.addEventListener("mousemove", handleMouseMove);
+    currentContainer.addEventListener("click", handleMouseClick);
+    currentContainer.addEventListener("mouseenter", handleMouseEnter);
+    currentContainer.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
-      container.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("click", handleMouseClick);
-      container.removeEventListener("mouseenter", handleMouseEnter);
-      container.removeEventListener("mouseleave", handleMouseLeave);
+      currentContainer.removeEventListener("mousemove", handleMouseMove);
+      currentContainer.removeEventListener("click", handleMouseClick);
+      currentContainer.removeEventListener("mouseenter", handleMouseEnter);
+      currentContainer.removeEventListener("mouseleave", handleMouseLeave);
     };
-    // If we pass only containerRef it is not working
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [containerRef.current, handleMouseMove, handleMouseClick]);
+  }, [currentContainer, handleMouseMove, handleMouseClick]);
 
   return {
     mouseMoving,

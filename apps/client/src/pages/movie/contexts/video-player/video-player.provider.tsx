@@ -86,26 +86,22 @@ export const VideoPlayerProvider: React.FC<{
 
   const [selectedResolution, setSelectedResolution] =
     useState<TResolutionSchema | null>(null);
+
+  const userSelectedResolution =
+    selectedResolution ?? streamableResolutions[0] ?? null;
+
   const [selectedSubtitlesLanguage, setSelectedSubtitlesLanguage] = useState<
     string | null
   >(null);
 
-  useEffect(
-    () => setSelectedResolution(streamableResolutions[0] ?? null),
-    [streamableResolutions]
-  );
-
-  useEffect(
-    () =>
-      setSelectedSubtitlesLanguage(
-        streamableSubtitles.find(
-          (subtitle) =>
-            subtitle.language ===
-            languageYTSCodes[i18n.language as keyof typeof languageCodes]
-        )?.language ?? null
-      ),
-    [streamableSubtitles, i18n.language]
-  );
+  const userSelectedSubtitlesLanguage =
+    selectedSubtitlesLanguage ??
+    streamableSubtitles.find(
+      (subtitle) =>
+        subtitle.language ===
+        languageYTSCodes[i18n.language as keyof typeof languageCodes]
+    )?.language ??
+    null;
 
   // Play/Pause
   useEffect(() => {
@@ -118,7 +114,7 @@ export const VideoPlayerProvider: React.FC<{
       videoRef.current.pause();
     }
     videoRef.current.volume = volume / 100;
-  }, [videoRef, playing, volume, progress, setProgress]);
+  }, [videoRef, playing, volume, progress]);
 
   // Mute/Unmute
   useEffect(() => {
@@ -197,7 +193,7 @@ export const VideoPlayerProvider: React.FC<{
 
   const handleSeek = useCallback(
     (percent: number) => {
-      if (selectedResolution?.downloadState !== DownloadStates.DOWNLOADED) {
+      if (userSelectedResolution?.downloadState !== DownloadStates.DOWNLOADED) {
         return;
       }
       if (!videoRef.current) return;
@@ -208,7 +204,7 @@ export const VideoPlayerProvider: React.FC<{
       if (percent >= 100) setPlaying(false);
       setProgress(percent);
     },
-    [videoRef, setProgress, setPlaying, selectedResolution]
+    [videoRef, setProgress, setPlaying, userSelectedResolution]
   );
 
   const handleSetSpeed = useCallback(
@@ -322,10 +318,10 @@ export const VideoPlayerProvider: React.FC<{
         triggerMouseClick,
 
         isResolutionsLoading,
-        selectedResolution,
+        selectedResolution: userSelectedResolution,
         setSelectedResolution,
 
-        selectedSubtitlesLanguage,
+        selectedSubtitlesLanguage: userSelectedSubtitlesLanguage,
         setSelectedSubtitlesLanguage,
       }}
     >

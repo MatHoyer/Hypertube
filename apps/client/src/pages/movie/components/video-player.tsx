@@ -143,15 +143,18 @@ const VolumeControl = () => {
 
 const Timer = () => {
   const { videoRef, progress } = useVideoPlayer();
+  const [currentDuration, setCurrentDuration] = useState(0);
 
-  const currentTime = secondsToHMS(
-    (progress * (videoRef.current?.duration ?? 0)) / 100
-  );
+  useEffect(() => {
+    if (!videoRef) return;
+
+    setCurrentDuration(videoRef.current?.duration ?? 0);
+  }, [videoRef]);
+
+  const currentTime = secondsToHMS((progress * currentDuration) / 100);
   const duration = useMemo(
-    () => secondsToHMS(videoRef.current?.duration ?? 0),
-    // eslint doesn't understand that videoRef.current?.duration is a dependency of the function and not only videoRef
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [videoRef.current?.duration]
+    () => secondsToHMS(currentDuration),
+    [currentDuration]
   );
 
   return (
@@ -349,7 +352,7 @@ const VideoPlayer = () => {
   }, [volume, setMiddleScreenInfo]);
 
   const progressRef = useRef(progress);
-  progressRef.current = progress;
+  if (progressRef.current === null) progressRef.current = progress;
 
   const updateWatchTimer = useCallback(() => {
     if (!progressRef.current) return;

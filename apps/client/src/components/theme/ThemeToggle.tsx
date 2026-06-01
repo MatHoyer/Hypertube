@@ -1,20 +1,11 @@
 import { Moon, Sun } from "lucide-react";
 
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
 
 import { useTheme } from "./ThemeProvider";
 
 export function ThemeToggle() {
-  const [mounted, setMounted] = useState(false);
   const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
   const isDark = theme === "dark";
 
   return (
