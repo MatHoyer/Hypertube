@@ -11,7 +11,7 @@ export type VideoPlayerContextType = {
   handleKeyDown: (event: KeyboardEvent<HTMLDivElement>) => void;
 
   playing: boolean;
-  togglePlay: () => void;
+  handlePlay: () => void;
 
   muted: boolean;
   toggleMute: () => void;

@@ -78,11 +78,11 @@ const PlayPauseButton: React.FC<ComponentProps<typeof Button>> = ({
   className,
   ...props
 }) => {
-  const { playing, togglePlay } = useVideoPlayer();
+  const { playing, handlePlay } = useVideoPlayer();
   return (
     <Button
       variant="ghost"
-      onClick={togglePlay}
+      onClick={handlePlay}
       className={cn("p-2 rounded-full", className)}
       {...props}
     >
@@ -325,7 +325,7 @@ const VideoPlayer = () => {
 
     playing,
     volume,
-    togglePlay,
+    handlePlay,
     handleProgress,
     triggerMouseClick,
 
@@ -397,7 +397,7 @@ const VideoPlayer = () => {
       className="w-full h-[72dvh] bg-black rounded-2xl shadow-lg overflow-hidden relative outline-none"
       onClick={
         !isMobile
-          ? togglePlay
+          ? handlePlay
           : (e) => {
               e.stopPropagation();
               triggerMouseClick();
