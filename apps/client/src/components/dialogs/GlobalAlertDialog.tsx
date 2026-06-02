@@ -32,8 +32,8 @@ export const GlobalAlertDialog = () => {
   return (
     <AlertDialog open={isOpen} onOpenChange={handleClose}>
       <AlertDialogPortal>
-        <AlertDialogOverlay className="z-[60]" />
-        <AlertDialogContent className="z-[60]">
+        <AlertDialogOverlay className="z-60" />
+        <AlertDialogContent className="z-60">
           <AlertDialogHeader>
             <AlertDialogTitle>
               {options?.title || t("alert-dialog.title")}
