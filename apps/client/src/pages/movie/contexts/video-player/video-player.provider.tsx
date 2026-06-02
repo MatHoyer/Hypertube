@@ -63,18 +63,22 @@ export const VideoPlayerProvider: React.FC<{
     toggle: togglePlay,
     setValue: setPlaying,
   } = useToggle(false);
-  const [volume, setVolume] = useLocalStorage<number>(
-    LOCAL_STORAGE_KEYS.VOLUME,
-    20
-  );
-  const [progress, setProgress] = useState(0);
-  const [bufferedProgress, setBufferedProgress] = useState(0);
   const {
     value: isFullscreen,
     toggle: toggleFullscreen,
     setValue: setIsFullscreen,
   } = useToggle(false);
+
+  const [volume, setVolume] = useLocalStorage(LOCAL_STORAGE_KEYS.VOLUME, 20);
+  const [progress, setProgress] = useState(0);
+  const [bufferedProgress, setBufferedProgress] = useState(0);
   const [speed, setSpeed] = useState<Speed>(1);
+
+  const handlePlay = useCallback(() => {
+    if (!playing && progress >= 100) setProgress(0);
+
+    togglePlay();
+  }, [playing, progress, togglePlay]);
 
   const { mouseMoving, mouseClicked, triggerMouseMove, triggerMouseClick } =
     useMouse(videoRef, isMobile ? 3000 : undefined);
@@ -108,7 +112,6 @@ export const VideoPlayerProvider: React.FC<{
     if (!videoRef.current) return;
 
     if (playing) {
-      if (progress >= 100) setProgress(0);
       videoRef.current.play();
     } else {
       videoRef.current.pause();
@@ -245,7 +248,7 @@ export const VideoPlayerProvider: React.FC<{
       switch (e.key) {
         case " ":
           triggerMouseClick();
-          togglePlay();
+          handlePlay();
           break;
         case "m":
           toggleMute();
@@ -270,7 +273,7 @@ export const VideoPlayerProvider: React.FC<{
     [
       triggerMouseMove,
       triggerMouseClick,
-      togglePlay,
+      handlePlay,
       toggleMute,
       toggleFullscreen,
       handleJumpVideo,
@@ -288,7 +291,7 @@ export const VideoPlayerProvider: React.FC<{
         handleKeyDown,
 
         playing,
-        togglePlay,
+        handlePlay,
 
         muted,
         toggleMute,
