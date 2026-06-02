@@ -160,7 +160,7 @@ const Timer = () => {
   return (
     <div className="flex items-center">
       {currentTime === null || duration === null ? (
-        <Skeleton className="w-[85px] h-[20px]" />
+        <Skeleton className="w-21.25 h-5" />
       ) : (
         <Badge>
           <Typography className="font-mono font-bold">
@@ -291,7 +291,7 @@ const ControlsBar = () => {
         }}
         className="absolute bottom-0 left-0 right-0"
       >
-        <div className="dark flex flex-col gap-3 items-center justify-between size-full bg-gradient-to-t from-black/70 to-transparent p-3">
+        <div className="dark flex flex-col gap-3 items-center justify-between size-full bg-linear-to-t from-black/70 to-transparent p-3">
           <ProgressBar />
           <div className="flex flex-row items-center w-full">
             {!isMobile && <PlayPauseButton />}
