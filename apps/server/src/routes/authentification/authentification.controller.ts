@@ -12,7 +12,7 @@ import {
   TUnlinkProviderAuthentificationSchemas,
 } from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
-import { Status } from "better-auth/*";
+import { Status } from "better-auth";
 import { APIError } from "better-auth/api";
 import { isBefore } from "date-fns";
 import { Context } from "hono";
