@@ -95,17 +95,19 @@ export const VideoPlayerProvider: React.FC<{
     selectedResolution ?? streamableResolutions[0] ?? null;
 
   const [selectedSubtitlesLanguage, setSelectedSubtitlesLanguage] = useState<
-    string | null
-  >(null);
+    string | null | undefined
+  >();
+
+  const defaultSubtitlesLanguage = streamableSubtitles.find(
+    (subtitle) =>
+      subtitle.language ===
+      languageYTSCodes[i18n.language as keyof typeof languageCodes]
+  )?.language;
 
   const userSelectedSubtitlesLanguage =
-    selectedSubtitlesLanguage ??
-    streamableSubtitles.find(
-      (subtitle) =>
-        subtitle.language ===
-        languageYTSCodes[i18n.language as keyof typeof languageCodes]
-    )?.language ??
-    null;
+    selectedSubtitlesLanguage === undefined
+      ? defaultSubtitlesLanguage
+      : selectedSubtitlesLanguage;
 
   // Play/Pause
   useEffect(() => {
