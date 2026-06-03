@@ -81,7 +81,7 @@ export const VideoPlayerProvider: React.FC<{
   }, [playing, progress, togglePlay]);
 
   const { mouseMoving, mouseClicked, triggerMouseMove, triggerMouseClick } =
-    useMouse(videoRef, isMobile ? 3000 : undefined);
+    useMouse(containerRef, isMobile ? 3000 : undefined);
 
   const { streamableResolutions, isLoading: isResolutionsLoading } =
     useResolutions();
