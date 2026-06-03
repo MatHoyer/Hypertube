@@ -5,10 +5,6 @@ export const useMouse = (
   containerRef: React.RefObject<HTMLElement | null>,
   timeoutDuration = 1000
 ) => {
-  const [currentContainer, setCurrentContainer] = useState<HTMLElement | null>(
-    null
-  );
-
   const { value: mouseMoving, setValue: setMouseMoving } = useTimeoutResetState(
     false,
     timeoutDuration
@@ -26,31 +22,25 @@ export const useMouse = (
   }, [setMouseClicked]);
 
   useEffect(() => {
-    if (!containerRef) return;
+    if (!containerRef?.current) return;
 
-    setCurrentContainer(containerRef.current);
-    // If we pass only containerRef it is not working
-    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/refs
-  }, [containerRef.current]);
-
-  useEffect(() => {
-    if (!currentContainer) return;
+    const container = containerRef.current;
 
     const handleMouseEnter = () => setMouseIn(true);
     const handleMouseLeave = () => setMouseIn(false);
 
-    currentContainer.addEventListener("mousemove", handleMouseMove);
-    currentContainer.addEventListener("click", handleMouseClick);
-    currentContainer.addEventListener("mouseenter", handleMouseEnter);
-    currentContainer.addEventListener("mouseleave", handleMouseLeave);
+    container.addEventListener("mousemove", handleMouseMove);
+    container.addEventListener("click", handleMouseClick);
+    container.addEventListener("mouseenter", handleMouseEnter);
+    container.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
-      currentContainer.removeEventListener("mousemove", handleMouseMove);
-      currentContainer.removeEventListener("click", handleMouseClick);
-      currentContainer.removeEventListener("mouseenter", handleMouseEnter);
-      currentContainer.removeEventListener("mouseleave", handleMouseLeave);
+      container.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("click", handleMouseClick);
+      container.removeEventListener("mouseenter", handleMouseEnter);
+      container.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [currentContainer, handleMouseMove, handleMouseClick]);
+  }, [containerRef, handleMouseMove, handleMouseClick]);
 
   return {
     mouseMoving,
