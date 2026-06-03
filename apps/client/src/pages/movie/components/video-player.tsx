@@ -146,9 +146,23 @@ const Timer = () => {
   const [currentDuration, setCurrentDuration] = useState(0);
 
   useEffect(() => {
-    if (!videoRef) return;
+    if (!videoRef?.current) return;
 
-    setCurrentDuration(videoRef.current?.duration ?? 0);
+    const video = videoRef.current;
+
+    const updateDuration = () => {
+      setCurrentDuration(video.duration ?? 0);
+    };
+
+    updateDuration();
+
+    video.addEventListener("loadedmetadata", updateDuration);
+    video.addEventListener("durationchange", updateDuration);
+
+    return () => {
+      video.removeEventListener("loadedmetadata", updateDuration);
+      video.removeEventListener("durationchange", updateDuration);
+    };
   }, [videoRef]);
 
   const currentTime = secondsToHMS((progress * currentDuration) / 100);
