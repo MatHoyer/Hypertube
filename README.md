@@ -102,12 +102,6 @@ to run a custom cmd use:
 docker compose -f docker-compose-prod.yml run --rm migrate <custom_cmd>
 ```
 
-Create downloads symlink (simulate docker volume)
-
-```bash
-ln -s ../downloader/downloads ./apps/server/downloads
-```
-
 Build packages:
 
 ```bash
@@ -120,19 +114,7 @@ Run all workers in dev mode (hot reload):
 pnpm dev
 ```
 
-### 🔹 Option 2 — Dev with Docker (only for 42)
-
-```bash
-docker compose -f docker-compose-dev.yml up
-```
-
-or
-
-```bash
-make dev
-```
-
-### 🔹 Option 3 — Prod with Docker (no hot reload)
+### 🔹 Option 2 — Prod with Docker (no hot reload)
 
 ```bash
 docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml up
