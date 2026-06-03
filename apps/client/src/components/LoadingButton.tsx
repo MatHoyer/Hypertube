@@ -2,7 +2,7 @@ import { useTimeoutResetState } from "@/hooks/use-timeout-state-reset";
 import { cn } from "@/lib/utils";
 import { CheckIcon, XIcon } from "lucide-react";
 import { motion } from "motion/react";
-import { type ComponentProps, useEffect } from "react";
+import { type ComponentProps, useEffect, useRef } from "react";
 import { AppLoader } from "./ui/app-loader";
 import { Button } from "./ui/button";
 
@@ -25,8 +25,15 @@ export const LoadingButton = ({
     1000
   );
 
+  const previousLoading = useRef(loading);
+
   useEffect(() => {
-    if (!loading && success !== undefined) setShowSuccess(true);
+    const wasLoading = previousLoading.current;
+    previousLoading.current = loading;
+
+    if (!wasLoading || loading) return;
+
+    if (success !== undefined) setShowSuccess(true);
   }, [loading, success, setShowSuccess]);
 
   const isAnimating = loading || showSuccess;
