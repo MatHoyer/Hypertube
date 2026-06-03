@@ -29,7 +29,9 @@ export const useMouse = (
     if (!containerRef) return;
 
     setCurrentContainer(containerRef.current);
-  }, [containerRef]);
+    // If we pass only containerRef it is not working
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/refs
+  }, [containerRef.current]);
 
   useEffect(() => {
     if (!currentContainer) return;
