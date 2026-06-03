@@ -28,7 +28,7 @@ export const VideoPlayerProvider: React.FC<{
   setWatchedTimestamp: (timestamp: number) => void;
   children: React.ReactNode;
 }> = ({ watchedTimestamp, setWatchedTimestamp, children }) => {
-  const isMobile = useIsMobile();
+  const { isMobile } = useIsMobile();
   const { i18n } = useTranslation();
 
   const containerRef = useRef<HTMLDivElement>(null);

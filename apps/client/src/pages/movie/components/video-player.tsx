@@ -38,7 +38,7 @@ import SettingsButton from "./dropdown-menu-navigating/dropdown-menu-navigating"
 const MiddleScreenInfo: React.FC<{
   type: "volume" | "play" | null;
 }> = ({ type }) => {
-  const isMobile = useIsMobile();
+  const { isMobile } = useIsMobile();
   const { volume, playing } = useVideoPlayer();
 
   if (type === null) return null;
@@ -246,7 +246,7 @@ const FullscreenButton = () => {
 };
 
 const ControlsBar = () => {
-  const isMobile = useIsMobile();
+  const { isMobile } = useIsMobile();
 
   const controlsRef = useRef<HTMLDivElement>(null);
   const { mouseIn } = useMouse(controlsRef);
@@ -337,7 +337,7 @@ const VideoPlayer = () => {
     setWatchedTimestamp,
   } = useVideoPlayer();
 
-  const isMobile = useIsMobile();
+  const { isMobile } = useIsMobile();
   const queryClient = useQueryClient();
 
   const { value: middleScreenInfo, setValue: setMiddleScreenInfo } =
