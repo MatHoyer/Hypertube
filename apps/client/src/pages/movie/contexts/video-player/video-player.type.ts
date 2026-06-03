@@ -44,6 +44,6 @@ export type VideoPlayerContextType = {
   selectedResolution: TResolutionSchema | null;
   setSelectedResolution: (resolution: TResolutionSchema) => void;
 
-  selectedSubtitlesLanguage: string | null;
+  selectedSubtitlesLanguage: string | null | undefined;
   setSelectedSubtitlesLanguage: (language: string | null) => void;
 };
