@@ -15,11 +15,12 @@ const envSchema = z
     SERVER_PORT: z.coerce.number(),
     CLIENT_URL: z.url(),
     CLIENT_PORT: z.coerce.number(),
-    MAIL_PROVIDER: z.enum(["resend", "mailpit"]),
-    RESEND_API_KEY: z.string().optional(),
     MAIL_FROM: z.string(),
-    MAILPIT_SMTP_HOST: z.string(),
-    MAILPIT_SMTP_PORT: z.coerce.number(),
+    MAIL_SMTP_HOST: z.string(),
+    MAIL_SMTP_PORT: z.coerce.number(),
+    MAIL_SMTP_SECURE: z.coerce.boolean().optional().default(false),
+    MAIL_SMTP_USER: z.string().optional(),
+    MAIL_SMTP_PASSWORD: z.string().optional(),
     BETTER_AUTH_SECRET: z.string(),
     BETTER_AUTH_URL: z.url(),
     GOOGLE_CLIENT_ID: z.string(),
@@ -47,20 +48,7 @@ const envSchema = z
     REDIS_PORT: z.coerce.number(),
     VPN_IS_ACTIVE: z.coerce.boolean().default(false),
     NODE_ENV: z.enum(["DEV", "PROD"]).default("DEV"),
-  })
-  .check(
-    z.superRefine((data, ctx) => {
-      if (data.MAIL_PROVIDER === "resend") {
-        if (!data.RESEND_API_KEY) {
-          ctx.addIssue({
-            code: "custom",
-            message: "RESEND_API_KEY is required when NODE_ENV is PROD",
-            path: ["RESEND_API_KEY"],
-          });
-        }
-      }
-    })
-  );
+  });
 
 export const env = envSchema.parse({
   ...process.env,
