@@ -1,6 +1,5 @@
 import { env } from "@hypertube/server-core";
 import nodemailer from "nodemailer";
-import { Resend } from "resend";
 
 export type SendEmailPayload = {
   to: string | string[];
@@ -10,36 +9,28 @@ export type SendEmailPayload = {
   from?: string;
 };
 
-const mailpitTransport =
-  env.MAIL_PROVIDER === "mailpit"
-    ? nodemailer.createTransport({
-        host: env.MAILPIT_SMTP_HOST,
-        port: env.MAILPIT_SMTP_PORT,
-        secure: false,
-      })
-    : null;
+const createTransport = () => {
+  let auth: { user: string; pass: string } | undefined;
 
-let resend: Resend | null = null;
-function getResend(): Resend {
-  if (!resend) {
-    resend = new Resend(env.RESEND_API_KEY);
+  if (env.MAIL_SMTP_USER && env.MAIL_SMTP_PASSWORD) {
+    auth = {
+      user: env.MAIL_SMTP_USER,
+      pass: env.MAIL_SMTP_PASSWORD,
+    };
   }
-  return resend;
-}
+
+  return nodemailer.createTransport({
+    host: env.MAIL_SMTP_HOST,
+    port: env.MAIL_SMTP_PORT,
+    secure: env.MAIL_SMTP_SECURE,
+    ...(auth ? { auth } : {}),
+  });
+};
+
+const transport = createTransport();
 
 export const sendEmail = async (payload: SendEmailPayload) => {
-  if (env.MAIL_PROVIDER === "mailpit") {
-    await mailpitTransport!.sendMail({
-      from: payload.from ?? env.MAIL_FROM,
-      to: payload.to,
-      subject: payload.subject,
-      html: payload.html,
-      text: payload.text,
-    });
-    return;
-  }
-
-  return getResend().emails.send({
+  await transport.sendMail({
     from: payload.from ?? env.MAIL_FROM,
     to: payload.to,
     subject: payload.subject,
