@@ -62,67 +62,13 @@ jobs:
           sudo apt install curl
 
       - name: Create .env file
-        run: |
-          cat <<EOF > .env
-          POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
-          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-          POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
-          DATABASE_URL=${{ secrets.DATABASE_URL }}
-
-
-          SERVER_URL=${{ secrets.SERVER_URL }}
-          SERVER_PORT=${{ secrets.SERVER_PORT }}
-          CLIENT_URL=${{ secrets.CLIENT_URL }}
-          CLIENT_PORT=${{ secrets.CLIENT_PORT }}
-
-          MAIL_FROM="Hypertube <hypertube@notifications.mathieuhoyer.fr>"
-          MAIL_SMTP_HOST=localhost
-          MAIL_SMTP_PORT=1025
-          MAIL_SMTP_SECURE=false
-
-          BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
-          BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
-          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-          GITHUB_CLIENT_ID=${{ secrets.O_GITHUB_CLIENT_ID }}
-          GITHUB_CLIENT_SECRET=${{ secrets.O_GITHUB_CLIENT_SECRET }}
-          DISCORD_CLIENT_ID=${{ secrets.DISCORD_CLIENT_ID }}
-          DISCORD_CLIENT_SECRET=${{ secrets.DISCORD_CLIENT_SECRET }}
-          SCHOOL_42_CLIENT_ID=${{ secrets.SCHOOL_42_CLIENT_ID }}
-          SCHOOL_42_CLIENT_SECRET=${{ secrets.SCHOOL_42_CLIENT_SECRET }}
-
-          TRANSMISSION_HOST=${{ secrets.TRANSMISSION_HOST }}
-          TRANSMISSION_RCP_PORT=${{ secrets.TRANSMISSION_RCP_PORT }}
-          TRANSMISSION_TORRENT_PORT=${{ secrets.TRANSMISSION_TORRENT_PORT }}
-
-          TMDB_TOKEN=${{ secrets.TMDB_TOKEN }}
-
-          YTS_API_URL=${{ secrets.YTS_API_URL }}
-          YTS_PROXY_URL=${{ vars.YTS_PROXY_URL }}
-          YTS_PROXY_PORT=${{ vars.YTS_PROXY_PORT }}
-
-          REDIS_HOST=${{ secrets.REDIS_HOST }}
-          REDIS_PORT=${{ secrets.REDIS_PORT }}
-
-          MINIO_ENDPOINT=${{ secrets.MINIO_ENDPOINT }}
-          MINIO_PORT=${{ secrets.MINIO_PORT }}
-          MINIO_URL=${{ secrets.MINIO_URL }}
-          MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}
-          MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
-
-          VPN_SERVICE_PROVIDER=${{ vars.VPN_SERVICE_PROVIDER }}
-
-          OPENVPN_USER=${{ secrets.OPENVPN_USER }}
-          OPENVPN_PASSWORD=${{ secrets.OPENVPN_PASSWORD }}
-          EOF
+        run: cp .env.ci .env
 
       - name: Create Docker network
         run: docker network create hypertube-network || echo "Network already exists"
 
-      - name: Start VPN container
-        run: docker compose -f docker-compose-vpn.yml up -d
+      - name: Start VPN stub container
+        run: docker compose -f docker-compose-vpn-ci.yml up -d
 
       - name: Start DB containers (docker-compose.yml)
         run: docker compose -f docker-compose.yml up -d
@@ -131,11 +77,11 @@ jobs:
         run: |
           echo "Waiting for hypertube_db to be healthy..."
 
-          docker logs -f ${{ secrets.POSTGRES_HOST }} &
+          docker logs -f hypertube_db &
           LOGS_PID=$!
 
           for i in {1..15}; do
-            status=$(docker inspect --format='{{.State.Health.Status}}' ${{ secrets.POSTGRES_HOST }} 2>/dev/null || echo "not found")
+            status=$(docker inspect --format='{{.State.Health.Status}}' hypertube_db 2>/dev/null || echo "not found")
             if [ "$status" == "healthy" ]; then
               echo "✅ Database is healthy!"
               kill $LOGS_PID
@@ -203,4 +149,5 @@ jobs:
         if: always()
         run: |
           docker compose -f docker-compose-prod.yml down
-          docker compose down
+          docker compose -f docker-compose.yml down
+          docker compose -f docker-compose-vpn-ci.yml down
