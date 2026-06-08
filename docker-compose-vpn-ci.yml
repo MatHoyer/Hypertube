@@ -1,0 +1,16 @@
+services:
+  vpn:
+    image: alpine:3.21
+    container_name: vpn
+    command: sleep infinity
+    ports:
+      - "${TRANSMISSION_RCP_PORT}:${TRANSMISSION_RCP_PORT}"
+      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}"
+      - "${TRANSMISSION_TORRENT_PORT}:${TRANSMISSION_TORRENT_PORT}/udp"
+      - "${YTS_PROXY_PORT}:${YTS_PROXY_PORT}"
+    networks:
+      - hypertube-network
+
+networks:
+  hypertube-network:
+    external: true
