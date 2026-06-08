@@ -87,17 +87,22 @@ export const signInSocial = async (
   const { providerId } = c.get("validatedBody");
 
   try {
-    const { url } = await auth.api.signInSocial({
+    const res = await auth.api.signInSocial({
       body: {
         provider: providerId,
         callbackURL: getUrl(ROUTES.CLIENT.HOME, { withUrl: "client" }),
       },
       headers: c.req.raw.headers,
+      asResponse: true,
     });
-    return c.json(
-      { url, message: "Sign in with social provider successfully" },
-      200
-    );
+
+    const responseData = await res.json();
+    const body = {
+      ...responseData,
+      message: "Sign in with social provider successfully",
+    };
+
+    return new Response(JSON.stringify(body), res);
   } catch (e) {
     return c.json({ url: "", message: betterAuthErrorTranslation(e) }, 400);
   }
@@ -197,14 +202,19 @@ export const linkProvider = async (
   const { providerId } = c.get("validatedBody");
 
   try {
-    const { url } = await auth.api.linkSocialAccount({
+    const res = await auth.api.linkSocialAccount({
       body: {
         provider: providerId,
         callbackURL: getUrl(ROUTES.CLIENT.SETTINGS, { withUrl: "client" }),
       },
       headers: c.req.raw.headers,
+      asResponse: true,
     });
-    return c.json({ url, message: "Link provider successfully" }, 200);
+
+    const responseData = await res.json();
+    const body = { ...responseData, message: "Link provider successfully" };
+
+    return new Response(JSON.stringify(body), res);
   } catch (e) {
     return c.json({ url: "", message: betterAuthErrorTranslation(e) }, 400);
   }
