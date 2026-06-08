@@ -51,7 +51,7 @@ export const UserPasswordUpdate = () => {
   });
 
   const hasCredential = useMemo(
-    () => accounts.map((account) => account.provider).includes(credentialId),
+    () => accounts.map((account) => account.providerId).includes(credentialId),
     [accounts]
   );
 
