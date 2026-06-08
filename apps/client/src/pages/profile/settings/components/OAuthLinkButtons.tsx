@@ -20,7 +20,7 @@ export const OAuthLinkButtons = () => {
   const { accounts } = useAuthAccounts();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const linkedAccounts = accounts.map((account) => account.provider);
+  const linkedAccounts = accounts.map((account) => account.providerId);
 
   const { mutate: linkMutate } = useMutation({
     mutationFn: (provider: { id: (typeof betterAuthProviders)[number] }) =>
