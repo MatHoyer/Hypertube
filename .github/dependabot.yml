@@ -9,10 +9,6 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
-    ignore:
-      - dependency-name: "ioredis"
-        versions:
-          - ">= 5.11.0"
     groups:
       npm-all:
         patterns:
