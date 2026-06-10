@@ -1,5 +1,6 @@
-import { Providers, TMovieSchema, TResolutionSchema } from "@hypertube/libs";
-import { YtsProxyApi } from "../apis/yts-proxy.api";
+import { TMovieSchema, TResolutionSchema } from "@hypertube/libs";
+import { ProwlarrApi } from "../apis/prowlarr.api";
+import { TmdbApi } from "../apis/tmdb.api";
 import { getDownloaderQueue } from "../queues/downloader";
 
 export const downloadTorrent = async ({
@@ -9,19 +10,32 @@ export const downloadTorrent = async ({
   movie: TMovieSchema;
   resolution: TResolutionSchema;
 }) => {
-  switch (resolution.provider) {
-    case Providers.YTS:
-      await new YtsProxyApi().downloadTorrent({
-        movie,
-        targetResolution: resolution.resolution,
-      });
-      break;
-    default:
-      throw new Error(`Provider (${resolution.provider}) not supported`);
+  if (!movie.imdbId) throw new Error("Movie has no IMDB ID");
+
+  const tmdbMovie = await new TmdbApi().getMovie(movie.tmdbId, "en");
+  if (!tmdbMovie.hasDetails) {
+    throw new Error(`Movie details not found for tmdbId ${movie.tmdbId}`);
   }
+
+  const year = Number.parseInt(tmdbMovie.release_date.slice(0, 4), 10);
+  if (!Number.isFinite(year)) {
+    throw new Error(`Movie release year not found for tmdbId ${movie.tmdbId}`);
+  }
+
+  await new ProwlarrApi().downloadTorrent({
+    movie,
+    resolution,
+    resolutionId: resolution.id,
+    search: {
+      imdbId: movie.imdbId,
+      tmdbId: movie.tmdbId,
+      title: tmdbMovie.original_title,
+      year,
+    },
+  });
 
   await getDownloaderQueue().produce("download", {
     movie,
-    resolution: resolution.resolution,
+    resolutionId: resolution.id,
   });
 };

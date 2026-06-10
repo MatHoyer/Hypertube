@@ -54,7 +54,7 @@ const sendSSEDownloadStateChange = (
   stream.writeSSE({
     event: MOVIE_EVENTS.RESOLUTION_STATE_CHANGE,
     data: JSON.stringify({
-      resolution: jobData.resolution,
+      resolutionId: jobData.resolutionId,
       downloadState: downloadState,
     }),
   });
@@ -67,7 +67,7 @@ const sendSSEProgress = (
   stream.writeSSE({
     event: MOVIE_EVENTS.RESOLUTION_DOWNLOAD_PROGRESS,
     data: JSON.stringify({
-      resolution: job.data.resolution,
+      resolutionId: job.data.resolutionId,
       progress: job.progress,
     }),
   });

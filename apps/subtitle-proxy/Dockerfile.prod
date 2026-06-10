@@ -1,24 +1,22 @@
 FROM node:22 AS builder
 
-# Enable pnpm via corepack
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
 WORKDIR /hypertube
 
-# Copy root files
 COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY .env ./
 COPY eslint.config.js ./
 
-COPY apps/yts-api-proxy ./apps/yts-api-proxy
+COPY apps/subtitle-proxy ./apps/subtitle-proxy
 COPY packages/libs ./packages/libs
 COPY packages/server-core ./packages/server-core
 
 RUN pnpm i --frozen-lockfile
 RUN pnpm lint
 RUN pnpm --filter server-core prisma:generate
-RUN pnpm build:yts-api-proxy
+RUN pnpm build:subtitle-proxy
 
 FROM node:22-alpine AS runner
 
@@ -27,18 +25,18 @@ RUN apk add --no-cache chromium nss freetype harfbuzz ttf-freefont
 WORKDIR /hypertube
 
 COPY --from=builder /hypertube/node_modules ./node_modules
-COPY --from=builder /hypertube/apps/yts-api-proxy/node_modules ./apps/yts-api-proxy/node_modules
+COPY --from=builder /hypertube/apps/subtitle-proxy/node_modules ./apps/subtitle-proxy/node_modules
 COPY --from=builder /hypertube/packages/libs/node_modules ./packages/libs/node_modules
 COPY --from=builder /hypertube/packages/server-core/node_modules ./packages/server-core/node_modules
 
-COPY --from=builder /hypertube/apps/yts-api-proxy/dist ./apps/yts-api-proxy/dist
+COPY --from=builder /hypertube/apps/subtitle-proxy/dist ./apps/subtitle-proxy/dist
 COPY --from=builder /hypertube/packages/libs/dist ./packages/libs/dist
 COPY --from=builder /hypertube/packages/server-core/dist ./packages/server-core/dist
 
-COPY --from=builder /hypertube/apps/yts-api-proxy/package.json ./apps/yts-api-proxy/package.json
+COPY --from=builder /hypertube/apps/subtitle-proxy/package.json ./apps/subtitle-proxy/package.json
 COPY --from=builder /hypertube/packages/libs/package.json ./packages/libs/package.json
 COPY --from=builder /hypertube/packages/server-core/package.json ./packages/server-core/package.json
 
-WORKDIR /hypertube/apps/yts-api-proxy
+WORKDIR /hypertube/apps/subtitle-proxy
 
-CMD ["node", "./dist/apps/yts-api-proxy/src/main.js"]
+CMD ["node", "./dist/apps/subtitle-proxy/src/main.js"]

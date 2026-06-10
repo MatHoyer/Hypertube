@@ -35,8 +35,8 @@ jobs:
             dockerfile: ./apps/downloader/Dockerfile.prod
           - name: scheduler
             dockerfile: ./apps/scheduler/Dockerfile.prod
-          - name: yts-api-proxy
-            dockerfile: ./apps/yts-api-proxy/Dockerfile.prod
+          - name: subtitle-proxy
+            dockerfile: ./apps/subtitle-proxy/Dockerfile.prod
           - name: migrate
             dockerfile: ./packages/server-core/Dockerfile.migration
 

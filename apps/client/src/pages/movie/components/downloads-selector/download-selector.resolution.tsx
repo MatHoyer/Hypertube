@@ -25,7 +25,7 @@ const DownloadResolutionButton: React.FC<{
         {resolution.resolution}
       </Typography>
       <Typography textSize="xs" textColor="muted" functionnal="truncate">
-        {resolution.size}
+        {resolution.size} · {resolution.indexerName}
       </Typography>
       <div className="flex items-center justify-between w-full mt-2">
         <Badge variant="secondary">MP4</Badge>

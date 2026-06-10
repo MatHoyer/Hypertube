@@ -110,11 +110,11 @@ export const getMovieSSESchemas = {
   }),
   response: {
     [MOVIE_EVENTS.RESOLUTION_STATE_CHANGE]: z.object({
-      resolution: resolutionSchema.shape.resolution,
+      resolutionId: resolutionSchema.shape.id,
       downloadState: z.enum(DownloadStates),
     }),
     [MOVIE_EVENTS.RESOLUTION_DOWNLOAD_PROGRESS]: z.object({
-      resolution: resolutionSchema.shape.resolution,
+      resolutionId: resolutionSchema.shape.id,
       progress: z.coerce.number(),
     }),
     [MOVIE_EVENTS.SUBTITLE_STATE_CHANGE]: z.object({
@@ -152,7 +152,7 @@ export type TGetMovieResolutionsSchemas = {
 export const postMovieDownloadResolutionSchemas = {
   urlParams: z.object({
     tmdbId: movieSchema.shape.tmdbId,
-    resolution: resolutionSchema.shape.resolution,
+    resolutionId: resolutionSchema.shape.id,
   }),
   response: z.object({
     message: z.string(),

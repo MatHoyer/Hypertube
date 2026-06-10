@@ -11,7 +11,8 @@ services:
       - ${TRANSMISSION_RCP_PORT}
       - ${TRANSMISSION_TORRENT_PORT}
       - ${TRANSMISSION_TORRENT_PORT}/udp
-      - ${YTS_PROXY_PORT}
+      - ${PROWLARR_PORT}
+      - ${SUBTITLE_PROXY_PORT}
     environment:
       - VPN_SERVICE_PROVIDER=protonvpn
       - VPN_TYPE=openvpn

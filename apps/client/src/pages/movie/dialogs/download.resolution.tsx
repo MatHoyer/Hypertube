@@ -43,6 +43,10 @@ const ResolutionDisplay: React.FC<{
           </Typography>
           <Typography textSize="xs">{resolution.size}</Typography>
         </div>
+        <div className="flex items-center gap-2">
+          <Typography textSize="xs">Indexer:</Typography>
+          <Typography textSize="xs">{resolution.indexerName}</Typography>
+        </div>
       </div>
     </DownloadResourceDisplay>
   );
@@ -62,7 +66,7 @@ export const DownloadResolutionDialog: React.FC<{
         method: "POST",
         url: getUrl(ROUTES.API.MOVIES, {
           tmdbId,
-          resolution: resolution.resolution,
+          resolutionId: resolution.id,
         }),
         schemas: postMovieDownloadResolutionSchemas,
       }),

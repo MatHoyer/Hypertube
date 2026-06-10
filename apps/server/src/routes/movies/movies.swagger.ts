@@ -246,7 +246,10 @@ export const moviesSwagger = {
                     resolution: "720p",
                     size: "950MB",
                     downloadState: "DOWNLOADED",
-                    provider: "YTS",
+                    indexerName: "YTS",
+                    indexerId: 1,
+                    releaseGuid: "abc123-yts-720p",
+                    infoHash: "a1b2c3d4",
                     createdAt: "2026-01-15T10:30:00Z",
                     updatedAt: "2026-01-15T12:45:00Z",
                   },
@@ -256,7 +259,10 @@ export const moviesSwagger = {
                     resolution: "1080p",
                     size: "2.1GB",
                     downloadState: "NOT_DOWNLOADED",
-                    provider: "YTS",
+                    indexerName: "1337x",
+                    indexerId: 2,
+                    releaseGuid: "def456-1337x-1080p",
+                    infoHash: "e5f6g7h8",
                     createdAt: "2026-01-15T10:30:00Z",
                     updatedAt: "2026-01-15T10:30:00Z",
                   },
@@ -266,7 +272,10 @@ export const moviesSwagger = {
                     resolution: "2160p",
                     size: "4.5GB",
                     downloadState: "WAITING",
-                    provider: "YTS",
+                    indexerName: "The Pirate Bay",
+                    indexerId: 3,
+                    releaseGuid: "ghi789-tpb-2160p",
+                    infoHash: "i9j0k1l2",
                     createdAt: "2026-01-15T10:30:00Z",
                     updatedAt: "2026-01-15T14:20:00Z",
                   },
@@ -290,7 +299,7 @@ export const moviesSwagger = {
   },
   [getUrl(ROUTES.API.MOVIES, {
     tmdbId: "{tmdbId}",
-    resolution: "{resolution}",
+    resolutionId: "{resolutionId}",
   })]: {
     post: {
       summary: "Start movie resolution download (VPN required)",
@@ -304,14 +313,10 @@ export const moviesSwagger = {
         },
         {
           in: "path",
-          name: "resolution",
+          name: "resolutionId",
           required: true,
-          schema: {
-            type: "string",
-            enum: typedValues(
-              postMovieDownloadResolutionSchemas.urlParams.shape.resolution.enum
-            ),
-          },
+          schema:
+            postMovieDownloadResolutionSchemas.urlParams.shape.resolutionId,
         },
       ],
       responses: {

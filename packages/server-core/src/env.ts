@@ -1,7 +1,22 @@
 import * as dotenv from "dotenv";
+import fs from "node:fs";
 import z from "zod";
 
 dotenv.config({ path: "../../.env" });
+
+const resolveSecretFromFile = (
+  value: string | undefined,
+  filePath: string | undefined
+): string | undefined => {
+  if (value?.trim()) return value.trim();
+  if (!filePath) return undefined;
+  try {
+    const content = fs.readFileSync(filePath, "utf8").trim();
+    return content || undefined;
+  } catch {
+    return undefined;
+  }
+};
 
 const envSchema = z
   .object({
@@ -41,15 +56,26 @@ const envSchema = z
     MINIO_ROOT_USER: z.string(),
     MINIO_ROOT_PASSWORD: z.string(),
     TMDB_TOKEN: z.string(),
-    YTS_API_URL: z.url(),
-    YTS_PROXY_URL: z.url(),
-    YTS_PROXY_PORT: z.coerce.number(),
+    PROWLARR_URL: z.url(),
+    PROWLARR_API_KEY: z.string().min(1),
+    PROWLARR_API_KEY_FILE: z.string().optional(),
+    PROWLARR_PORT: z.coerce.number(),
+    PROWLARR_INDEXER_IDS: z.string().optional().default(""),
+    SUBTITLE_PROXY_URL: z.url(),
+    SUBTITLE_PROXY_PORT: z.coerce.number(),
     REDIS_HOST: z.string(),
     REDIS_PORT: z.coerce.number(),
     VPN_IS_ACTIVE: z.coerce.boolean().default(false),
     NODE_ENV: z.enum(["DEV", "PROD"]).default("DEV"),
   });
 
-export const env = envSchema.parse({
-  ...process.env,
-});
+const rawEnv = { ...process.env };
+const prowlarrApiKey = resolveSecretFromFile(
+  rawEnv.PROWLARR_API_KEY,
+  rawEnv.PROWLARR_API_KEY_FILE
+);
+if (prowlarrApiKey) {
+  rawEnv.PROWLARR_API_KEY = prowlarrApiKey;
+}
+
+export const env = envSchema.parse(rawEnv);

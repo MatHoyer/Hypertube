@@ -7,7 +7,6 @@ import {
   getMoviesSchemas,
   hypertubeLogger,
   ParentTypes,
-  Providers,
   TDeleteMovieLikeSchemas,
   TDeleteMovieSubscribeSchemas,
   TGetMovieCastingSchema,
@@ -33,7 +32,8 @@ import { streamSSE } from "hono/streaming";
 import i18next from "i18next";
 import z from "zod";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
-import { YtsProxyApi } from "../../lib/apis/yts-proxy.api";
+import { ProwlarrApi } from "../../lib/apis/prowlarr.api";
+import { SubtitleProxyApi } from "../../lib/apis/subtitle-proxy.api";
 import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
 import { TSupportedLanguage } from "../../lib/i18n/utils";
 import { TBodyParser } from "../../middlewares/bodyParser";
@@ -225,16 +225,34 @@ export const getMovieResolutions = async (
   if (!movie) return c.json({ message: "Movie not found" }, 404);
   if (!movie.imdbId) return c.json({ resolutions: [] }, 200);
 
-  const ytsProxyApi = new YtsProxyApi();
+  const tmdbMovie = await new TmdbApi().getMovie(tmdbId, "en");
+  if (!tmdbMovie.hasDetails) {
+    return c.json({ message: "Movie details not found" }, 404);
+  }
 
-  const resolutions = await ytsProxyApi.getResolutions(movie.imdbId);
+  const year = Number.parseInt(tmdbMovie.release_date.slice(0, 4), 10);
+  if (!Number.isFinite(year)) {
+    return c.json({ message: "Movie release year not found" }, 404);
+  }
+
+  const prowlarrApi = new ProwlarrApi();
+
+  const resolutions = await prowlarrApi.getResolutions({
+    imdbId: movie.imdbId,
+    tmdbId: movie.tmdbId,
+    title: tmdbMovie.original_title,
+    year,
+  });
   if (resolutions) {
     await prisma.resolution.createMany({
       data: resolutions.map((resolution) => ({
         movieId: movie.id,
         resolution: resolution.quality,
         size: resolution.size,
-        provider: Providers.YTS,
+        indexerName: resolution.indexerName,
+        indexerId: resolution.indexerId,
+        releaseGuid: resolution.releaseGuid,
+        infoHash: resolution.hash,
       })),
       skipDuplicates: true,
     });
@@ -244,9 +262,7 @@ export const getMovieResolutions = async (
     where: {
       movieId: movie.id,
     },
-    orderBy: {
-      size: "asc",
-    },
+    orderBy: [{ resolution: "asc" }, { indexerName: "asc" }],
   });
   return c.json({ resolutions: dbResolutions }, 200);
 };
@@ -257,7 +273,7 @@ export const downloadMovie = async (
       TUrlParamsParser<TPostMovieDownloadResolutionSchemas["urlParams"]>
   >
 ) => {
-  const { tmdbId, resolution } = c.get("validatedUrlParams");
+  const { tmdbId, resolutionId } = c.get("validatedUrlParams");
   const language = c.get("language");
 
   const dbMovie = await prisma.movie.findUnique({
@@ -267,7 +283,7 @@ export const downloadMovie = async (
     include: {
       resolutions: {
         where: {
-          resolution,
+          id: resolutionId,
         },
       },
       subtitles: true,
@@ -319,6 +335,7 @@ export const downloadMovie = async (
     hypertubeLogger.error(
       `Error downloading movie ${formatUnknownError(error)}`
     );
+    return c.json({ message: "Failed to start movie download" }, 500);
   }
 
   return c.json({ message: "Movie downloaded started" }, 200);
@@ -340,7 +357,7 @@ export const getMovieSubtitles = async (
   if (!movie) return c.json({ message: "Movie not found" }, 404);
   if (!movie.imdbId) return c.json({ subtitles: [] }, 200);
 
-  const ytsProxyApi = new YtsProxyApi();
+  const subtitleProxyApi = new SubtitleProxyApi();
 
   const dbSubtitles = await prisma.subtitle.findMany({
     where: {
@@ -352,7 +369,7 @@ export const getMovieSubtitles = async (
   });
 
   const getSubtitles = async (imdbId: string) => {
-    const subtitles = (await ytsProxyApi.getSubtitles(imdbId)) ?? [];
+    const subtitles = (await subtitleProxyApi.getSubtitles(imdbId)) ?? [];
 
     await prisma.subtitle.createMany({
       data: subtitles.map((subtitle) => ({

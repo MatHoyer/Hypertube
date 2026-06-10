@@ -125,14 +125,14 @@ const ResolutionsSettings: React.FC<{
       goBack={goBack}
     >
       {streamableResolutions.length > 0 &&
-        streamableResolutions.map((resolution, index) => (
+        streamableResolutions.map((resolution) => (
           <DropdownMenuSelectedItem
-            key={index}
+            key={resolution.id}
             onClick={() => {
               setSelectedResolution(resolution);
               closePopup();
             }}
-            selected={selectedResolution?.resolution === resolution.resolution}
+            selected={selectedResolution?.id === resolution.id}
             icon={
               resolution.downloadState === DownloadStates.DOWNLOADED ? (
                 <Check color="green" />
@@ -141,7 +141,7 @@ const ResolutionsSettings: React.FC<{
               )
             }
           >
-            {resolution.resolution}
+            {resolution.resolution} · {resolution.indexerName}
           </DropdownMenuSelectedItem>
         ))}
       {isLoading && (

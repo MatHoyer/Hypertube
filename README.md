@@ -140,7 +140,7 @@ Images are tagged with the git tag (e.g. `v1.0.0`):
 - `ghcr.io/mathoyer/hypertube-server:<tag>`
 - `ghcr.io/mathoyer/hypertube-downloader:<tag>`
 - `ghcr.io/mathoyer/hypertube-scheduler:<tag>`
-- `ghcr.io/mathoyer/hypertube-yts-api-proxy:<tag>`
+- `ghcr.io/mathoyer/hypertube-subtitle-proxy:<tag>`
 - `ghcr.io/mathoyer/hypertube-migrate:<tag>`
 
 Example:
@@ -161,7 +161,7 @@ The project is split into **7 workspaces**:
 - **server-core** (`packages/server-core`)
 - **downloader** (`apps/downloader`)
 - **scheduler** (`apps/scheduler`)
-- **yts-api-proxy** (`apps/yts-api-proxy`)
+- **subtitle-proxy** (`apps/subtitle-proxy`)
 
 ### Install a dependency shared across multiple workspaces:
 
@@ -215,9 +215,34 @@ pnpm add <package-name>
 
 - Worker to run cron jobs
 
-### ⚙️ Yts API proxy (`apps/yts-api-proxy`)
+### ⚙️ Prowlarr (torrent provider)
 
-- A proxy for the yts using a VPN
+- [Prowlarr](https://github.com/Prowlarr/Prowlarr) runs in the VPN network namespace and aggregates public torrent indexers (YTS, 1337x, TPB, etc.)
+- **No UI setup required** — use the init scripts for config + indexers
+- Prod Docker runs `prowlarr-init`, `prowlarr-indexers-init`, then the app automatically
+- The server queries Prowlarr's search API directly (`PROWLARR_URL`) for movie torrent resolutions
+
+**Headless setup:**
+
+```bash
+# 1. Optionally set PROWLARR_API_KEY in .env (or leave empty to auto-generate on first init)
+# 2. Optionally set PROWLARR_INDEXERS (default: 10 public indexers — yts, thepiratebay, limetorrents, …)
+#    Re-run ./scripts/prowlarr-init.sh indexers after changing this list
+#    (torrentgalaxy is an alias for torrentgalaxyclone; 1337x needs FlareSolverr)
+
+# Local scripts (stop Prowlarr first if already running)
+./scripts/prowlarr-init.sh config
+./scripts/prowlarr-init.sh indexers
+
+# Docker prod — indexers init runs automatically before the app starts
+docker compose -f docker-compose-prod.yml up -d
+```
+
+If `PROWLARR_API_KEY` is auto-generated, it is saved to the Prowlarr config volume (`api_key`). In prod the app reads it via `PROWLARR_API_KEY_FILE`. For local dev, copy the printed key into `.env` or point `PROWLARR_API_KEY_FILE` at your config `api_key` file.
+
+### ⚙️ Subtitle proxy (`apps/subtitle-proxy`)
+
+- Scrapes yifysubtitles.ch over VPN (Puppeteer) for external subtitle tracks
 
 ## 📦 Package Import Rules
 
@@ -236,7 +261,7 @@ Understanding how packages can import each other is key to maintaining a clean a
 | server            |       ✅        |           ✅           |
 | downloader        |       ✅        |           ✅           |
 | scheduler         |       ✅        |           ✅           |
-| yts-api-proxy     |       ✅        |           ✅           |
+| subtitle-proxy    |       ✅        |           ✅           |
 | client            |       ✅        |           ❌           |
 
 _Note: This ensures shared logic and types flow in one direction (from base to specialized packages), and frontend code never accidentally pulls in backend/server-only code._

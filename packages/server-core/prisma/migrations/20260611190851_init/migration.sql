@@ -5,9 +5,6 @@ CREATE TYPE "ParentType" AS ENUM ('MOVIE', 'COMMENT');
 CREATE TYPE "DownloadState" AS ENUM ('NOT_DOWNLOADED', 'WAITING', 'DOWNLOADING', 'DOWNLOADED');
 
 -- CreateEnum
-CREATE TYPE "Provider" AS ENUM ('YTS');
-
--- CreateEnum
 CREATE TYPE "NotificationType" AS ENUM ('test', 'movieDownloaded', 'movieDownloading', 'newCommentReply', 'newCommentLike');
 
 -- CreateTable
@@ -49,7 +46,10 @@ CREATE TABLE "Resolution" (
     "resolution" TEXT NOT NULL,
     "size" TEXT NOT NULL,
     "downloadState" "DownloadState" NOT NULL DEFAULT 'NOT_DOWNLOADED',
-    "provider" "Provider",
+    "indexerName" TEXT NOT NULL,
+    "indexerId" INTEGER NOT NULL,
+    "releaseGuid" TEXT NOT NULL,
+    "infoHash" TEXT,
     "movieId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -224,7 +224,7 @@ CREATE TABLE "Credential" (
 CREATE UNIQUE INDEX "Like_userId_parentId_key" ON "Like"("userId", "parentId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Resolution_movieId_resolution_key" ON "Resolution"("movieId", "resolution");
+CREATE UNIQUE INDEX "Resolution_movieId_resolution_indexerName_key" ON "Resolution"("movieId", "resolution", "indexerName");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Subtitle_downloadLink_key" ON "Subtitle"("downloadLink");

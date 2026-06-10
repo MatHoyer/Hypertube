@@ -3,11 +3,10 @@ import {
   betterAuthProviders,
   languageCodes,
 } from "../../const/global.const.js";
-import { ytsQualities } from "../../const/yts.const.js";
 import { commentSchema } from "../../schemas/database/comments.schema.js";
 import { credentialSchema } from "../../schemas/database/credential.schema.js";
 import { imageSchema } from "../../schemas/database/image.schema.js";
-import { movieSchema } from "../../schemas/database/movie.schema.js";
+import { movieSchema, resolutionSchema } from "../../schemas/database/movie.schema.js";
 import { notificationSchema } from "../../schemas/database/notifications.schema.js";
 import { playlistSchema } from "../../schemas/database/playlist.schema.js";
 import { userSchema } from "../../schemas/database/user.schema.js";
@@ -148,8 +147,8 @@ const routeSchemas = {
       tmdbId: z
         .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
         .optional(),
-      resolution: z
-        .union([z.enum(ytsQualities), z.literal("{resolution}")])
+      resolutionId: z
+        .union([resolutionSchema.shape.id, z.literal("{resolutionId}")])
         .optional(),
       subtitlesLanguage: z
         .union([z.string(), z.literal("{subtitlesLanguage}")])
@@ -194,8 +193,8 @@ const routeSchemas = {
       tmdbId: z
         .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
         .optional(),
-      resolution: z
-        .union([z.enum(ytsQualities), z.literal("{resolution}")])
+      resolutionId: z
+        .union([resolutionSchema.shape.id, z.literal("{resolutionId}")])
         .optional(),
     }),
     [ROUTES.API.STREAMING_MOVIE_SUBTITLES]: z.object({
@@ -332,16 +331,16 @@ const routes: {
   [ROUTES.API.IMAGES]: ({ imageId }) =>
     imageId ? `/api/images/${imageId}` : "/api/images",
 
-  [ROUTES.API.MOVIES]: ({ tmdbId, resolution, subtitlesLanguage }) => {
-    if (resolution && subtitlesLanguage) {
+  [ROUTES.API.MOVIES]: ({ tmdbId, resolutionId, subtitlesLanguage }) => {
+    if (resolutionId && subtitlesLanguage) {
       throw new Error(
         "Resolution and subtitles language cannot be provided together"
       );
     }
     if (tmdbId === undefined) return `/api/movies`;
 
-    if (resolution) {
-      return `/api/movies/${tmdbId}/resolutions/${resolution}/download`;
+    if (resolutionId) {
+      return `/api/movies/${tmdbId}/resolutions/${resolutionId}/download`;
     } else if (subtitlesLanguage) {
       return `/api/movies/${tmdbId}/subtitles/${subtitlesLanguage}/download`;
     } else {
@@ -389,8 +388,8 @@ const routes: {
   [ROUTES.API.SSE_NOTIFICATIONS]: () => "/api/notifications/sse",
 
   // Streaming routes
-  [ROUTES.API.STREAMING_MOVIE_RESOLUTION]: ({ tmdbId, resolution }) =>
-    `/api/streaming/movie/${tmdbId}/resolution/${resolution}`,
+  [ROUTES.API.STREAMING_MOVIE_RESOLUTION]: ({ tmdbId, resolutionId }) =>
+    `/api/streaming/movie/${tmdbId}/resolution/${resolutionId}`,
   [ROUTES.API.STREAMING_MOVIE_SUBTITLES]: ({ tmdbId, subtitlesLanguage }) =>
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
 
