@@ -1,11 +1,11 @@
 import z from "zod";
-import { userSchema } from "./user.schema.js";
 
 export const accountsSchema = z.array(
   z.object({
     id: z.string(),
-    userId: userSchema.shape.id,
     providerId: z.string(),
+    provider: z.string(),
+    providerEmail: z.string().nullable(),
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
     accountId: z.string(),
