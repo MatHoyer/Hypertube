@@ -15,11 +15,23 @@ import {
 import { genericOAuth, username } from "better-auth/plugins";
 import { addMinutes, isBefore } from "date-fns";
 import i18next from "i18next";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { v5 } from "uuid";
 import z from "zod";
 import { mailTemplate } from "../emails/import-template";
 import { sendVerificationEmail } from "../emails/sendEmailVerification";
 import { sendEmail } from "./mail";
+
+const pendingProviderEmail = new AsyncLocalStorage<string | undefined>();
+
+const stashProviderEmail = (email: string | undefined | null) => {
+  if (email) pendingProviderEmail.enterWith(email.toLowerCase());
+};
+
+const withProviderEmail = <T extends { email?: string | null }>(profile: T) => {
+  stashProviderEmail(profile.email);
+  return profile;
+};
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
@@ -189,8 +201,45 @@ export const auth = betterAuth({
     },
   },
   account: {
+    additionalFields: {
+      providerEmail: {
+        type: "string",
+        required: false,
+        input: false,
+      },
+    },
     accountLinking: {
       allowDifferentEmails: true,
+    },
+  },
+  databaseHooks: {
+    account: {
+      create: {
+        before: async (account) => {
+          const providerEmail = pendingProviderEmail.getStore();
+          if (!providerEmail) return { data: account };
+
+          return {
+            data: {
+              ...account,
+              providerEmail,
+            },
+          };
+        },
+      },
+      update: {
+        before: async (account) => {
+          const providerEmail = pendingProviderEmail.getStore();
+          if (!providerEmail) return { data: account };
+
+          return {
+            data: {
+              ...account,
+              providerEmail,
+            },
+          };
+        },
+      },
     },
   },
   hooks: {
@@ -230,6 +279,7 @@ export const auth = betterAuth({
               headers: { Authorization: `Bearer ${tokens.accessToken}` },
             });
             const userInfo = await response.json();
+            stashProviderEmail(userInfo.email);
             const customNamespace = v5(env.BETTER_AUTH_URL, v5.URL);
             return {
               id: v5(String(userInfo.id), customNamespace),
@@ -251,22 +301,25 @@ export const auth = betterAuth({
     google: {
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-      mapProfileToUser: (e) => {
-        return { ...e, username: null };
+      mapProfileToUser: (profile) => {
+        withProviderEmail(profile);
+        return { ...profile, username: null };
       },
     },
     github: {
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
-      mapProfileToUser: (e) => {
-        return { ...e, username: null };
+      mapProfileToUser: (profile) => {
+        withProviderEmail(profile);
+        return { ...profile, username: null };
       },
     },
     discord: {
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
-      mapProfileToUser: (e) => {
-        return { ...e, username: null };
+      mapProfileToUser: (profile) => {
+        withProviderEmail(profile);
+        return { ...profile, username: null };
       },
     },
   },

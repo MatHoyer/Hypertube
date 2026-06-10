@@ -216,7 +216,31 @@ export const getAccounts = async (c: Context<TIsLogged>) => {
   const accounts = await auth.api.listUserAccounts({
     headers: c.req.raw.headers,
   });
-  return c.json(getAccountsUsersSchemas.response.parse({ accounts }), 200);
+  return c.json(
+    getAccountsUsersSchemas.response.parse({
+      accounts: accounts.map((account) => {
+        const providerEmail =
+          "providerEmail" in account &&
+          typeof account.providerEmail === "string"
+            ? account.providerEmail
+            : null;
+
+        return {
+          id: account.id,
+          providerId: account.providerId,
+          provider: providerEmail
+            ? `${account.providerId} (${providerEmail})`
+            : account.providerId,
+          providerEmail,
+          createdAt: account.createdAt,
+          updatedAt: account.updatedAt,
+          accountId: account.accountId,
+          scopes: account.scopes,
+        };
+      }),
+    }),
+    200
+  );
 };
 
 export const getSession = async (c: Context<TIsLogged>) => {
