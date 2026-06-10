@@ -184,7 +184,9 @@ export const usersSwagger = {
                 accounts: [
                   {
                     id: "acc_clx1a2b3c4d5e6f7g8h9i0j1k",
-                    provider: "google",
+                    providerId: "google",
+                    provider: "google (user@gmail.com)",
+                    providerEmail: "user@gmail.com",
                     createdAt: "2024-01-15T10:30:00.000Z",
                     updatedAt: "2024-06-20T14:22:00.000Z",
                     accountId: "112233445566778899",
@@ -192,7 +194,9 @@ export const usersSwagger = {
                   },
                   {
                     id: "acc_clx2b3c4d5e6f7g8h9i0j1k2l",
-                    provider: "github",
+                    providerId: "github",
+                    provider: "github (dev@company.com)",
+                    providerEmail: "dev@company.com",
                     createdAt: "2024-03-10T09:15:00.000Z",
                     updatedAt: "2024-03-10T09:15:00.000Z",
                     accountId: "987654321",
@@ -200,7 +204,9 @@ export const usersSwagger = {
                   },
                   {
                     id: "acc_clx3c4d5e6f7g8h9i0j1k2l3m",
-                    provider: "42",
+                    providerId: "school42",
+                    provider: "school42 (student@student.42.fr)",
+                    providerEmail: "student@student.42.fr",
                     createdAt: "2024-02-05T16:45:00.000Z",
                     updatedAt: "2024-08-12T11:30:00.000Z",
                     accountId: "42user123",
