@@ -1,30 +1,51 @@
-import { DownloadStates, TTmdbMovieSchema, TUserSchema } from "@hypertube/libs";
+import {
+  DownloadState,
+  DownloadStates,
+  TTmdbMovieSchema,
+  TUserSchema,
+} from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
+
+const DOWNLOAD_STATE_PRIORITY: Record<DownloadState, number> = {
+  [DownloadStates.DOWNLOADED]: 4,
+  [DownloadStates.DOWNLOADING]: 3,
+  [DownloadStates.WAITING]: 2,
+  [DownloadStates.NOT_DOWNLOADED]: 1,
+};
+
+const aggregateDownloadState = (
+  resolutions: { downloadState: DownloadState }[]
+): DownloadState => {
+  if (!resolutions.length) return DownloadStates.NOT_DOWNLOADED;
+
+  return resolutions.reduce<DownloadState>(
+    (best, resolution) =>
+      DOWNLOAD_STATE_PRIORITY[resolution.downloadState] >
+      DOWNLOAD_STATE_PRIORITY[best]
+        ? resolution.downloadState
+        : best,
+    DownloadStates.NOT_DOWNLOADED
+  );
+};
 
 export const getMovieDownloadStatesByTmdbIds = async (
   tmdbIds: TTmdbMovieSchema["id"][]
 ) => {
-  const moviesWithResolutionsOrderByDownloadState = await prisma.movie.findMany(
-    {
-      where: {
-        tmdbId: {
-          in: tmdbIds,
-        },
+  const moviesWithResolutions = await prisma.movie.findMany({
+    where: {
+      tmdbId: {
+        in: tmdbIds,
       },
-      include: {
-        resolutions: {
-          orderBy: {
-            downloadState: "desc",
-          },
-        },
-      },
-    }
-  );
+    },
+    include: {
+      resolutions: true,
+    },
+  });
 
   return new Map(
-    moviesWithResolutionsOrderByDownloadState.map((movie) => [
+    moviesWithResolutions.map((movie) => [
       movie.tmdbId,
-      movie.resolutions[0]?.downloadState ?? DownloadStates.NOT_DOWNLOADED,
+      aggregateDownloadState(movie.resolutions),
     ])
   );
 };

@@ -1,10 +1,10 @@
 {
-  "name": "yts-api-proxy",
+  "name": "subtitle-proxy",
   "scripts": {
     "clear": "rm -rf node_modules dist",
     "dev": "tsx watch src/main.ts",
     "build": "tsc",
-    "start": "node dist/apps/yts-api-proxy/src/main.js",
+    "start": "node dist/apps/subtitle-proxy/src/main.js",
     "download:puppeteer": "npx puppeteer browsers install chrome"
   },
   "dependencies": {

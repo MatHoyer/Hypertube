@@ -1,8 +1,20 @@
-.PHONY: vpn stop-vpn logs-vpn infra stop-infra logs-infra helpers stop-helpers logs-helpers prod stop-prod logs-prod stop-all rebuild-prod reset
+.PHONY: vpn stop-vpn logs-vpn refresh-vpn-sidecars infra stop-infra logs-infra helpers stop-helpers logs-helpers prod stop-prod logs-prod stop-all rebuild-prod reset
+
+# Sidecars use network_mode: container:vpn — they must be recreated when the VPN
+# container is replaced, or DNS/networking breaks inside Prowlarr/Transmission.
+refresh-vpn-sidecars:
+	docker compose -f docker-compose.yml -f docker-compose.override.yml up -d --force-recreate transmission
+	docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml up -d --force-recreate prowlarr subtitle-proxy
 
 # VPN
 vpn:
 	docker compose -f docker-compose-vpn.yml -f docker-compose-vpn.override.yml up -d
+	@VPN_ID=$$(docker inspect -f '{{.Id}}' vpn 2>/dev/null); \
+	PROWLARR_NS=$$(docker inspect -f '{{.HostConfig.NetworkMode}}' hypertube-prowlarr-prod 2>/dev/null || true); \
+	if [ -n "$$VPN_ID" ] && [ "container:$$VPN_ID" != "$$PROWLARR_NS" ]; then \
+		echo "VPN container changed — recreating sidecars..."; \
+		$(MAKE) refresh-vpn-sidecars; \
+	fi
 
 stop-vpn:
 	docker compose -f docker-compose-vpn.yml -f docker-compose-vpn.override.yml down

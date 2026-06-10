@@ -7,7 +7,7 @@ import {
   TSubtitleSchema,
 } from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
-import { YtsProxyApi } from "../../lib/apis/yts-proxy.api";
+import { SubtitleProxyApi } from "../../lib/apis/subtitle-proxy.api";
 import { sendSSESubtitleStateChange, sseClients } from "./movie.sse";
 
 export const downloadSubtitle = async ({
@@ -26,7 +26,7 @@ export const downloadSubtitle = async ({
     },
   });
 
-  const res = await new YtsProxyApi().downloadSubtitles({
+  const res = await new SubtitleProxyApi().downloadSubtitles({
     subtitles,
     tmdbId,
   });

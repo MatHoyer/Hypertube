@@ -4,7 +4,7 @@ import { movieSchema, resolutionSchema } from "../database/movie.schema.js";
 export const getStreamingResolutionSchemas = {
   urlParams: z.object({
     movieId: movieSchema.shape.tmdbId,
-    resolution: resolutionSchema.shape.resolution,
+    resolutionId: resolutionSchema.shape.id,
   }),
 };
 export type TGetStreamingResolutionSchemas = {

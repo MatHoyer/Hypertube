@@ -19,15 +19,21 @@ services:
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - NODE_ENV=PROD
-      - YTS_PROXY_URL=http://vpn:${YTS_PROXY_PORT}
+      - PROWLARR_URL=http://vpn:${PROWLARR_PORT}
+      - SUBTITLE_PROXY_URL=http://vpn:${SUBTITLE_PROXY_PORT}
       - REDIS_HOST=redis
       - MINIO_ENDPOINT=minio
       - CLIENT_URL=${SERVER_URL}
       - CLIENT_PORT=${SERVER_PORT}
+      - PROWLARR_API_KEY_FILE=/prowlarr-config/api_key
+    volumes:
+      - prowlarr_config:/prowlarr-config:ro
     networks:
       - hypertube-network
     depends_on:
       migrate:
+        condition: service_completed_successfully
+      prowlarr-indexers-init:
         condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${SERVER_PORT}/api/health"]
@@ -70,11 +76,59 @@ services:
     depends_on:
       - app
 
-  yts-api-proxy:
-    container_name: hypertube-yts-api-proxy-prod
+  prowlarr-init:
+    image: alpine:3.21
+    container_name: hypertube-prowlarr-init
+    env_file: .env
+    environment:
+      - PROWLARR_CONFIG_DIR=/config
+      - PROWLARR_PORT=${PROWLARR_PORT}
+    volumes:
+      - prowlarr_config:/config
+      - ./scripts/prowlarr-init-config.sh:/prowlarr-init-config.sh:ro
+    entrypoint: /bin/sh
+    command: /prowlarr-init-config.sh
+    restart: "no"
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: hypertube-prowlarr-prod
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - prowlarr_config:/config
+    network_mode: container:vpn
+    restart: unless-stopped
+    depends_on:
+      prowlarr-init:
+        condition: service_completed_successfully
+
+  prowlarr-indexers-init:
+    image: alpine:3.21
+    container_name: hypertube-prowlarr-indexers-init
+    env_file: .env
+    environment:
+      - PROWLARR_URL=http://vpn:${PROWLARR_PORT}
+      - PROWLARR_API_KEY_FILE=/config/api_key
+      - PROWLARR_CONFIG_DIR=/config
+    volumes:
+      - prowlarr_config:/config:ro
+      - ./scripts/prowlarr-init-indexers.sh:/prowlarr-init-indexers.sh:ro
+    networks:
+      - hypertube-network
+    entrypoint: /bin/sh
+    command: -c "apk add --no-cache curl jq >/dev/null && /prowlarr-init-indexers.sh"
+    depends_on:
+      - prowlarr
+    restart: "no"
+
+  subtitle-proxy:
+    container_name: hypertube-subtitle-proxy-prod
     build:
       context: .
-      dockerfile: ./apps/yts-api-proxy/Dockerfile.prod
+      dockerfile: ./apps/subtitle-proxy/Dockerfile.prod
     env_file: .env
     environment:
       - PUPPETEER_SKIP_DOWNLOAD=true
@@ -91,3 +145,5 @@ networks:
 volumes:
   downloads_transmission:
     name: hypertube_downloads_transmission
+  prowlarr_config:
+    name: hypertube_prowlarr_config

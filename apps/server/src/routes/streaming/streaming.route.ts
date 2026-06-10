@@ -14,7 +14,7 @@ import {
 const streamingRouter = new Hono<TApiContext>();
 
 streamingRouter.get(
-  "/movie/:movieId/resolution/:resolution",
+  "/movie/:movieId/resolution/:resolutionId",
   isLogged,
   urlParamsParser(getStreamingResolutionSchemas.urlParams),
   getStreamingResolution,

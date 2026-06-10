@@ -25,8 +25,8 @@ const Footer = () => {
         <div className="flex flex-col">
           <Typography variant="h3">{t("footer.providers")}</Typography>
           <Button variant="link" asChild>
-            <Link to="#" target="_blank">
-              YTS
+            <Link to="https://github.com/Prowlarr/Prowlarr" target="_blank">
+              Prowlarr
             </Link>
           </Button>
         </div>

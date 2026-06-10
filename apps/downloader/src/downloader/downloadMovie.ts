@@ -11,6 +11,7 @@ import {
   getSubtitlePath,
   minio,
   prisma,
+  resolveMovieObjectName,
   TDownloadJobData,
   waitFile,
 } from "@hypertube/server-core";
@@ -187,18 +188,30 @@ const handleSrtFile = async (
 };
 
 export const downloadMovie = async (job: Job<TDownloadJobData>) => {
-  const { movie, resolution } = job.data;
+  const { movie, resolutionId } = job.data;
+
+  const dbResolution = await prisma.resolution.findUnique({
+    where: { id: resolutionId },
+  });
+  if (!dbResolution) {
+    throw new Error(`Resolution ${resolutionId} not found`);
+  }
 
   const resolutionStream = await minio.getObject(
     BUCKETS.MOVIES,
-    getMoviePath(movie.tmdbId.toString(), resolution, "resolution.torrent")
+    await resolveMovieObjectName(
+      movie.tmdbId.toString(),
+      resolutionId,
+      dbResolution.resolution,
+      "resolution.torrent"
+    )
   );
   const torrentBuf = await buffer(resolutionStream);
 
-  const downloadDir = `/downloads-transmission/${movie.tmdbId}/resolutions/${resolution}`;
+  const downloadDir = `/downloads-transmission/${movie.tmdbId}/resolutions/${resolutionId}`;
   await fs.promises.mkdir(downloadDir, { recursive: true });
   hypertubeLogger.info(
-    `Adding torrent for movie ${movie.tmdbId} resolution ${resolution}`
+    `Adding torrent for movie ${movie.tmdbId} resolution ${dbResolution.resolution} (${dbResolution.indexerName})`
   );
 
   const result = await downloader.addTorrentMetainfo(torrentBuf, {
@@ -245,10 +258,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
 
     await prisma.resolution.update({
       where: {
-        movieId_resolution: {
-          movieId: movie.id,
-          resolution,
-        },
+        id: resolutionId,
       },
       data: { downloadState: DownloadStates.DOWNLOADING },
     });
@@ -299,12 +309,12 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
               const movieStat = await fs.promises.stat(moviePath);
               await minio.putObject(
                 BUCKETS.MOVIES,
-                getMoviePath(movie.tmdbId.toString(), resolution, "movie.mp4"),
+                getMoviePath(movie.tmdbId.toString(), resolutionId, "movie.mp4"),
                 fs.createReadStream(moviePath),
                 movieStat.size
               );
 
-              await fs.promises.rm(`/downloads-transmission/${movie.tmdbId}`, {
+              await fs.promises.rm(downloadDir, {
                 recursive: true,
                 force: true,
               });

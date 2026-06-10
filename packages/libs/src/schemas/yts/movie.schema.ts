@@ -2,13 +2,16 @@ import z from "zod";
 import { ytsGenres, ytsQualities } from "../../const/yts.const.js";
 import { capitalizeAllWords } from "../../utils/string.utils.js";
 
-export const ytsMovieTorrentSchema = z.object({
-  url: z.string(),
-  hash: z.string(),
+export const movieTorrentSchema = z.object({
   quality: z.enum(ytsQualities),
   size: z.string(),
+  url: z.string(),
+  hash: z.string(),
+  indexerName: z.string(),
+  indexerId: z.number().int(),
+  releaseGuid: z.string(),
 });
-export type TYtsMovieTorrentSchema = z.infer<typeof ytsMovieTorrentSchema>;
+export type TMovieTorrentSchema = z.infer<typeof movieTorrentSchema>;
 
 export const ytsMovieActorSchema = z.object({
   name: z.string(),
@@ -40,7 +43,7 @@ export const ytsMovieSchema = z.object({
   small_cover_image: z.string(),
   medium_cover_image: z.string(),
   large_cover_image: z.string(),
-  torrents: z.array(ytsMovieTorrentSchema),
+  torrents: z.array(movieTorrentSchema),
   cast: z.array(ytsMovieActorSchema).optional().default([]),
 });
 export type TYtsMovieSchema = z.infer<typeof ytsMovieSchema>;

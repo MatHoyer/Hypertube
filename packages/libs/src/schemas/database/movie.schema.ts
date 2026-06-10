@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DownloadStates, Providers } from "../../const/global.const.js";
+import { DownloadStates } from "../../const/global.const.js";
 import { ytsQualities } from "../../const/yts.const.js";
 
 export const resolutionSchema = z.object({
@@ -8,7 +8,10 @@ export const resolutionSchema = z.object({
   resolution: z.enum(ytsQualities),
   size: z.string(),
   downloadState: z.enum([...Object.values(DownloadStates)] as const),
-  provider: z.enum([...Object.values(Providers)] as const).nullable(),
+  indexerName: z.string(),
+  indexerId: z.number().int(),
+  releaseGuid: z.string(),
+  infoHash: z.string().nullable(),
 });
 export type TResolutionSchema = z.infer<typeof resolutionSchema>;
 

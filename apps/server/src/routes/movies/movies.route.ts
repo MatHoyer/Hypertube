@@ -71,7 +71,7 @@ moviesRouter.get(
 );
 
 moviesRouter.post(
-  "/:tmdbId/resolutions/:resolution/download",
+  "/:tmdbId/resolutions/:resolutionId/download",
   isVPNActive,
   isLogged,
   urlParamsParser(postMovieDownloadResolutionSchemas.urlParams),

@@ -9,10 +9,19 @@ export const getMovieRootPath = (movieId: string) => {
 };
 export const getMoviePath = (
   movieId: string,
-  resolution: string,
+  resolutionId: string,
   filename: string
 ) => {
-  return `${getMovieRootPath(movieId)}/resolutions/${resolution}/${filename}`;
+  return `${getMovieRootPath(movieId)}/resolutions/${resolutionId}/${filename}`;
+};
+
+/** Pre-migration layout keyed by quality label (e.g. 1080p). */
+export const getLegacyMoviePath = (
+  movieId: string,
+  quality: string,
+  filename: string
+) => {
+  return `${getMovieRootPath(movieId)}/resolutions/${quality}/${filename}`;
 };
 
 export const getSubtitleRootPath = (movieId: string) => {

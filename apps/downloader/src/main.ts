@@ -44,10 +44,7 @@ worker.on("completed", async (job) => {
 
   await prisma.resolution.update({
     where: {
-      movieId_resolution: {
-        movieId: job.data.movie.id,
-        resolution: job.data.resolution,
-      },
+      id: job.data.resolutionId,
     },
     data: {
       downloadState: DownloadStates.DOWNLOADED,
@@ -66,19 +63,16 @@ worker.on("failed", async (job, err) => {
   hypertubeLogger.error(
     `[${job?.data.movie.id}] Movie download failed: ${formatUnknownError(err)}`
   );
-  if (!job?.data.movie.id || !job?.data.resolution) {
+  if (!job?.data.movie.id || !job?.data.resolutionId) {
     hypertubeLogger.error(
-      `[${job?.data.movie.id}] Can't update movie resolution download state : No movieId or resolution`
+      `[${job?.data.movie.id}] Can't update movie resolution download state : No movieId or resolutionId`
     );
     return;
   }
 
   await prisma.resolution.update({
     where: {
-      movieId_resolution: {
-        movieId: job.data.movie.id,
-        resolution: job.data.resolution,
-      },
+      id: job.data.resolutionId,
     },
     data: {
       downloadState: DownloadStates.NOT_DOWNLOADED,

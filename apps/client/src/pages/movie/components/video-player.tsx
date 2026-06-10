@@ -18,7 +18,6 @@ import {
   putMovieWatchTimerSchemas,
   ROUTES,
   secondsToHMS,
-  ytsQualities,
 } from "@hypertube/libs";
 import { useQueryClient } from "@tanstack/react-query";
 import { Expand, Pause, Play, Shrink, Volume2, VolumeX } from "lucide-react";
@@ -434,8 +433,7 @@ const VideoPlayer = () => {
             <source
               src={getUrl(ROUTES.API.STREAMING_MOVIE_RESOLUTION, {
                 tmdbId,
-                resolution:
-                  selectedResolution.resolution as (typeof ytsQualities)[number],
+                resolutionId: selectedResolution.id,
               })}
               type="video/mp4"
             />

@@ -75,7 +75,6 @@ export const getSubtitlesDownloadLinks = async ({
         (acc, subtitle) => {
           const existing = acc.find((s) => s.language === subtitle.language);
           if (!existing || subtitle.rating > existing.rating) {
-            // Remove existing entry of this language
             return [
               ...acc.filter((s) => s.language !== subtitle.language),
               subtitle,
@@ -117,7 +116,6 @@ export const downloadYifysubtitles = async (
 
   await page.waitForSelector("a.btn-icon.download-subtitle");
 
-  // Get original filename before download
   const originalHref = await page.$eval(
     "a.btn-icon.download-subtitle",
     (el) => el.href
@@ -127,12 +125,10 @@ export const downloadYifysubtitles = async (
     throw new Error("Original filename not found");
   }
 
-  // Download the file
   await page.click("a.btn-icon.download-subtitle");
 
   const originalPath = path.join(downloadPath, originalFilename);
 
-  // Wait for original file to download
   await waitFile(originalPath, 3000);
 
   await browser.close();

@@ -4,5 +4,5 @@ export const DOWNLOAD_QUEUE = "downloader";
 
 export type TDownloadJobData = {
   movie: TMovieSchema;
-  resolution: TResolutionSchema["resolution"];
+  resolutionId: TResolutionSchema["id"];
 };

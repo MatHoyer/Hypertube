@@ -1,0 +1,314 @@
+import {
+  formatUnknownError,
+  hypertubeLogger,
+  TMovieSchema,
+  TMovieTorrentSchema,
+  TResolutionSchema,
+  ytsQualities,
+} from "@hypertube/libs";
+import {
+  BUCKETS,
+  env,
+  getMoviePath,
+  minio,
+} from "@hypertube/server-core";
+
+type YtsQuality = (typeof ytsQualities)[number];
+
+type ProwlarrRelease = {
+  title: string;
+  downloadUrl?: string;
+  magnetUrl?: string;
+  size: number;
+  infoHash: string;
+  seeders: number;
+  indexer: string;
+  indexerId: number;
+  guid: string;
+};
+
+type NormalizedRelease = Omit<ProwlarrRelease, "downloadUrl" | "magnetUrl"> & {
+  downloadUrl: string;
+};
+
+type ParsedRelease = NormalizedRelease & {
+  quality: YtsQuality;
+};
+
+export type ProwlarrMovieSearch = {
+  imdbId: string;
+  tmdbId?: number;
+  title: string;
+  year: number;
+};
+
+const MOVIE_CATEGORIES = [
+  "2000",
+  "2010",
+  "2020",
+  "2030",
+  "2040",
+  "2045",
+  "2050",
+  "2060",
+];
+
+const QUALITY_PATTERNS: { quality: YtsQuality; pattern: RegExp }[] = [
+  { quality: "3D", pattern: /\b3D\b/i },
+  { quality: "2160p", pattern: /\b(2160p|4K|UHD)\b/i },
+  {
+    quality: "1080p.x265",
+    pattern: /\b1080p\b.*\b(x265|hevc|h\.?265)\b/i,
+  },
+  {
+    quality: "1080p.x265",
+    pattern: /\b(x265|hevc|h\.?265)\b.*\b1080p\b/i,
+  },
+  { quality: "1080p", pattern: /\b1080p\b/i },
+  { quality: "720p", pattern: /\b720p\b/i },
+  { quality: "480p", pattern: /\b(480p|576p)\b/i },
+];
+
+const SOURCE_QUALITY_HINTS: { quality: YtsQuality; pattern: RegExp }[] = [
+  { quality: "1080p.x265", pattern: /\b(x265|hevc|h\.?265)\b/i },
+  { quality: "1080p", pattern: /\b(bluray|bdrip|brrip|web-?dl|webdl)\b/i },
+  { quality: "720p", pattern: /\b(webrip|hdtv|dvdrip)\b/i },
+  { quality: "480p", pattern: /\b(cam|hdcam|telesync|ts|dvdscr)\b/i },
+];
+
+const formatBytes = (bytes: number): string => {
+  if (bytes >= 1e9) return `${(bytes / 1e9).toFixed(2)} GB`;
+  if (bytes >= 1e6) return `${(bytes / 1e6).toFixed(2)} MB`;
+  return `${(bytes / 1e3).toFixed(2)} KB`;
+};
+
+const parseQuality = (title: string): YtsQuality | null => {
+  for (const { quality, pattern } of QUALITY_PATTERNS) {
+    if (pattern.test(title)) return quality;
+  }
+  for (const { quality, pattern } of SOURCE_QUALITY_HINTS) {
+    if (pattern.test(title)) return quality;
+  }
+  return null;
+};
+
+const normalizeRelease = (release: ProwlarrRelease): NormalizedRelease | null => {
+  const downloadUrl = release.downloadUrl ?? release.magnetUrl;
+  if (!downloadUrl || !release.indexer) return null;
+  const { magnetUrl: _magnetUrl, ...rest } = release;
+  return { ...rest, downloadUrl };
+};
+
+const parseRelease = (release: ProwlarrRelease): ParsedRelease | null => {
+  const normalized = normalizeRelease(release);
+  if (!normalized) return null;
+  const quality = parseQuality(normalized.title);
+  if (!quality) return null;
+  return { ...normalized, quality };
+};
+
+const pickBestPerQualityPerIndexer = (
+  items: ParsedRelease[]
+): ParsedRelease[] => {
+  const byKey = new Map<string, ParsedRelease>();
+
+  for (const item of items) {
+    const key = `${item.quality}::${item.indexer}`;
+    const existing = byKey.get(key);
+    if (!existing || item.seeders > existing.seeders) {
+      byKey.set(key, item);
+    }
+  }
+
+  return [...byKey.values()];
+};
+
+export class ProwlarrApi {
+  private readonly baseUrl: string;
+
+  constructor() {
+    this.baseUrl = env.PROWLARR_URL.replace(/\/$/, "");
+  }
+
+  private buildSearchUrl(query: string, type: "movie" | "search"): string {
+    const params = new URLSearchParams({
+      query,
+      type,
+    });
+
+    for (const category of MOVIE_CATEGORIES) {
+      params.append("categories", category);
+    }
+
+    const indexerIds = env.PROWLARR_INDEXER_IDS.split(",")
+      .map((id) => id.trim())
+      .filter(Boolean);
+    for (const id of indexerIds) {
+      params.append("indexerIds", id);
+    }
+
+    return `${this.baseUrl}/api/v1/search?${params}`;
+  }
+
+  private resolveDownloadUrl(downloadUrl: string): string {
+    try {
+      const url = new URL(downloadUrl);
+      const base = new URL(this.baseUrl);
+      url.protocol = base.protocol;
+      url.hostname = base.hostname;
+      url.port = base.port;
+      return url.toString();
+    } catch {
+      return downloadUrl;
+    }
+  }
+
+  private async fetchMovieReleases(
+    imdbId: string,
+    tmdbId?: number
+  ): Promise<ProwlarrRelease[]> {
+    const queries = [`{ImdbId:${imdbId}}`];
+    if (tmdbId) queries.push(`{TmdbId:${tmdbId}}`);
+
+    const results = await Promise.all(
+      queries.map((query) => this.fetchReleases(query, "movie"))
+    );
+    return this.mergeReleases(results.flat());
+  }
+
+  private buildTextQueries(title: string, year: number): string[] {
+    const queries = new Set<string>();
+    const trimmed = title.trim();
+    queries.add(`${trimmed} ${year}`);
+    queries.add(`${trimmed.replace(/\s+/g, ".")}.${year}`);
+    queries.add(`${trimmed.replace(/[^\w\s]/g, "").replace(/\s+/g, " ")} ${year}`);
+    return [...queries];
+  }
+
+  private async fetchTextReleases(
+    title: string,
+    year: number
+  ): Promise<ProwlarrRelease[]> {
+    const results = await Promise.all(
+      this.buildTextQueries(title, year).map((query) =>
+        this.fetchReleases(query, "search")
+      )
+    );
+    return this.mergeReleases(results.flat());
+  }
+
+  private async fetchReleases(
+    query: string,
+    type: "movie" | "search"
+  ): Promise<ProwlarrRelease[]> {
+    const response = await fetch(this.buildSearchUrl(query, type), {
+      headers: { "X-Api-Key": env.PROWLARR_API_KEY },
+    });
+    if (!response.ok) {
+      throw new Error(`Prowlarr search failed with status ${response.status}`);
+    }
+    return (await response.json()) as ProwlarrRelease[];
+  }
+
+  private mergeReleases(releases: ProwlarrRelease[]): ProwlarrRelease[] {
+    const byGuid = new Map<string, ProwlarrRelease>();
+    for (const release of releases) {
+      byGuid.set(release.guid, release);
+    }
+    return [...byGuid.values()];
+  }
+
+  private async searchReleases({
+    imdbId,
+    tmdbId,
+    title,
+    year,
+  }: ProwlarrMovieSearch): Promise<ParsedRelease[]> {
+    try {
+      const [imdbResults, textResults] = await Promise.all([
+        this.fetchMovieReleases(imdbId, tmdbId),
+        this.fetchTextReleases(title, year),
+      ]);
+      const releases = this.mergeReleases([...imdbResults, ...textResults]);
+      const parsed = releases
+        .map(parseRelease)
+        .filter((item): item is ParsedRelease => item !== null);
+
+      hypertubeLogger.info(
+        `Prowlarr search for ${imdbId}: imdb=${imdbResults.length}, text=${textResults.length}, raw=${releases.length}, parsed=${parsed.length}, indexers=[${[...new Set(parsed.map((r) => r.indexer))].join(", ")}]`
+      );
+
+      return pickBestPerQualityPerIndexer(parsed);
+    } catch (error) {
+      hypertubeLogger.error(
+        `Error searching Prowlarr: ${formatUnknownError(error)}`
+      );
+      return [];
+    }
+  }
+
+  public async getResolutions(
+    search: ProwlarrMovieSearch
+  ): Promise<TMovieTorrentSchema[]> {
+    const items = await this.searchReleases(search);
+    return items.map((item) => ({
+      quality: item.quality,
+      size: formatBytes(item.size),
+      url: item.downloadUrl,
+      hash: item.infoHash,
+      indexerName: item.indexer,
+      indexerId: item.indexerId,
+      releaseGuid: item.guid,
+    }));
+  }
+
+  public async downloadTorrent({
+    movie,
+    resolution,
+    resolutionId,
+    search,
+  }: {
+    movie: TMovieSchema;
+    resolution: TResolutionSchema;
+    resolutionId: string;
+    search: ProwlarrMovieSearch;
+  }) {
+    if (!movie.imdbId) throw new Error("Movie has no IMDB ID");
+
+    const items = await this.searchReleases(search);
+    const release =
+      items.find((item) => item.guid === resolution.releaseGuid) ??
+      items.find(
+        (item) =>
+          item.indexer === resolution.indexerName &&
+          item.quality === resolution.resolution
+      );
+    if (!release) {
+      throw new Error(
+        `Resolution (${resolution.resolution}, ${resolution.indexerName}) not found for movie ${movie.imdbId}`
+      );
+    }
+
+    const res = await fetch(this.resolveDownloadUrl(release.downloadUrl), {
+      headers: { "X-Api-Key": env.PROWLARR_API_KEY },
+    });
+    if (!res.ok) {
+      throw new Error(
+        `Failed to download torrent for movie ${movie.imdbId} (${resolution.resolution}, ${resolution.indexerName})`
+      );
+    }
+
+    const arrayBuffer = await res.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    await minio.putObject(
+      BUCKETS.MOVIES,
+      getMoviePath(
+        movie.tmdbId.toString(),
+        resolutionId,
+        "resolution.torrent"
+      ),
+      buffer
+    );
+  }
+}

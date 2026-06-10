@@ -308,7 +308,7 @@ importers:
         specifier: ^4.1.7
         version: 4.1.8(@types/node@25.9.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))
 
-  apps/yts-api-proxy:
+  apps/subtitle-proxy:
     dependencies:
       '@hono/node-server':
         specifier: ^2.0.4

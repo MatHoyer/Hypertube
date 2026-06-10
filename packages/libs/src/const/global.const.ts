@@ -21,10 +21,6 @@ export const ParentTypes = {
 
 export type TParentType = (typeof ParentTypes)[keyof typeof ParentTypes];
 
-export const Providers = {
-  YTS: "YTS",
-} as const;
-
 export const betterAuthProviders = [
   "google",
   "github",
