@@ -1,5 +1,5 @@
 import { getUrl, newUTCDate, ROUTES, TUserSchema } from "@hypertube/libs";
-import { env, prisma } from "@hypertube/server-core";
+import { env, getRedisBetterAuth, prisma } from "@hypertube/server-core";
 import {
   AuthContext,
   betterAuth,
@@ -15,17 +15,16 @@ import {
 import { genericOAuth, username } from "better-auth/plugins";
 import { addMinutes, isBefore } from "date-fns";
 import i18next from "i18next";
-import { AsyncLocalStorage } from "node:async_hooks";
 import { v5 } from "uuid";
 import z from "zod";
 import { mailTemplate } from "../emails/import-template";
 import { sendVerificationEmail } from "../emails/sendEmailVerification";
 import { sendEmail } from "./mail";
 
-const pendingProviderEmail = new AsyncLocalStorage<string | undefined>();
+const redisCooldown = getRedisBetterAuth();
 
-const stashProviderEmail = (email: string | undefined | null) => {
-  if (email) pendingProviderEmail.enterWith(email.toLowerCase());
+const setProviderEmail = (id: string, email: string) => {
+  redisCooldown.set(id, email, "EX", 10);
 };
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
@@ -211,7 +210,8 @@ export const auth = betterAuth({
     account: {
       create: {
         before: async (account) => {
-          const providerEmail = pendingProviderEmail.getStore();
+          const providerEmail = await redisCooldown.get(account.accountId);
+          await redisCooldown.del(account.accountId);
           if (!providerEmail) return { data: account };
 
           return {
@@ -261,10 +261,11 @@ export const auth = betterAuth({
               headers: { Authorization: `Bearer ${tokens.accessToken}` },
             });
             const userInfo = await response.json();
-            stashProviderEmail(userInfo.email);
             const customNamespace = v5(env.BETTER_AUTH_URL, v5.URL);
+            const id = v5(String(userInfo.id), customNamespace);
+            setProviderEmail(id, userInfo.email);
             return {
-              id: v5(String(userInfo.id), customNamespace),
+              id,
               email: userInfo.email,
               name: userInfo.displayname,
               createdAt: new Date(),
@@ -284,7 +285,7 @@ export const auth = betterAuth({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
       mapProfileToUser: (profile) => {
-        stashProviderEmail(profile.email);
+        setProviderEmail(profile.sub, profile.email);
         return { ...profile, username: null };
       },
     },
@@ -292,7 +293,7 @@ export const auth = betterAuth({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
       mapProfileToUser: (profile) => {
-        stashProviderEmail(profile.email);
+        if (profile.email) setProviderEmail(profile.id, profile.email);
         return { ...profile, username: null };
       },
     },
@@ -300,7 +301,7 @@ export const auth = betterAuth({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
       mapProfileToUser: (profile) => {
-        stashProviderEmail(profile.email);
+        if (profile.email) setProviderEmail(profile.id, profile.email);
         return { ...profile, username: null };
       },
     },
