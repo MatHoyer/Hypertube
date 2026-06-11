@@ -28,11 +28,6 @@ const stashProviderEmail = (email: string | undefined | null) => {
   if (email) pendingProviderEmail.enterWith(email.toLowerCase());
 };
 
-const withProviderEmail = <T extends { email?: string | null }>(profile: T) => {
-  stashProviderEmail(profile.email);
-  return profile;
-};
-
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
 type AuthMiddleware = MiddlewareContext<
@@ -227,19 +222,6 @@ export const auth = betterAuth({
           };
         },
       },
-      update: {
-        before: async (account) => {
-          const providerEmail = pendingProviderEmail.getStore();
-          if (!providerEmail) return { data: account };
-
-          return {
-            data: {
-              ...account,
-              providerEmail,
-            },
-          };
-        },
-      },
     },
   },
   hooks: {
@@ -302,7 +284,7 @@ export const auth = betterAuth({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
       mapProfileToUser: (profile) => {
-        withProviderEmail(profile);
+        stashProviderEmail(profile.email);
         return { ...profile, username: null };
       },
     },
@@ -310,7 +292,7 @@ export const auth = betterAuth({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
       mapProfileToUser: (profile) => {
-        withProviderEmail(profile);
+        stashProviderEmail(profile.email);
         return { ...profile, username: null };
       },
     },
@@ -318,7 +300,7 @@ export const auth = betterAuth({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
       mapProfileToUser: (profile) => {
-        withProviderEmail(profile);
+        stashProviderEmail(profile.email);
         return { ...profile, username: null };
       },
     },
