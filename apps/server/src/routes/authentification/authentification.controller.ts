@@ -12,11 +12,9 @@ import {
   TUnlinkProviderAuthentificationSchemas,
 } from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
-import { Status } from "better-auth";
-import { APIError } from "better-auth/api";
+import { APIError, Status } from "better-auth";
 import { isBefore } from "date-fns";
 import { Context } from "hono";
-import { ContentfulStatusCode } from "hono/utils/http-status";
 import i18next from "i18next";
 import { decode } from "jsonwebtoken";
 import z, { safeParse } from "zod";
@@ -27,31 +25,52 @@ import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 
-export const signUp = async (
-  c: Context<TBodyParser<TSignUpAuthentificationSchemas["requirements"]>>
+const handleAuthentificationMethod = async (
+  c: Context,
+  fn: () => Promise<Response | void>,
+  successMessage: string
 ) => {
-  const userData = c.get("validatedBody");
-
   try {
-    const res = await auth.api.signUpEmail({
-      body: userData,
-      headers: c.req.raw.headers,
-      asResponse: true,
-    });
-    if (res.ok) return res;
+    const res = await fn();
+    if (!(res instanceof Response)) {
+      return c.json({ message: successMessage }, 200);
+    }
 
     const responseData = await res.json();
-
-    if (responseData.code) {
+    if (!res.ok) {
       throw new APIError(res.status as Status, {
         code: responseData.code,
       });
     }
 
-    return c.json(responseData, res.status as ContentfulStatusCode);
+    const body = {
+      ...responseData,
+      message: successMessage,
+    };
+
+    return new Response(JSON.stringify(body), res);
   } catch (e) {
-    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
+    const { message, statusCode } = betterAuthErrorTranslation(e);
+
+    return c.json({ message }, statusCode);
   }
+};
+
+export const signUp = async (
+  c: Context<TBodyParser<TSignUpAuthentificationSchemas["requirements"]>>
+) => {
+  const userData = c.get("validatedBody");
+
+  const signUpEmail = async () => {
+    return await auth.api.signUpEmail({
+      body: userData,
+      headers: c.req.raw.headers,
+      asResponse: true,
+    });
+  };
+
+  const successMessage = "Sign up successfully";
+  return handleAuthentificationMethod(c, signUpEmail, successMessage);
 };
 
 export const signIn = async (
@@ -59,26 +78,16 @@ export const signIn = async (
 ) => {
   const userData = c.get("validatedBody");
 
-  try {
-    const res = await auth.api.signInUsername({
+  const signInUsername = async () => {
+    return await auth.api.signInUsername({
       body: userData,
       headers: c.req.raw.headers,
       asResponse: true,
     });
-    if (res.ok) return res;
+  };
 
-    const responseData = await res.json();
-
-    if (responseData.code) {
-      throw new APIError(res.status as Status, {
-        code: responseData.code,
-      });
-    }
-
-    return c.json(responseData, res.status as ContentfulStatusCode);
-  } catch (e) {
-    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
-  }
+  const successMessage = "Sign in successfully";
+  return handleAuthentificationMethod(c, signInUsername, successMessage);
 };
 
 export const signInSocial = async (
@@ -86,8 +95,8 @@ export const signInSocial = async (
 ) => {
   const { providerId } = c.get("validatedBody");
 
-  try {
-    const res = await auth.api.signInSocial({
+  const signInSocial = async () => {
+    return await auth.api.signInSocial({
       body: {
         provider: providerId,
         callbackURL: getUrl(ROUTES.CLIENT.HOME, { withUrl: "client" }),
@@ -95,17 +104,10 @@ export const signInSocial = async (
       headers: c.req.raw.headers,
       asResponse: true,
     });
+  };
 
-    const responseData = await res.json();
-    const body = {
-      ...responseData,
-      message: "Sign in with social provider successfully",
-    };
-
-    return new Response(JSON.stringify(body), res);
-  } catch (e) {
-    return c.json({ url: "", message: betterAuthErrorTranslation(e) }, 400);
-  }
+  const successMessage = "Sign in with social provider successfully";
+  return handleAuthentificationMethod(c, signInSocial, successMessage);
 };
 
 export const requestPasswordReset = async (
@@ -115,15 +117,15 @@ export const requestPasswordReset = async (
 ) => {
   const { email } = c.get("validatedBody");
 
-  try {
+  const requestPasswordReset = async () => {
     await auth.api.requestPasswordReset({
       body: { email },
       headers: c.req.raw.headers,
     });
-    return c.json({ message: "Request password reset successfully" }, 200);
-  } catch (e) {
-    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
-  }
+  };
+
+  const successMessage = "Request password reset successfully";
+  return handleAuthentificationMethod(c, requestPasswordReset, successMessage);
 };
 
 export const resetPassword = async (
@@ -131,24 +133,24 @@ export const resetPassword = async (
 ) => {
   const userData = c.get("validatedBody");
 
-  try {
+  const resetPassword = async () => {
     await auth.api.resetPassword({
       body: userData,
       headers: c.req.raw.headers,
     });
-    return c.json({ message: "Reset password successfully" }, 200);
-  } catch (e) {
-    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
-  }
+  };
+
+  const successMessage = "Reset password successfully";
+  return handleAuthentificationMethod(c, resetPassword, successMessage);
 };
 
 export const signOut = async (c: Context<TIsLogged>) => {
-  try {
+  const signOut = async () => {
     await auth.api.signOut({ headers: c.req.raw.headers });
-    return c.json({ message: "Sign out successfully" }, 200);
-  } catch (e) {
-    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
-  }
+  };
+
+  const successMessage = "Sign out successfully";
+  return handleAuthentificationMethod(c, signOut, successMessage);
 };
 
 const emailVerificationTokenSchema = z.object({
@@ -201,8 +203,8 @@ export const linkProvider = async (
 ) => {
   const { providerId } = c.get("validatedBody");
 
-  try {
-    const res = await auth.api.linkSocialAccount({
+  const linkSocialAccount = async () => {
+    return await auth.api.linkSocialAccount({
       body: {
         provider: providerId,
         callbackURL: getUrl(ROUTES.CLIENT.SETTINGS, { withUrl: "client" }),
@@ -210,14 +212,10 @@ export const linkProvider = async (
       headers: c.req.raw.headers,
       asResponse: true,
     });
+  };
 
-    const responseData = await res.json();
-    const body = { ...responseData, message: "Link provider successfully" };
-
-    return new Response(JSON.stringify(body), res);
-  } catch (e) {
-    return c.json({ url: "", message: betterAuthErrorTranslation(e) }, 400);
-  }
+  const successMessage = "Link provider successfully";
+  return handleAuthentificationMethod(c, linkSocialAccount, successMessage);
 };
 
 export const unlinkProvider = async (
@@ -228,13 +226,13 @@ export const unlinkProvider = async (
 ) => {
   const { providerId } = c.get("validatedUrlParams");
 
-  try {
+  const unlinkAccount = async () => {
     await auth.api.unlinkAccount({
       body: { providerId },
       headers: c.req.raw.headers,
     });
-    return c.json({ message: "Unlink provider successfully" }, 200);
-  } catch (e) {
-    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
-  }
+  };
+
+  const successMessage = "Unlink provider successfully";
+  return handleAuthentificationMethod(c, unlinkAccount, successMessage);
 };

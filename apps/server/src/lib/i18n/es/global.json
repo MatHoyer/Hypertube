@@ -29,6 +29,7 @@
     "EMAIL_NOT_VERIFIED": "Correo electrónico no verificado. Enviando correo electrónico...",
     "UNEXPECTED_ERROR": "Error inesperado",
     "USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER": "El nombre de usuario ya está en uso. Por favor, prueba con otro.",
+    "USERNAME_IS_ALREADY_TAKEN": "El nombre de usuario ya está en uso.",
     "USERNAME_IS_TOO_SHORT": "El nombre de usuario es demasiado corto",
     "USERNAME_IS_TOO_LONG": "El nombre de usuario es demasiado largo",
     "USERNAME_IS_INVALID": "Nombre de usuario inválido",
