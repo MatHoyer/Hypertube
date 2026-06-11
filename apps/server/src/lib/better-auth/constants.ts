@@ -1,4 +1,6 @@
+import { hypertubeLogger } from "@hypertube/libs";
 import { isAPIError } from "better-auth/api";
+import { ContentfulStatusCode } from "hono/utils/http-status";
 import i18next from "i18next";
 
 const keyErrorCodes = [
@@ -6,6 +8,7 @@ const keyErrorCodes = [
   "EMAIL_NOT_VERIFIED",
   "UNEXPECTED_ERROR",
   "USERNAME_IS_ALREADY_TAKEN_PLEASE_TRY_ANOTHER",
+  "USERNAME_IS_ALREADY_TAKEN",
   "USERNAME_IS_TOO_SHORT",
   "USERNAME_IS_TOO_LONG",
   "USERNAME_IS_INVALID",
@@ -47,16 +50,19 @@ export const errorCodes = keyErrorCodes.map(
   (code) => `betterAuthError.${code}` as const
 );
 
-const getApiErrorCode = (error: unknown): string | undefined => {
-  if (!isAPIError(error)) return undefined;
-  const { body } = error as { body?: { code?: string } };
-  return body?.code;
+const getApiErrorCodes = (
+  error: unknown
+): { errorCode: string | undefined; statusCode: number } => {
+  if (!isAPIError(error)) return { errorCode: undefined, statusCode: 400 };
+  return { errorCode: error.body?.code, statusCode: error.statusCode };
 };
 
-export const betterAuthErrorTranslation = (error: unknown): string => {
+export const betterAuthErrorTranslation = (
+  error: unknown
+): { message: string; statusCode: ContentfulStatusCode } => {
   let code = "UNEXPECTED_ERROR";
   try {
-    const errorCode = getApiErrorCode(error);
+    const { errorCode, statusCode } = getApiErrorCodes(error);
     if (errorCode) code = errorCode;
 
     if (
@@ -64,12 +70,23 @@ export const betterAuthErrorTranslation = (error: unknown): string => {
         `betterAuthError.${code as (typeof keyErrorCodes)[number]}`
       )
     ) {
-      console.log("better-auth error code not translate : ", code);
-      return i18next.t("betterAuthError.UNEXPECTED_ERROR");
+      hypertubeLogger.warn(`better-auth error code not translate : ${code}`);
+      return {
+        message: i18next.t("betterAuthError.UNEXPECTED_ERROR"),
+        statusCode: statusCode as ContentfulStatusCode,
+      };
     }
 
-    return i18next.t(`betterAuthError.${code}` as (typeof errorCodes)[number]);
+    return {
+      message: i18next.t(
+        `betterAuthError.${code}` as (typeof errorCodes)[number]
+      ),
+      statusCode: statusCode as ContentfulStatusCode,
+    };
   } catch {
-    return i18next.t("betterAuthError.UNEXPECTED_ERROR");
+    return {
+      message: i18next.t("betterAuthError.UNEXPECTED_ERROR"),
+      statusCode: 400,
+    };
   }
 };

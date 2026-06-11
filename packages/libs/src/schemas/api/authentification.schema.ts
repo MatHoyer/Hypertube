@@ -12,7 +12,7 @@ export const signUpAuthentificationSchemas = {
     password: z.string().min(8).max(50),
   }),
   response: z.object({
-    message: z.string().optional(),
+    message: z.string(),
   }),
 };
 
@@ -27,7 +27,7 @@ export const signInAuthentificationSchemas = {
     password: z.string(),
   }),
   response: z.object({
-    message: z.string().optional(),
+    message: z.string(),
   }),
 };
 
