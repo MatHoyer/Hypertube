@@ -255,8 +255,6 @@ export const usersSwagger = {
                   firstName: "John",
                   lastName: "Doe",
                   imageId: "img_clx9z8y7x6w5v4u3t2s1r0q",
-                  emailCooldown: "2024-01-15T10:30:00.000Z",
-                  passwordCooldown: "2024-12-15T10:30:00.000Z",
                 },
               },
             },

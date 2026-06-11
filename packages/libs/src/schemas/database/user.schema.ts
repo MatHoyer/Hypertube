@@ -14,7 +14,5 @@ export const userSchema = z.object({
   firstName: z.string().nullable(),
   lastName: z.string().nullable(),
   imageId: imageSchema.shape.id.nullable(),
-  emailCooldown: z.coerce.date(),
-  passwordCooldown: z.coerce.date(),
 });
 export type TUserSchema = z.infer<typeof userSchema>;

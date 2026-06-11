@@ -158,8 +158,6 @@ CREATE TABLE "User" (
     "firstName" TEXT,
     "lastName" TEXT,
     "imageId" TEXT,
-    "emailCooldown" TIMESTAMP(3),
-    "passwordCooldown" TIMESTAMP(3),
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
