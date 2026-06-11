@@ -35,3 +35,11 @@ export const getRedisSubscriber = () => {
     maxRetriesPerRequest: null,
   });
 };
+
+export const getRedisBetterAuth = () => {
+  return new Redis({
+    host: env.REDIS_HOST,
+    port: env.REDIS_PORT,
+    maxRetriesPerRequest: null,
+  });
+};
