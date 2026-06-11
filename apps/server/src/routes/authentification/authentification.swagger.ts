@@ -29,6 +29,30 @@ export const authentificationSwagger = {
       responses: {
         "200": {
           description: "Sign up successfully",
+          content: {
+            "application/json": {
+              example: {
+                token: null,
+                user: {
+                  name: "John Doe",
+                  email: "example@example.com",
+                  emailVerified: false,
+                  image: null,
+                  createdAt: "2026-06-10T19:54:01.074Z",
+                  updatedAt: "2026-06-11T15:03:29.075Z",
+                  username: "johndoe",
+                  displayUsername: "johndoe",
+                  firstName: "John",
+                  lastName: "Doe",
+                  imageId: null,
+                  emailCooldown: "2026-06-10T19:59:01.084Z",
+                  passwordCooldown: "2026-06-11T15:08:29.072Z",
+                  id: "6068b57e-3714-41e8-b760-f147116e7377",
+                },
+                message: "Sign up successfully",
+              },
+            },
+          },
         },
         "400": {
           description: "Sign up failed",
@@ -59,6 +83,31 @@ export const authentificationSwagger = {
       responses: {
         "200": {
           description: "Sign in successfully",
+          content: {
+            "application/json": {
+              example: {
+                redirect: false,
+                token: "9hJcxhqXK2c4d892J8PzlWU4sBM1WVbz",
+                user: {
+                  name: "John Doe",
+                  email: "example@example.com",
+                  emailVerified: true,
+                  image: null,
+                  createdAt: "2026-06-10T19:54:01.074Z",
+                  updatedAt: "2026-06-11T15:03:29.075Z",
+                  username: "johndoe",
+                  displayUsername: "johndoe",
+                  firstName: "John",
+                  lastName: "Doe",
+                  imageId: null,
+                  emailCooldown: "2026-06-10T19:59:01.084Z",
+                  passwordCooldown: "2026-06-11T15:08:29.072Z",
+                  id: "6068b57e-3714-41e8-b760-f147116e7377",
+                },
+                message: "Sign in successfully",
+              },
+            },
+          },
         },
         "400": {
           description: "Sign in failed",
