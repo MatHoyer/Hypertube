@@ -1,4 +1,4 @@
-import { getUrl, newUTCDate, ROUTES, TUserSchema } from "@hypertube/libs";
+import { getUrl, ROUTES, TUserSchema } from "@hypertube/libs";
 import { env, getRedisBetterAuth, prisma } from "@hypertube/server-core";
 import {
   AuthContext,
@@ -13,7 +13,6 @@ import {
   getSessionFromCtx,
 } from "better-auth/api";
 import { genericOAuth, username } from "better-auth/plugins";
-import { addMinutes, isBefore } from "date-fns";
 import i18next from "i18next";
 import { v5 } from "uuid";
 import z from "zod";
@@ -21,10 +20,18 @@ import { mailTemplate } from "../emails/import-template";
 import { sendVerificationEmail } from "../emails/sendEmailVerification";
 import { sendEmail } from "./mail";
 
-const redisCooldown = getRedisBetterAuth();
+const redisBetterAuth = getRedisBetterAuth();
+
+const setPasswordCooldown = (id: string) => {
+  redisBetterAuth.set(`${id}:password`, 1, "EX", 5 * 60);
+};
+
+const hasPasswordCooldown = async (id: string) => {
+  return !!(await redisBetterAuth.get(`${id}:password`));
+};
 
 const setProviderEmail = (id: string, email: string) => {
-  redisCooldown.set(id, email, "EX", 10);
+  redisBetterAuth.set(id, email, "EX", 10);
 };
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
@@ -124,7 +131,8 @@ export const auth = betterAuth({
     maxPasswordLength: 50,
     sendResetPassword: async ({ user, url }) => {
       const userInfo = user as TUserSchema;
-      if (isBefore(newUTCDate(), userInfo.passwordCooldown)) {
+      const hasCooldown = await hasPasswordCooldown(user.id);
+      if (hasCooldown) {
         throw new APIError("TOO_MANY_REQUESTS", {
           code: "TOO_MANY_EMAILS_SENT",
         });
@@ -145,12 +153,7 @@ export const auth = betterAuth({
         searchParams: { token },
       });
 
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          passwordCooldown: addMinutes(newUTCDate(), 5),
-        },
-      });
+      setPasswordCooldown(user.id);
 
       await sendEmail({
         to: userInfo.email,
@@ -182,16 +185,6 @@ export const auth = betterAuth({
       firstName: { type: "string" },
       lastName: { type: "string" },
       imageId: { type: "string", input: false },
-      emailCooldown: {
-        type: "date",
-        input: false,
-        defaultValue: newUTCDate(),
-      },
-      passwordCooldown: {
-        type: "date",
-        input: false,
-        defaultValue: newUTCDate(),
-      },
     },
   },
   account: {
@@ -210,8 +203,8 @@ export const auth = betterAuth({
     account: {
       create: {
         before: async (account) => {
-          const providerEmail = await redisCooldown.get(account.accountId);
-          await redisCooldown.del(account.accountId);
+          const providerEmail = await redisBetterAuth.get(account.accountId);
+          await redisBetterAuth.del(account.accountId);
           if (!providerEmail) return { data: account };
 
           return {

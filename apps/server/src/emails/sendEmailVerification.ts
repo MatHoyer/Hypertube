@@ -1,10 +1,19 @@
-import { newUTCDate, TUserSchema } from "@hypertube/libs";
-import { prisma } from "@hypertube/server-core";
+import { TUserSchema } from "@hypertube/libs";
+import { getRedisBetterAuth } from "@hypertube/server-core";
 import { APIError } from "better-auth/api";
-import { addMinutes, isBefore } from "date-fns";
 import i18next from "i18next";
 import { sendEmail } from "../lib/mail";
 import { mailTemplate } from "./import-template";
+
+const redisBetterAuth = getRedisBetterAuth();
+
+const setEmailCooldown = (id: string) => {
+  redisBetterAuth.set(`${id}:email`, 1, "EX", 5 * 60);
+};
+
+const hasEmailCooldown = async (id: string) => {
+  return !!(await redisBetterAuth.get(`${id}:email`));
+};
 
 export const sendVerificationEmail = async ({
   user,
@@ -15,7 +24,8 @@ export const sendVerificationEmail = async ({
   url: string;
   callbackURL: string;
 }) => {
-  if (isBefore(newUTCDate(), user.emailCooldown)) {
+  const hasCooldown = await hasEmailCooldown(user.id);
+  if (hasCooldown) {
     throw new APIError("TOO_MANY_REQUESTS", {
       code: "TOO_MANY_EMAILS_SENT",
     });
@@ -24,12 +34,7 @@ export const sendVerificationEmail = async ({
   const newUrl = new URL(url);
   newUrl.searchParams.set("callbackURL", callbackURL);
 
-  await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      emailCooldown: addMinutes(newUTCDate(), 5),
-    },
-  });
+  setEmailCooldown(user.id);
 
   await sendEmail({
     to: user.email,
