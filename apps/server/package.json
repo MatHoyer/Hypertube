@@ -22,7 +22,7 @@
     "hono": "^4.12.18",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^8.0.5",
-    "sharp": "^0.34.3",
+    "sharp": "^0.35.1",
     "uuid": "^14.0.0"
   },
   "devDependencies": {
