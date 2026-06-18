@@ -188,6 +188,12 @@ export const auth = betterAuth({
       imageId: { type: "string", input: false },
     },
   },
+  account: {
+    accountLinking: {
+      allowDifferentEmails: true,
+      disableImplicitLinking: true,
+    },
+  },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       switch (ctx.path) {

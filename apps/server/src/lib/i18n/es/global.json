@@ -66,7 +66,8 @@
     "TOO_MANY_EMAILS_SENT": "Se han enviado demasiados correos electrónicos",
     "OAUTH_CODE_VERIFICATION_FAILED": "Error al verificar el código OAuth",
     "EMAIL_DOESN'T_MATCH": "El correo electrónico no coincide.",
-    "FAILED_TO_UNLINK_LAST_ACCOUNT": "No se pudo desvincular la última cuenta."
+    "FAILED_TO_UNLINK_LAST_ACCOUNT": "No se pudo desvincular la última cuenta.",
+    "ACCOUNT_NOT_LINKED": "Cuenta no vinculada."
   },
   "notifications": {
     "test": {
