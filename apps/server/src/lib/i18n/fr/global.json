@@ -66,7 +66,8 @@
     "TOO_MANY_EMAILS_SENT": "Trop d'e-mails envoyés. Réessayez plus tard.",
     "OAUTH_CODE_VERIFICATION_FAILED": "La vérification du code OAuth a échoué.",
     "EMAIL_DOESN'T_MATCH": "L'adresse e-mail ne correspond pas.",
-    "FAILED_TO_UNLINK_LAST_ACCOUNT": "Échec de la dissociation du dernier compte."
+    "FAILED_TO_UNLINK_LAST_ACCOUNT": "Échec de la dissociation du dernier compte.",
+    "ACCOUNT_NOT_LINKED": "Compte non lié."
   },
   "notifications": {
     "test": {
