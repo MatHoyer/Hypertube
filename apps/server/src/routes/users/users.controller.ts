@@ -8,17 +8,17 @@ import {
   ROUTES,
   TGetUsersSchemas,
   TPatchUsersSchemas,
+  TUserSchema,
 } from "@hypertube/libs";
 import { TGetUserSchemas } from "@hypertube/libs/src/schemas/api/users.schema";
 import { env, prisma } from "@hypertube/server-core";
-import { APIError } from "better-auth/api";
 import { addHours, getTime } from "date-fns";
 import { Context } from "hono";
 import i18next from "i18next";
 import { sign as jwtSign } from "jsonwebtoken";
 import { sendVerificationEmail } from "../../emails/sendEmailVerification";
 import { auth } from "../../lib/auth";
-import { betterAuthErrorTranslation } from "../../lib/better-auth/constants";
+import { handleAuthentificationMethod } from "../../lib/better-auth/constants";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
@@ -99,6 +99,88 @@ export const getUser = async (
   );
 };
 
+const handleChangePassword = async ({
+  c,
+  password,
+  oldPassword,
+}: {
+  c: Context;
+  password: string | undefined;
+  oldPassword: string | undefined;
+}) => {
+  if (!password) return;
+
+  if (oldPassword) {
+    const changePassword = async () => {
+      return await auth.api.changePassword({
+        body: {
+          currentPassword: oldPassword,
+          newPassword: password,
+        },
+        headers: c.req.raw.headers,
+        asResponse: true,
+      });
+    };
+
+    return handleAuthentificationMethod(c, changePassword);
+  }
+
+  const setPassword = async () => {
+    return await auth.api.setPassword({
+      body: { newPassword: password },
+      headers: c.req.raw.headers,
+      asResponse: true,
+    });
+  };
+
+  return handleAuthentificationMethod(c, setPassword);
+};
+
+const handleChangeEmail = async ({
+  c,
+  user,
+  newEmail,
+}: {
+  c: Context;
+  user: TUserSchema;
+  newEmail: string | undefined;
+}) => {
+  if (!newEmail) return;
+  const email = newEmail.toLowerCase();
+
+  const otherUser = await prisma.user.findUnique({ where: { email } });
+  if (otherUser) {
+    const message = i18next.t(
+      "betterAuthError.USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL"
+    );
+    return c.json({ message }, 400);
+  }
+
+  const token = jwtSign(
+    {
+      email: user.email,
+      newEmail: email,
+      exp: getTime(addHours(newUTCDate(), 1)),
+      iat: getTime(newUTCDate()),
+    },
+    env.BETTER_AUTH_SECRET
+  );
+  const url = getUrl(ROUTES.API.AUTHENTIFICATION_EMAIL_VERIFICATION, {
+    withUrl: "client",
+    searchParams: { token },
+  });
+
+  const handleSendVerificationEmail = async () => {
+    return await sendVerificationEmail({
+      user,
+      url,
+      callbackURL: getUrl(ROUTES.CLIENT.SETTINGS, { withUrl: "client" }),
+    });
+  };
+
+  return handleAuthentificationMethod(c, handleSendVerificationEmail);
+};
+
 export const patchUser = async (
   c: Context<
     TIsLogged &
@@ -111,93 +193,31 @@ export const patchUser = async (
   const user = c.get("user");
 
   if (user.id !== userId) {
-    return c.json(
-      {
-        message:
-          "You are not authorized to modify information that is not yours",
-      },
-      401
-    );
+    const message = i18next.t("httpCode.401");
+    return c.json({ message }, 401);
   }
 
-  try {
-    if (body.oldPassword && body.password) {
-      await auth.api.changePassword({
-        body: {
-          currentPassword: body.oldPassword,
-          newPassword: body.password,
-        },
-        headers: c.req.raw.headers,
-      });
-    } else if (body.password) {
-      await auth.api.setPassword({
-        body: { newPassword: body.password },
-        headers: c.req.raw.headers,
-      });
-    }
-  } catch (e) {
-    return c.json({ message: betterAuthErrorTranslation(e) }, 400);
-  }
+  const passwordResponse = await handleChangePassword({
+    c,
+    password: body.password,
+    oldPassword: body.oldPassword,
+  });
+  if (passwordResponse && !passwordResponse.ok) return passwordResponse;
 
-  delete body.oldPassword;
-  delete body.password;
-
-  if (body.email) {
-    const email = body.email.toLowerCase();
-
-    const otherUser = await prisma.user.findUnique({
-      where: { email: email },
-    });
-    if (otherUser) {
-      return c.json(
-        {
-          message: i18next.t(
-            "betterAuthError.USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL"
-          ),
-        },
-        400
-      );
-    }
-
-    const token = jwtSign(
-      {
-        email: user.email,
-        newEmail: email,
-        exp: getTime(addHours(newUTCDate(), 1)),
-        iat: getTime(newUTCDate()),
-      },
-      env.BETTER_AUTH_SECRET
-    );
-    const url = getUrl(ROUTES.API.AUTHENTIFICATION_EMAIL_VERIFICATION, {
-      withUrl: "client",
-      searchParams: { token },
-    });
-
-    try {
-      await sendVerificationEmail({
-        user,
-        url,
-        callbackURL: getUrl(ROUTES.CLIENT.SETTINGS, { withUrl: "client" }),
-      });
-    } catch (e) {
-      if (e instanceof APIError) {
-        return c.json({ message: betterAuthErrorTranslation(e) }, 429);
-      }
-      return c.json({ message: i18next.t("httpCode.400") }, 400);
-    }
-  }
-
-  delete body.email;
+  const emailResponse = await handleChangeEmail({
+    c,
+    user,
+    newEmail: body.email,
+  });
+  if (emailResponse && !emailResponse.ok) return emailResponse;
 
   if (body.username) {
     const user = await prisma.user.findUnique({
       where: { username: body.username },
     });
     if (user) {
-      return c.json(
-        { message: auth.$ERROR_CODES.USERNAME_IS_ALREADY_TAKEN },
-        400
-      );
+      const message = i18next.t("betterAuthError.USERNAME_IS_ALREADY_TAKEN");
+      return c.json({ message }, 400);
     }
   }
 
@@ -207,7 +227,14 @@ export const patchUser = async (
 
   await prisma.user.update({
     where: { id: userId },
-    data: { ...body, image },
+    data: {
+      name: body.name,
+      username: body.username,
+      firstName: body.firstName,
+      lastName: body.lastName,
+      imageId: body.imageId,
+      image,
+    },
   });
   return c.json({ message: "User updated successfully" }, 200);
 };
