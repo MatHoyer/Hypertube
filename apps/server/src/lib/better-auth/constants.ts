@@ -48,6 +48,7 @@ const keyErrorCodes = [
   "OAUTH_CODE_VERIFICATION_FAILED",
   "EMAIL_DOESN'T_MATCH",
   "FAILED_TO_UNLINK_LAST_ACCOUNT",
+  "ACCOUNT_NOT_LINKED",
 ] as const;
 
 export const errorCodes = keyErrorCodes.map(
