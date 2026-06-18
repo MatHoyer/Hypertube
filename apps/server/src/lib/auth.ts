@@ -18,6 +18,7 @@ import { v5 } from "uuid";
 import z from "zod";
 import { mailTemplate } from "../emails/import-template";
 import { sendVerificationEmail } from "../emails/sendEmailVerification";
+import { betterAuthErrorTranslation } from "./better-auth/constants";
 import { sendEmail } from "./mail";
 
 const redisBetterAuth = getRedisBetterAuth();
@@ -28,10 +29,6 @@ const setPasswordCooldown = (id: string) => {
 
 const hasPasswordCooldown = async (id: string) => {
   return !!(await redisBetterAuth.get(`${id}:password`));
-};
-
-const setProviderEmail = (id: string, email: string) => {
-  redisBetterAuth.set(id, email, "EX", 10);
 };
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
@@ -108,14 +105,18 @@ const updateEmail = (newEmail: string) => {
 };
 
 const handleBetterAuthError = (ctx: AuthMiddleware) => {
+  let code;
+  if (ctx.query && typeof ctx.query.error === "string") {
+    code = ctx.query.error.toUpperCase();
+  }
+  const { message } = betterAuthErrorTranslation(
+    new APIError("BAD_REQUEST", { code })
+  );
+
   throw ctx.redirect(
     getUrl(ROUTES.CLIENT.ERROR, {
       withUrl: "client",
-      searchParams: {
-        error: ctx.query
-          ? (ctx.query.error as string).toUpperCase()
-          : "UNEXPECTED_ERROR",
-      },
+      searchParams: { error: message },
     })
   );
 };
@@ -187,36 +188,6 @@ export const auth = betterAuth({
       imageId: { type: "string", input: false },
     },
   },
-  account: {
-    additionalFields: {
-      providerEmail: {
-        type: "string",
-        required: false,
-        input: false,
-      },
-    },
-    accountLinking: {
-      allowDifferentEmails: true,
-    },
-  },
-  databaseHooks: {
-    account: {
-      create: {
-        before: async (account) => {
-          const providerEmail = await redisBetterAuth.get(account.accountId);
-          await redisBetterAuth.del(account.accountId);
-          if (!providerEmail) return { data: account };
-
-          return {
-            data: {
-              ...account,
-              providerEmail,
-            },
-          };
-        },
-      },
-    },
-  },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       switch (ctx.path) {
@@ -256,7 +227,6 @@ export const auth = betterAuth({
             const userInfo = await response.json();
             const customNamespace = v5(env.BETTER_AUTH_URL, v5.URL);
             const id = v5(String(userInfo.id), customNamespace);
-            setProviderEmail(id, userInfo.email);
             return {
               id,
               email: userInfo.email,
@@ -278,7 +248,6 @@ export const auth = betterAuth({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
       mapProfileToUser: (profile) => {
-        setProviderEmail(profile.sub, profile.email);
         return { ...profile, username: null };
       },
     },
@@ -286,7 +255,6 @@ export const auth = betterAuth({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
       mapProfileToUser: (profile) => {
-        if (profile.email) setProviderEmail(profile.id, profile.email);
         return { ...profile, username: null };
       },
     },
@@ -294,7 +262,6 @@ export const auth = betterAuth({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
       mapProfileToUser: (profile) => {
-        if (profile.email) setProviderEmail(profile.id, profile.email);
         return { ...profile, username: null };
       },
     },

@@ -24,9 +24,3 @@ export const supportedOAuths: Record<
 export type TSupportedOAuths = keyof typeof supportedOAuths;
 
 export const credentialId = "credential";
-
-export const keyErrorCodes = [
-  "UNEXPECTED_ERROR",
-  "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER",
-  "OAUTH_CODE_VERIFICATION_FAILED",
-] as const;

@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { Layout, LayoutContent } from "@/layouts/PageLayout";
-import { keyErrorCodes } from "@/lib/better-auth/constants";
 import { getUrl, ROUTES } from "@hypertube/libs";
 import { TriangleAlert } from "lucide-react";
 import { useQueryState } from "nuqs";
@@ -12,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 export const ErrorPage = () => {
   const [error, _] = useQueryState("error", { defaultValue: "" });
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Layout>
@@ -21,11 +20,7 @@ export const ErrorPage = () => {
           <Card className="p-10 items-center text-center bg-primary/60">
             <TriangleAlert className="text-accent-foreground" size={100} />
             <Typography variant="h1">{t("global.error")}</Typography>
-            <Typography variant="h3">
-              {i18n.exists(`error.${error as (typeof keyErrorCodes)[number]}`)
-                ? t(`error.${error as (typeof keyErrorCodes)[number]}`)
-                : t("error.UNEXPECTED_ERROR")}
-            </Typography>
+            <Typography variant="h3">{error}</Typography>
             <Button
               variant={"secondary"}
               onClick={() => navigate(getUrl(ROUTES.CLIENT.HOME))}

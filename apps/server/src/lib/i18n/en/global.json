@@ -64,7 +64,9 @@
     "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "Account is already linked to different user.",
     "USER_ALREADY_HAS_A_PASSWORD": "User already has a password",
     "TOO_MANY_EMAILS_SENT": "Too many emails sent. Retry later.",
-    "OAUTH_CODE_VERIFICATION_FAILED": "Oauth code verification failed."
+    "OAUTH_CODE_VERIFICATION_FAILED": "Oauth code verification failed.",
+    "EMAIL_DOESN'T_MATCH": "Email doesn't match.",
+    "FAILED_TO_UNLINK_LAST_ACCOUNT": "Failed to unlink last account."
   },
   "notifications": {
     "test": {

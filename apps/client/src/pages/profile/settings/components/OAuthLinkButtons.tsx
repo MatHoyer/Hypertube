@@ -76,12 +76,6 @@ export const OAuthLinkButtons = () => {
               alt={params.name}
               title={params.name}
             />
-            {linkedAccounts.includes(providerId) && (
-              <p className="text-xs text-muted-foreground text-center truncate">
-                {accounts.find((account) => account.providerId === providerId)
-                  ?.providerEmail ?? ""}
-              </p>
-            )}
             {linkedAccounts.includes(providerId) ? (
               <Button
                 variant={"destructive"}

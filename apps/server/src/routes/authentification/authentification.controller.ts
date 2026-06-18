@@ -12,49 +12,17 @@ import {
   TUnlinkProviderAuthentificationSchemas,
 } from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
-import { APIError, Status } from "better-auth";
 import { isBefore } from "date-fns";
 import { Context } from "hono";
 import i18next from "i18next";
 import { decode } from "jsonwebtoken";
 import z, { safeParse } from "zod";
 import { auth } from "../../lib/auth";
-import { betterAuthErrorTranslation } from "../../lib/better-auth/constants";
+import { handleAuthentificationMethod } from "../../lib/better-auth/constants";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
-
-const handleAuthentificationMethod = async (
-  c: Context,
-  fn: () => Promise<Response | void>,
-  successMessage: string
-) => {
-  try {
-    const res = await fn();
-    if (!(res instanceof Response)) {
-      return c.json({ message: successMessage }, 200);
-    }
-
-    const responseData = await res.json();
-    if (!res.ok) {
-      throw new APIError(res.status as Status, {
-        code: responseData.code,
-      });
-    }
-
-    const body = {
-      ...responseData,
-      message: successMessage,
-    };
-
-    return new Response(JSON.stringify(body), res);
-  } catch (e) {
-    const { message, statusCode } = betterAuthErrorTranslation(e);
-
-    return c.json({ message }, statusCode);
-  }
-};
 
 export const signUp = async (
   c: Context<TBodyParser<TSignUpAuthentificationSchemas["requirements"]>>
