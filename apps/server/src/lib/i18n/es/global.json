@@ -64,7 +64,9 @@
     "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "La cuenta ya está vinculada a un usuario diferente",
     "USER_ALREADY_HAS_A_PASSWORD": "El usuario ya tiene una contraseña",
     "TOO_MANY_EMAILS_SENT": "Se han enviado demasiados correos electrónicos",
-    "OAUTH_CODE_VERIFICATION_FAILED": "Error al verificar el código OAuth"
+    "OAUTH_CODE_VERIFICATION_FAILED": "Error al verificar el código OAuth",
+    "EMAIL_DOESN'T_MATCH": "El correo electrónico no coincide.",
+    "FAILED_TO_UNLINK_LAST_ACCOUNT": "No se pudo desvincular la última cuenta."
   },
   "notifications": {
     "test": {

@@ -1,5 +1,7 @@
 import { hypertubeLogger } from "@hypertube/libs";
-import { isAPIError } from "better-auth/api";
+import { Status } from "better-auth";
+import { APIError, isAPIError } from "better-auth/api";
+import { Context } from "hono";
 import { ContentfulStatusCode } from "hono/utils/http-status";
 import i18next from "i18next";
 
@@ -44,6 +46,8 @@ const keyErrorCodes = [
   "USER_ALREADY_HAS_A_PASSWORD",
   "TOO_MANY_EMAILS_SENT",
   "OAUTH_CODE_VERIFICATION_FAILED",
+  "EMAIL_DOESN'T_MATCH",
+  "FAILED_TO_UNLINK_LAST_ACCOUNT",
 ] as const;
 
 export const errorCodes = keyErrorCodes.map(
@@ -88,5 +92,36 @@ export const betterAuthErrorTranslation = (
       message: i18next.t("betterAuthError.UNEXPECTED_ERROR"),
       statusCode: 400,
     };
+  }
+};
+
+export const handleAuthentificationMethod = async (
+  c: Context,
+  fn: () => Promise<Response | void>,
+  successMessage: string
+) => {
+  try {
+    const res = await fn();
+    if (!(res instanceof Response)) {
+      return c.json({ message: successMessage }, 200);
+    }
+
+    const responseData = await res.json();
+    if (!res.ok) {
+      throw new APIError(res.status as Status, {
+        code: responseData.code,
+      });
+    }
+
+    const body = {
+      ...responseData,
+      message: successMessage,
+    };
+
+    return new Response(JSON.stringify(body), res);
+  } catch (e) {
+    const { message, statusCode } = betterAuthErrorTranslation(e);
+
+    return c.json({ message }, statusCode);
   }
 };
