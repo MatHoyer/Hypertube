@@ -366,10 +366,5 @@
     "settings": "Paramètres",
     "historic": "Historique",
     "playlists": "Playlists"
-  },
-  "error": {
-    "UNEXPECTED_ERROR": "Erreur inattendue.",
-    "ACCOUNT_ALREADY_LINKED_TO_DIFFERENT_USER": "Le compte est déjà associé à un utilisateur différent.",
-    "OAUTH_CODE_VERIFICATION_FAILED": "La vérification du code OAuth a échoué."
   }
 }
