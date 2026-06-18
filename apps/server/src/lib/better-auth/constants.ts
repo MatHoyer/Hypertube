@@ -98,7 +98,7 @@ export const betterAuthErrorTranslation = (
 export const handleAuthentificationMethod = async (
   c: Context,
   fn: () => Promise<Response | void>,
-  successMessage: string
+  successMessage?: string
 ) => {
   try {
     const res = await fn();
