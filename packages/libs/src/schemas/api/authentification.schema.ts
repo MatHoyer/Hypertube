@@ -134,13 +134,3 @@ export type TUnlinkProviderAuthentificationSchemas = {
   urlParams: z.infer<typeof unlinkProviderAuthentificationSchemas.urlParams>;
   response: z.infer<typeof unlinkProviderAuthentificationSchemas.response>;
 };
-
-export const deleteUserAuthentificationSchemas = {
-  response: z.object({
-    message: z.string(),
-  }),
-};
-
-export type TDeleteUserAuthentificationSchemas = {
-  response: z.infer<typeof deleteUserAuthentificationSchemas.response>;
-};

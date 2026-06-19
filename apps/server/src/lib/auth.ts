@@ -157,7 +157,7 @@ export const auth = betterAuth({
 
       setPasswordCooldown(user.id);
 
-      await sendEmail({
+      void sendEmail({
         to: userInfo.email,
         subject: i18next.t("email.password.resetPassword"),
         html: mailTemplate({
@@ -172,7 +172,7 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendVerificationEmail: async (data) =>
-      await sendVerificationEmail({
+      void sendVerificationEmail({
         user: data.user as TUserSchema,
         url: data.url,
         callbackURL: getUrl(ROUTES.CLIENT.SIGNIN, { withUrl: "client" }),
@@ -191,7 +191,7 @@ export const auth = betterAuth({
     deleteUser: {
       enabled: true,
       sendDeleteAccountVerification: async (data) =>
-        await sendDeleteVerification({
+        void sendDeleteVerification({
           user: data.user as TUserSchema,
           url: data.url,
           callbackURL: getUrl(ROUTES.CLIENT.SIGNIN, { withUrl: "client" }),

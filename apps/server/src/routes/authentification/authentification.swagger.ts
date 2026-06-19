@@ -373,20 +373,4 @@ export const authentificationSwagger = {
       },
     },
   },
-  [getUrl(ROUTES.API.DELETE_USER)]: {
-    delete: {
-      summary: "Delete user",
-      tags: ["Auth"],
-      responses: {
-        "200": {
-          description: "Delete user successfully",
-          content: {
-            "application/json": {
-              example: { message: "Delete user successfully" },
-            },
-          },
-        },
-      },
-    },
-  },
 };

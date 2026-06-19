@@ -148,12 +148,46 @@ export const usersSwagger = {
           },
         },
         "401": {
-          description: "Unauthorized to modify information",
+          description: "Unauthorized",
           content: {
             "application/json": {
               example: {
-                message:
-                  "You are not authorized to modify information that is not yours",
+                message: "Unauthorized",
+              },
+            },
+          },
+        },
+        "429": {
+          description: "Too many emails sent",
+          content: {
+            "application/json": {
+              example: {
+                message: "Too many emails sent",
+              },
+            },
+          },
+        },
+      },
+    },
+    delete: {
+      summary: "Delete user",
+      tags: ["Users"],
+      parameters: [usersPathParam],
+      responses: {
+        "200": {
+          description: "Account deletion email successfully sent",
+          content: {
+            "application/json": {
+              example: { message: "Account deletion email successfully sent" },
+            },
+          },
+        },
+        "401": {
+          description: "Unauthorized",
+          content: {
+            "application/json": {
+              example: {
+                message: "Unauthorized",
               },
             },
           },
