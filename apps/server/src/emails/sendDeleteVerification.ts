@@ -1,49 +1,40 @@
 import { TUserSchema } from "@hypertube/libs";
-import { getRedisBetterAuth } from "@hypertube/server-core";
+import { ICacheService } from "@hypertube/server-core";
 import { APIError } from "better-auth/api";
 import i18next from "i18next";
 import { sendEmail } from "../lib/mail";
 import { mailTemplate } from "./import-template";
 
-const redisBetterAuth = getRedisBetterAuth();
-
-const setDeleteCooldown = (id: string) => {
-  redisBetterAuth.set(`${id}:delete`, 1, "EX", 5 * 60);
-};
-
-export const hasDeleteCooldown = async (id: string) => {
-  return !!(await redisBetterAuth.get(`${id}:delete`));
-};
-
-export const sendDeleteVerification = async ({
-  user,
-  url,
-  callbackURL,
-}: {
+type TSendDeleteVerification = {
   user: TUserSchema;
   url: string;
   callbackURL: string;
-}) => {
-  const hasCooldown = await hasDeleteCooldown(user.id);
-  if (hasCooldown) {
-    throw new APIError("TOO_MANY_REQUESTS", {
-      code: "TOO_MANY_EMAILS_SENT",
-    });
-  }
-
-  const newUrl = new URL(url);
-  newUrl.searchParams.set("callbackURL", callbackURL);
-
-  setDeleteCooldown(user.id);
-
-  await sendEmail({
-    to: user.email,
-    subject: i18next.t("email.userDeletion.confirmDelete"),
-    html: mailTemplate({
-      title: i18next.t("email.userDeletion.confirmDelete"),
-      content: "",
-      link: newUrl.href,
-      linkText: i18next.t("email.userDeletion.delete"),
-    }),
-  });
 };
+
+export const sendDeleteVerification =
+  (cacheService: ICacheService) => async (input: TSendDeleteVerification) => {
+    const { user, url, callbackURL } = input;
+
+    const hasCooldown = await cacheService.has(`delete:${user.id}`);
+    if (hasCooldown) {
+      throw new APIError("TOO_MANY_REQUESTS", {
+        code: "TOO_MANY_EMAILS_SENT",
+      });
+    }
+
+    const newUrl = new URL(url);
+    newUrl.searchParams.set("callbackURL", callbackURL);
+
+    cacheService.set(`delete:${user.id}`, 1, 5 * 60);
+
+    await sendEmail({
+      to: user.email,
+      subject: i18next.t("email.userDeletion.confirmDelete"),
+      html: mailTemplate({
+        title: i18next.t("email.userDeletion.confirmDelete"),
+        content: "",
+        link: newUrl.href,
+        linkText: i18next.t("email.userDeletion.delete"),
+      }),
+    });
+  };
