@@ -17,6 +17,7 @@ import i18next from "i18next";
 import { v5 } from "uuid";
 import z from "zod";
 import { mailTemplate } from "../emails/import-template";
+import { sendDeleteVerification } from "../emails/sendDeleteVerification";
 import { sendVerificationEmail } from "../emails/sendEmailVerification";
 import { betterAuthErrorTranslation } from "./better-auth/constants";
 import { sendEmail } from "./mail";
@@ -186,6 +187,15 @@ export const auth = betterAuth({
       firstName: { type: "string" },
       lastName: { type: "string" },
       imageId: { type: "string", input: false },
+    },
+    deleteUser: {
+      enabled: true,
+      sendDeleteAccountVerification: async (data) =>
+        await sendDeleteVerification({
+          user: data.user as TUserSchema,
+          url: data.url,
+          callbackURL: getUrl(ROUTES.CLIENT.SIGNIN, { withUrl: "client" }),
+        }),
     },
   },
   account: {

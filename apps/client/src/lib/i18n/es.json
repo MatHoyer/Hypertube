@@ -107,7 +107,8 @@
     "emailVerification": "¡Enviando verificación por correo electrónico!",
     "username": "Nombre de usuario",
     "firstName": "Nombre",
-    "lastName": "Apellido"
+    "lastName": "Apellido",
+    "delete": "Eliminar tu cuenta"
   },
   "profile": {
     "likes": "Le gusta",

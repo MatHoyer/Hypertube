@@ -107,7 +107,8 @@
     "emailVerification": "Envoi de vérification par email !",
     "username": "Nom d'utilisateur",
     "firstName": "Prénom",
-    "lastName": "Nom"
+    "lastName": "Nom",
+    "delete": "Supprimer votre compte"
   },
   "profile": {
     "likes": "Likes",
