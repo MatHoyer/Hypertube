@@ -1,5 +1,5 @@
 import { getUrl, ROUTES, TUserSchema } from "@hypertube/libs";
-import { env, getRedisBetterAuth, prisma } from "@hypertube/server-core";
+import { env, prisma, RedisCacheService } from "@hypertube/server-core";
 import {
   AuthContext,
   betterAuth,
@@ -13,24 +13,14 @@ import {
   getSessionFromCtx,
 } from "better-auth/api";
 import { genericOAuth, username } from "better-auth/plugins";
-import i18next from "i18next";
 import { v5 } from "uuid";
 import z from "zod";
-import { mailTemplate } from "../emails/import-template";
 import { sendDeleteVerification } from "../emails/sendDeleteVerification";
 import { sendVerificationEmail } from "../emails/sendEmailVerification";
+import { sendResetPassword } from "../emails/sendResetPassword";
 import { betterAuthErrorTranslation } from "./better-auth/constants";
-import { sendEmail } from "./mail";
 
-const redisBetterAuth = getRedisBetterAuth();
-
-const setPasswordCooldown = (id: string) => {
-  redisBetterAuth.set(`${id}:password`, 1, "EX", 5 * 60);
-};
-
-const hasPasswordCooldown = async (id: string) => {
-  return !!(await redisBetterAuth.get(`${id}:password`));
-};
+const redisBetterAuth = new RedisCacheService();
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
 
@@ -131,48 +121,16 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 50,
-    sendResetPassword: async ({ user, url }) => {
-      const userInfo = user as TUserSchema;
-      const hasCooldown = await hasPasswordCooldown(user.id);
-      if (hasCooldown) {
-        throw new APIError("TOO_MANY_REQUESTS", {
-          code: "TOO_MANY_EMAILS_SENT",
-        });
-      }
-
-      const tokenUrl = new URL(url);
-
-      const token = tokenUrl.pathname.split("/").pop();
-
-      if (!token) {
-        throw new APIError("BAD_REQUEST", {
-          code: "INVALID_TOKEN",
-        });
-      }
-
-      const newUrl = getUrl(ROUTES.CLIENT.RESET_PASSWORD, {
-        withUrl: "client",
-        searchParams: { token },
-      });
-
-      setPasswordCooldown(user.id);
-
-      void sendEmail({
-        to: userInfo.email,
-        subject: i18next.t("email.password.resetPassword"),
-        html: mailTemplate({
-          title: i18next.t("email.password.resetPassword"),
-          content: "",
-          link: newUrl,
-          linkText: i18next.t("email.password.reset"),
-        }),
-      });
-    },
+    sendResetPassword: async (data) =>
+      void sendResetPassword(redisBetterAuth)({
+        user: data.user as TUserSchema,
+        url: data.url,
+      }),
     requireEmailVerification: true,
   },
   emailVerification: {
     sendVerificationEmail: async (data) =>
-      void sendVerificationEmail({
+      void sendVerificationEmail(redisBetterAuth)({
         user: data.user as TUserSchema,
         url: data.url,
         callbackURL: getUrl(ROUTES.CLIENT.SIGNIN, { withUrl: "client" }),
@@ -191,7 +149,7 @@ export const auth = betterAuth({
     deleteUser: {
       enabled: true,
       sendDeleteAccountVerification: async (data) =>
-        void sendDeleteVerification({
+        void sendDeleteVerification(redisBetterAuth)({
           user: data.user as TUserSchema,
           url: data.url,
           callbackURL: getUrl(ROUTES.CLIENT.SIGNIN, { withUrl: "client" }),

@@ -14,13 +14,12 @@ import {
   TDeleteUsersSchemas,
   TGetUserSchemas,
 } from "@hypertube/libs/src/schemas/api/users.schema";
-import { env, prisma } from "@hypertube/server-core";
+import { env, prisma, RedisCacheService } from "@hypertube/server-core";
 import { APIError } from "better-auth";
 import { addHours, getTime } from "date-fns";
 import { Context } from "hono";
 import i18next from "i18next";
 import { sign as jwtSign } from "jsonwebtoken";
-import { hasDeleteCooldown } from "../../emails/sendDeleteVerification";
 import { sendVerificationEmail } from "../../emails/sendEmailVerification";
 import { auth } from "../../lib/auth";
 import { handleAuthentificationMethod } from "../../lib/better-auth/constants";
@@ -28,6 +27,8 @@ import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
+
+const redisBetterAuth = new RedisCacheService();
 
 export const getUsers = async (
   c: Context<TIsLogged & TSearchParamsParser<TGetUsersSchemas["searchParams"]>>
@@ -176,7 +177,7 @@ const handleChangeEmail = async ({
   });
 
   const handleSendVerificationEmail = async () => {
-    return await sendVerificationEmail({
+    return void sendVerificationEmail(redisBetterAuth)({
       user,
       url,
       callbackURL: getUrl(ROUTES.CLIENT.SETTINGS, { withUrl: "client" }),
@@ -253,7 +254,7 @@ export const deleteUser = (
   if (user.id !== userId) return c.json(i18next.t("httpCode.401"), 401);
 
   const deleteUser = async () => {
-    const hasCooldown = await hasDeleteCooldown(user.id);
+    const hasCooldown = await redisBetterAuth.has(`delete:${user.id}`);
     if (hasCooldown) {
       throw new APIError("TOO_MANY_REQUESTS", {
         code: "TOO_MANY_EMAILS_SENT",
