@@ -1,4 +1,5 @@
 import {
+  deleteUsersSchemas,
   getUserSchemas,
   getUsersSchemas,
   patchUsersSchemas,
@@ -9,6 +10,7 @@ import { isLogged } from "../../middlewares/isLogged";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
+  deleteUser,
   getAccounts,
   getSession,
   getUser,
@@ -38,6 +40,13 @@ usersRouter.patch(
   urlParamsParser(patchUsersSchemas.urlParams),
   bodyParser(patchUsersSchemas.requirements),
   patchUser
+);
+
+usersRouter.delete(
+  "/:userId",
+  isLogged,
+  urlParamsParser(deleteUsersSchemas.urlParams),
+  deleteUser
 );
 
 usersRouter.get("/me/accounts", isLogged, getAccounts);

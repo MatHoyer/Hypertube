@@ -10,12 +10,17 @@ import {
   TPatchUsersSchemas,
   TUserSchema,
 } from "@hypertube/libs";
-import { TGetUserSchemas } from "@hypertube/libs/src/schemas/api/users.schema";
+import {
+  TDeleteUsersSchemas,
+  TGetUserSchemas,
+} from "@hypertube/libs/src/schemas/api/users.schema";
 import { env, prisma } from "@hypertube/server-core";
+import { APIError } from "better-auth";
 import { addHours, getTime } from "date-fns";
 import { Context } from "hono";
 import i18next from "i18next";
 import { sign as jwtSign } from "jsonwebtoken";
+import { hasDeleteCooldown } from "../../emails/sendDeleteVerification";
 import { sendVerificationEmail } from "../../emails/sendEmailVerification";
 import { auth } from "../../lib/auth";
 import { handleAuthentificationMethod } from "../../lib/better-auth/constants";
@@ -237,6 +242,31 @@ export const patchUser = async (
     },
   });
   return c.json({ message: "User updated successfully" }, 200);
+};
+
+export const deleteUser = (
+  c: Context<TIsLogged & TUrlParamsParser<TDeleteUsersSchemas["urlParams"]>>
+) => {
+  const user = c.get("user");
+  const { userId } = c.get("validatedUrlParams");
+
+  if (user.id !== userId) return c.json(i18next.t("httpCode.401"), 401);
+
+  const deleteUser = async () => {
+    const hasCooldown = await hasDeleteCooldown(user.id);
+    if (hasCooldown) {
+      throw new APIError("TOO_MANY_REQUESTS", {
+        code: "TOO_MANY_EMAILS_SENT",
+      });
+    }
+    await auth.api.deleteUser({
+      body: {},
+      headers: c.req.raw.headers,
+    });
+  };
+
+  const successMessage = "Account deletion email successfully sent";
+  return handleAuthentificationMethod(c, deleteUser, successMessage);
 };
 
 export const getAccounts = async (c: Context<TIsLogged>) => {
