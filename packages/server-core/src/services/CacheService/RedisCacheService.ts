@@ -23,7 +23,5 @@ export class RedisCacheService implements ICacheService {
     return await this.redisClient.get(key);
   };
 
-  has: ICacheService["has"] = async (key) => {
-    return !!(await this.get(key));
-  };
+  has: ICacheService["has"] = async (key) => !!(await this.get(key));
 }
