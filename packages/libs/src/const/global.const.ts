@@ -33,6 +33,8 @@ export const betterAuthProviders = [
 ] as const;
 export type TBetterAuthProviders = (typeof betterAuthProviders)[number];
 
+export const credentialId = "credential";
+
 export const languageCodesArray = ["en", "fr", "es"] as const;
 export type LanguageCode = (typeof languageCodesArray)[number];
 export const languageCodes: Record<LanguageCode, string> = {
