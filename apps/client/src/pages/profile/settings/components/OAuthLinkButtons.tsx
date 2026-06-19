@@ -10,6 +10,7 @@ import {
   getUrl,
   linkProviderAuthentificationSchemas,
   ROUTES,
+  typedEntries,
   unlinkProviderAuthentificationSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -67,7 +68,7 @@ export const OAuthLinkButtons = () => {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-      {Object.entries(supportedOAuths).map(([providerId, params]) => (
+      {typedEntries(supportedOAuths).map(([providerId, params]) => (
         <Card key={providerId}>
           <CardContent className="flex flex-col gap-2">
             <img
