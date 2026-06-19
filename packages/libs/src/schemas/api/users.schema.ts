@@ -78,6 +78,18 @@ export type TPatchUsersSchemas = {
   response: z.infer<typeof patchUsersSchemas.response>;
 };
 
+export const deleteUsersSchemas = {
+  urlParams: z.object({ userId: userSchema.shape.id }),
+  response: z.object({
+    message: z.string(),
+  }),
+};
+
+export type TDeleteUsersSchemas = {
+  urlParams: z.infer<typeof deleteUsersSchemas.urlParams>;
+  response: z.infer<typeof deleteUsersSchemas.response>;
+};
+
 export const getAccountsUsersSchemas = {
   response: z.object({
     accounts: accountsSchema,

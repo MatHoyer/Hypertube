@@ -13,7 +13,6 @@ import { isLogged } from "../../middlewares/isLogged";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
-  deleteUser,
   emailVerification,
   linkProvider,
   requestPasswordReset,
@@ -78,7 +77,5 @@ authentificationRouter.delete(
   urlParamsParser(unlinkProviderAuthentificationSchemas.urlParams),
   unlinkProvider
 );
-
-authentificationRouter.delete("/delete-user", isLogged, deleteUser);
 
 export default authentificationRouter;

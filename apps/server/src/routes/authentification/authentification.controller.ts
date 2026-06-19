@@ -12,13 +12,11 @@ import {
   TUnlinkProviderAuthentificationSchemas,
 } from "@hypertube/libs";
 import { prisma } from "@hypertube/server-core";
-import { APIError } from "better-auth";
 import { isBefore } from "date-fns";
 import { Context } from "hono";
 import i18next from "i18next";
 import { decode } from "jsonwebtoken";
 import z, { safeParse } from "zod";
-import { hasDeleteCooldown } from "../../emails/sendDeleteVerification";
 import { auth } from "../../lib/auth";
 import { handleAuthentificationMethod } from "../../lib/better-auth/constants";
 import { TBodyParser } from "../../middlewares/bodyParser";
@@ -205,24 +203,4 @@ export const unlinkProvider = async (
 
   const successMessage = "Unlink provider successfully";
   return handleAuthentificationMethod(c, unlinkAccount, successMessage);
-};
-
-export const deleteUser = (c: Context<TIsLogged>) => {
-  const user = c.get("user");
-
-  const deleteUser = async () => {
-    const hasCooldown = await hasDeleteCooldown(user.id);
-    if (hasCooldown) {
-      throw new APIError("TOO_MANY_REQUESTS", {
-        code: "TOO_MANY_EMAILS_SENT",
-      });
-    }
-    await auth.api.deleteUser({
-      body: {},
-      headers: c.req.raw.headers,
-    });
-  };
-
-  const successMessage = "Delete user successfully";
-  return handleAuthentificationMethod(c, deleteUser, successMessage);
 };
