@@ -15,7 +15,6 @@ import {
   TGetUserSchemas,
 } from "@hypertube/libs/src/schemas/api/users.schema";
 import { env, prisma, RedisCacheService } from "@hypertube/server-core";
-import { APIError } from "better-auth";
 import { addHours, getTime } from "date-fns";
 import { Context } from "hono";
 import i18next from "i18next";
@@ -254,12 +253,6 @@ export const deleteUser = (
   if (user.id !== userId) return c.json(i18next.t("httpCode.401"), 401);
 
   const deleteUser = async () => {
-    const hasCooldown = await redisBetterAuth.has(`delete:${user.id}`);
-    if (hasCooldown) {
-      throw new APIError("TOO_MANY_REQUESTS", {
-        code: "TOO_MANY_EMAILS_SENT",
-      });
-    }
     await auth.api.deleteUser({
       body: {},
       headers: c.req.raw.headers,

@@ -1,4 +1,4 @@
-import { getUrl, ROUTES, TUserSchema } from "@hypertube/libs";
+import { getUrl, hypertubeLogger, ROUTES, TUserSchema } from "@hypertube/libs";
 import { env, prisma, RedisCacheService } from "@hypertube/server-core";
 import {
   AuthContext,
@@ -95,6 +95,26 @@ const updateEmail = (newEmail: string) => {
   }
 };
 
+const beforeDeleteVerification = async (ctx: AuthMiddleware) => {
+  const session = await getSessionFromCtx(ctx);
+  if (!session) {
+    throw new APIError("UNAUTHORIZED", {
+      code: "USER_NOT_FOUND",
+    });
+  }
+
+  const hasCooldown = await redisBetterAuth.has(`delete:${session.user.id}`);
+  if (hasCooldown) {
+    throw new APIError("TOO_MANY_REQUESTS", {
+      code: "TOO_MANY_EMAILS_SENT",
+    });
+  }
+
+  redisBetterAuth.set(`delete:${session.user.id}`, 1, 5 * 60);
+
+  return { context: ctx };
+};
+
 const handleBetterAuthError = (ctx: AuthMiddleware) => {
   let code;
   if (ctx.query && typeof ctx.query.error === "string") {
@@ -148,12 +168,13 @@ export const auth = betterAuth({
     },
     deleteUser: {
       enabled: true,
-      sendDeleteAccountVerification: async (data) =>
-        void sendDeleteVerification(redisBetterAuth)({
+      sendDeleteAccountVerification: async (data) => {
+        void sendDeleteVerification({
           user: data.user as TUserSchema,
           url: data.url,
           callbackURL: getUrl(ROUTES.CLIENT.SIGNIN, { withUrl: "client" }),
-        }),
+        });
+      },
     },
   },
   account: {
@@ -164,6 +185,8 @@ export const auth = betterAuth({
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
+      hypertubeLogger.debug(ctx.path);
+      hypertubeLogger.debug(ctx.body);
       switch (ctx.path) {
         case "/sign-in/username":
           return normalizeUsername(ctx);
@@ -177,6 +200,8 @@ export const auth = betterAuth({
           return updateUser(ctx);
         case "/change-email":
           return updateEmail(ctx.body.newEmail);
+        case "/delete-user":
+          return beforeDeleteVerification(ctx);
         case "/error":
           return handleBetterAuthError(ctx);
       }
