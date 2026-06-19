@@ -13,6 +13,10 @@
       "resetPassword": "Réinitialiser votre mot de passe",
       "reset": "Réinitialiser"
     },
+    "userDeletion": {
+      "confirmDelete": "Supprimer votre compte",
+      "delete": "Supprimer"
+    },
     "error": {
       "invalidToken": "Jeton invalide",
       "userNotFound": "Utilisateur par e-mail introuvable",

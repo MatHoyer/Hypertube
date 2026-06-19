@@ -47,6 +47,7 @@ export const ROUTES = {
     AUTHENTIFICATION_EMAIL_VERIFICATION:
       "api-authentification-email-verification",
     AUTHENTIFICATION_LINK: "api-authentification-link",
+    DELETE_USER: "api-authentification-delete-user",
     OAUTH_CREDENTIALS: "api-oauth-credentials",
     USERS: "api-users",
     USERS_ACCOUNTS: "api-users-accounts",
@@ -129,6 +130,7 @@ const routeSchemas = {
         .union([z.enum(betterAuthProviders), z.literal("{providerId}")])
         .optional(),
     }),
+    [ROUTES.API.DELETE_USER]: z.object({}),
     [ROUTES.API.OAUTH_CREDENTIALS]: z.object({
       credentialId: z
         .union([credentialSchema.shape.id, z.literal("{credentialId}")])
@@ -319,6 +321,7 @@ const routes: {
     providerId
       ? `/api/authentification/link/${providerId}`
       : "/api/authentification/link",
+  [ROUTES.API.DELETE_USER]: () => "/api/authentification/delete-user",
   [ROUTES.API.OAUTH_CREDENTIALS]: ({ credentialId }) =>
     credentialId
       ? `/api/oauth/credentials/${credentialId}`

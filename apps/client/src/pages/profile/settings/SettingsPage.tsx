@@ -1,4 +1,5 @@
 import { Layout, LayoutContent } from "@/layouts/PageLayout";
+import { DeleteButton } from "./components/DeleteButton";
 import { OAuthLinkButtons } from "./components/OAuthLinkButtons";
 import { ProfilePictureUpdate } from "./components/ProfilePictureUpdate";
 import { UserEmailUpdate } from "./components/UserEmailUpdate";
@@ -14,6 +15,7 @@ export const SettingsPage = () => {
         <UserEmailUpdate />
         <UserPasswordUpdate />
         <OAuthLinkButtons />
+        <DeleteButton />
       </LayoutContent>
     </Layout>
   );

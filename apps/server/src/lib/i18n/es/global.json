@@ -13,6 +13,10 @@
       "resetPassword": "Restablecer contraseña",
       "reset": "Restablecer"
     },
+    "userDeletion": {
+      "confirmDelete": "Eliminar tu cuenta",
+      "delete": "Eliminar"
+    },
     "error": {
       "invalidToken": "Token inválido",
       "userNotFound": "Usuario no encontrado",
