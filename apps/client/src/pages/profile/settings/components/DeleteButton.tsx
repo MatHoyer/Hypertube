@@ -10,7 +10,7 @@ export const DeleteButton = () => {
   const user = useRequiredUser();
   const { t } = useTranslation();
 
-  const { mutate } = useMutation({
+  const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: () =>
       axiosFetch({
         method: "DELETE",
@@ -26,7 +26,12 @@ export const DeleteButton = () => {
   });
 
   return (
-    <LoadingButton variant={"destructive"} onClick={() => mutate()}>
+    <LoadingButton
+      variant={"destructive"}
+      loading={isPending}
+      success={isSuccess}
+      onClick={() => mutate()}
+    >
       {t("settings.delete")}
     </LoadingButton>
   );
