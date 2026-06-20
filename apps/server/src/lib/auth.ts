@@ -21,8 +21,6 @@ import { betterAuthErrorTranslation } from "./better-auth/constants";
 
 const redisBetterAuth = new RedisCacheService();
 
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
-
 type AuthMiddleware = MiddlewareContext<
   MiddlewareOptions,
   AuthContext & {
@@ -55,18 +53,6 @@ const beforeSignIn = async (ctx: AuthMiddleware) => {
   if (user.emailVerified) return;
 
   await beforeSendEmail("email", user.id);
-};
-
-const checkPasswordRegex = (newPassword: string) => {
-  if (!newPassword)
-    throw new APIError("BAD_REQUEST", {
-      code: "FAILED_TO_UPDATE_PASSWORD",
-    });
-  if (!passwordRegex.test(newPassword)) {
-    throw new APIError("BAD_REQUEST", {
-      code: "PASSWORD_POLICY",
-    });
-  }
 };
 
 const beforeRequestPasswordReset = async (ctx: AuthMiddleware) => {
@@ -170,12 +156,6 @@ export const auth = betterAuth({
       switch (ctx.path) {
         case "/sign-in/username":
           return beforeSignIn(ctx);
-        case "/sign-up/email":
-          return checkPasswordRegex(ctx.body.password);
-        case "/reset-password":
-        case "/set-password":
-        case "/change-password":
-          return checkPasswordRegex(ctx.body.newPassword);
         case "/request-password-reset":
           return beforeRequestPasswordReset(ctx);
         case "/delete-user":

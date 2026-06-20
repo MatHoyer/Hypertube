@@ -22,7 +22,10 @@ import i18next from "i18next";
 import { sign as jwtSign } from "jsonwebtoken";
 import { sendVerificationEmail } from "../../emails/sendEmailVerification";
 import { auth } from "../../lib/auth";
-import { handleAuthentificationMethod } from "../../lib/better-auth/constants";
+import {
+  checkPasswordRegex,
+  handleAuthentificationMethod,
+} from "../../lib/better-auth/constants";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
@@ -118,6 +121,7 @@ const handleChangePassword = async ({
 
   if (oldPassword) {
     const changePassword = async () => {
+      checkPasswordRegex(password);
       return await auth.api.changePassword({
         body: {
           currentPassword: oldPassword,
@@ -132,6 +136,7 @@ const handleChangePassword = async ({
   }
 
   const setPassword = async () => {
+    checkPasswordRegex(password);
     return await auth.api.setPassword({
       body: { newPassword: password },
       headers: c.req.raw.headers,
