@@ -14,7 +14,6 @@ import { getQueryKey } from "@/lib/getQueryKey";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getUrl, patchUsersSchemas, ROUTES } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -33,14 +32,9 @@ export const UserEmailUpdate = () => {
   const form = useForm<TFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: user.email,
+      email: user.email.toLowerCase().trim(),
     },
   });
-
-  const dirtyFields = useMemo(
-    () => form.formState.dirtyFields,
-    [form.formState.dirtyFields]
-  );
 
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: (data: TFormSchema) =>
@@ -65,7 +59,7 @@ export const UserEmailUpdate = () => {
     <form
       className="size-full"
       onSubmit={form.handleSubmit((data) => {
-        if (dirtyFields.email) return mutate(data);
+        if (form.formState.dirtyFields.email) return mutate(data);
       })}
     >
       <Card>
@@ -79,14 +73,21 @@ export const UserEmailUpdate = () => {
               <Input
                 id="email"
                 autoComplete="email"
-                {...form.register("email")}
+                {...form.register("email", {
+                  setValueAs: (email: string) => email.toLowerCase().trim(),
+                })}
               />
               <FieldError>{form.formState.errors.email?.message}</FieldError>
             </Field>
           </FieldSet>
         </CardContent>
         <CardFooter>
-          <LoadingButton type="submit" loading={isPending} success={isSuccess}>
+          <LoadingButton
+            type="submit"
+            loading={isPending}
+            success={isSuccess}
+            disabled={!form.formState.dirtyFields.email}
+          >
             {t("global.submit")}
           </LoadingButton>
         </CardFooter>

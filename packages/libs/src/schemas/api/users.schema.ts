@@ -55,13 +55,14 @@ export const patchUsersSchemas = {
   urlParams: z.object({ userId: userSchema.shape.id }),
   requirements: z
     .object({
-      ...userSchema.pick({ email: true, imageId: true }).shape,
+      email: userSchema.shape.email.toLowerCase().trim(),
       name: userSchema.shape.name.min(1),
-      username: userSchema.shape.username.unwrap().min(1),
+      username: userSchema.shape.username.unwrap().min(1).toLowerCase().trim(),
       firstName: userSchema.shape.firstName.unwrap().min(1),
       lastName: userSchema.shape.lastName.unwrap().min(1),
       oldPassword: z.string(),
       password: z.string(),
+      imageId: userSchema.shape.imageId,
     })
     .partial()
     .refine((data) => (data.oldPassword ? data.password : true), {

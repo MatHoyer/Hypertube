@@ -4,8 +4,13 @@ import { userSchema } from "../database/user.schema.js";
 
 export const signUpAuthentificationSchemas = {
   requirements: z.object({
-    email: userSchema.shape.email,
-    username: userSchema.shape.username.unwrap().min(1).max(50),
+    email: userSchema.shape.email.toLowerCase().trim(),
+    username: userSchema.shape.username
+      .unwrap()
+      .min(1)
+      .max(50)
+      .toLowerCase()
+      .trim(),
     firstName: userSchema.shape.firstName.unwrap().min(1).max(50),
     lastName: userSchema.shape.lastName.unwrap().min(1).max(50),
     name: userSchema.shape.name,
@@ -23,7 +28,7 @@ export type TSignUpAuthentificationSchemas = {
 
 export const signInAuthentificationSchemas = {
   requirements: z.object({
-    username: userSchema.shape.username.unwrap(),
+    username: userSchema.shape.username.unwrap().toLowerCase().trim(),
     password: z.string(),
   }),
   response: z.object({
