@@ -18,9 +18,14 @@ import { useRequiredUser } from "@/hooks/use-required-user";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUrl, patchUsersSchemas, pick, ROUTES } from "@hypertube/libs";
+import {
+  getUrl,
+  patchUsersSchemas,
+  pick,
+  ROUTES,
+  typedKeys,
+} from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -42,17 +47,12 @@ export const UserInfoUpdate = () => {
   const form = useForm<TFormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: user.username ?? "",
+      username: (user.username ?? "").toLowerCase().trim(),
       name: user.name,
       firstName: user.firstName ?? "",
       lastName: user.lastName ?? "",
     },
   });
-
-  const dirtyFields = useMemo(
-    () => form.formState.dirtyFields,
-    [form.formState.dirtyFields]
-  );
 
   const { mutate, isPending, isSuccess } = useMutation({
     mutationFn: async (data: TFormSchema) =>
@@ -75,7 +75,7 @@ export const UserInfoUpdate = () => {
   });
 
   const onSubmit = (data: TFormSchema) => {
-    const dirtyFieldKeys = Object.keys(dirtyFields) as (keyof typeof data)[];
+    const dirtyFieldKeys = typedKeys(form.formState.dirtyFields);
     if (dirtyFieldKeys.length) {
       mutate(pick(data, dirtyFieldKeys));
     }
@@ -97,7 +97,10 @@ export const UserInfoUpdate = () => {
                 <Input
                   id="username"
                   autoComplete="username"
-                  {...form.register("username")}
+                  {...form.register("username", {
+                    setValueAs: (username: string) =>
+                      username.toLowerCase().trim(),
+                  })}
                 />
                 <FieldError>
                   {form.formState.errors.username?.message}
@@ -146,7 +149,12 @@ export const UserInfoUpdate = () => {
           </FieldSet>
         </CardContent>
         <CardFooter>
-          <LoadingButton type="submit" loading={isPending} success={isSuccess}>
+          <LoadingButton
+            type="submit"
+            loading={isPending}
+            success={isSuccess}
+            disabled={!typedKeys(form.formState.dirtyFields).length}
+          >
             {t("global.submit")}
           </LoadingButton>
         </CardFooter>
