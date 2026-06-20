@@ -6,6 +6,10 @@ import {
 } from "@hypertube/libs";
 import { env } from "@hypertube/server-core";
 import { Hono } from "hono";
+import {
+  injectApiContext,
+  TApiContext,
+} from "./middlewares/injectApiContext.js";
 import { cors } from "hono/cors";
 import { languageDetector } from "hono/language";
 import { logger } from "hono/logger";
@@ -49,7 +53,9 @@ export function createApp() {
     }
   );
 
-  const apiRouter = new Hono();
+  const apiRouter = new Hono<TApiContext>();
+
+  apiRouter.use(injectApiContext);
 
   apiRouter.route("/auth", authRouter);
   apiRouter.route("/oauth", oauthRouter);

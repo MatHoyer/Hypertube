@@ -5,6 +5,7 @@ import {
 } from "@hypertube/libs";
 import { Hono } from "hono";
 import { bodyParser } from "../../middlewares/bodyParser";
+import { TApiContext } from "../../middlewares/injectApiContext";
 import { isLogged } from "../../middlewares/isLogged";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
@@ -14,7 +15,7 @@ import {
   postToken,
 } from "./oauth.controller";
 
-export const oauthRouter = new Hono();
+export const oauthRouter = new Hono<TApiContext>();
 
 oauthRouter.get("/credentials", isLogged, getCredentials);
 

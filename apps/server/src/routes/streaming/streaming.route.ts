@@ -3,6 +3,7 @@ import {
   getStreamingSubtitlesSchemas,
 } from "@hypertube/libs";
 import { Hono } from "hono";
+import { TApiContext } from "../../middlewares/injectApiContext";
 import { isLogged } from "../../middlewares/isLogged";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
@@ -10,7 +11,7 @@ import {
   getStreamingSubtitles,
 } from "./streaming.controller";
 
-const streamingRouter = new Hono();
+const streamingRouter = new Hono<TApiContext>();
 
 streamingRouter.get(
   "/movie/:movieId/resolution/:resolution",

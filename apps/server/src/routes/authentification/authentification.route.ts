@@ -9,6 +9,7 @@ import {
 } from "@hypertube/libs";
 import { Hono } from "hono";
 import { bodyParser } from "../../middlewares/bodyParser";
+import { TApiContext } from "../../middlewares/injectApiContext";
 import { isLogged } from "../../middlewares/isLogged";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
@@ -24,7 +25,7 @@ import {
   unlinkProvider,
 } from "./authentification.controller";
 
-const authentificationRouter = new Hono();
+const authentificationRouter = new Hono<TApiContext>();
 
 authentificationRouter.post(
   "/sign-up",
