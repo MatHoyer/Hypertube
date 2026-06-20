@@ -1,10 +1,10 @@
-import { getUrl, ROUTES, TUserSchema } from "@hypertube/libs";
-import { APIError } from "better-auth";
+import { getUrl, ROUTES } from "@hypertube/libs";
+import { APIError, User } from "better-auth";
 import i18next from "i18next";
 import { sendEmail } from "../lib/mail";
 import { mailTemplate } from "./import-template";
 
-type TSendResetPassword = { user: TUserSchema; url: string };
+type TSendResetPassword = { user: User; url: string };
 
 export const sendResetPassword = async (input: TSendResetPassword) => {
   const { user, url } = input;

@@ -1,10 +1,10 @@
-import { TUserSchema } from "@hypertube/libs";
+import { User } from "better-auth";
 import i18next from "i18next";
 import { sendEmail } from "../lib/mail";
 import { mailTemplate } from "./import-template";
 
 type TSendDeleteVerification = {
-  user: TUserSchema;
+  user: User;
   url: string;
   callbackURL: string;
 };
