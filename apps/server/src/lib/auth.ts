@@ -1,5 +1,5 @@
 import { getUrl, ROUTES, TUserSchema } from "@hypertube/libs";
-import { env, prisma, RedisCacheService } from "@hypertube/server-core";
+import { env, prisma } from "@hypertube/server-core";
 import {
   AuthContext,
   betterAuth,
@@ -14,12 +14,11 @@ import {
 } from "better-auth/api";
 import { genericOAuth, username } from "better-auth/plugins";
 import { v5 } from "uuid";
+import { container } from "../container";
 import { sendDeleteVerification } from "../emails/sendDeleteVerification";
 import { sendVerificationEmail } from "../emails/sendEmailVerification";
 import { sendResetPassword } from "../emails/sendResetPassword";
 import { betterAuthErrorTranslation } from "./better-auth/constants";
-
-const redisBetterAuth = new RedisCacheService();
 
 type AuthMiddleware = MiddlewareContext<
   MiddlewareOptions,
@@ -29,15 +28,17 @@ type AuthMiddleware = MiddlewareContext<
   }
 >;
 
-const beforeSendEmail = async (redisKey: string, userId: TUserSchema["id"]) => {
-  const hasCooldown = await redisBetterAuth.has(`${redisKey}:${userId}`);
+const beforeSendEmail = async (cacheKey: string, userId: TUserSchema["id"]) => {
+  const cacheService = container.cacheService;
+
+  const hasCooldown = await cacheService.has(`${cacheKey}:${userId}`);
   if (hasCooldown) {
     throw new APIError("TOO_MANY_REQUESTS", {
       code: "TOO_MANY_EMAILS_SENT",
     });
   }
 
-  redisBetterAuth.set(`${redisKey}:${userId}`, 1, 5 * 60);
+  cacheService.set(`${cacheKey}:${userId}`, 1, 5 * 60);
 };
 
 const beforeSignIn = async (ctx: AuthMiddleware) => {
