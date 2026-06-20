@@ -107,7 +107,7 @@ export const auth = betterAuth({
     maxPasswordLength: 50,
     sendResetPassword: async (data) => {
       void sendResetPassword({
-        user: data.user as TUserSchema,
+        user: data.user,
         url: data.url,
       });
     },
@@ -118,7 +118,7 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     sendVerificationEmail: async (data) => {
       void sendVerificationEmail({
-        user: data.user as TUserSchema,
+        user: data.user,
         url: data.url,
         callbackURL: getUrl(ROUTES.CLIENT.SIGNIN, { withUrl: "client" }),
       });
@@ -138,7 +138,7 @@ export const auth = betterAuth({
       enabled: true,
       sendDeleteAccountVerification: async (data) => {
         void sendDeleteVerification({
-          user: data.user as TUserSchema,
+          user: data.user,
           url: data.url,
           callbackURL: getUrl(ROUTES.CLIENT.SIGNIN, { withUrl: "client" }),
         });
