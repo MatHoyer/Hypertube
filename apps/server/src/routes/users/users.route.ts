@@ -6,10 +6,7 @@ import {
 } from "@hypertube/libs";
 import { Hono } from "hono";
 import { bodyParser } from "../../middlewares/bodyParser";
-import {
-  injectApiContext,
-  TApiContext,
-} from "../../middlewares/injectApiContext";
+import { TApiContext } from "../../middlewares/injectApiContext";
 import { isLogged } from "../../middlewares/isLogged";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
@@ -41,7 +38,6 @@ usersRouter.get(
 usersRouter.patch(
   "/:userId",
   isLogged,
-  injectApiContext,
   urlParamsParser(patchUsersSchemas.urlParams),
   bodyParser(patchUsersSchemas.requirements),
   patchUser
