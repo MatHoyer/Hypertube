@@ -5,6 +5,7 @@ import {
 } from "@hypertube/libs";
 import { Hono } from "hono";
 import { bodyParser } from "../../middlewares/bodyParser";
+import { TApiContext } from "../../middlewares/injectApiContext";
 import { isLogged } from "../../middlewares/isLogged";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
@@ -17,7 +18,7 @@ import {
   postSendTestNotification,
 } from "./notifications.controller";
 
-const notificationsRouter = new Hono();
+const notificationsRouter = new Hono<TApiContext>();
 
 notificationsRouter.get(
   "/",

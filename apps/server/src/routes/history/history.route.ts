@@ -3,6 +3,7 @@ import {
   getHistorySchemas,
 } from "@hypertube/libs";
 import { Hono } from "hono";
+import { TApiContext } from "../../middlewares/injectApiContext";
 import { isLogged } from "../../middlewares/isLogged";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
@@ -12,7 +13,7 @@ import {
   getHistory,
 } from "./history.controller";
 
-const historyRouter = new Hono();
+const historyRouter = new Hono<TApiContext>();
 
 historyRouter.get(
   "/",

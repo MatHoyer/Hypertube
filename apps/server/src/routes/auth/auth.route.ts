@@ -2,8 +2,9 @@ import { env } from "@hypertube/server-core";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { auth } from "../../lib/auth";
+import { TApiContext } from "../../middlewares/injectApiContext";
 
-const authRouter = new Hono();
+const authRouter = new Hono<TApiContext>();
 
 authRouter.use(
   "*",

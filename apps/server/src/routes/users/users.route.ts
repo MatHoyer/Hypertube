@@ -6,6 +6,7 @@ import {
 } from "@hypertube/libs";
 import { Hono } from "hono";
 import { bodyParser } from "../../middlewares/bodyParser";
+import { TApiContext } from "../../middlewares/injectApiContext";
 import { isLogged } from "../../middlewares/isLogged";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
@@ -18,7 +19,7 @@ import {
   patchUser,
 } from "./users.controller";
 
-const usersRouter = new Hono();
+const usersRouter = new Hono<TApiContext>();
 
 usersRouter.get(
   "/",
