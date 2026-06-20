@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/LoadingButton";
 import { useRequiredUser } from "@/hooks/use-required-user";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { deleteUsersSchemas, getUrl, ROUTES } from "@hypertube/libs";
@@ -26,8 +26,8 @@ export const DeleteButton = () => {
   });
 
   return (
-    <Button variant={"destructive"} onClick={() => mutate()}>
+    <LoadingButton variant={"destructive"} onClick={() => mutate()}>
       {t("settings.delete")}
-    </Button>
+    </LoadingButton>
   );
 };
