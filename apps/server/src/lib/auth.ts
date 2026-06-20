@@ -1,4 +1,4 @@
-import { getUrl, hypertubeLogger, ROUTES, TUserSchema } from "@hypertube/libs";
+import { getUrl, ROUTES, TUserSchema } from "@hypertube/libs";
 import { env, prisma, RedisCacheService } from "@hypertube/server-core";
 import {
   AuthContext,
@@ -14,7 +14,6 @@ import {
 } from "better-auth/api";
 import { genericOAuth, username } from "better-auth/plugins";
 import { v5 } from "uuid";
-import z from "zod";
 import { sendDeleteVerification } from "../emails/sendDeleteVerification";
 import { sendVerificationEmail } from "../emails/sendEmailVerification";
 import { sendResetPassword } from "../emails/sendResetPassword";
@@ -32,20 +31,33 @@ type AuthMiddleware = MiddlewareContext<
   }
 >;
 
-const normalizeUsername = (ctx: AuthMiddleware) => {
-  const username = ctx.body.username as string;
-  return {
-    context: {
-      ...ctx,
-      body: {
-        ...ctx.body,
-        username: username.toLowerCase(),
-      },
-    },
-  };
+const beforeSendEmail = async (redisKey: string, userId: TUserSchema["id"]) => {
+  const hasCooldown = await redisBetterAuth.has(`${redisKey}:${userId}`);
+  if (hasCooldown) {
+    throw new APIError("TOO_MANY_REQUESTS", {
+      code: "TOO_MANY_EMAILS_SENT",
+    });
+  }
+
+  redisBetterAuth.set(`${redisKey}:${userId}`, 1, 5 * 60);
 };
 
-const updatePassword = (newPassword: string) => {
+const beforeSignIn = async (ctx: AuthMiddleware) => {
+  const user = await prisma.user.findUnique({
+    where: { username: ctx.body.username },
+  });
+  if (!user) {
+    throw new APIError("UNAUTHORIZED", {
+      code: "USER_NOT_FOUND",
+    });
+  }
+
+  if (user.emailVerified) return;
+
+  await beforeSendEmail("email", user.id);
+};
+
+const checkPasswordRegex = (newPassword: string) => {
   if (!newPassword)
     throw new APIError("BAD_REQUEST", {
       code: "FAILED_TO_UPDATE_PASSWORD",
@@ -57,45 +69,20 @@ const updatePassword = (newPassword: string) => {
   }
 };
 
-const updateUser = async (ctx: AuthMiddleware) => {
-  if (ctx.body.image) return;
-  else if (ctx.body.firstName || ctx.body.lastName) {
-    const session = await getSessionFromCtx(ctx);
-    if (!session) {
-      throw new APIError("UNAUTHORIZED", {
-        code: "FAILED_TO_UPDATE_USER",
-      });
-    }
-    const user = session.user;
-    const fullName = `${ctx.body.firstName || user.firstName} ${
-      ctx.body.lastName || user.lastName
-    }`;
-    return {
-      context: {
-        ...ctx,
-        body: {
-          ...ctx.body,
-          name: fullName,
-        },
-      },
-    };
-  } else {
-    throw new APIError("BAD_REQUEST", {
-      code: "FAILED_TO_UPDATE_USER",
+const beforeRequestPasswordReset = async (ctx: AuthMiddleware) => {
+  const user = await prisma.user.findUnique({
+    where: { email: ctx.body.email },
+  });
+  if (!user) {
+    throw new APIError("UNAUTHORIZED", {
+      code: "USER_NOT_FOUND",
     });
   }
+
+  await beforeSendEmail("password", user.id);
 };
 
-const updateEmail = (newEmail: string) => {
-  const res = z.email().safeParse(newEmail);
-  if (!newEmail || !res.success) {
-    throw new APIError("BAD_REQUEST", {
-      code: "COULDNT_UPDATE_YOUR_EMAIL",
-    });
-  }
-};
-
-const beforeDeleteVerification = async (ctx: AuthMiddleware) => {
+const beforeDeleteUser = async (ctx: AuthMiddleware) => {
   const session = await getSessionFromCtx(ctx);
   if (!session) {
     throw new APIError("UNAUTHORIZED", {
@@ -103,16 +90,7 @@ const beforeDeleteVerification = async (ctx: AuthMiddleware) => {
     });
   }
 
-  const hasCooldown = await redisBetterAuth.has(`delete:${session.user.id}`);
-  if (hasCooldown) {
-    throw new APIError("TOO_MANY_REQUESTS", {
-      code: "TOO_MANY_EMAILS_SENT",
-    });
-  }
-
-  redisBetterAuth.set(`delete:${session.user.id}`, 1, 5 * 60);
-
-  return { context: ctx };
+  await beforeSendEmail("delete", session.user.id);
 };
 
 const handleBetterAuthError = (ctx: AuthMiddleware) => {
@@ -141,20 +119,24 @@ export const auth = betterAuth({
     enabled: true,
     minPasswordLength: 8,
     maxPasswordLength: 50,
-    sendResetPassword: async (data) =>
-      void sendResetPassword(redisBetterAuth)({
+    sendResetPassword: async (data) => {
+      void sendResetPassword({
         user: data.user as TUserSchema,
         url: data.url,
-      }),
+      });
+    },
     requireEmailVerification: true,
   },
   emailVerification: {
-    sendVerificationEmail: async (data) =>
-      void sendVerificationEmail(redisBetterAuth)({
+    sendOnSignIn: true,
+    sendOnSignUp: true,
+    sendVerificationEmail: async (data) => {
+      void sendVerificationEmail({
         user: data.user as TUserSchema,
         url: data.url,
         callbackURL: getUrl(ROUTES.CLIENT.SIGNIN, { withUrl: "client" }),
-      }),
+      });
+    },
     autoSignInAfterVerification: true,
   },
   user: {
@@ -185,23 +167,19 @@ export const auth = betterAuth({
   },
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
-      hypertubeLogger.debug(ctx.path);
-      hypertubeLogger.debug(ctx.body);
       switch (ctx.path) {
         case "/sign-in/username":
-          return normalizeUsername(ctx);
+          return beforeSignIn(ctx);
         case "/sign-up/email":
-          return updatePassword(ctx.body.password);
+          return checkPasswordRegex(ctx.body.password);
         case "/reset-password":
         case "/set-password":
         case "/change-password":
-          return updatePassword(ctx.body.newPassword);
-        case "/update-user":
-          return updateUser(ctx);
-        case "/change-email":
-          return updateEmail(ctx.body.newEmail);
+          return checkPasswordRegex(ctx.body.newPassword);
+        case "/request-password-reset":
+          return beforeRequestPasswordReset(ctx);
         case "/delete-user":
-          return beforeDeleteVerification(ctx);
+          return beforeDeleteUser(ctx);
         case "/error":
           return handleBetterAuthError(ctx);
       }
