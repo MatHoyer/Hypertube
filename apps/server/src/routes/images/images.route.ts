@@ -6,11 +6,12 @@ import {
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { bodyParser } from "../../middlewares/bodyParser";
+import { TApiContext } from "../../middlewares/injectApiContext";
 import { isLogged } from "../../middlewares/isLogged";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import { deleteImage, postImage } from "./images.controller";
 
-const imagesRouter = new Hono();
+const imagesRouter = new Hono<TApiContext>();
 
 imagesRouter.post(
   "/",

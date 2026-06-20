@@ -16,6 +16,7 @@ import {
 } from "@hypertube/libs";
 import { Hono } from "hono";
 import { bodyParser } from "../../middlewares/bodyParser";
+import { TApiContext } from "../../middlewares/injectApiContext";
 import { isLogged } from "../../middlewares/isLogged";
 import { isVPNActive } from "../../middlewares/isVPNActive";
 import { searchParamsParser } from "../../middlewares/searchParamsParser";
@@ -38,7 +39,7 @@ import {
   unsubscribeFromMovie,
 } from "./movies.controller";
 
-const moviesRouter = new Hono();
+const moviesRouter = new Hono<TApiContext>();
 
 moviesRouter.get(
   "/",
