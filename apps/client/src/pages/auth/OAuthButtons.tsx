@@ -6,6 +6,7 @@ import {
   getUrl,
   ROUTES,
   signInSocialAuthentificationSchemas,
+  typedEntries,
 } from "@hypertube/libs";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -31,12 +32,12 @@ export const OAuthButtons = () => {
 
   return (
     <div className="flex justify-evenly gap-4">
-      {Object.entries(supportedOAuths).map(([providerId, params]) => (
+      {typedEntries(supportedOAuths).map(([providerId, params]) => (
         <Button
           key={providerId}
           onClick={() =>
             linkMutation.mutate({
-              id: providerId as TBetterAuthProviders,
+              id: providerId,
             })
           }
           type="button"

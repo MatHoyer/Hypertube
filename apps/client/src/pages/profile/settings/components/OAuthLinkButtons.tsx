@@ -4,7 +4,6 @@ import { useAuthAccounts } from "@/hooks/use-auth-accounts";
 import { supportedOAuths } from "@/lib/better-auth/constants";
 import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
-import type { TBetterAuthProviders } from "@hypertube/libs";
 import {
   betterAuthProviders,
   getUrl,
@@ -82,18 +81,14 @@ export const OAuthLinkButtons = () => {
                 variant={"destructive"}
                 onClick={() =>
                   unlinkMutate({
-                    id: providerId as TBetterAuthProviders,
+                    id: providerId,
                   })
                 }
               >
                 {t("settings.unlink")}
               </Button>
             ) : (
-              <Button
-                onClick={() =>
-                  linkMutate({ id: providerId as TBetterAuthProviders })
-                }
-              >
+              <Button onClick={() => linkMutate({ id: providerId })}>
                 {t("settings.link")}
               </Button>
             )}
