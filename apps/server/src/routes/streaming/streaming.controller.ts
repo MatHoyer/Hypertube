@@ -4,10 +4,10 @@ import {
 } from "@hypertube/libs";
 import {
   BUCKETS,
+  getMoviePath,
   getSubtitlePath,
   minio,
   prisma,
-  resolveMovieObjectName,
 } from "@hypertube/server-core";
 import { Context } from "hono";
 import { buffer } from "node:stream/consumers";
@@ -32,20 +32,7 @@ export const getStreamingResolution = async (
     return c.json({ message: "Resolution not found" }, 404);
   }
 
-  let objectName: string;
-  try {
-    objectName = await resolveMovieObjectName(
-      String(movieId),
-      resolutionId,
-      movie.resolutions[0].resolution,
-      "movie.mp4"
-    );
-  } catch (e) {
-    if (isObjectNotFound(e)) {
-      return c.json({ message: "Movie file not found" }, 404);
-    }
-    throw e;
-  }
+  const objectName = getMoviePath(String(movieId), resolutionId, "movie.mp4");
 
   let fileSize: number;
   try {
