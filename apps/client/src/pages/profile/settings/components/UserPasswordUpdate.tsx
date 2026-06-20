@@ -22,7 +22,7 @@ import { axiosFetch } from "@/lib/fetch/axiosFetch";
 import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getUrl, patchUsersSchemas, ROUTES } from "@hypertube/libs";
+import { getUrl, patchUsersSchemas, ROUTES, typedKeys } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -32,7 +32,7 @@ import z from "zod";
 
 const formSchema = z.object({
   password: z.string().min(8).max(50),
-  oldPassword: z.string().min(8).max(50).optional(),
+  oldPassword: z.string(),
 });
 type TFormSchema = z.infer<typeof formSchema>;
 
@@ -46,7 +46,7 @@ export const UserPasswordUpdate = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       password: "",
-      oldPassword: undefined,
+      oldPassword: "",
     },
   });
 
@@ -164,6 +164,7 @@ export const UserPasswordUpdate = () => {
                 type="submit"
                 loading={isPending}
                 success={isSuccess}
+                disabled={!typedKeys(form.formState.dirtyFields).length}
               >
                 {t("global.submit")}
               </LoadingButton>
