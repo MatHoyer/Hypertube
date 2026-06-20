@@ -37,6 +37,7 @@
     "USERNAME_IS_TOO_SHORT": "El nombre de usuario es demasiado corto",
     "USERNAME_IS_TOO_LONG": "El nombre de usuario es demasiado largo",
     "USERNAME_IS_INVALID": "Nombre de usuario inválido",
+    "INVALID_USERNAME": "Inválido nombre",
     "DISPLAY_USERNAME_IS_INVALID": "Nombre de usuario para mostrar inválido",
     "USER_NOT_FOUND": "Usuario no encontrado",
     "FAILED_TO_CREATE_USER": "No se pudo crear el usuario",
