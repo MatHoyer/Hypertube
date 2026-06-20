@@ -25,6 +25,8 @@ import { SubtitlesProvider } from "./contexts/subtitles/subtitles.provider";
 import { VideoPlayerProvider } from "./contexts/video-player/video-player.provider";
 import { MoviePageParamsSchema } from "./schemas/urlParams.schema";
 
+const serverUrl = import.meta.env.PUBLIC_SERVER_URL;
+
 const MovieTabs = {
   VIDEO: "video",
   DOWNLOADS: "downloads",
@@ -66,9 +68,11 @@ const MoviePage = () => {
 
   useEffect(() => {
     const eventSource = new EventSource(
-      getUrl(ROUTES.API.SSE_MOVIES, {
-        tmdbId,
-      })
+      serverUrl +
+        getUrl(ROUTES.API.SSE_MOVIES, {
+          tmdbId,
+        }),
+      { withCredentials: true }
     );
     eventSource.onopen = () => {
       console.log("SSE opened");

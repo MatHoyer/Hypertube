@@ -5,6 +5,8 @@ import { File } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
+const serverUrl = import.meta.env.PUBLIC_SERVER_URL;
+
 export const OAuthCredentialsActions = () => {
   const { t } = useTranslation();
 
@@ -16,10 +18,7 @@ export const OAuthCredentialsActions = () => {
       <div>
         <Button className="w-full md:w-auto" variant="outline" asChild>
           <Link
-            to={getUrl(ROUTES.API.SWAGGER, {
-              mode: "ui",
-              withUrl: "server",
-            })}
+            to={serverUrl + getUrl(ROUTES.API.SWAGGER, { mode: "ui" })}
             target="_blank"
             className="flex-1 md:flex-none"
           >

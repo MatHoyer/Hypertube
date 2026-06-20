@@ -10,8 +10,22 @@ services:
     networks:
       - hypertube-network
 
-  app:
-    container_name: hypertube-prod
+  client:
+    container_name: hypertube-client-prod
+    build:
+      context: .
+      dockerfile: ./apps/client/Dockerfile.prod
+    env_file: .env
+    networks:
+      - hypertube-network
+    healthcheck:
+      test: ["CMD", "service", "nginx", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  server:
+    container_name: hypertube-server-prod
     build:
       context: .
       dockerfile: ./apps/server/Dockerfile.prod
@@ -23,8 +37,6 @@ services:
       - SUBTITLE_PROXY_URL=http://vpn:${SUBTITLE_PROXY_PORT}
       - REDIS_HOST=redis
       - MINIO_ENDPOINT=minio
-      - CLIENT_URL=${SERVER_URL}
-      - CLIENT_PORT=${SERVER_PORT}
       - PROWLARR_API_KEY_FILE=/prowlarr-config/api_key
     volumes:
       - prowlarr_config:/prowlarr-config:ro
@@ -58,7 +70,7 @@ services:
     networks:
       - hypertube-network
     depends_on:
-      - app
+      - server
 
   scheduler:
     container_name: hypertube-scheduler-prod
@@ -74,7 +86,7 @@ services:
     networks:
       - hypertube-network
     depends_on:
-      - app
+      - server
 
   prowlarr-init:
     image: alpine:3.21
