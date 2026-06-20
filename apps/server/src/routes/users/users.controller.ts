@@ -15,6 +15,7 @@ import {
   TGetUserSchemas,
 } from "@hypertube/libs/src/schemas/api/users.schema";
 import { env, prisma, RedisCacheService } from "@hypertube/server-core";
+import { APIError } from "better-auth";
 import { addHours, getTime } from "date-fns";
 import { Context } from "hono";
 import i18next from "i18next";
@@ -176,7 +177,16 @@ const handleChangeEmail = async ({
   });
 
   const handleSendVerificationEmail = async () => {
-    return void sendVerificationEmail(redisBetterAuth)({
+    const hasCooldown = await redisBetterAuth.has(`email:${user.id}`);
+    if (hasCooldown) {
+      throw new APIError("TOO_MANY_REQUESTS", {
+        code: "TOO_MANY_EMAILS_SENT",
+      });
+    }
+
+    redisBetterAuth.set(`email:${user.id}`, 1, 5 * 60);
+
+    return void sendVerificationEmail({
       user,
       url,
       callbackURL: getUrl(ROUTES.CLIENT.SETTINGS, { withUrl: "client" }),
