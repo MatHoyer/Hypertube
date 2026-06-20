@@ -29,6 +29,7 @@ type ProwlarrRelease = {
 
 type NormalizedRelease = Omit<ProwlarrRelease, "downloadUrl" | "magnetUrl"> & {
   downloadUrl: string;
+  magnetUrl?: string;
 };
 
 type ParsedRelease = NormalizedRelease & {
@@ -76,6 +77,17 @@ const SOURCE_QUALITY_HINTS: { quality: YtsQuality; pattern: RegExp }[] = [
   { quality: "480p", pattern: /\b(cam|hdcam|telesync|ts|dvdscr)\b/i },
 ];
 
+const isMagnetLink = (url: string): boolean =>
+  url.trim().startsWith("magnet:");
+
+const MAGNET_PREFERRED_INDEXERS = [/pirate\s*bay/i, /\btpb\b/i];
+
+const buildMagnetFromInfoHash = (infoHash: string, title: string): string =>
+  `magnet:?xt=urn:btih:${infoHash.trim().toLowerCase()}&dn=${encodeURIComponent(title)}`;
+
+const prefersMagnetLink = (indexer: string): boolean =>
+  MAGNET_PREFERRED_INDEXERS.some((pattern) => pattern.test(indexer));
+
 const formatBytes = (bytes: number): string => {
   if (bytes >= 1e9) return `${(bytes / 1e9).toFixed(2)} GB`;
   if (bytes >= 1e6) return `${(bytes / 1e6).toFixed(2)} MB`;
@@ -95,8 +107,17 @@ const parseQuality = (title: string): YtsQuality | null => {
 const normalizeRelease = (release: ProwlarrRelease): NormalizedRelease | null => {
   const downloadUrl = release.downloadUrl ?? release.magnetUrl;
   if (!downloadUrl || !release.indexer) return null;
-  const { magnetUrl: _magnetUrl, ...rest } = release;
-  return { ...rest, downloadUrl };
+  return {
+    title: release.title,
+    size: release.size,
+    infoHash: release.infoHash,
+    seeders: release.seeders,
+    indexer: release.indexer,
+    indexerId: release.indexerId,
+    guid: release.guid,
+    downloadUrl,
+    magnetUrl: release.magnetUrl,
+  };
 };
 
 const parseRelease = (release: ProwlarrRelease): ParsedRelease | null => {
@@ -150,7 +171,24 @@ export class ProwlarrApi {
     return `${this.baseUrl}/api/v1/search?${params}`;
   }
 
+  private shouldRewriteToProwlarrBase(downloadUrl: string): boolean {
+    if (isMagnetLink(downloadUrl)) return false;
+
+    try {
+      const url = new URL(downloadUrl);
+      const base = new URL(this.baseUrl);
+      if (url.hostname === "localhost" || url.hostname === "127.0.0.1") {
+        return true;
+      }
+      return url.hostname === base.hostname;
+    } catch {
+      return false;
+    }
+  }
+
   private resolveDownloadUrl(downloadUrl: string): string {
+    if (!this.shouldRewriteToProwlarrBase(downloadUrl)) return downloadUrl;
+
     try {
       const url = new URL(downloadUrl);
       const base = new URL(this.baseUrl);
@@ -161,6 +199,44 @@ export class ProwlarrApi {
     } catch {
       return downloadUrl;
     }
+  }
+
+  private async fetchTorrentFile(downloadUrl: string): Promise<Buffer> {
+    const url = this.resolveDownloadUrl(downloadUrl);
+    try {
+      const res = await fetch(url, {
+        headers: { "X-Api-Key": env.PROWLARR_API_KEY },
+      });
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+      return Buffer.from(await res.arrayBuffer());
+    } catch (error) {
+      throw new Error(
+        `Failed to fetch torrent from ${url}: ${formatUnknownError(error)}`,
+        { cause: error }
+      );
+    }
+  }
+
+  private resolveMagnetLink(release: ParsedRelease): string | null {
+    if (release.magnetUrl && isMagnetLink(release.magnetUrl)) {
+      return release.magnetUrl.trim();
+    }
+    if (isMagnetLink(release.downloadUrl)) {
+      return release.downloadUrl.trim();
+    }
+    if (prefersMagnetLink(release.indexer) && release.infoHash) {
+      return buildMagnetFromInfoHash(release.infoHash, release.title);
+    }
+    return null;
+  }
+
+  private async storeTorrentSource(
+    objectPath: string,
+    content: Buffer
+  ): Promise<void> {
+    await minio.putObject(BUCKETS.MOVIES, objectPath, content);
   }
 
   private async fetchMovieReleases(
@@ -289,26 +365,49 @@ export class ProwlarrApi {
       );
     }
 
-    const res = await fetch(this.resolveDownloadUrl(release.downloadUrl), {
-      headers: { "X-Api-Key": env.PROWLARR_API_KEY },
-    });
-    if (!res.ok) {
-      throw new Error(
-        `Failed to download torrent for movie ${movie.imdbId} (${resolution.resolution}, ${resolution.indexerName})`
+    const objectPath = getMoviePath(
+      movie.tmdbId.toString(),
+      resolutionId,
+      "resolution.torrent"
+    );
+
+    const magnetLink = this.resolveMagnetLink(release);
+    if (magnetLink) {
+      hypertubeLogger.info(
+        `Storing magnet link for ${movie.imdbId} (${resolution.resolution}, ${resolution.indexerName})`
       );
+      await this.storeTorrentSource(
+        objectPath,
+        Buffer.from(magnetLink, "utf-8")
+      );
+      return;
     }
 
-    const arrayBuffer = await res.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    try {
+      const buffer = await this.fetchTorrentFile(release.downloadUrl);
+      await this.storeTorrentSource(objectPath, buffer);
+    } catch (error) {
+      if (release.infoHash) {
+        hypertubeLogger.warn(
+          `Torrent fetch failed for ${movie.imdbId} (${resolution.resolution}, ${resolution.indexerName}), using infoHash magnet fallback`
+        );
+        await this.storeTorrentSource(
+          objectPath,
+          Buffer.from(
+            buildMagnetFromInfoHash(release.infoHash, release.title),
+            "utf-8"
+          )
+        );
+        return;
+      }
 
-    await minio.putObject(
-      BUCKETS.MOVIES,
-      getMoviePath(
-        movie.tmdbId.toString(),
-        resolutionId,
-        "resolution.torrent"
-      ),
-      buffer
-    );
+      hypertubeLogger.error(
+        `Torrent download failed for ${movie.imdbId} (${resolution.resolution}, ${resolution.indexerName}): ${formatUnknownError(error)}`
+      );
+      throw new Error(
+        `Failed to download torrent for movie ${movie.imdbId} (${resolution.resolution}, ${resolution.indexerName})`,
+        { cause: error }
+      );
+    }
   }
 }

@@ -28,7 +28,7 @@ const worker = new Worker<TDownloadJobData>(
 
     return downloadMovie(job);
   },
-  { connection, concurrency: 5, lockDuration: 120000 }
+  { connection, concurrency: 5, lockDuration: 3600000 }
 );
 
 hypertubeLogger.info(`Downloader worker started`);

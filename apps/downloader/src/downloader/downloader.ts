@@ -1,6 +1,12 @@
 import { hypertubeLogger } from "@hypertube/libs";
 import { env } from "@hypertube/server-core";
 
+const TransmissionStatus = {
+  STOPPED: 0,
+  DOWNLOADING: 4,
+  SEEDING: 6,
+} as const;
+
 async function fetchWithSession(
   baseUrl: string,
   body: Record<string, unknown>,
@@ -33,7 +39,15 @@ export type TransmissionTorrent = {
   percentDone: number;
   rateDownload: number;
   status: number;
-  files?: { name: string }[];
+  error?: number;
+  errorString?: string;
+  files?: TransmissionTorrentFile[];
+};
+
+export type TransmissionTorrentFile = {
+  name: string;
+  length?: number;
+  bytesCompleted?: number;
 };
 
 export type TransmissionAddOptions = {
@@ -102,6 +116,62 @@ class TransmissionClient {
     return { id: added.id };
   }
 
+  /** Transmission accepts magnet URIs via the filename field. */
+  async addMagnet(
+    magnetUrl: string,
+    options: TransmissionAddOptions = {}
+  ): Promise<{ id: number }> {
+    return this.addFile(magnetUrl, options);
+  }
+
+  async waitForFiles(
+    id: number,
+    timeoutMs = 120000,
+    intervalMs = 2000
+  ): Promise<TransmissionTorrentFile[]> {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      const info = await this.get(id, ["files"]);
+      const files = info.torrents[0]?.files;
+      if (files && files.length > 0) return files;
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
+    throw new Error("Timeout waiting for torrent metadata");
+  }
+
+  async waitForDownloadProgress(
+    id: number,
+    timeoutMs = 600000,
+    intervalMs = 2000
+  ): Promise<void> {
+    const deadline = Date.now() + timeoutMs;
+    while (Date.now() < deadline) {
+      const info = await this.get(id);
+      const torrent = info.torrents[0];
+      if (!torrent) throw new Error("Torrent not found");
+
+      if (torrent.percentDone > 0 || torrent.status === TransmissionStatus.DOWNLOADING) {
+        return;
+      }
+      if (
+        torrent.status === TransmissionStatus.SEEDING ||
+        torrent.percentDone >= 0.99
+      ) {
+        return;
+      }
+      if (
+        torrent.status === TransmissionStatus.STOPPED &&
+        torrent.percentDone < 0.01 &&
+        torrent.errorString
+      ) {
+        throw new Error(`Torrent error: ${torrent.errorString}`);
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
+    throw new Error("Timeout waiting for torrent download to start");
+  }
+
   /** Cross-container safe: raw .torrent bytes as base64 metainfo. */
   async addTorrentMetainfo(
     torrentBuffer: Buffer,
@@ -137,6 +207,8 @@ class TransmissionClient {
       "percentDone",
       "rateDownload",
       "status",
+      "error",
+      "errorString",
       "files",
     ];
     const args = await this.rpc<{ torrents: TransmissionTorrent[] }>({

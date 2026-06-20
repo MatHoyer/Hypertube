@@ -21,7 +21,7 @@ vi.mock("@hypertube/libs", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@hypertube/libs")>();
   return {
     ...actual,
-    hypertubeLogger: { error: vi.fn(), info: vi.fn() },
+    hypertubeLogger: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
   };
 });
 
@@ -235,6 +235,30 @@ describe("ProwlarrApi", () => {
         "2060",
       ]);
     });
+    it("returns magnet links when downloadUrl is absent", async () => {
+      const magnetUrl = "magnet:?xt=urn:btih:tpbhash&dn=Movie+1080p";
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          ok: true,
+          json: async () => [
+            makeRelease({
+              downloadUrl: undefined,
+              magnetUrl,
+              indexer: "The Pirate Bay",
+              indexerId: 2,
+              guid: "guid-tpb-1080p",
+            }),
+          ],
+        })
+      );
+
+      const api = new ProwlarrApi();
+      const resolutions = await api.getResolutions(searchTarget);
+
+      expect(resolutions).toHaveLength(1);
+      expect(resolutions[0].url).toBe(magnetUrl);
+    });
   });
 
   describe("downloadTorrent", () => {
@@ -276,6 +300,201 @@ describe("ProwlarrApi", () => {
         "movies",
         "12345/resolution-id-1/resolution.torrent",
         expect.any(Buffer)
+      );
+    });
+
+    it("stores magnet links directly without fetching", async () => {
+      const magnetUrl =
+        "magnet:?xt=urn:btih:abc123&dn=Movie+1080p&tr=udp://tracker.example.com";
+      const release = makeRelease({
+        title: "Movie 1080p BluRay",
+        downloadUrl: undefined,
+        magnetUrl,
+        guid: "guid-tpb-1080p",
+        indexer: "The Pirate Bay",
+      });
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [release],
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const api = new ProwlarrApi();
+      await api.downloadTorrent({
+        movie: { tmdbId: 12345, imdbId: "tt1234567" } as never,
+        resolution: makeResolution({
+          indexerName: "The Pirate Bay",
+          releaseGuid: "guid-tpb-1080p",
+        }) as never,
+        resolutionId: "resolution-id-1",
+        search: searchTarget,
+      });
+
+      expect(fetchMock).toHaveBeenCalled();
+      expect(
+        fetchMock.mock.calls.some((call) =>
+          String(call[0]).includes("/download/")
+        )
+      ).toBe(false);
+      expect(mockPutObject).toHaveBeenCalledWith(
+        "movies",
+        "12345/resolution-id-1/resolution.torrent",
+        Buffer.from(magnetUrl, "utf-8")
+      );
+    });
+
+    it("stores magnet link from downloadUrl field without fetching", async () => {
+      const magnetUrl =
+        "magnet:?xt=urn:btih:tpbhash&dn=Movie+1080p&tr=udp://tracker.example.com";
+      const release = makeRelease({
+        title: "Movie 1080p BluRay",
+        downloadUrl: magnetUrl,
+        magnetUrl: undefined,
+        guid: "guid-tpb-1080p",
+        indexer: "The Pirate Bay",
+      });
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [release],
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const api = new ProwlarrApi();
+      await api.downloadTorrent({
+        movie: { tmdbId: 12345, imdbId: "tt1234567" } as never,
+        resolution: makeResolution({
+          indexerName: "The Pirate Bay",
+          releaseGuid: "guid-tpb-1080p",
+        }) as never,
+        resolutionId: "resolution-id-1",
+        search: searchTarget,
+      });
+
+      expect(
+        fetchMock.mock.calls.some((call) =>
+          String(call[0]).includes("/download/")
+        )
+      ).toBe(false);
+      expect(mockPutObject).toHaveBeenCalledWith(
+        "movies",
+        "12345/resolution-id-1/resolution.torrent",
+        Buffer.from(magnetUrl, "utf-8")
+      );
+    });
+
+    it("does not rewrite external torrent URLs to the Prowlarr host", async () => {
+      const torrentBuffer = Buffer.from("torrent-data");
+      const externalUrl = "https://yts.mx/torrent/download/abc123";
+      const release = makeRelease({
+        title: "Movie 1080p BluRay",
+        downloadUrl: externalUrl,
+        guid: "guid-yts-1080p",
+      });
+      const fetchMock = vi.fn().mockImplementation((url: string) => {
+        if (url === externalUrl) {
+          return Promise.resolve({
+            ok: true,
+            arrayBuffer: async () => torrentBuffer.buffer,
+          });
+        }
+        return Promise.resolve({ ok: true, json: async () => [release] });
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const api = new ProwlarrApi();
+      await api.downloadTorrent({
+        movie: { tmdbId: 12345, imdbId: "tt1234567" } as never,
+        resolution: makeResolution() as never,
+        resolutionId: "resolution-id-1",
+        search: searchTarget,
+      });
+
+      const downloadCall = fetchMock.mock.calls.find(
+        (call) => String(call[0]) === externalUrl
+      );
+      expect(downloadCall).toBeDefined();
+    });
+
+    it("builds magnet from infoHash for The Pirate Bay without fetching", async () => {
+      const infoHash = "ABCDEF1234567890ABCDEF1234567890ABCDEF12";
+      const release = makeRelease({
+        title: "Interstellar (2014) 720p BrRip x264 -YIFY",
+        downloadUrl:
+          "http://127.0.0.1:9696/2/download?apikey=test&link=encoded&file=movie.torrent",
+        magnetUrl: undefined,
+        infoHash,
+        guid: "guid-tpb-720",
+        indexer: "The Pirate Bay",
+        indexerId: 2,
+      });
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => [release],
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const api = new ProwlarrApi();
+      await api.downloadTorrent({
+        movie: { tmdbId: 12345, imdbId: "tt1234567" } as never,
+        resolution: makeResolution({
+          indexerName: "The Pirate Bay",
+          releaseGuid: "guid-tpb-720",
+          resolution: "720p",
+        }) as never,
+        resolutionId: "resolution-id-1",
+        search: searchTarget,
+      });
+
+      expect(
+        fetchMock.mock.calls.some((call) =>
+          String(call[0]).includes("/download?")
+        )
+      ).toBe(false);
+      expect(mockPutObject).toHaveBeenCalledWith(
+        "movies",
+        "12345/resolution-id-1/resolution.torrent",
+        Buffer.from(
+          `magnet:?xt=urn:btih:${infoHash.toLowerCase()}&dn=${encodeURIComponent(
+            "Interstellar (2014) 720p BrRip x264 -YIFY"
+          )}`,
+          "utf-8"
+        )
+      );
+    });
+
+    it("falls back to infoHash magnet when torrent fetch fails", async () => {
+      const infoHash = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef";
+      const release = makeRelease({
+        title: "Movie 1080p BluRay",
+        downloadUrl: "http://127.0.0.1:9696/1/download/torrent",
+        guid: "guid-yts-1080p",
+        infoHash,
+      });
+      const fetchMock = vi.fn().mockImplementation((url: string) => {
+        if (String(url).includes("/download/torrent")) {
+          return Promise.reject(new Error("fetch failed"));
+        }
+        return Promise.resolve({ ok: true, json: async () => [release] });
+      });
+      vi.stubGlobal("fetch", fetchMock);
+
+      const api = new ProwlarrApi();
+      await api.downloadTorrent({
+        movie: { tmdbId: 12345, imdbId: "tt1234567" } as never,
+        resolution: makeResolution() as never,
+        resolutionId: "resolution-id-1",
+        search: searchTarget,
+      });
+
+      expect(mockPutObject).toHaveBeenCalledWith(
+        "movies",
+        "12345/resolution-id-1/resolution.torrent",
+        Buffer.from(
+          `magnet:?xt=urn:btih:${infoHash}&dn=${encodeURIComponent(
+            "Movie 1080p BluRay"
+          )}`,
+          "utf-8"
+        )
       );
     });
 

@@ -6,12 +6,10 @@ import {
 } from "@hypertube/libs";
 import {
   BUCKETS,
-  convertSrtToVtt,
   getMoviePath,
   getSubtitlePath,
   minio,
   prisma,
-  resolveMovieObjectName,
   TDownloadJobData,
   waitFile,
 } from "@hypertube/server-core";
@@ -21,11 +19,19 @@ import * as fs from "fs";
 import { buffer } from "node:stream/consumers";
 import path from "path";
 import { notifySubscribers } from "../notifications/notifySubscriber.js";
-import { downloader } from "./downloader.js";
+import { downloader, TransmissionTorrent } from "./downloader.js";
+import {
+  FFPROBE_LOW_MEM,
+  formatSidecarSubtitleLanguage,
+  handleEmbeddedSubtitles,
+  isSidecarSubtitle,
+  convertSubtitleFileToVtt,
+} from "./subtitle.utils.js";
 
 const WAIT_FILE_TIMEOUT = 1000000;
 const WAIT_SUBTITLE_TIMEOUT = 10000;
 const CHECK_DOWNLOAD_INTERVAL = 30000;
+const COMPLETE_THRESHOLD = 0.99;
 
 const Status = {
   STOPPED: 0,
@@ -37,12 +43,43 @@ const Status = {
   SEEDING: 6,
 } as const;
 
-const FFPROBE_LOW_MEM = [
-  "-probesize",
-  "2097152",
-  "-analyzeduration",
-  "1000000",
+const VIDEO_EXTENSIONS = [
+  ".mp4",
+  ".mkv",
+  ".avi",
+  ".m4v",
+  ".webm",
+  ".mov",
+  ".wmv",
+  ".flv",
+  ".ts",
+  ".m2ts",
 ];
+
+type TorrentFile = { name: string; length?: number };
+
+const isVideoFile = (filename: string): boolean => {
+  const lower = filename.toLowerCase();
+  return VIDEO_EXTENSIONS.some((ext) => lower.endsWith(ext));
+};
+
+const isTorrentComplete = (torrent: TransmissionTorrent): boolean =>
+  torrent.percentDone >= COMPLETE_THRESHOLD ||
+  torrent.status === Status.SEEDING;
+
+const isTorrentStalled = (torrent: TransmissionTorrent): boolean =>
+  torrent.status === Status.STOPPED &&
+  torrent.percentDone < COMPLETE_THRESHOLD;
+
+const findMainVideoFile = (files: TorrentFile[]): TorrentFile | undefined => {
+  const videoFiles = files.filter((file) => isVideoFile(file.name));
+  if (videoFiles.length === 0) return undefined;
+  if (videoFiles.length === 1) return videoFiles[0];
+
+  return videoFiles.reduce((largest, file) =>
+    (file.length ?? 0) > (largest.length ?? 0) ? file : largest
+  );
+};
 
 const checkFileReadability = async (filePath: string) => {
   return new Promise<boolean>((resolve) => {
@@ -100,12 +137,18 @@ const convertMovie = (
           ...FFPROBE_LOW_MEM,
         ])
         .outputOptions([
+          "-map",
+          "0:v:0",
+          "-map",
+          "0:a:0?",
           "-c",
           "copy",
           "-threads",
           "1",
           "-max_muxing_queue_size",
           "256",
+          "-movflags",
+          "+faststart",
         ])
         .on("start", async () => {
           hypertubeLogger.info(`Conversion started`);
@@ -138,52 +181,62 @@ const convertMovie = (
   });
 };
 
-const handleSrtFile = async (
-  movie: TMovieSchema,
-  srtFile: { name: string }
-) => {
-  const target = path.resolve(
-    process.cwd(),
-    `./downloads-transmission/incomplete/${srtFile.name}`
-  );
-  hypertubeLogger.info(`Waiting for SRT file to be downloaded ${target}`);
-  await waitFile(target, WAIT_SUBTITLE_TIMEOUT);
-  let language = srtFile.name.substring(
-    srtFile.name.lastIndexOf("/") + 1,
-    srtFile.name.lastIndexOf(".")
-  );
-  if (language.includes("[YTS.MX]")) {
-    language = "YTS OFFICIAL - English";
-  } else {
-    language = "YTS - " + language;
-  }
-
-  const srtPath = `/downloads-transmission/${movie.tmdbId}/subtitles/${language}/subtitles.srt`;
-  hypertubeLogger.info(`Copying SRT file to ${srtPath}`);
-  await fs.promises.cp(target, srtPath, {
-    recursive: true,
-    force: true,
-  });
-  await convertSrtToVtt(srtPath);
-
+const uploadSubtitle = async ({
+  movie,
+  language,
+  vttPath,
+  downloadLink,
+}: {
+  movie: TMovieSchema;
+  language: string;
+  vttPath: string;
+  downloadLink: string;
+}) => {
   await minio.putObject(
     BUCKETS.SUBTITLES,
     getSubtitlePath(movie.tmdbId.toString(), language, "subtitles.vtt"),
-    await fs.promises.readFile(srtPath)
+    await fs.promises.readFile(vttPath)
   );
 
   await prisma.subtitle.upsert({
-    where: {
-      downloadLink: srtFile.name,
-    },
+    where: { downloadLink },
     update: {},
     create: {
       movieId: movie.id,
-      language: language,
+      language,
       rating: 5,
-      downloadLink: srtFile.name,
+      downloadLink,
       downloadState: DownloadStates.DOWNLOADED,
     },
+  });
+};
+
+const handleSidecarSubtitleFile = async (
+  movie: TMovieSchema,
+  subtitleFile: { name: string }
+) => {
+  const target = path.resolve(
+    process.cwd(),
+    `./downloads-transmission/incomplete/${subtitleFile.name}`
+  );
+  hypertubeLogger.info(
+    `Waiting for sidecar subtitle file to be downloaded ${target}`
+  );
+  await waitFile(target, WAIT_SUBTITLE_TIMEOUT);
+
+  const language = formatSidecarSubtitleLanguage(subtitleFile.name);
+  const subtitleDir = `/downloads-transmission/${movie.tmdbId}/subtitles/${language}`;
+  const vttPath = `${subtitleDir}/subtitles.vtt`;
+
+  hypertubeLogger.info(`Converting sidecar subtitle to VTT at ${vttPath}`);
+  await fs.promises.mkdir(subtitleDir, { recursive: true });
+  await convertSubtitleFileToVtt(target, vttPath);
+
+  await uploadSubtitle({
+    movie,
+    language,
+    vttPath,
+    downloadLink: subtitleFile.name,
   });
 };
 
@@ -199,60 +252,69 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
 
   const resolutionStream = await minio.getObject(
     BUCKETS.MOVIES,
-    await resolveMovieObjectName(
-      movie.tmdbId.toString(),
-      resolutionId,
-      dbResolution.resolution,
-      "resolution.torrent"
-    )
+    getMoviePath(movie.tmdbId.toString(), resolutionId, "resolution.torrent")
   );
   const torrentBuf = await buffer(resolutionStream);
+  const isMagnet = torrentBuf.toString("utf-8").startsWith("magnet:");
 
   const downloadDir = `/downloads-transmission/${movie.tmdbId}/resolutions/${resolutionId}`;
   await fs.promises.mkdir(downloadDir, { recursive: true });
   hypertubeLogger.info(
-    `Adding torrent for movie ${movie.tmdbId} resolution ${dbResolution.resolution} (${dbResolution.indexerName})`
+    `Adding ${isMagnet ? "magnet" : "torrent"} for movie ${movie.tmdbId} resolution ${dbResolution.resolution} (${dbResolution.indexerName})`
   );
 
-  const result = await downloader.addTorrentMetainfo(torrentBuf, {
-    "download-dir": downloadDir,
-    paused: true,
-  });
+  const addOptions = { "download-dir": downloadDir, paused: true };
+  const result = isMagnet
+    ? await downloader.addMagnet(torrentBuf.toString("utf-8"), addOptions)
+    : await downloader.addTorrentMetainfo(torrentBuf, addOptions);
   hypertubeLogger.info(`Torrent added with ID: ${result.id}`);
 
   try {
-    const info = await downloader.get(result.id, ["files"]);
-    const files = info.torrents[0].files as { name: string }[];
-
-    const mp4File = files.find((file) => file.name.endsWith(".mp4"));
-    if (!mp4File) {
-      throw new Error("MP4 file not found");
+    let files: { name: string }[];
+    if (isMagnet) {
+      hypertubeLogger.info("Waiting for magnet metadata");
+      await downloader.start(result.id);
+      files = await downloader.waitForFiles(result.id);
+    } else {
+      const info = await downloader.get(result.id, ["files"]);
+      files = info.torrents[0].files as { name: string }[];
     }
-    hypertubeLogger.info(`MP4 file found ${mp4File.name}`);
-    const srtFiles = files.filter((file) => file.name.endsWith(".srt"));
-    if (srtFiles.length > 0) {
+
+    const videoFile = findMainVideoFile(files);
+    if (!videoFile) {
+      throw new Error(
+        `Video file not found (supported: ${VIDEO_EXTENSIONS.join(", ")})`
+      );
+    }
+    hypertubeLogger.info(`Video file found ${videoFile.name}`);
+    const sidecarSubtitleFiles = files.filter((file) =>
+      isSidecarSubtitle(file.name)
+    );
+    if (sidecarSubtitleFiles.length > 0) {
       hypertubeLogger.info(
-        `${srtFiles.length} SRT files found ${srtFiles
+        `${sidecarSubtitleFiles.length} sidecar subtitle file(s) found ${sidecarSubtitleFiles
           .map((file) => file.name)
           .join(", ")}`
       );
     }
 
-    await downloader.start(result.id);
+    if (!isMagnet) {
+      await downloader.start(result.id);
+    }
 
-    const target = `/downloads-transmission/incomplete/${mp4File.name}`;
+    const target = `/downloads-transmission/incomplete/${videoFile.name}`;
 
-    hypertubeLogger.info(`Waiting for file downloaded to be started ${target}`);
-    await waitFile(target, WAIT_FILE_TIMEOUT);
+    hypertubeLogger.info(`Waiting for torrent download to start (${target})`);
+    await downloader.waitForDownloadProgress(result.id);
 
     try {
-      const srtPromises = srtFiles.map((srtFile) =>
-        handleSrtFile(movie, srtFile)
+      const sidecarPromises = sidecarSubtitleFiles.map((subtitleFile) =>
+        handleSidecarSubtitleFile(movie, subtitleFile)
       );
-      await Promise.allSettled(srtPromises);
+      await Promise.allSettled(sidecarPromises);
     } catch (error) {
       hypertubeLogger.error(
-        `Error handling SRT files: ${formatUnknownError(error)}`
+        `Error handling sidecar subtitle files: ${formatUnknownError(error)}`
       );
     }
 
@@ -290,23 +352,54 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
             )}, Download speed: ${downloadSpeed.toFixed(2)}, Status: ${status}`
           );
 
-          if (status === Status.SEEDING || status === Status.STOPPED) {
+          if (isTorrentStalled(torrent)) {
+            clearInterval(intervalId);
+            reject(
+              new Error(
+                `Torrent stalled at ${(torrent.percentDone * 100).toFixed(2)}% (${torrent.errorString ?? "no error"})`
+              )
+            );
+            return;
+          }
+
+          if (isTorrentComplete(torrent)) {
             clearInterval(intervalId);
 
-            const endFile = downloadDir + "/" + mp4File.name;
-            await waitFile(endFile);
+            const endFile = downloadDir + "/" + videoFile.name;
+            await waitFile(endFile, WAIT_FILE_TIMEOUT);
+
+            const endFileStat = await fs.promises.stat(endFile);
+            if (endFileStat.size === 0) {
+              reject(new Error(`Downloaded file is empty: ${endFile}`));
+              return;
+            }
 
             const moviePath = downloadDir + "/movie.mp4";
 
             try {
-              await convertMovie(
-                { path: endFile },
-                {
-                  path: moviePath,
-                }
-              );
+              const subtitlesDir = `/downloads-transmission/${movie.tmdbId}/subtitles`;
+
+              await convertMovie({ path: endFile }, { path: moviePath });
+              await Promise.allSettled([
+                handleEmbeddedSubtitles({
+                  videoPath: endFile,
+                  videoFileName: videoFile.name,
+                  subtitlesDir,
+                  onSubtitle: async ({ language, vttPath, downloadLink }) => {
+                    await uploadSubtitle({
+                      movie,
+                      language,
+                      vttPath,
+                      downloadLink,
+                    });
+                  },
+                }),
+              ]);
 
               const movieStat = await fs.promises.stat(moviePath);
+              if (movieStat.size === 0) {
+                throw new Error(`Converted movie file is empty: ${moviePath}`);
+              }
               await minio.putObject(
                 BUCKETS.MOVIES,
                 getMoviePath(movie.tmdbId.toString(), resolutionId, "movie.mp4"),
@@ -335,5 +428,8 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     });
   } catch (error) {
     await downloader.remove(result.id);
+    throw error instanceof Error
+      ? error
+      : new Error(formatUnknownError(error));
   }
 };
