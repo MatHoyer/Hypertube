@@ -1,7 +1,7 @@
 services:
   client:
     ports:
-      - "${CLIENT_PORT}:80"
+      - "${CLIENT_PORT}:8080"
 
   server:
     ports:
