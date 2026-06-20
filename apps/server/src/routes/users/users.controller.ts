@@ -14,7 +14,7 @@ import {
   TDeleteUsersSchemas,
   TGetUserSchemas,
 } from "@hypertube/libs/src/schemas/api/users.schema";
-import { env, prisma, RedisCacheService } from "@hypertube/server-core";
+import { env, ICacheService, prisma } from "@hypertube/server-core";
 import { APIError } from "better-auth";
 import { addHours, getTime } from "date-fns";
 import { Context } from "hono";
@@ -27,11 +27,10 @@ import {
   handleAuthentificationMethod,
 } from "../../lib/better-auth/constants";
 import { TBodyParser } from "../../middlewares/bodyParser";
+import { TApiContext } from "../../middlewares/injectApiContext";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
-
-const redisBetterAuth = new RedisCacheService();
 
 export const getUsers = async (
   c: Context<TIsLogged & TSearchParamsParser<TGetUsersSchemas["searchParams"]>>
@@ -149,10 +148,12 @@ const handleChangePassword = async ({
 
 const handleChangeEmail = async ({
   c,
+  cacheService,
   user,
   newEmail,
 }: {
   c: Context;
+  cacheService: ICacheService;
   user: TUserSchema;
   newEmail: string | undefined;
 }) => {
@@ -182,14 +183,14 @@ const handleChangeEmail = async ({
   });
 
   const handleSendVerificationEmail = async () => {
-    const hasCooldown = await redisBetterAuth.has(`email:${user.id}`);
+    const hasCooldown = await cacheService.has(`email:${user.id}`);
     if (hasCooldown) {
       throw new APIError("TOO_MANY_REQUESTS", {
         code: "TOO_MANY_EMAILS_SENT",
       });
     }
 
-    redisBetterAuth.set(`email:${user.id}`, 1, 5 * 60);
+    cacheService.set(`email:${user.id}`, 1, 5 * 60);
 
     return void sendVerificationEmail({
       user,
@@ -204,6 +205,7 @@ const handleChangeEmail = async ({
 export const patchUser = async (
   c: Context<
     TIsLogged &
+      TApiContext &
       TUrlParamsParser<TPatchUsersSchemas["urlParams"]> &
       TBodyParser<TPatchUsersSchemas["requirements"]>
   >
@@ -211,6 +213,7 @@ export const patchUser = async (
   const body = c.get("validatedBody");
   const { userId } = c.get("validatedUrlParams");
   const user = c.get("user");
+  const cacheService = c.get("cacheService");
 
   if (user.id !== userId) {
     const message = i18next.t("httpCode.401");
@@ -226,6 +229,7 @@ export const patchUser = async (
 
   const emailResponse = await handleChangeEmail({
     c,
+    cacheService,
     user,
     newEmail: body.email,
   });
