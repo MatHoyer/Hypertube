@@ -18,6 +18,8 @@ type TAxiosFetch<T extends ZodType<TT>, TT, D extends ZodType<DD>, DD> = {
   };
 };
 
+const serverUrl = import.meta.env.PUBLIC_SERVER_URL;
+
 export const axiosFetch = async <
   T extends ZodType<TT>,
   TT,
@@ -38,7 +40,7 @@ export const axiosFetch = async <
 
     const res = await axios({
       method,
-      url,
+      url: serverUrl + url,
       data,
       headers: {
         "Content-Type": "application/json",

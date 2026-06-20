@@ -1,4 +1,3 @@
-import { serveStatic } from "@hono/node-server/serve-static";
 import {
   hypertubeLogger,
   languageCodesArray,
@@ -6,15 +5,15 @@ import {
 } from "@hypertube/libs";
 import { env } from "@hypertube/server-core";
 import { Hono } from "hono";
-import {
-  injectApiContext,
-  TApiContext,
-} from "./middlewares/injectApiContext.js";
 import { cors } from "hono/cors";
 import { languageDetector } from "hono/language";
 import { logger } from "hono/logger";
 import i18next from "i18next";
 import "./lib/i18n/i18n.js";
+import {
+  injectApiContext,
+  TApiContext,
+} from "./middlewares/injectApiContext.js";
 import authRouter from "./routes/auth/auth.route.js";
 import authentificationRouter from "./routes/authentification/authentification.route.js";
 import commentsRouter from "./routes/comments/comments.route.js";
@@ -40,7 +39,12 @@ export function createApp() {
 
   app.use(
     logger(),
-    cors(),
+    cors({
+      origin: [env.CLIENT_URL],
+      credentials: true,
+      allowHeaders: ["Content-Type", "Authorization"],
+      allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    }),
     languageDetector({
       convertDetectedLanguage: (lang) => lang.split("-")[0],
       supportedLanguages: [...languageCodesArray],
@@ -72,23 +76,6 @@ export function createApp() {
   apiRouter.get("/health", (c) => c.text("OK"));
 
   app.route("/api", apiRouter);
-
-  if (env.NODE_ENV === "PROD") {
-    app.use(
-      serveStatic({
-        root: "./dist/apps/public",
-      })
-    );
-    app.use(
-      "*",
-      serveStatic({
-        root: "./dist/apps/public",
-        path: "index.html",
-      })
-    );
-  } else {
-    app.use("/images/*", serveStatic({ root: "./public" }));
-  }
 
   return app;
 }

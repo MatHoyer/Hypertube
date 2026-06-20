@@ -7,6 +7,8 @@ import { defineConfig } from "vite";
 export default defineConfig({
   base: "/",
   plugins: [react(), tailwindcss()],
+  envPrefix: "PUBLIC_",
+  envDir: path.resolve(__dirname, "../.."),
   preview: {
     port: 3001,
     strictPort: true,
@@ -16,12 +18,8 @@ export default defineConfig({
     strictPort: true,
     host: true,
     origin: "http://0.0.0.0:3001",
+    cors: false,
     proxy: {
-      "/public": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-        secure: false,
-      },
       "/api": {
         target: "http://localhost:3000",
         changeOrigin: true,

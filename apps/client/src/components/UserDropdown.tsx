@@ -31,6 +31,8 @@ import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { UserImageAvatar } from "./images/Avatar";
 
+const serverUrl = import.meta.env.PUBLIC_SERVER_URL;
+
 export const UserDropdown = () => {
   const queryClient = useQueryClient();
   const { t } = useTranslation();
@@ -61,7 +63,10 @@ export const UserDropdown = () => {
   });
 
   useEffect(() => {
-    const eventSource = new EventSource(getUrl(ROUTES.API.SSE_NOTIFICATIONS));
+    const eventSource = new EventSource(
+      serverUrl + getUrl(ROUTES.API.SSE_NOTIFICATIONS),
+      { withCredentials: true }
+    );
     eventSource.onopen = () => {
       console.log("notifications SSE opened");
     };

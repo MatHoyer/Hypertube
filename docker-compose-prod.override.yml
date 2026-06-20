@@ -1,4 +1,8 @@
 services:
-  app:
+  client:
+    ports:
+      - "${CLIENT_PORT}:80"
+
+  server:
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"

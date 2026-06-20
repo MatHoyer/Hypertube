@@ -9,17 +9,14 @@ WORKDIR /hypertube
 COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY .env ./
-COPY eslint.config.js ./
 
 COPY apps/server ./apps/server
-COPY apps/client ./apps/client
 COPY packages/libs ./packages/libs
 COPY packages/server-core ./packages/server-core
 
 RUN pnpm i --frozen-lockfile
-RUN pnpm lint
 RUN pnpm --filter server-core prisma:generate
-RUN pnpm build:app
+RUN pnpm build:server
 
 FROM node:22-alpine AS runner
 
