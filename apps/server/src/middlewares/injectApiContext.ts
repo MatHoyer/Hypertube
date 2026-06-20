@@ -1,5 +1,6 @@
-import { ICacheService, RedisCacheService } from "@hypertube/server-core";
+import { ICacheService } from "@hypertube/server-core";
 import { createMiddleware } from "hono/factory";
+import { container } from "../container";
 
 export type TApiContext = {
   Variables: {
@@ -7,11 +8,9 @@ export type TApiContext = {
   };
 };
 
-const cacheService = new RedisCacheService();
-
 export const injectApiContext = createMiddleware<TApiContext>(
   async (c, next) => {
-    c.set("cacheService", cacheService);
+    c.set("cacheService", container.cacheService);
     await next();
   }
 );
