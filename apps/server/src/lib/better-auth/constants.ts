@@ -126,3 +126,17 @@ export const handleAuthentificationMethod = async (
     return c.json({ message }, statusCode);
   }
 };
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/;
+
+export const checkPasswordRegex = (newPassword: string) => {
+  if (!newPassword)
+    throw new APIError("BAD_REQUEST", {
+      code: "FAILED_TO_UPDATE_PASSWORD",
+    });
+  if (!passwordRegex.test(newPassword)) {
+    throw new APIError("BAD_REQUEST", {
+      code: "PASSWORD_POLICY",
+    });
+  }
+};

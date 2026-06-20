@@ -18,7 +18,10 @@ import i18next from "i18next";
 import { decode } from "jsonwebtoken";
 import z, { safeParse } from "zod";
 import { auth } from "../../lib/auth";
-import { handleAuthentificationMethod } from "../../lib/better-auth/constants";
+import {
+  checkPasswordRegex,
+  handleAuthentificationMethod,
+} from "../../lib/better-auth/constants";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TSearchParamsParser } from "../../middlewares/searchParamsParser";
@@ -30,6 +33,7 @@ export const signUp = async (
   const userData = c.get("validatedBody");
 
   const signUpEmail = async () => {
+    checkPasswordRegex(userData.password);
     return await auth.api.signUpEmail({
       body: userData,
       headers: c.req.raw.headers,
@@ -102,6 +106,7 @@ export const resetPassword = async (
   const userData = c.get("validatedBody");
 
   const resetPassword = async () => {
+    checkPasswordRegex(userData.newPassword);
     await auth.api.resetPassword({
       body: userData,
       headers: c.req.raw.headers,
