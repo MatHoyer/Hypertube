@@ -96,29 +96,49 @@ jobs:
       - name: Start App containers (docker-compose-prod.yml)
         run: docker compose -f docker-compose-prod.yml up -d
 
-      - name: Wait for App to be ready
+      - name: Wait for Client to be ready
         run: |
-          echo "Waiting for app to be healthy..."
+          echo "Waiting for client to be healthy..."
 
-          docker logs -f hypertube-prod &
+          docker logs -f hypertube-client-prod &
           LOGS_PID=$!
 
           for i in {1..60}; do
-            status=$(docker inspect --format='{{.State.Health.Status}}' hypertube-prod 2>/dev/null || echo "not found")
+            status=$(docker inspect --format='{{.State.Health.Status}}' hypertube-client-prod 2>/dev/null || echo "not found")
             if [ "$status" == "healthy" ]; then
-              echo "✅ App is healthy!"
+              echo "✅ Client is healthy!"
               kill $LOGS_PID
               exit 0
             fi
             sleep 2
           done
-          echo "❌ App did not become healthy in time"
+          echo "❌ Client did not become healthy in time"
+          kill $LOGS_PID
+          exit 1
+
+      - name: Wait for Server to be ready
+        run: |
+          echo "Waiting for server to be healthy..."
+
+          docker logs -f hypertube-server-prod &
+          LOGS_PID=$!
+
+          for i in {1..60}; do
+            status=$(docker inspect --format='{{.State.Health.Status}}' hypertube-server-prod 2>/dev/null || echo "not found")
+            if [ "$status" == "healthy" ]; then
+              echo "✅ Server is healthy!"
+              kill $LOGS_PID
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "❌ Server did not become healthy in time"
           kill $LOGS_PID
           exit 1
 
       - name: Check all containers status
         run: |
-          containers="hypertube-prod hypertube-downloader-prod hypertube-scheduler-prod"
+          containers="hypertube-client-prod hypertube-server-prod hypertube-downloader-prod hypertube-scheduler-prod"
           max_attempts=2
           wait_time=10
 
