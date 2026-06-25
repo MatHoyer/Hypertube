@@ -27,8 +27,16 @@ export const postImage = async (
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  const webpBuffer = await sharp(buffer).webp().toBuffer();
+  let webpBuffer;
+  try {
+    const sharpImage = sharp(buffer);
+    await sharpImage.metadata();
 
+    webpBuffer = await sharpImage.webp().toBuffer();
+  } catch (e) {
+    if (e instanceof Error) return c.json({ error: e.message }, 400);
+    return c.json({ error: "Unexpected error" }, 400);
+  }
   const image = await prisma.image.create({ data: {} });
 
   await minio.putObject(
