@@ -23,10 +23,17 @@ export const getDateAsStringWithLocale = ({
 
 export const getNearDateWithLocale = ({
   date,
+  earlierDate,
   options,
 }: {
   date: Date;
+  earlierDate?: Date;
   options?: { includeSeconds?: boolean; addSuffix?: boolean };
 }) => {
-  return getNearDate(date, i18next.language as LanguageCode, options);
+  return getNearDate({
+    date,
+    earlierDate,
+    locale: i18next.language as LanguageCode,
+    options,
+  });
 };
