@@ -1,6 +1,11 @@
 import { TZDate } from "@date-fns/tz";
 import type { Locale } from "date-fns";
-import { format, formatDistanceToNow, intervalToDuration } from "date-fns";
+import {
+  addSeconds,
+  format,
+  formatDistance,
+  intervalToDuration,
+} from "date-fns";
 import { enUS, es, fr } from "date-fns/locale";
 import type { LanguageCode } from "../const/global.const.js";
 
@@ -68,12 +73,18 @@ export const getDateAsString = ({
   return format(date, DateFormats[type], { locale: dateFnsLocales[locale] });
 };
 
-export const getNearDate = (
-  date: Date,
-  locale: LanguageCode,
-  options?: { includeSeconds?: boolean; addSuffix?: boolean }
-) => {
-  return formatDistanceToNow(date, {
+export const getNearDate = ({
+  date,
+  earlierDate,
+  locale,
+  options,
+}: {
+  date: Date;
+  earlierDate?: Date;
+  locale: LanguageCode;
+  options?: { includeSeconds?: boolean; addSuffix?: boolean };
+}) => {
+  return formatDistance(date, earlierDate ?? addSeconds(new Date(), 1), {
     locale: dateFnsLocales[locale],
     addSuffix: options?.addSuffix ?? true,
     includeSeconds: options?.includeSeconds ?? true,
