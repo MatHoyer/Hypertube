@@ -34,6 +34,8 @@ import { useVideoPlayer } from "../contexts/video-player/video-player.context";
 import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 import SettingsButton from "./dropdown-menu-navigating/dropdown-menu-navigating";
 
+const serverUrl = import.meta.env.PUBLIC_SERVER_URL;
+
 const MiddleScreenInfo: React.FC<{
   type: "volume" | "play" | null;
 }> = ({ type }) => {
@@ -429,20 +431,27 @@ const VideoPlayer = () => {
             playsInline
             {...{ "webkit-playsinline": "" }}
             disableRemotePlayback
+            crossOrigin="use-credentials"
           >
             <source
-              src={getUrl(ROUTES.API.STREAMING_MOVIE_RESOLUTION, {
-                tmdbId,
-                resolutionId: selectedResolution.id,
-              })}
+              src={
+                serverUrl +
+                getUrl(ROUTES.API.STREAMING_MOVIE_RESOLUTION, {
+                  tmdbId,
+                  resolutionId: selectedResolution.id,
+                })
+              }
               type="video/mp4"
             />
             {selectedSubtitlesLanguage && (
               <track
-                src={getUrl(ROUTES.API.STREAMING_MOVIE_SUBTITLES, {
-                  tmdbId,
-                  subtitlesLanguage: selectedSubtitlesLanguage,
-                })}
+                src={
+                  serverUrl +
+                  getUrl(ROUTES.API.STREAMING_MOVIE_SUBTITLES, {
+                    tmdbId,
+                    subtitlesLanguage: selectedSubtitlesLanguage,
+                  })
+                }
                 kind="subtitles"
                 srcLang={selectedSubtitlesLanguage}
                 default
