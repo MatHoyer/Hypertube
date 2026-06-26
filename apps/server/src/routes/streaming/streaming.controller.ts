@@ -10,13 +10,13 @@ import {
   prisma,
 } from "@hypertube/server-core";
 import { Context } from "hono";
-import { buffer } from "node:stream/consumers";
 import { Readable } from "node:stream";
+import { buffer } from "node:stream/consumers";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import { isObjectNotFound, parseByteRange } from "./streaming.utils.js";
 
 export const getStreamingResolution = async (
-  c: Context<TUrlParamsParser<TGetStreamingResolutionSchemas["urlParams"]>>,
+  c: Context<TUrlParamsParser<TGetStreamingResolutionSchemas["urlParams"]>>
 ) => {
   const { movieId, resolutionId } = c.get("validatedUrlParams");
 
@@ -56,7 +56,7 @@ export const getStreamingResolution = async (
         {
           message: "Requested range not satisfiable",
         },
-        416,
+        416
       );
     }
 
@@ -74,7 +74,9 @@ export const getStreamingResolution = async (
     c.header("Content-Length", chunkSize.toString());
     c.header("Content-Type", "video/mp4");
 
-    return new Response(Readable.toWeb(fileStream) as BodyInit, { status: 206 });
+    return new Response(Readable.toWeb(fileStream) as BodyInit, {
+      status: 206,
+    });
   }
 
   const fileStream = await minio.getObject(BUCKETS.MOVIES, objectName);
@@ -85,7 +87,7 @@ export const getStreamingResolution = async (
 };
 
 export const getStreamingSubtitles = async (
-  c: Context<TUrlParamsParser<TGetStreamingSubtitlesSchemas["urlParams"]>>,
+  c: Context<TUrlParamsParser<TGetStreamingSubtitlesSchemas["urlParams"]>>
 ) => {
   const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
   const objectName = getSubtitlePath(
