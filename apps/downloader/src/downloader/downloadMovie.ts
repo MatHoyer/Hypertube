@@ -16,6 +16,7 @@ import {
 import { Job } from "bullmq";
 import ffmpeg from "fluent-ffmpeg";
 import * as fs from "fs";
+import { PassThrough } from "node:stream";
 import { buffer } from "node:stream/consumers";
 import path from "path";
 import { notifySubscribers } from "../notifications/notifySubscriber.js";
@@ -58,6 +59,124 @@ const VIDEO_EXTENSIONS = [
 
 type TorrentFile = { name: string; length?: number };
 
+type VideoMetadata = {
+  duration: number;
+  videoCodec?: string;
+  audioCodec?: string;
+  width?: number;
+  height?: number;
+  bitrate?: number;
+  formatName?: string;
+};
+
+const probeVideoMetadata = (filePath: string): Promise<VideoMetadata> => {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, FFPROBE_LOW_MEM, (err, metadata) => {
+      if (err) {
+        reject(
+          new Error(
+            `Failed to probe video metadata: ${formatUnknownError(err)}`
+          )
+        );
+        return;
+      }
+
+      const duration = metadata?.format?.duration;
+      if (
+        typeof duration !== "number" ||
+        !Number.isFinite(duration) ||
+        duration <= 0
+      ) {
+        reject(
+          new Error(`Invalid or missing video duration: ${String(duration)}`)
+        );
+        return;
+      }
+
+      const videoStream = metadata.streams?.find(
+        (stream) => stream.codec_type === "video"
+      );
+      const audioStream = metadata.streams?.find(
+        (stream) => stream.codec_type === "audio"
+      );
+      const bitrate = metadata.format?.bit_rate;
+
+      resolve({
+        duration,
+        videoCodec: videoStream?.codec_name,
+        audioCodec: audioStream?.codec_name,
+        width: videoStream?.width,
+        height: videoStream?.height,
+        bitrate:
+          typeof bitrate === "string"
+            ? Number.parseInt(bitrate, 10)
+            : typeof bitrate === "number"
+              ? bitrate
+              : undefined,
+        formatName: metadata.format?.format_name,
+      });
+    });
+  });
+};
+
+const buildMovieObjectMetadata = ({
+  videoMetadata,
+  movie,
+  resolutionId,
+  resolution,
+  sourceFilename,
+  sourceSizeBytes,
+}: {
+  videoMetadata: VideoMetadata;
+  movie: TMovieSchema;
+  resolutionId: string;
+  resolution: {
+    resolution: string;
+    indexerName: string;
+    infoHash: string | null;
+  };
+  sourceFilename: string;
+  sourceSizeBytes: number;
+}): Record<string, string> => {
+  const metadata: Record<string, string> = {
+    "Content-Type": "video/mp4",
+    duration: videoMetadata.duration.toFixed(3),
+    "tmdb-id": String(movie.tmdbId),
+    "resolution-id": resolutionId,
+    resolution: resolution.resolution,
+    "indexer-name": resolution.indexerName,
+    "source-filename": sourceFilename,
+    "source-size-bytes": String(sourceSizeBytes),
+  };
+
+  if (movie.imdbId) {
+    metadata["imdb-id"] = movie.imdbId;
+  }
+  if (resolution.infoHash) {
+    metadata["info-hash"] = resolution.infoHash;
+  }
+  if (videoMetadata.videoCodec) {
+    metadata["video-codec"] = videoMetadata.videoCodec;
+  }
+  if (videoMetadata.audioCodec) {
+    metadata["audio-codec"] = videoMetadata.audioCodec;
+  }
+  if (videoMetadata.width) {
+    metadata.width = String(videoMetadata.width);
+  }
+  if (videoMetadata.height) {
+    metadata.height = String(videoMetadata.height);
+  }
+  if (videoMetadata.bitrate) {
+    metadata["bitrate-bps"] = String(videoMetadata.bitrate);
+  }
+  if (videoMetadata.formatName) {
+    metadata["source-format"] = videoMetadata.formatName;
+  }
+
+  return metadata;
+};
+
 const isVideoFile = (filename: string): boolean => {
   const lower = filename.toLowerCase();
   return VIDEO_EXTENSIONS.some((ext) => lower.endsWith(ext));
@@ -81,37 +200,9 @@ const findMainVideoFile = (files: TorrentFile[]): TorrentFile | undefined => {
   );
 };
 
-const checkFileReadability = async (filePath: string) => {
-  return new Promise<boolean>((resolve) => {
-    ffmpeg.ffprobe(filePath, FFPROBE_LOW_MEM, (err, metadata) => {
-      if (err) {
-        hypertubeLogger.error(
-          `File is NOT readable by ffmpeg: ${formatUnknownError(err)}`
-        );
-        resolve(false);
-      } else {
-        const duration = metadata?.format?.duration;
-        const hasValidDuration =
-          typeof duration === "number" &&
-          Number.isFinite(duration) &&
-          duration > 0;
-        if (!hasValidDuration) {
-          hypertubeLogger.info(
-            `File readable but no valid duration yet (incomplete?): duration=${String(duration)}`
-          );
-          resolve(false);
-        } else {
-          hypertubeLogger.info(`File is readable, duration: ${duration}s`);
-          resolve(true);
-        }
-      }
-    });
-  });
-};
-
 const convertMovie = (
   input: { path: string },
-  output: { path: string },
+  output: PassThrough,
   handler?: {
     onStart?: () => Promise<void>;
     onProgress?: (progress: { percent: number }) => Promise<void>;
@@ -121,14 +212,7 @@ const convertMovie = (
 ): Promise<void> => {
   return new Promise((resolvePromise, rejectPromise) => {
     const run = async () => {
-      const isReadable = await checkFileReadability(input.path);
-      if (!isReadable) {
-        rejectPromise(new Error("File is not readable"));
-        return;
-      }
-
       ffmpeg(input.path)
-        .output(output.path)
         .inputOptions([
           "-fflags",
           "+genpts",
@@ -148,10 +232,11 @@ const convertMovie = (
           "-max_muxing_queue_size",
           "256",
           "-movflags",
-          "+faststart",
+          "frag_keyframe+empty_moov+default_base_moof",
         ])
-        .on("start", async () => {
-          hypertubeLogger.info(`Conversion started`);
+        .format("mp4")
+        .on("start", async (commandLine) => {
+          hypertubeLogger.info(`Conversion started: ${commandLine}`);
           await handler?.onStart?.();
         })
         .on("progress", async (progress) => {
@@ -174,7 +259,7 @@ const convertMovie = (
             error instanceof Error ? error : new Error(String(error))
           );
         })
-        .run();
+        .pipe(output, { end: true });
     };
 
     void run();
@@ -184,18 +269,18 @@ const convertMovie = (
 const uploadSubtitle = async ({
   movie,
   language,
-  vttPath,
+  vttStream,
   downloadLink,
 }: {
   movie: TMovieSchema;
   language: string;
-  vttPath: string;
+  vttStream: PassThrough;
   downloadLink: string;
 }) => {
   await minio.putObject(
     BUCKETS.SUBTITLES,
     getSubtitlePath(movie.tmdbId.toString(), language, "subtitles.vtt"),
-    await fs.promises.readFile(vttPath)
+    vttStream
   );
 
   await prisma.subtitle.upsert({
@@ -225,19 +310,18 @@ const handleSidecarSubtitleFile = async (
   await waitFile(target, WAIT_SUBTITLE_TIMEOUT);
 
   const language = formatSidecarSubtitleLanguage(subtitleFile.name);
-  const subtitleDir = `/downloads-transmission/${movie.tmdbId}/subtitles/${language}`;
-  const vttPath = `${subtitleDir}/subtitles.vtt`;
+  const uploadStream = new PassThrough();
 
-  hypertubeLogger.info(`Converting sidecar subtitle to VTT at ${vttPath}`);
-  await fs.promises.mkdir(subtitleDir, { recursive: true });
-  await convertSubtitleFileToVtt(target, vttPath);
-
-  await uploadSubtitle({
-    movie,
-    language,
-    vttPath,
-    downloadLink: subtitleFile.name,
-  });
+  hypertubeLogger.info(`Converting sidecar subtitle to VTT: ${subtitleFile.name}`);
+  await Promise.all([
+    convertSubtitleFileToVtt(target, uploadStream),
+    uploadSubtitle({
+      movie,
+      language,
+      vttStream: uploadStream,
+      downloadLink: subtitleFile.name,
+    }),
+  ]);
 };
 
 export const downloadMovie = async (job: Job<TDownloadJobData>) => {
@@ -374,43 +458,64 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
               return;
             }
 
-            const moviePath = downloadDir + "/movie.mp4";
-
             try {
-              const subtitlesDir = `/downloads-transmission/${movie.tmdbId}/subtitles`;
+              const movieObjectPath = getMoviePath(
+                movie.tmdbId.toString(),
+                resolutionId,
+                "movie.mp4"
+              );
+              const videoMetadata = await probeVideoMetadata(endFile);
+              const movieMetadata = buildMovieObjectMetadata({
+                videoMetadata,
+                movie,
+                resolutionId,
+                resolution: dbResolution,
+                sourceFilename: videoFile.name,
+                sourceSizeBytes: endFileStat.size,
+              });
+              hypertubeLogger.info(
+                `Uploading movie with metadata: duration=${movieMetadata.duration}s, resolution=${movieMetadata.resolution}`
+              );
+              const uploadStream = new PassThrough();
 
-              await convertMovie({ path: endFile }, { path: moviePath });
-              await Promise.allSettled([
-                handleEmbeddedSubtitles({
-                  videoPath: endFile,
-                  videoFileName: videoFile.name,
-                  subtitlesDir,
-                  onSubtitle: async ({ language, vttPath, downloadLink }) => {
-                    await uploadSubtitle({
-                      movie,
+              await Promise.all([
+                convertMovie({ path: endFile }, uploadStream),
+                minio.putObject(
+                  BUCKETS.MOVIES,
+                  movieObjectPath,
+                  uploadStream,
+                  undefined,
+                  movieMetadata
+                ),
+                Promise.allSettled([
+                  handleEmbeddedSubtitles({
+                    videoPath: endFile,
+                    videoFileName: videoFile.name,
+                    onSubtitle: async ({
                       language,
-                      vttPath,
+                      vttStream,
                       downloadLink,
-                    });
-                  },
-                }),
+                    }) => {
+                      await uploadSubtitle({
+                        movie,
+                        language,
+                        vttStream,
+                        downloadLink,
+                      });
+                    },
+                  }),
+                ]),
               ]);
 
-              const movieStat = await fs.promises.stat(moviePath);
-              if (movieStat.size === 0) {
-                throw new Error(`Converted movie file is empty: ${moviePath}`);
-              }
-              await minio.putObject(
+              const uploadedStat = await minio.statObject(
                 BUCKETS.MOVIES,
-                getMoviePath(movie.tmdbId.toString(), resolutionId, "movie.mp4"),
-                fs.createReadStream(moviePath),
-                movieStat.size
+                movieObjectPath
               );
-
-              await fs.promises.rm(downloadDir, {
-                recursive: true,
-                force: true,
-              });
+              if (uploadedStat.size === 0) {
+                throw new Error(
+                  `Uploaded movie file is empty: ${movieObjectPath}`
+                );
+              }
 
               resolve();
             } catch (err) {

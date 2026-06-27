@@ -1,6 +1,7 @@
 import { formatUnknownError, hypertubeLogger } from "@hypertube/libs";
 import ffmpeg from "fluent-ffmpeg";
 import * as fs from "fs";
+import { PassThrough } from "node:stream";
 import * as path from "path";
 
 export const FFPROBE_LOW_MEM = [
@@ -53,46 +54,46 @@ export const probeSubtitleStreams = (
 export const extractEmbeddedSubtitleToVtt = (
   videoPath: string,
   streamIndex: number,
-  outputPath: string
+  output: PassThrough
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
     ffmpeg(videoPath)
-      .output(outputPath)
       .outputOptions(["-map", `0:${streamIndex}`, "-c:s", "webvtt"])
+      .format("webvtt")
       .on("end", () => resolve())
       .on("error", (error) => reject(error))
-      .run();
+      .pipe(output, { end: true });
   });
 };
 
 export const convertSubtitleFileToVtt = (
   inputPath: string,
-  outputPath: string
+  output: PassThrough
 ): Promise<void> => {
   const ext = path.extname(inputPath).toLowerCase();
   if (ext === ".srt") {
-    return convertSrtFileToVtt(inputPath, outputPath);
+    return convertSrtFileToVtt(inputPath, output);
   }
 
   return new Promise((resolve, reject) => {
     ffmpeg(inputPath)
-      .output(outputPath)
       .outputOptions(["-c:s", "webvtt"])
+      .format("webvtt")
       .on("end", () => resolve())
       .on("error", (error) => reject(error))
-      .run();
+      .pipe(output, { end: true });
   });
 };
 
 const convertSrtFileToVtt = async (
   srtPath: string,
-  vttPath: string
+  output: PassThrough
 ): Promise<void> => {
   const srtData = await fs.promises.readFile(srtPath, "utf8");
   let vttData =
     "WEBVTT\n\n" + srtData.replace(/(\d+:\d+:\d+),(\d+)/g, "$1.$2");
   vttData = vttData.replace(/^\d+\s*[\r\n]+/gm, "");
-  await fs.promises.writeFile(vttPath, vttData, { encoding: "utf8", flag: "w" });
+  output.end(vttData);
 };
 
 export const formatEmbeddedSubtitleLanguage = (
@@ -117,15 +118,13 @@ export const formatSidecarSubtitleLanguage = (filename: string): string => {
 export const handleEmbeddedSubtitles = async ({
   videoPath,
   videoFileName,
-  subtitlesDir,
   onSubtitle,
 }: {
   videoPath: string;
   videoFileName: string;
-  subtitlesDir: string;
   onSubtitle: (params: {
     language: string;
-    vttPath: string;
+    vttStream: PassThrough;
     downloadLink: string;
   }) => Promise<void>;
 }): Promise<void> => {
@@ -139,19 +138,16 @@ export const handleEmbeddedSubtitles = async ({
     `${streams.length} embedded subtitle stream(s) found in ${videoFileName}`
   );
 
-  await fs.promises.mkdir(subtitlesDir, { recursive: true });
-
   for (const [i, stream] of streams.entries()) {
     const language = formatEmbeddedSubtitleLanguage(stream, i + 1);
-    const safeLanguage = language.replace(/[/\\]/g, "-");
-    const subtitleDir = path.join(subtitlesDir, safeLanguage);
-    const vttPath = path.join(subtitleDir, "subtitles.vtt");
     const downloadLink = `embedded:${videoFileName}:s:${stream.index}`;
+    const uploadStream = new PassThrough();
 
     try {
-      await fs.promises.mkdir(subtitleDir, { recursive: true });
-      await extractEmbeddedSubtitleToVtt(videoPath, stream.index, vttPath);
-      await onSubtitle({ language, vttPath, downloadLink });
+      await Promise.all([
+        extractEmbeddedSubtitleToVtt(videoPath, stream.index, uploadStream),
+        onSubtitle({ language, vttStream: uploadStream, downloadLink }),
+      ]);
       hypertubeLogger.info(
         `Embedded subtitle extracted: ${language} (${stream.codecName})`
       );
