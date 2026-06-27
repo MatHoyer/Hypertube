@@ -28,6 +28,7 @@ import React, {
   useRef,
   useState,
   type ComponentProps,
+  type MouseEvent,
 } from "react";
 import { useTranslation } from "react-i18next";
 import { useVideoPlayer } from "../contexts/video-player/video-player.context";
@@ -187,6 +188,11 @@ const Timer = () => {
   );
 };
 
+type TPreview = {
+  positionX: number;
+  percent: number;
+};
+
 const ProgressBar: React.FC<ComponentProps<"div">> = ({
   className,
   ...props
@@ -194,12 +200,23 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
   const { progress, bufferedProgress, handleSeek, selectedResolution } =
     useVideoPlayer();
 
+  const [preview, setPreview] = useState<TPreview | null>(null);
+
   const isExplorable = useMemo(() => {
     return (
       selectedResolution &&
       selectedResolution.downloadState === DownloadStates.DOWNLOADED
     );
   }, [selectedResolution]);
+
+  const handleMouseMove = (e: MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+
+    const mouseX = e.clientX - rect.left;
+    const percent = (mouseX / rect.width) * 100;
+
+    setPreview({ positionX: mouseX, percent: Math.floor(percent) });
+  };
 
   return (
     <div className={cn("flex items-center w-full", className)} {...props}>
@@ -224,12 +241,27 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
           value={progress}
         />
 
+        {preview && (
+          <div
+            style={{
+              position: "absolute",
+              left: preview?.positionX,
+              top: -30,
+              transform: "translateX(-50%)",
+            }}
+          >
+            {preview.percent}
+          </div>
+        )}
+
         <input
           type="range"
           min="0"
           max="100"
           step="0.1"
           value={progress}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={() => setPreview(null)}
           onChange={(e) => handleSeek(e.target.valueAsNumber)}
           className={cn(
             "absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10",
