@@ -23,8 +23,8 @@ export const getStoragePath = <T extends TItemType>(
 };
 
 export const getMoviePreviewsPath = (movieId: string) => {
-  return `${getMovieRootPath(movieId)}/previews/`;
+  return `${getMovieRootPath(movieId)}/`;
 };
 export const getMoviePreviewPath = (movieId: string, filename: string) => {
-  return `${getMovieRootPath(movieId)}/previews/${filename}`;
+  return `${getMovieRootPath(movieId)}/${filename}`;
 };
