@@ -7,6 +7,7 @@ import {
 } from "@hypertube/server-core";
 import ffmpeg from "fluent-ffmpeg";
 import * as fs from "fs";
+import Stream from "stream";
 
 type TpreviewMetadata = {
   duration: number;
@@ -28,39 +29,21 @@ const hasMoviePreview = async (movieId: string) => {
   }
 };
 
-const getDuration = (url: string): Promise<number> => {
-  return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(url, (err, metadata) => {
-      if (err) return reject(err);
-
-      const duration = metadata.format.duration;
-      if (!duration) return reject(new Error("No duration found"));
-
-      resolve(duration);
-    });
-  });
-};
-
 const downloadMoviePreview = ({
   movieId,
-  inputPath,
+  stream,
   outputDir,
   metadata,
 }: {
   movieId: string;
-  inputPath: string;
+  stream: Stream.Readable;
   outputDir: string;
   metadata: TpreviewMetadata;
 }) => {
   const count = metadata.cols * metadata.rows;
 
   return new Promise<void>((resolve, reject) => {
-    ffmpeg(inputPath)
-      .inputOptions([
-        "-reconnect 1",
-        "-reconnect_streamed 1",
-        "-reconnect_delay_max 5",
-      ])
+    ffmpeg(stream)
       .outputOptions([
         "-vf",
         `fps=${count / metadata.duration},scale=240:-1,tile=${metadata.cols}x${metadata.rows}`,
@@ -82,7 +65,7 @@ const downloadMoviePreview = ({
         hypertubeLogger.info(`Finish download preview for : ${movieId}`);
         resolve();
       })
-      .on("error", () => reject())
+      .on("error", reject)
       .run();
   });
 };
@@ -94,27 +77,15 @@ const putPreviewToObjectStockage = async (
 ) => {
   hypertubeLogger.info(`Put preview on object storage for : ${movieId}`);
   try {
-    const json = JSON.stringify(metadata);
-    const buffer = Buffer.from(json);
-
     const stat = await fs.promises.stat(filepath);
 
-    await Promise.all([
-      minio.putObject(
-        BUCKETS.MOVIES,
-        getMoviePreviewPath(movieId, "preview.jpg"),
-        fs.createReadStream(filepath),
-        stat.size,
-        { "Content-Type": "image/jpeg" }
-      ),
-      minio.putObject(
-        BUCKETS.MOVIES,
-        getMoviePreviewPath(movieId, "preview.json"),
-        buffer,
-        buffer.length,
-        { "Content-Type": "application/json" }
-      ),
-    ]);
+    await minio.putObject(
+      BUCKETS.MOVIES,
+      getMoviePreviewPath(movieId, "preview.jpg"),
+      fs.createReadStream(filepath),
+      stat.size,
+      { "Content-Type": "image/jpeg", ...metadata }
+    );
   } catch (e) {
     hypertubeLogger.error("Preview upload failed");
     throw e;
@@ -128,7 +99,7 @@ export const downloadMoviePreviews = async (
 ): Promise<string[] | undefined> => {
   if (await hasMoviePreview(movieId)) return;
 
-  const inputPath = await minio.presignedGetObject(
+  const stream = await minio.getObject(
     BUCKETS.MOVIES,
     getMoviePath(movieId, resolutionId, filename)
   );
@@ -136,15 +107,19 @@ export const downloadMoviePreviews = async (
   const outputDir = `${dir}/previews`;
   await fs.promises.mkdir(outputDir, { recursive: true });
 
-  const duration = await getDuration(inputPath);
+  const { metaData } = await minio.statObject(
+    BUCKETS.MOVIES,
+    getMoviePath(movieId, resolutionId, filename)
+  );
+
   const metadata: TpreviewMetadata = {
-    duration,
+    duration: metaData.duration,
     cols: 10,
     rows: 10,
     width: 240,
     height: -1,
   };
 
-  await downloadMoviePreview({ movieId, inputPath, outputDir, metadata });
+  await downloadMoviePreview({ movieId, stream, outputDir, metadata });
   await fs.promises.rm(dir, { recursive: true, force: true });
 };
