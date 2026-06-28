@@ -44,6 +44,7 @@ const downloadMoviePreview = ({
 
   return new Promise<void>((resolve, reject) => {
     ffmpeg(stream)
+      .inputOptions(["-threads", "1"])
       .outputOptions([
         "-vf",
         `fps=${count / metadata.duration},scale=240:-1,tile=${metadata.cols}x${metadata.rows}`,

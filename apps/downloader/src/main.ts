@@ -34,7 +34,7 @@ const worker = new Worker<TDownloadJobData>(
         throw new Error(`Unknown job name: ${job.name}`);
     }
   },
-  { connection, concurrency: 5, lockDuration: 3600000 }
+  { connection, concurrency: 1, lockDuration: 3600000 }
 );
 
 hypertubeLogger.info(`Downloader worker started`);
