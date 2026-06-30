@@ -46,4 +46,18 @@ export type VideoPlayerContextType = {
 
   selectedSubtitlesLanguage: string | null | undefined;
   setSelectedSubtitlesLanguage: (language: string | null) => void;
+
+  previewImage:
+    | {
+        previewUrl: string;
+        bitmap: ImageBitmap;
+        metadata: {
+          duration: number;
+          cols: number;
+          rows: number;
+          width: number;
+          height: number;
+        };
+      }
+    | undefined;
 };

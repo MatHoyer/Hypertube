@@ -190,6 +190,10 @@ const Timer = () => {
 
 type TPreview = {
   positionX: number;
+  x: number;
+  y: number;
+  tileWidth: number;
+  tileHeight: number;
   percent: number;
 };
 
@@ -197,8 +201,13 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
   className,
   ...props
 }) => {
-  const { progress, bufferedProgress, handleSeek, selectedResolution } =
-    useVideoPlayer();
+  const {
+    progress,
+    bufferedProgress,
+    handleSeek,
+    selectedResolution,
+    previewImage,
+  } = useVideoPlayer();
 
   const [preview, setPreview] = useState<TPreview | null>(null);
 
@@ -210,12 +219,27 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
   }, [selectedResolution]);
 
   const handleMouseMove = (e: MouseEvent) => {
+    if (!previewImage) return;
     const rect = e.currentTarget.getBoundingClientRect();
 
     const mouseX = e.clientX - rect.left;
-    const percent = (mouseX / rect.width) * 100;
+    const percent = Math.floor((mouseX / rect.width) * 100);
 
-    setPreview({ positionX: mouseX, percent: Math.floor(percent) });
+    const x = percent % previewImage.metadata.cols;
+    const y = Math.floor(percent / previewImage.metadata.rows);
+
+    const tileWidth = previewImage.metadata.width;
+    // const tileHeight = previewImage.metadata.height;
+    const tileHeight = 135;
+
+    setPreview({
+      positionX: mouseX - previewImage.metadata.width / 2,
+      x,
+      y,
+      tileWidth,
+      tileHeight,
+      percent: percent,
+    });
   };
 
   return (
@@ -241,17 +265,19 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
           value={progress}
         />
 
-        {preview && (
+        {preview && previewImage && (
           <div
             style={{
               position: "absolute",
-              left: preview?.positionX,
-              top: -30,
-              transform: "translateX(-50%)",
+              left: preview.positionX,
+              top: -(preview.tileHeight + 5),
+              width: preview.tileWidth,
+              height: preview.tileHeight,
+              backgroundImage: `url(${previewImage.previewUrl})`,
+              backgroundPosition: `-${preview.x * preview.tileWidth}px -${preview.y * preview.tileHeight}px`,
+              backgroundSize: `${preview.tileWidth * previewImage.metadata.cols}px ${preview.tileHeight * previewImage.metadata.rows}px`,
             }}
-          >
-            {preview.percent}
-          </div>
+          />
         )}
 
         <input
