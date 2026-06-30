@@ -96,6 +96,7 @@ export const getMovieSchemas = {
       likesNumber: z.number().int().nonnegative(),
       isLikedByUser: z.boolean(),
       watchedTimestamp: z.number().int().nonnegative(),
+      preview: z.url(),
     })
     .nullable(),
 };

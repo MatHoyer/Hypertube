@@ -26,8 +26,9 @@ import type { Speed } from "./video-player.type";
 export const VideoPlayerProvider: React.FC<{
   watchedTimestamp: number;
   setWatchedTimestamp: (timestamp: number) => void;
+  previewUrl: string;
   children: React.ReactNode;
-}> = ({ watchedTimestamp, setWatchedTimestamp, children }) => {
+}> = ({ watchedTimestamp, setWatchedTimestamp, previewUrl, children }) => {
   const { isMobile } = useIsMobile();
   const { i18n } = useTranslation();
 
@@ -283,6 +284,40 @@ export const VideoPlayerProvider: React.FC<{
     ]
   );
 
+  const [previewImage, setPreviewImage] = useState<{
+    previewUrl: string;
+    bitmap: ImageBitmap;
+    metadata: {
+      duration: number;
+      cols: number;
+      rows: number;
+      width: number;
+      height: number;
+    };
+  }>();
+
+  useEffect(() => {
+    const getPreviewImage = async () => {
+      const response = await fetch(previewUrl);
+      const blob = await response.blob();
+      const bitmap = await createImageBitmap(blob);
+      const headers = response.headers;
+
+      setPreviewImage({
+        previewUrl,
+        bitmap,
+        metadata: {
+          duration: Number(headers.get("x-amz-meta-duration")),
+          cols: Number(headers.get("x-amz-meta-cols")),
+          rows: Number(headers.get("x-amz-meta-rows")),
+          width: Number(headers.get("x-amz-meta-width")),
+          height: Number(headers.get("x-amz-meta-height")),
+        },
+      });
+    };
+    getPreviewImage();
+  }, [previewUrl]);
+
   return (
     <VideoPlayerContext.Provider
       value={{
@@ -328,6 +363,8 @@ export const VideoPlayerProvider: React.FC<{
 
         selectedSubtitlesLanguage: userSelectedSubtitlesLanguage,
         setSelectedSubtitlesLanguage,
+
+        previewImage,
       }}
     >
       {children}

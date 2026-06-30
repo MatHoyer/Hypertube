@@ -26,14 +26,19 @@ import {
   TResolutionSchema,
   typedKeys,
 } from "@hypertube/libs";
-import { prisma } from "@hypertube/server-core";
+import {
+  BUCKETS,
+  getMoviePreviewPath,
+  minio,
+  prisma,
+} from "@hypertube/server-core";
 import { Context } from "hono";
 import { streamSSE } from "hono/streaming";
 import i18next from "i18next";
 import z from "zod";
-import { TmdbApi } from "../../lib/apis/tmdb.api";
 import { ProwlarrApi } from "../../lib/apis/prowlarr.api";
 import { SubtitleProxyApi } from "../../lib/apis/subtitle-proxy.api";
+import { TmdbApi } from "../../lib/apis/tmdb.api";
 import { downloadTorrent } from "../../lib/downloader/downloadTorrent";
 import { TSupportedLanguage } from "../../lib/i18n/utils";
 import { TBodyParser } from "../../middlewares/bodyParser";
@@ -179,6 +184,11 @@ export const getMovie = async (
   });
   const watchedTimestamp = watchTimer ? watchTimer.timestamp : 0;
 
+  const preview = await minio.presignedGetObject(
+    BUCKETS.MOVIES,
+    getMoviePreviewPath(String(tmdbId), "preview.jpg")
+  );
+
   return c.json(
     getMovieSchemas.response.parse({
       details: tmdbMovie,
@@ -187,6 +197,7 @@ export const getMovie = async (
       likesNumber,
       isLikedByUser,
       watchedTimestamp,
+      preview,
     }),
     200
   );
