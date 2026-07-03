@@ -16,6 +16,6 @@
       "@hypertube/server-core": ["../../packages/server-core/src"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "../../packages/server-core/src/queues"],
   "exclude": ["node_modules", "dist", "__tests__", "vitest.config.ts"]
 }

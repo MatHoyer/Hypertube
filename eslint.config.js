@@ -69,7 +69,14 @@ export default tseslint.config([
 
   // Server/Node specific config
   {
-    files: ["apps/server/**/*.{ts,js}"],
+    files: [
+      "apps/server/**/*.{ts,js}",
+      "apps/downloader/**/*.{ts,js}",
+      "apps/scheduler/**/*.{ts,js}",
+      "apps/subtitle-proxy/**/*.{ts,js}",
+      "packages/libs/**/*.{ts,js}",
+      "packages/server-core/**/*.{ts,js}",
+    ],
     ...baseConfig,
     languageOptions: {
       ...baseConfig.languageOptions,

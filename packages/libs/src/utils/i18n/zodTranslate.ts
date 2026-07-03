@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import type { TFunction } from "i18next";
 import z from "zod";
@@ -30,7 +31,7 @@ export const zodTranslate = (t: TFunction) => {
 
       if (issue.code === "custom") {
         const customCode = issue.path?.pop();
-        errorKey = `zod.${issue.code}.${customCode}`;
+        errorKey = `zod.${issue.code}.${customCode.toString()}`;
       }
 
       switch (issue.code) {
