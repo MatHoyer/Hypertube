@@ -8,7 +8,7 @@ type TQueueJobData = {
   [MOVIE_QUEUE]: TDownloadJobData;
 };
 type TQueueJobName = {
-  [MOVIE_QUEUE]: "download";
+  [MOVIE_QUEUE]: "download-movie";
 };
 
 export class BullMQ<T extends TQueueName> {

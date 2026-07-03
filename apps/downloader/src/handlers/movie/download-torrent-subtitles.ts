@@ -36,8 +36,9 @@ export const probeSubtitleStreams = (
       }
 
       const streams =
-        metadata?.streams?.filter((stream) => stream.codec_type === "subtitle") ??
-        [];
+        metadata?.streams?.filter(
+          (stream) => stream.codec_type === "subtitle"
+        ) ?? [];
 
       resolve(
         streams.map((stream) => ({
@@ -90,8 +91,7 @@ const convertSrtFileToVtt = async (
   output: PassThrough
 ): Promise<void> => {
   const srtData = await fs.promises.readFile(srtPath, "utf8");
-  let vttData =
-    "WEBVTT\n\n" + srtData.replace(/(\d+:\d+:\d+),(\d+)/g, "$1.$2");
+  let vttData = "WEBVTT\n\n" + srtData.replace(/(\d+:\d+:\d+),(\d+)/g, "$1.$2");
   vttData = vttData.replace(/^\d+\s*[\r\n]+/gm, "");
   output.end(vttData);
 };

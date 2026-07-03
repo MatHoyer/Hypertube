@@ -1,18 +1,13 @@
-import {
-  DownloadStates,
-  formatUnknownError,
-  hypertubeLogger,
-} from "@hypertube/libs";
-import {
-  env,
-  MOVIE_QUEUE,
-  prisma,
-  TDownloadJobData,
-} from "@hypertube/server-core";
+import { hypertubeLogger } from "@hypertube/libs";
+import { env, MOVIE_QUEUE, TDownloadJobData } from "@hypertube/server-core";
+import { MOVIE_QUEUE_JOB_NAMES } from "@hypertube/server-core/src/redis/const.js";
 import { Job, Worker } from "bullmq";
 import { Redis } from "ioredis";
-import { downloadMovie } from "./downloader/downloadMovie.js";
-import { notifySubscribers } from "./notifications/notifySubscriber.js";
+import {
+  downloadMovieFailureHandler,
+  downloadMovieHandler,
+  downloadMovieSuccessHandler,
+} from "./handlers/movie/download-movie.handler.js";
 import { gracefulShutdown } from "./shutdown.js";
 
 const connection = new Redis({
@@ -23,10 +18,13 @@ const connection = new Redis({
 
 const worker = new Worker<TDownloadJobData>(
   MOVIE_QUEUE,
-  async (job: Job<TDownloadJobData>) => {
-    hypertubeLogger.info(`[${job.data.movie.id}] Download torrent job started`);
-
-    return downloadMovie(job);
+  async (job: Job) => {
+    switch (job.name) {
+      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
+        return downloadMovieHandler(job);
+      default:
+        throw new Error(`Unknown job name: ${job.name}`);
+    }
   },
   { connection, concurrency: 5, lockDuration: 3600000 }
 );
@@ -40,42 +38,24 @@ process
 
 // Handle completed jobs
 worker.on("completed", async (job) => {
-  hypertubeLogger.info(`[${job.data.movie.id}] Moviedownload success`);
-
-  await prisma.resolution.update({
-    where: {
-      id: job.data.resolutionId,
-    },
-    data: {
-      downloadState: DownloadStates.DOWNLOADED,
-    },
-  });
-  try {
-    await notifySubscribers(job.data.movie.id, DownloadStates.DOWNLOADED);
-  } catch (error) {
-    hypertubeLogger.error(
-      `Error sending movie downloaded notification: ${formatUnknownError(error)}`
-    );
+  switch (job.name) {
+    case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
+      return downloadMovieSuccessHandler(job);
+    default:
+      throw new Error(`Unknown job name: ${job.name}`);
   }
 });
 
 worker.on("failed", async (job, err) => {
-  hypertubeLogger.error(
-    `[${job?.data.movie.id}] Movie download failed: ${formatUnknownError(err)}`
-  );
-  if (!job?.data.movie.id || !job?.data.resolutionId) {
-    hypertubeLogger.error(
-      `[${job?.data.movie.id}] Can't update movie resolution download state : No movieId or resolutionId`
-    );
+  if (!job) {
+    hypertubeLogger.error("Job not found");
     return;
   }
 
-  await prisma.resolution.update({
-    where: {
-      id: job.data.resolutionId,
-    },
-    data: {
-      downloadState: DownloadStates.NOT_DOWNLOADED,
-    },
-  });
+  switch (job.name) {
+    case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
+      return downloadMovieFailureHandler(job, err);
+    default:
+      throw new Error(`Unknown job name: ${job.name}`);
+  }
 });
