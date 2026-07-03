@@ -293,6 +293,8 @@ export const VideoPlayerProvider: React.FC<{
       rows: number;
       width: number;
       height: number;
+      tileWidth: number;
+      tileHeight: number;
     };
   }>();
 
@@ -312,6 +314,8 @@ export const VideoPlayerProvider: React.FC<{
           rows: Number(headers.get("x-amz-meta-rows")),
           width: Number(headers.get("x-amz-meta-width")),
           height: Number(headers.get("x-amz-meta-height")),
+          tileWidth: Number(headers.get("x-amz-meta-tileWidth")),
+          tileHeight: Number(headers.get("x-amz-meta-tileHeight")),
         },
       });
     };

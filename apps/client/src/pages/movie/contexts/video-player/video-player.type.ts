@@ -3,6 +3,16 @@ import type { KeyboardEvent } from "react";
 
 export type Speed = 0.5 | 1 | 1.5 | 2;
 
+type TpreviewMetadata = {
+  duration: number;
+  cols: number;
+  rows: number;
+  width: number;
+  height: number;
+  tileWidth: number;
+  tileHeight: number;
+};
+
 export type VideoPlayerContextType = {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   setVideoRef: (ref: HTMLVideoElement) => void;
@@ -47,17 +57,9 @@ export type VideoPlayerContextType = {
   selectedSubtitlesLanguage: string | null | undefined;
   setSelectedSubtitlesLanguage: (language: string | null) => void;
 
-  previewImage:
-    | {
-        previewUrl: string;
-        bitmap: ImageBitmap;
-        metadata: {
-          duration: number;
-          cols: number;
-          rows: number;
-          width: number;
-          height: number;
-        };
-      }
-    | undefined;
+  previewImage?: {
+    previewUrl: string;
+    bitmap: ImageBitmap;
+    metadata: TpreviewMetadata;
+  };
 };
