@@ -25,6 +25,7 @@ import {
   formatSidecarSubtitleLanguage,
   handleEmbeddedSubtitles,
   isSidecarSubtitle,
+  VideoMetadata,
 } from "./download-torrent-subtitles.js";
 import { downloader, TransmissionTorrent } from "./transmission.client.js";
 

@@ -1,16 +1,12 @@
-import type { TResolutionSchema } from "@hypertube/libs";
+import type { TpreviewMetadata, TResolutionSchema } from "@hypertube/libs";
 import type { KeyboardEvent } from "react";
 
 export type Speed = 0.5 | 1 | 1.5 | 2;
 
-type TpreviewMetadata = {
-  duration: number;
-  cols: number;
-  rows: number;
-  width: number;
-  height: number;
-  tileWidth: number;
-  tileHeight: number;
+export type TPreview = {
+  previewUrl: string;
+  bitmap: ImageBitmap;
+  metadata: TpreviewMetadata;
 };
 
 export type VideoPlayerContextType = {
@@ -57,9 +53,5 @@ export type VideoPlayerContextType = {
   selectedSubtitlesLanguage: string | null | undefined;
   setSelectedSubtitlesLanguage: (language: string | null) => void;
 
-  previewImage?: {
-    previewUrl: string;
-    bitmap: ImageBitmap;
-    metadata: TpreviewMetadata;
-  };
+  previewImage: TPreview | undefined;
 };

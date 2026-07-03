@@ -21,7 +21,7 @@ import { useResolutions } from "../resolutions/resolutions.context";
 import { useSubtitles } from "../subtitles/subtitles.context";
 import { usedKeys } from "./video-player.const";
 import { VideoPlayerContext } from "./video-player.context";
-import type { Speed } from "./video-player.type";
+import type { Speed, TPreview } from "./video-player.type";
 
 export const VideoPlayerProvider: React.FC<{
   watchedTimestamp: number;
@@ -284,19 +284,7 @@ export const VideoPlayerProvider: React.FC<{
     ]
   );
 
-  const [previewImage, setPreviewImage] = useState<{
-    previewUrl: string;
-    bitmap: ImageBitmap;
-    metadata: {
-      duration: number;
-      cols: number;
-      rows: number;
-      width: number;
-      height: number;
-      tileWidth: number;
-      tileHeight: number;
-    };
-  }>();
+  const [previewImage, setPreviewImage] = useState<TPreview>();
 
   useEffect(() => {
     const getPreviewImage = async () => {
@@ -309,7 +297,6 @@ export const VideoPlayerProvider: React.FC<{
         previewUrl,
         bitmap,
         metadata: {
-          duration: Number(headers.get("x-amz-meta-duration")),
           cols: Number(headers.get("x-amz-meta-cols")),
           rows: Number(headers.get("x-amz-meta-rows")),
           width: Number(headers.get("x-amz-meta-width")),

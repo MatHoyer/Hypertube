@@ -26,12 +26,7 @@ import {
   TResolutionSchema,
   typedKeys,
 } from "@hypertube/libs";
-import {
-  BUCKETS,
-  getMoviePreviewPath,
-  minio,
-  prisma,
-} from "@hypertube/server-core";
+import { BUCKETS, minio, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { streamSSE } from "hono/streaming";
 import i18next from "i18next";
@@ -186,7 +181,7 @@ export const getMovie = async (
 
   const preview = await minio.presignedGetObject(
     BUCKETS.MOVIES,
-    getMoviePreviewPath(String(tmdbId), "preview.jpg")
+    `${String(tmdbId)}/preview.jpg`
   );
 
   return c.json(
