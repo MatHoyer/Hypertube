@@ -6,7 +6,7 @@ import {
 import {
   BUCKETS,
   convertSrtToVtt,
-  getSubtitlePath,
+  getStoragePath,
   minio,
   renameFile,
   waitFile,
@@ -152,9 +152,10 @@ export const downloadYifysubtitles = async (
   const vttFilePath = await convertSrtToVtt(srtFilePath);
 
   await minio.putObject(
-    BUCKETS.SUBTITLES,
-    getSubtitlePath(
+    BUCKETS.MOVIES,
+    getStoragePath(
       subtitles.tmdbId.toString(),
+      "subtitles",
       subtitles.language,
       "subtitles.vtt"
     ),

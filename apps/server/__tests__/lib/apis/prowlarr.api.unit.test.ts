@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockPutObject, mockEnv } = vi.hoisted(() => ({
   mockPutObject: vi.fn(),
@@ -12,8 +12,12 @@ const { mockPutObject, mockEnv } = vi.hoisted(() => ({
 vi.mock("@hypertube/server-core", () => ({
   env: mockEnv,
   BUCKETS: { MOVIES: "movies" },
-  getMoviePath: (tmdbId: string, resolutionId: string, file: string) =>
-    `${tmdbId}/${resolutionId}/${file}`,
+  getStoragePath: (
+    movieId: string,
+    itemType: string,
+    itemId: string,
+    filename: string
+  ) => `${movieId}/${itemType}/${itemId}/${filename}`,
   minio: { putObject: mockPutObject },
 }));
 
@@ -222,7 +226,9 @@ describe("ProwlarrApi", () => {
       const url = new URL(fetchMock.mock.calls[0][0] as string);
       expect(url.searchParams.get("query")).toBe("{ImdbId:tt1234567}");
       expect(url.searchParams.get("type")).toBe("movie");
-      expect(new URL(fetchMock.mock.calls[1]?.[0] as string).searchParams.get("type")).toBe("search");
+      expect(
+        new URL(fetchMock.mock.calls[1]?.[0] as string).searchParams.get("type")
+      ).toBe("search");
       expect(fetchMock.mock.calls[1]?.[0]).toContain("query=Movie+2024");
       expect(url.searchParams.getAll("categories")).toEqual([
         "2000",
@@ -298,7 +304,7 @@ describe("ProwlarrApi", () => {
       });
       expect(mockPutObject).toHaveBeenCalledWith(
         "movies",
-        "12345/resolution-id-1/resolution.torrent",
+        "12345/resolutions/resolution-id-1/resolution.torrent",
         expect.any(Buffer)
       );
     });
@@ -338,7 +344,7 @@ describe("ProwlarrApi", () => {
       ).toBe(false);
       expect(mockPutObject).toHaveBeenCalledWith(
         "movies",
-        "12345/resolution-id-1/resolution.torrent",
+        "12345/resolutions/resolution-id-1/resolution.torrent",
         Buffer.from(magnetUrl, "utf-8")
       );
     });
@@ -377,7 +383,7 @@ describe("ProwlarrApi", () => {
       ).toBe(false);
       expect(mockPutObject).toHaveBeenCalledWith(
         "movies",
-        "12345/resolution-id-1/resolution.torrent",
+        "12345/resolutions/resolution-id-1/resolution.torrent",
         Buffer.from(magnetUrl, "utf-8")
       );
     });
@@ -452,7 +458,7 @@ describe("ProwlarrApi", () => {
       ).toBe(false);
       expect(mockPutObject).toHaveBeenCalledWith(
         "movies",
-        "12345/resolution-id-1/resolution.torrent",
+        "12345/resolutions/resolution-id-1/resolution.torrent",
         Buffer.from(
           `magnet:?xt=urn:btih:${infoHash.toLowerCase()}&dn=${encodeURIComponent(
             "Interstellar (2014) 720p BrRip x264 -YIFY"
@@ -488,7 +494,7 @@ describe("ProwlarrApi", () => {
 
       expect(mockPutObject).toHaveBeenCalledWith(
         "movies",
-        "12345/resolution-id-1/resolution.torrent",
+        "12345/resolutions/resolution-id-1/resolution.torrent",
         Buffer.from(
           `magnet:?xt=urn:btih:${infoHash}&dn=${encodeURIComponent(
             "Movie 1080p BluRay"

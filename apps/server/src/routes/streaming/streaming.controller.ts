@@ -2,13 +2,7 @@ import {
   TGetStreamingResolutionSchemas,
   TGetStreamingSubtitlesSchemas,
 } from "@hypertube/libs";
-import {
-  BUCKETS,
-  getMoviePath,
-  getSubtitlePath,
-  minio,
-  prisma,
-} from "@hypertube/server-core";
+import { BUCKETS, getStoragePath, minio, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { Readable } from "node:stream";
 import { buffer } from "node:stream/consumers";
@@ -18,10 +12,10 @@ import { isObjectNotFound, parseByteRange } from "./streaming.utils.js";
 export const getStreamingResolution = async (
   c: Context<TUrlParamsParser<TGetStreamingResolutionSchemas["urlParams"]>>
 ) => {
-  const { movieId, resolutionId } = c.get("validatedUrlParams");
+  const { movieId: tmdbId, resolutionId } = c.get("validatedUrlParams");
 
   const movie = await prisma.movie.findUnique({
-    where: { tmdbId: movieId },
+    where: { tmdbId },
     include: {
       resolutions: {
         where: { id: resolutionId },
@@ -32,7 +26,12 @@ export const getStreamingResolution = async (
     return c.json({ message: "Resolution not found" }, 404);
   }
 
-  const objectName = getMoviePath(String(movieId), resolutionId, "movie.mp4");
+  const objectName = getStoragePath(
+    tmdbId.toString(),
+    "resolutions",
+    resolutionId,
+    "movie.mp4"
+  );
 
   let fileSize: number;
   try {
@@ -89,15 +88,16 @@ export const getStreamingResolution = async (
 export const getStreamingSubtitles = async (
   c: Context<TUrlParamsParser<TGetStreamingSubtitlesSchemas["urlParams"]>>
 ) => {
-  const { movieId, subtitlesLanguage } = c.get("validatedUrlParams");
-  const objectName = getSubtitlePath(
-    String(movieId),
+  const { movieId: tmdbId, subtitlesLanguage } = c.get("validatedUrlParams");
+  const objectName = getStoragePath(
+    tmdbId.toString(),
+    "subtitles",
     subtitlesLanguage,
     "subtitles.vtt"
   );
 
   try {
-    const stream = await minio.getObject(BUCKETS.SUBTITLES, objectName);
+    const stream = await minio.getObject(BUCKETS.MOVIES, objectName);
     const file = await buffer(stream);
     return new Response(new Uint8Array(file), {
       status: 200,

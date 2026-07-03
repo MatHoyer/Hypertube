@@ -1,27 +1,19 @@
 export const BUCKETS = {
   MOVIES: "movies",
-  SUBTITLES: "subtitles",
   IMAGES: "images",
 };
 
-export const getMovieRootPath = (movieId: string) => {
-  return `${movieId}`;
-};
-export const getMoviePath = (
-  movieId: string,
-  resolutionId: string,
-  filename: string
-) => {
-  return `${getMovieRootPath(movieId)}/resolutions/${resolutionId}/${filename}`;
-};
+type TItemType = "resolutions" | "subtitles";
 
-export const getSubtitleRootPath = (movieId: string) => {
-  return `${movieId}`;
-};
-export const getSubtitlePath = (
+type TFilename<T extends TItemType> = T extends "resolutions"
+  ? "movie.mp4" | "resolution.torrent"
+  : "subtitles.vtt";
+
+export const getStoragePath = <T extends TItemType>(
   movieId: string,
-  language: string,
-  filename: string
+  itemType: T,
+  itemId: string,
+  filename: TFilename<T>
 ) => {
-  return `${getSubtitleRootPath(movieId)}/${language}/${filename}`;
+  return `${movieId}/${itemType}/${itemId}/${filename}`;
 };
