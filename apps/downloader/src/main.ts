@@ -1,6 +1,10 @@
 import { hypertubeLogger } from "@hypertube/libs";
-import { env, MOVIE_QUEUE, TDownloadJobData } from "@hypertube/server-core";
-import { MOVIE_QUEUE_JOB_NAMES } from "@hypertube/server-core/src/redis/const.js";
+import {
+  env,
+  MOVIE_QUEUE,
+  MOVIE_QUEUE_JOB_NAMES,
+  TDownloadJobData,
+} from "@hypertube/server-core";
 import { Job, Worker } from "bullmq";
 import { Redis } from "ioredis";
 import {
