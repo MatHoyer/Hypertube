@@ -6,12 +6,7 @@ import {
   TResolutionSchema,
   ytsQualities,
 } from "@hypertube/libs";
-import {
-  BUCKETS,
-  env,
-  getMoviePath,
-  minio,
-} from "@hypertube/server-core";
+import { BUCKETS, env, getStoragePath, minio } from "@hypertube/server-core";
 
 type YtsQuality = (typeof ytsQualities)[number];
 
@@ -77,8 +72,7 @@ const SOURCE_QUALITY_HINTS: { quality: YtsQuality; pattern: RegExp }[] = [
   { quality: "480p", pattern: /\b(cam|hdcam|telesync|ts|dvdscr)\b/i },
 ];
 
-const isMagnetLink = (url: string): boolean =>
-  url.trim().startsWith("magnet:");
+const isMagnetLink = (url: string): boolean => url.trim().startsWith("magnet:");
 
 const MAGNET_PREFERRED_INDEXERS = [/pirate\s*bay/i, /\btpb\b/i];
 
@@ -104,7 +98,9 @@ const parseQuality = (title: string): YtsQuality | null => {
   return null;
 };
 
-const normalizeRelease = (release: ProwlarrRelease): NormalizedRelease | null => {
+const normalizeRelease = (
+  release: ProwlarrRelease
+): NormalizedRelease | null => {
   const downloadUrl = release.downloadUrl ?? release.magnetUrl;
   if (!downloadUrl || !release.indexer) return null;
   return {
@@ -257,7 +253,9 @@ export class ProwlarrApi {
     const trimmed = title.trim();
     queries.add(`${trimmed} ${year}`);
     queries.add(`${trimmed.replace(/\s+/g, ".")}.${year}`);
-    queries.add(`${trimmed.replace(/[^\w\s]/g, "").replace(/\s+/g, " ")} ${year}`);
+    queries.add(
+      `${trimmed.replace(/[^\w\s]/g, "").replace(/\s+/g, " ")} ${year}`
+    );
     return [...queries];
   }
 
@@ -365,8 +363,9 @@ export class ProwlarrApi {
       );
     }
 
-    const objectPath = getMoviePath(
+    const objectPath = getStoragePath(
       movie.tmdbId.toString(),
+      "resolutions",
       resolutionId,
       "resolution.torrent"
     );

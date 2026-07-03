@@ -6,13 +6,12 @@ import {
 } from "@hypertube/libs";
 import {
   BUCKETS,
-  getMoviePath,
-  getSubtitlePath,
   minio,
   prisma,
   TDownloadJobData,
   waitFile,
 } from "@hypertube/server-core";
+import { getStoragePath } from "@hypertube/server-core/src/storage/const.js";
 import { Job } from "bullmq";
 import ffmpeg from "fluent-ffmpeg";
 import * as fs from "fs";
@@ -22,11 +21,11 @@ import path from "path";
 import { notifySubscribers } from "../notifications/notifySubscriber.js";
 import { downloader, TransmissionTorrent } from "./downloader.js";
 import {
+  convertSubtitleFileToVtt,
   FFPROBE_LOW_MEM,
   formatSidecarSubtitleLanguage,
   handleEmbeddedSubtitles,
   isSidecarSubtitle,
-  convertSubtitleFileToVtt,
 } from "./subtitle.utils.js";
 
 const WAIT_FILE_TIMEOUT = 1000000;
@@ -187,8 +186,7 @@ const isTorrentComplete = (torrent: TransmissionTorrent): boolean =>
   torrent.status === Status.SEEDING;
 
 const isTorrentStalled = (torrent: TransmissionTorrent): boolean =>
-  torrent.status === Status.STOPPED &&
-  torrent.percentDone < COMPLETE_THRESHOLD;
+  torrent.status === Status.STOPPED && torrent.percentDone < COMPLETE_THRESHOLD;
 
 const findMainVideoFile = (files: TorrentFile[]): TorrentFile | undefined => {
   const videoFiles = files.filter((file) => isVideoFile(file.name));
@@ -278,8 +276,13 @@ const uploadSubtitle = async ({
   downloadLink: string;
 }) => {
   await minio.putObject(
-    BUCKETS.SUBTITLES,
-    getSubtitlePath(movie.tmdbId.toString(), language, "subtitles.vtt"),
+    BUCKETS.MOVIES,
+    getStoragePath(
+      movie.tmdbId.toString(),
+      "subtitles",
+      language,
+      "subtitles.vtt"
+    ),
     vttStream
   );
 
@@ -312,7 +315,9 @@ const handleSidecarSubtitleFile = async (
   const language = formatSidecarSubtitleLanguage(subtitleFile.name);
   const uploadStream = new PassThrough();
 
-  hypertubeLogger.info(`Converting sidecar subtitle to VTT: ${subtitleFile.name}`);
+  hypertubeLogger.info(
+    `Converting sidecar subtitle to VTT: ${subtitleFile.name}`
+  );
   await Promise.all([
     convertSubtitleFileToVtt(target, uploadStream),
     uploadSubtitle({
@@ -336,7 +341,12 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
 
   const resolutionStream = await minio.getObject(
     BUCKETS.MOVIES,
-    getMoviePath(movie.tmdbId.toString(), resolutionId, "resolution.torrent")
+    getStoragePath(
+      movie.tmdbId.toString(),
+      "resolutions",
+      resolutionId,
+      "resolution.torrent"
+    )
   );
   const torrentBuf = await buffer(resolutionStream);
   const isMagnet = torrentBuf.toString("utf-8").startsWith("magnet:");
@@ -459,8 +469,9 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
             }
 
             try {
-              const movieObjectPath = getMoviePath(
+              const movieObjectPath = getStoragePath(
                 movie.tmdbId.toString(),
+                "resolutions",
                 resolutionId,
                 "movie.mp4"
               );
@@ -533,8 +544,6 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     });
   } catch (error) {
     await downloader.remove(result.id);
-    throw error instanceof Error
-      ? error
-      : new Error(formatUnknownError(error));
+    throw error instanceof Error ? error : new Error(formatUnknownError(error));
   }
 };

@@ -1,11 +1,5 @@
 import { formatUnknownError, newUTCDate, TLogger } from "@hypertube/libs";
-import {
-  BUCKETS,
-  getMovieRootPath,
-  getSubtitleRootPath,
-  prisma,
-  removeObjectsByPrefix,
-} from "@hypertube/server-core";
+import { BUCKETS, prisma, removeObjectsByPrefix } from "@hypertube/server-core";
 import { subMonths } from "date-fns";
 import { cronUTC } from "../cronUTC.js";
 
@@ -31,12 +25,7 @@ const DELETE_MOVIES_MONTHLY_CRON_CALLBACK = async (localLogger: TLogger) => {
 
   for (const movie of moviesToDelete) {
     try {
-      const movieId = movie.tmdbId.toString();
-      await removeObjectsByPrefix(BUCKETS.MOVIES, getMovieRootPath(movieId));
-      await removeObjectsByPrefix(
-        BUCKETS.SUBTITLES,
-        getSubtitleRootPath(movieId)
-      );
+      await removeObjectsByPrefix(BUCKETS.MOVIES, movie.tmdbId.toString());
     } catch (error) {
       localLogger.error(
         `Error deleting movie folder: ${formatUnknownError(error)}`
