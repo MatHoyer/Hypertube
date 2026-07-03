@@ -7,7 +7,7 @@ import {
 import { TDownloadJobData } from "@hypertube/server-core";
 import { Job } from "bullmq";
 import { SSEStreamingApi } from "hono/streaming";
-import { getDownloaderQueue } from "../../lib/queues/downloader";
+import { getMovieQueue } from "../../lib/queues/downloader";
 import { SSEClients } from "../../lib/SSEClients";
 
 export const sseClients = new SSEClients();
@@ -18,14 +18,14 @@ export const ensureDownloaderQueueListeners = () => {
   if (downloaderListenersRegistered) return;
   downloaderListenersRegistered = true;
 
-  const downloaderQueue = getDownloaderQueue();
+  const movieQueue = getMovieQueue();
 
-  downloaderQueue.on("completed", (job) => {
+  movieQueue.on("completed", (job) => {
     sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
       sendSSEDownloadStateChange(job.data, DownloadStates.DOWNLOADED, stream);
     });
   });
-  downloaderQueue.on("failed", (job) => {
+  movieQueue.on("failed", (job) => {
     sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
       sendSSEDownloadStateChange(
         job.data,
@@ -34,12 +34,12 @@ export const ensureDownloaderQueueListeners = () => {
       );
     });
   });
-  downloaderQueue.on("waiting", (job) => {
+  movieQueue.on("waiting", (job) => {
     sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
       sendSSEDownloadStateChange(job.data, DownloadStates.WAITING, stream);
     });
   });
-  downloaderQueue.on("progress", (job) => {
+  movieQueue.on("progress", (job) => {
     sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
       sendSSEProgress(job, stream);
     });
