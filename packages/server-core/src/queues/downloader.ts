@@ -1,4 +1,5 @@
-import { BullMQ, MOVIE_QUEUE } from "@hypertube/server-core";
+import { BullMQ } from "../redis/BullMQ.js";
+import { MOVIE_QUEUE } from "../redis/const.js";
 
 let movieQueue: BullMQ<typeof MOVIE_QUEUE> | null = null;
 

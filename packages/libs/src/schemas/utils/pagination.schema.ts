@@ -28,11 +28,11 @@ type TPaginationResponse = typeof paginationResponse.shape;
 
 type TPaginationUrlParamsSchemas<TUrlParams> = TUrlParams extends ZodRawShape
   ? { urlParams: ZodObject<TUrlParams> }
-  : {};
+  : object;
 
 type TPaginationSearchParamsSchemas<TSearchParams, TWithPageSize> = {
   searchParams: ZodObject<
-    (TSearchParams extends ZodRawShape ? TSearchParams : {}) &
+    (TSearchParams extends ZodRawShape ? TSearchParams : object) &
       (TWithPageSize extends true
         ? TPaginationSearchParams
         : Record<"page", TPaginationSearchParams["page"]>)
@@ -42,7 +42,7 @@ type TPaginationSearchParamsSchemas<TSearchParams, TWithPageSize> = {
 type TPaginationRequirementsSchemas<TRequirements> =
   TRequirements extends ZodRawShape
     ? { requirements: ZodObject<TRequirements> }
-    : {};
+    : object;
 
 type TPaginationResponseSchemas<TResponse> = {
   response: ZodObject<TResponse & TPaginationResponse>;
@@ -53,7 +53,7 @@ type TPaginationSchemasReturn<
   TSearchParams,
   TRequirements,
   TResponse,
-  TWithPageSize
+  TWithPageSize,
 > = TPaginationUrlParamsSchemas<TUrlParams> &
   TPaginationSearchParamsSchemas<TSearchParams, TWithPageSize> &
   TPaginationRequirementsSchemas<TRequirements> &
@@ -64,7 +64,7 @@ export const getPaginationSchemas = <
   TSearchParams extends ZodRawShape | undefined = undefined,
   TRequirements extends ZodRawShape | undefined = undefined,
   TResponse extends ZodRawShape = ZodRawShape,
-  TWithPageSize extends boolean = true
+  TWithPageSize extends boolean = true,
 >({
   urlParams,
   searchParams,

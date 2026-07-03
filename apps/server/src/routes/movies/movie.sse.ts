@@ -4,10 +4,9 @@ import {
   MOVIE_EVENTS,
   TGetMovieSSESchemas,
 } from "@hypertube/libs";
-import { TDownloadJobData } from "@hypertube/server-core";
+import { getMovieQueue, TDownloadJobData } from "@hypertube/server-core";
 import { Job } from "bullmq";
 import { SSEStreamingApi } from "hono/streaming";
-import { getMovieQueue } from "../../lib/queues/downloader";
 import { SSEClients } from "../../lib/SSEClients";
 
 export const sseClients = new SSEClients();

@@ -14,6 +14,7 @@ import {
   downloadMovieHandler,
   downloadMovieSuccessHandler,
 } from "./handlers/movie/download-movie.handler.js";
+import { downloadMoviePreviews } from "./handlers/movie/downloadMoviePreviews.js";
 import { gracefulShutdown } from "./shutdown.js";
 
 export const storageService: IStorageService = new MinioStorageService();
@@ -30,11 +31,13 @@ const worker = new Worker<TDownloadJobData>(
     switch (job.name) {
       case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
         return downloadMovieHandler(job);
+      case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
+        return downloadMoviePreviews(job);
       default:
         throw new Error(`Unknown job name: ${job.name}`);
     }
   },
-  { connection, concurrency: 1, lockDuration: 3600000 }
+  { connection, concurrency: 2, lockDuration: 3600000 }
 );
 
 hypertubeLogger.info(`Downloader worker started`);
@@ -49,6 +52,8 @@ worker.on("completed", async (job) => {
   switch (job.name) {
     case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
       return downloadMovieSuccessHandler(job);
+    case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
+      return;
     default:
       throw new Error(`Unknown job name: ${job.name}`);
   }
@@ -63,6 +68,8 @@ worker.on("failed", async (job, err) => {
   switch (job.name) {
     case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
       return downloadMovieFailureHandler(job, err);
+    case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
+      return;
     default:
       throw new Error(`Unknown job name: ${job.name}`);
   }

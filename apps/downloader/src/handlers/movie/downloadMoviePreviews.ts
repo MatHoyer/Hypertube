@@ -1,5 +1,11 @@
 import { hypertubeLogger, TpreviewMetadata } from "@hypertube/libs";
-import { BUCKETS, getStoragePath, minio } from "@hypertube/server-core";
+import {
+  BUCKETS,
+  getStoragePath,
+  minio,
+  TPreviewJobData,
+} from "@hypertube/server-core";
+import { Job } from "bullmq";
 import ffmpeg from "fluent-ffmpeg";
 import Stream, { PassThrough } from "stream";
 import { VideoMetadata } from "./download-torrent-subtitles.js";
@@ -46,7 +52,6 @@ const downloadMoviePreview = ({
       .on("start", () => {
         hypertubeLogger.info(`Start download preview for : ${movieId}`);
       })
-      .pipe(uploadStream, { end: true })
       .on("end", async () => {
         const metadata: TpreviewMetadata = {
           cols,
@@ -61,7 +66,12 @@ const downloadMoviePreview = ({
         hypertubeLogger.info(`Finish download preview for : ${movieId}`);
         resolve();
       })
-      .on("error", reject);
+      .on("error", (e) => {
+        hypertubeLogger.error(`Movie preview error : ${e.message}`);
+        reject();
+      })
+      .format("image2")
+      .pipe(uploadStream, { end: true });
   });
 };
 
@@ -86,10 +96,11 @@ const putPreviewToObjectStockage = async (
 };
 
 export const downloadMoviePreviews = async (
-  movieId: string,
-  resolutionId: string,
-  filename: string
+  job: Job<TPreviewJobData>
 ): Promise<string[] | undefined> => {
+  const movieId = job.data.movie.tmdbId.toString();
+  const resolutionId = job.data.resolutionId;
+
   if (await hasMoviePreview(movieId)) return;
 
   const stream = await minio.getObject(

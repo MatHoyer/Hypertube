@@ -3,7 +3,12 @@ import {
   formatUnknownError,
   hypertubeLogger,
 } from "@hypertube/libs";
-import { prisma, TDownloadJobData } from "@hypertube/server-core";
+import {
+  getMovieQueue,
+  MOVIE_QUEUE_JOB_NAMES,
+  prisma,
+  TDownloadJobData,
+} from "@hypertube/server-core";
 import { Job } from "bullmq";
 import { notifySubscribers } from "../../notifications/notifySubscriber.js";
 import { downloadMovie } from "./movie-downloader.js";
@@ -34,6 +39,11 @@ export const downloadMovieSuccessHandler = async (
       `Error sending movie downloaded notification: ${formatUnknownError(error)}`
     );
   }
+
+  await getMovieQueue().produce(MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE, {
+    movie: job.data.movie,
+    resolutionId: job.data.resolutionId,
+  });
 };
 
 export const downloadMovieFailureHandler = async (

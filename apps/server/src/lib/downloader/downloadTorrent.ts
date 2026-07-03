@@ -1,8 +1,7 @@
 import { TMovieSchema, TResolutionSchema } from "@hypertube/libs";
-import { MOVIE_QUEUE_JOB_NAMES } from "@hypertube/server-core";
+import { getMovieQueue, MOVIE_QUEUE_JOB_NAMES } from "@hypertube/server-core";
 import { ProwlarrApi } from "../apis/prowlarr.api";
 import { TmdbApi } from "../apis/tmdb.api";
-import { getMovieQueue } from "../queues/downloader";
 
 export const downloadTorrent = async ({
   movie,
