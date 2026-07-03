@@ -1,10 +1,10 @@
-import { BullMQ, DOWNLOAD_QUEUE } from "@hypertube/server-core";
+import { BullMQ, MOVIE_QUEUE } from "@hypertube/server-core";
 
-let downloaderQueue: BullMQ<typeof DOWNLOAD_QUEUE> | null = null;
+let movieQueue: BullMQ<typeof MOVIE_QUEUE> | null = null;
 
-export const getDownloaderQueue = () => {
-  if (!downloaderQueue) {
-    downloaderQueue = new BullMQ(DOWNLOAD_QUEUE);
+export const getMovieQueue = () => {
+  if (!movieQueue) {
+    movieQueue = new BullMQ(MOVIE_QUEUE);
   }
-  return downloaderQueue;
+  return movieQueue;
 };

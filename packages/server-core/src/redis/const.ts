@@ -1,6 +1,6 @@
 import { TMovieSchema, TResolutionSchema } from "@hypertube/libs";
 
-export const DOWNLOAD_QUEUE = "downloader";
+export const MOVIE_QUEUE = "movie";
 
 export type TDownloadJobData = {
   movie: TMovieSchema;
