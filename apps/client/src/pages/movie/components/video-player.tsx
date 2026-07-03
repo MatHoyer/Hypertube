@@ -192,8 +192,6 @@ type TPreview = {
   positionX: number;
   x: number;
   y: number;
-  tileWidth: number;
-  tileHeight: number;
   percent: number;
 };
 
@@ -228,16 +226,15 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
     const x = percent % previewImage.metadata.cols;
     const y = Math.floor(percent / previewImage.metadata.rows);
 
-    const tileWidth = previewImage.metadata.width;
-    // const tileHeight = previewImage.metadata.height;
-    const tileHeight = 135;
+    const positionX = Math.min(
+      Math.max(mouseX - previewImage.metadata.tileWidth / 2, 0),
+      rect.width - previewImage.metadata.tileWidth
+    );
 
     setPreview({
-      positionX: mouseX - previewImage.metadata.width / 2,
+      positionX,
       x,
       y,
-      tileWidth,
-      tileHeight,
       percent: percent,
     });
   };
@@ -270,12 +267,12 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
             style={{
               position: "absolute",
               left: preview.positionX,
-              top: -(preview.tileHeight + 5),
-              width: preview.tileWidth,
-              height: preview.tileHeight,
+              top: -(previewImage.metadata.tileHeight + 5),
+              width: previewImage.metadata.tileWidth,
+              height: previewImage.metadata.tileHeight,
               backgroundImage: `url(${previewImage.previewUrl})`,
-              backgroundPosition: `-${preview.x * preview.tileWidth}px -${preview.y * preview.tileHeight}px`,
-              backgroundSize: `${preview.tileWidth * previewImage.metadata.cols}px ${preview.tileHeight * previewImage.metadata.rows}px`,
+              backgroundPosition: `-${preview.x * previewImage.metadata.tileWidth}px -${preview.y * previewImage.metadata.tileHeight}px`,
+              backgroundSize: `${previewImage.metadata.width}px ${previewImage.metadata.height}px`,
             }}
           />
         )}

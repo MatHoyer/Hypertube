@@ -14,8 +14,8 @@ type TpreviewMetadata = {
   duration: number;
   cols: number;
   rows: number;
-  width?: number;
-  height?: number;
+  width: number;
+  height: number;
   tileWidth: number;
   tileHeight: number;
 };
@@ -69,8 +69,8 @@ const downloadMoviePreview = ({
           duration: movieMetadata.duration,
           cols,
           rows,
-          width: movieMetadata.width,
-          height: movieMetadata.height,
+          width: widthScale * cols,
+          height: heightScale * rows,
           tileWidth: widthScale,
           tileHeight: heightScale,
         };
