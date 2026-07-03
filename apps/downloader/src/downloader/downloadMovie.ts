@@ -6,12 +6,12 @@ import {
 } from "@hypertube/libs";
 import {
   BUCKETS,
+  getStoragePath,
   minio,
   prisma,
   TDownloadJobData,
   waitFile,
 } from "@hypertube/server-core";
-import { getStoragePath } from "@hypertube/server-core/src/storage/const.js";
 import { Job } from "bullmq";
 import ffmpeg from "fluent-ffmpeg";
 import * as fs from "fs";

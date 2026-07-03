@@ -6,14 +6,12 @@ import {
   getUsersSchemas,
   newUTCDate,
   ROUTES,
+  TDeleteUsersSchemas,
   TGetUsersSchemas,
+  TGetUserSchemas,
   TPatchUsersSchemas,
   TUserSchema,
 } from "@hypertube/libs";
-import {
-  TDeleteUsersSchemas,
-  TGetUserSchemas,
-} from "@hypertube/libs/src/schemas/api/users.schema";
 import { env, ICacheService, prisma } from "@hypertube/server-core";
 import { APIError } from "better-auth";
 import { addHours, getTime } from "date-fns";
