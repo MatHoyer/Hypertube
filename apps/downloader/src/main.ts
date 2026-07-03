@@ -4,8 +4,8 @@ import {
   hypertubeLogger,
 } from "@hypertube/libs";
 import {
-  DOWNLOAD_QUEUE,
   env,
+  MOVIE_QUEUE,
   prisma,
   TDownloadJobData,
 } from "@hypertube/server-core";
@@ -22,7 +22,7 @@ const connection = new Redis({
 });
 
 const worker = new Worker<TDownloadJobData>(
-  DOWNLOAD_QUEUE,
+  MOVIE_QUEUE,
   async (job: Job<TDownloadJobData>) => {
     hypertubeLogger.info(`[${job.data.movie.id}] Download torrent job started`);
 
