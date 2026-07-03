@@ -1,4 +1,5 @@
 import { TMovieSchema, TResolutionSchema } from "@hypertube/libs";
+import { MOVIE_QUEUE_JOB_NAMES } from "@hypertube/server-core";
 import { ProwlarrApi } from "../apis/prowlarr.api";
 import { TmdbApi } from "../apis/tmdb.api";
 import { getMovieQueue } from "../queues/downloader";
@@ -34,7 +35,7 @@ export const downloadTorrent = async ({
     },
   });
 
-  await getMovieQueue().produce("download", {
+  await getMovieQueue().produce(MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE, {
     movie,
     resolutionId: resolution.id,
   });

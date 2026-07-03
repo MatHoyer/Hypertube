@@ -18,15 +18,15 @@ import * as fs from "fs";
 import { PassThrough } from "node:stream";
 import { buffer } from "node:stream/consumers";
 import path from "path";
-import { notifySubscribers } from "../notifications/notifySubscriber.js";
-import { downloader, TransmissionTorrent } from "./downloader.js";
+import { notifySubscribers } from "../../notifications/notifySubscriber.js";
 import {
   convertSubtitleFileToVtt,
   FFPROBE_LOW_MEM,
   formatSidecarSubtitleLanguage,
   handleEmbeddedSubtitles,
   isSidecarSubtitle,
-} from "./subtitle.utils.js";
+} from "./download-torrent-subtitles.js";
+import { downloader, TransmissionTorrent } from "./transmission.client.js";
 
 const WAIT_FILE_TIMEOUT = 1000000;
 const WAIT_SUBTITLE_TIMEOUT = 10000;

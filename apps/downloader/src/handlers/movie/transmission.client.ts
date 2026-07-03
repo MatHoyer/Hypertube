@@ -150,7 +150,10 @@ class TransmissionClient {
       const torrent = info.torrents[0];
       if (!torrent) throw new Error("Torrent not found");
 
-      if (torrent.percentDone > 0 || torrent.status === TransmissionStatus.DOWNLOADING) {
+      if (
+        torrent.percentDone > 0 ||
+        torrent.status === TransmissionStatus.DOWNLOADING
+      ) {
         return;
       }
       if (
