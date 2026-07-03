@@ -20,6 +20,16 @@ export type SubtitleStream = {
   title?: string;
 };
 
+export type VideoMetadata = {
+  duration: number;
+  videoCodec?: string;
+  audioCodec?: string;
+  width?: number;
+  height?: number;
+  bitrate?: number;
+  formatName?: string;
+};
+
 export const isSidecarSubtitle = (filename: string): boolean => {
   const lower = filename.toLowerCase();
   return SIDECAR_SUBTITLE_EXTENSIONS.some((ext) => lower.endsWith(ext));

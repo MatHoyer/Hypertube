@@ -58,16 +58,6 @@ const VIDEO_EXTENSIONS = [
 
 type TorrentFile = { name: string; length?: number };
 
-type VideoMetadata = {
-  duration: number;
-  videoCodec?: string;
-  audioCodec?: string;
-  width?: number;
-  height?: number;
-  bitrate?: number;
-  formatName?: string;
-};
-
 const probeVideoMetadata = (filePath: string): Promise<VideoMetadata> => {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(filePath, FFPROBE_LOW_MEM, (err, metadata) => {

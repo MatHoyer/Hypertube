@@ -8,13 +8,16 @@ import {
 import ffmpeg from "fluent-ffmpeg";
 import * as fs from "fs";
 import Stream from "stream";
+import { VideoMetadata } from "./subtitle.utils.js";
 
 type TpreviewMetadata = {
   duration: number;
   cols: number;
   rows: number;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
+  tileWidth: number;
+  tileHeight: number;
 };
 
 const hasMoviePreview = async (movieId: string) => {
@@ -33,31 +36,45 @@ const downloadMoviePreview = ({
   movieId,
   stream,
   outputDir,
-  metadata,
+  movieMetadata,
 }: {
   movieId: string;
   stream: Stream.Readable;
   outputDir: string;
-  metadata: TpreviewMetadata;
+  movieMetadata: VideoMetadata;
 }) => {
-  const count = metadata.cols * metadata.rows;
+  const cols = 10;
+  const rows = 10;
+  const widthScale = 240;
+  let heightScale = 135; // 16:9 ratio by default
+  if (movieMetadata.width && movieMetadata.height) {
+    heightScale = movieMetadata.height * (widthScale / movieMetadata.width);
+  }
 
   return new Promise<void>((resolve, reject) => {
     ffmpeg(stream)
       .inputOptions(["-threads", "1"])
       .outputOptions([
         "-vf",
-        `fps=${count / metadata.duration},scale=240:-1,tile=${metadata.cols}x${metadata.rows}`,
+        `fps=${(cols * rows) / movieMetadata.duration},scale=${widthScale}:${heightScale},tile=${cols}x${rows}`,
         "-q:v",
         "10",
-        "-start_number",
-        "0",
       ])
       .output(`${outputDir}/preview.jpg`)
       .on("start", () => {
         hypertubeLogger.info(`Start download preview for : ${movieId}`);
       })
       .on("end", async () => {
+        const metadata: TpreviewMetadata = {
+          duration: movieMetadata.duration,
+          cols,
+          rows,
+          width: movieMetadata.width,
+          height: movieMetadata.height,
+          tileWidth: widthScale,
+          tileHeight: heightScale,
+        };
+
         await putPreviewToObjectStockage(
           movieId,
           metadata,
@@ -113,14 +130,11 @@ export const downloadMoviePreviews = async (
     getMoviePath(movieId, resolutionId, filename)
   );
 
-  const metadata: TpreviewMetadata = {
-    duration: metaData.duration,
-    cols: 10,
-    rows: 10,
-    width: 240,
-    height: -1,
-  };
-
-  await downloadMoviePreview({ movieId, stream, outputDir, metadata });
+  await downloadMoviePreview({
+    movieId,
+    stream,
+    outputDir,
+    movieMetadata: metaData as VideoMetadata,
+  });
   await fs.promises.rm(dir, { recursive: true, force: true });
 };
