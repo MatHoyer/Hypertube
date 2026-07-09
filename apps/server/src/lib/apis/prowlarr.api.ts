@@ -6,7 +6,8 @@ import {
   TResolutionSchema,
   ytsQualities,
 } from "@hypertube/libs";
-import { BUCKETS, env, getStoragePath, minio } from "@hypertube/server-core";
+import { BUCKETS, env, getStoragePath } from "@hypertube/server-core";
+import { container } from "../../container";
 
 type YtsQuality = (typeof ytsQualities)[number];
 
@@ -232,7 +233,11 @@ export class ProwlarrApi {
     objectPath: string,
     content: Buffer
   ): Promise<void> {
-    await minio.putObject(BUCKETS.MOVIES, objectPath, content);
+    await container.storageService.putObject(
+      BUCKETS.MOVIES,
+      objectPath,
+      content
+    );
   }
 
   private async fetchMovieReleases(

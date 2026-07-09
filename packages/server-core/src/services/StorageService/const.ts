@@ -1,7 +1,9 @@
 export const BUCKETS = {
   MOVIES: "movies",
   IMAGES: "images",
-};
+} as const;
+
+export type TBuckets = (typeof BUCKETS)[keyof typeof BUCKETS];
 
 type TItemFilenames = {
   resolutions: "movie.mp4" | "resolution.torrent";
@@ -9,7 +11,6 @@ type TItemFilenames = {
 };
 
 type TItemType = keyof TItemFilenames;
-
 type TFilename<T extends TItemType> = TItemFilenames[T];
 
 export const getStoragePath = <T extends TItemType>(

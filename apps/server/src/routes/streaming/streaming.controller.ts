@@ -2,10 +2,11 @@ import {
   TGetStreamingResolutionSchemas,
   TGetStreamingSubtitlesSchemas,
 } from "@hypertube/libs";
-import { BUCKETS, getStoragePath, minio, prisma } from "@hypertube/server-core";
+import { BUCKETS, getStoragePath, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { Readable } from "node:stream";
 import { buffer } from "node:stream/consumers";
+import { container } from "../../container";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 import { isObjectNotFound, parseByteRange } from "./streaming.utils.js";
 
@@ -35,7 +36,10 @@ export const getStreamingResolution = async (
 
   let fileSize: number;
   try {
-    const stat = await minio.statObject(BUCKETS.MOVIES, objectName);
+    const stat = await container.storageService.getStatObject(
+      BUCKETS.MOVIES,
+      objectName
+    );
     fileSize = stat.size;
   } catch (e) {
     if (isObjectNotFound(e)) {
@@ -61,7 +65,7 @@ export const getStreamingResolution = async (
 
     const { start, chunkSize, safeEnd } = parsed;
 
-    const fileStream = await minio.getPartialObject(
+    const fileStream = await container.storageService.getPartialObject(
       BUCKETS.MOVIES,
       objectName,
       start,
@@ -78,7 +82,10 @@ export const getStreamingResolution = async (
     });
   }
 
-  const fileStream = await minio.getObject(BUCKETS.MOVIES, objectName);
+  const fileStream = await container.storageService.getObject(
+    BUCKETS.MOVIES,
+    objectName
+  );
   c.header("Content-Length", fileSize.toString());
   c.header("Content-Type", "video/mp4");
   c.header("Accept-Ranges", "bytes");
@@ -97,7 +104,10 @@ export const getStreamingSubtitles = async (
   );
 
   try {
-    const stream = await minio.getObject(BUCKETS.MOVIES, objectName);
+    const stream = await container.storageService.getObject(
+      BUCKETS.MOVIES,
+      objectName
+    );
     const file = await buffer(stream);
     return new Response(new Uint8Array(file), {
       status: 200,

@@ -4,9 +4,10 @@ import {
   TDeleteImageSchemas,
   TPostImageSchemas,
 } from "@hypertube/libs";
-import { BUCKETS, minio, prisma } from "@hypertube/server-core";
+import { BUCKETS, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import sharp from "sharp";
+import { container } from "../../container";
 import { TBodyParser } from "../../middlewares/bodyParser";
 import { TIsLogged } from "../../middlewares/isLogged";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
@@ -39,7 +40,7 @@ export const postImage = async (
   }
   const image = await prisma.image.create({ data: {} });
 
-  await minio.putObject(
+  await container.storageService.putObject(
     BUCKETS.IMAGES,
     getImagePath(image.id),
     webpBuffer,
@@ -60,7 +61,10 @@ export const deleteImage = async (
   });
   if (!image) return c.json({ message: "OK" }, 200);
 
-  await minio.removeObject(BUCKETS.IMAGES, getImagePath(image.id));
+  await container.storageService.removeObject(
+    BUCKETS.IMAGES,
+    getImagePath(image.id)
+  );
   await prisma.image.delete({ where: { id: imageId } });
 
   return c.json({ message: "OK" }, 200);

@@ -7,13 +7,13 @@ import {
   BUCKETS,
   convertSrtToVtt,
   getStoragePath,
-  minio,
   renameFile,
   waitFile,
 } from "@hypertube/server-core";
 import AdmZip from "adm-zip";
 import * as fs from "fs";
 import * as path from "path";
+import { storageClient } from "../main";
 import { launchPuppeteer } from "./scrappers.utils";
 
 const yifysubtitlesUrl = "https://yifysubtitles.ch/movie-imdb/";
@@ -151,7 +151,7 @@ export const downloadYifysubtitles = async (
 
   const vttFilePath = await convertSrtToVtt(srtFilePath);
 
-  await minio.putObject(
+  await storageClient.putObject(
     BUCKETS.MOVIES,
     getStoragePath(
       subtitles.tmdbId.toString(),
