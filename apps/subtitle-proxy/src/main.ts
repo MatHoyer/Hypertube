@@ -1,11 +1,13 @@
 import { serve } from "@hono/node-server";
 import { hypertubeLogger, subtitleSchema } from "@hypertube/libs";
-import { env } from "@hypertube/server-core";
+import { env, MinioStorageService } from "@hypertube/server-core";
 import { Hono } from "hono";
 import {
   downloadYifysubtitles,
   getSubtitlesDownloadLinks,
 } from "./scrappers/yifysubtitles.scrapper";
+
+export const storageClient = new MinioStorageService();
 
 const app = new Hono();
 

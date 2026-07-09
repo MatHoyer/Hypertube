@@ -7,7 +7,6 @@ import {
 import {
   BUCKETS,
   getStoragePath,
-  minio,
   prisma,
   TDownloadJobData,
   waitFile,
@@ -18,6 +17,7 @@ import * as fs from "fs";
 import { PassThrough } from "node:stream";
 import { buffer } from "node:stream/consumers";
 import path from "path";
+import { storageClient } from "../../main.js";
 import { notifySubscribers } from "../../notifications/notifySubscriber.js";
 import {
   convertSubtitleFileToVtt,
@@ -275,7 +275,7 @@ const uploadSubtitle = async ({
   vttStream: PassThrough;
   downloadLink: string;
 }) => {
-  await minio.putObject(
+  await storageClient.putObject(
     BUCKETS.MOVIES,
     getStoragePath(
       movie.tmdbId.toString(),
@@ -339,7 +339,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     throw new Error(`Resolution ${resolutionId} not found`);
   }
 
-  const resolutionStream = await minio.getObject(
+  const resolutionStream = await storageClient.getObject(
     BUCKETS.MOVIES,
     getStoragePath(
       movie.tmdbId.toString(),
@@ -491,7 +491,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
 
               await Promise.all([
                 convertMovie({ path: endFile }, uploadStream),
-                minio.putObject(
+                storageClient.putObject(
                   BUCKETS.MOVIES,
                   movieObjectPath,
                   uploadStream,
@@ -518,7 +518,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
                 ]),
               ]);
 
-              const uploadedStat = await minio.statObject(
+              const uploadedStat = await storageClient.getStatObject(
                 BUCKETS.MOVIES,
                 movieObjectPath
               );
