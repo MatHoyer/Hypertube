@@ -1,6 +1,7 @@
 import { hypertubeLogger } from "@hypertube/libs";
 import {
   env,
+  IStorageService,
   MinioStorageService,
   MOVIE_QUEUE,
   MOVIE_QUEUE_JOB_NAMES,
@@ -15,7 +16,7 @@ import {
 } from "./handlers/movie/download-movie.handler.js";
 import { gracefulShutdown } from "./shutdown.js";
 
-export const storageClient = new MinioStorageService();
+export const storageService: IStorageService = new MinioStorageService();
 
 const connection = new Redis({
   host: env.REDIS_HOST,

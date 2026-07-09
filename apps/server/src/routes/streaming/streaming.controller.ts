@@ -36,7 +36,7 @@ export const getStreamingResolution = async (
 
   let fileSize: number;
   try {
-    const stat = await container.storageService.getStatObject(
+    const stat = await container.storageService.statObject(
       BUCKETS.MOVIES,
       objectName
     );

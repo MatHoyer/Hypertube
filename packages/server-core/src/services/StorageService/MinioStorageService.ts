@@ -1,7 +1,8 @@
 import { Client } from "minio";
 import { env } from "../../env.js";
 import { IStorageService } from "./IStorageService.js";
-import { TBuckets } from "./const.js";
+
+const REMOVE_BATCH = 1000;
 
 const minioClient = new Client({
   endPoint: env.MINIO_ENDPOINT,
@@ -22,7 +23,7 @@ export class MinioStorageService implements IStorageService {
     return await this.minioClient.getObject(bucketName, objectName);
   };
 
-  getStatObject: IStorageService["getStatObject"] = async (
+  statObject: IStorageService["statObject"] = async (
     bucketName,
     objectName
   ) => {
@@ -66,11 +67,10 @@ export class MinioStorageService implements IStorageService {
     await this.minioClient.removeObject(bucketName, objectName);
   };
 
-  static async removeObjectsByPrefix(
-    bucketName: TBuckets,
-    prefix: string
-  ): Promise<void> {
-    const REMOVE_BATCH = 1000;
+  removeObjectsByPrefix: IStorageService["removeObjectsByPrefix"] = async (
+    bucketName,
+    prefix
+  ) => {
     const normalized = prefix.endsWith("/") ? prefix : `${prefix}/`;
     const names: string[] = [];
     const stream = minioClient.listObjects(bucketName, normalized, true);
@@ -87,5 +87,5 @@ export class MinioStorageService implements IStorageService {
       const chunk = names.slice(i, i + REMOVE_BATCH);
       await minioClient.removeObjects(bucketName, chunk);
     }
-  }
+  };
 }
