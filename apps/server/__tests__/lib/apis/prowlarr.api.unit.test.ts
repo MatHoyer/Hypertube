@@ -18,7 +18,10 @@ vi.mock("@hypertube/server-core", () => ({
     itemId: string,
     filename: string
   ) => `${movieId}/${itemType}/${itemId}/${filename}`,
-  minio: { putObject: mockPutObject },
+  RedisCacheService: class {},
+  MinioStorageService: class {
+    putObject = mockPutObject;
+  },
 }));
 
 vi.mock("@hypertube/libs", async (importOriginal) => {
