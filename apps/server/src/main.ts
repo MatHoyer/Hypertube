@@ -11,6 +11,8 @@ serve(
     port: env.SERVER_PORT,
   },
   (info) => {
-    hypertubeLogger.info(`Server is running on http://localhost:${info.port}`);
+    hypertubeLogger.info(
+      `Server is running on http://${info.address}:${info.port}`
+    );
   }
 );

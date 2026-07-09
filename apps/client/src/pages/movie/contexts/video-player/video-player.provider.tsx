@@ -289,6 +289,8 @@ export const VideoPlayerProvider: React.FC<{
   useEffect(() => {
     const getPreviewImage = async () => {
       const response = await fetch(previewUrl);
+      if (!response.ok) return;
+
       const blob = await response.blob();
       const bitmap = await createImageBitmap(blob);
       const headers = response.headers;
