@@ -1,13 +1,12 @@
-import { BucketItemStat, ItemBucketMetadata } from "minio";
 import { Readable } from "stream";
 import { TBuckets } from "./const.js";
 
 export interface IStorageService {
   getObject: (bucketName: TBuckets, objectName: string) => Promise<Readable>;
-  getStatObject: (
+  statObject: (
     bucketName: TBuckets,
     objectName: string
-  ) => Promise<BucketItemStat>;
+  ) => Promise<{ metaData: Record<string, string>; size: number }>;
   getPartialObject: (
     bucketName: TBuckets,
     objectName: string,
@@ -19,7 +18,8 @@ export interface IStorageService {
     objectName: string,
     stream: string | Readable | Buffer<ArrayBufferLike>,
     size?: number,
-    metaData?: ItemBucketMetadata
+    metaData?: Record<string, string>
   ) => Promise<void>;
   removeObject: (bucketName: TBuckets, objectName: string) => Promise<void>;
+  removeObjectsByPrefix: (bucketName: TBuckets, prefix: string) => void;
 }

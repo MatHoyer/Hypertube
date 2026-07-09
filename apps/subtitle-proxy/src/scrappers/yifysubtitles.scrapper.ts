@@ -13,7 +13,7 @@ import {
 import AdmZip from "adm-zip";
 import * as fs from "fs";
 import * as path from "path";
-import { storageClient } from "../main";
+import { storageService } from "../main";
 import { launchPuppeteer } from "./scrappers.utils";
 
 const yifysubtitlesUrl = "https://yifysubtitles.ch/movie-imdb/";
@@ -151,7 +151,7 @@ export const downloadYifysubtitles = async (
 
   const vttFilePath = await convertSrtToVtt(srtFilePath);
 
-  await storageClient.putObject(
+  await storageService.putObject(
     BUCKETS.MOVIES,
     getStoragePath(
       subtitles.tmdbId.toString(),
