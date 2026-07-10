@@ -180,6 +180,7 @@ const MoviePage = () => {
                     watchedTimestamp={watchedTimestamp}
                     setWatchedTimestamp={setWatchedTimestamp}
                     previewUrl={movie.preview}
+                    tmdbId={tmdbId}
                   >
                     <VideoPlayer />
                   </VideoPlayerProvider>

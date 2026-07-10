@@ -9,6 +9,7 @@ import {
   languageYTSCodes,
   type TResolutionSchema,
 } from "@hypertube/libs";
+import { useQuery } from "@tanstack/react-query";
 import {
   useCallback,
   useEffect,
@@ -21,14 +22,21 @@ import { useResolutions } from "../resolutions/resolutions.context";
 import { useSubtitles } from "../subtitles/subtitles.context";
 import { usedKeys } from "./video-player.const";
 import { VideoPlayerContext } from "./video-player.context";
-import type { Speed, TPreview } from "./video-player.type";
+import type { Speed } from "./video-player.type";
 
 export const VideoPlayerProvider: React.FC<{
   watchedTimestamp: number;
   setWatchedTimestamp: (timestamp: number) => void;
   previewUrl: string;
+  tmdbId: number;
   children: React.ReactNode;
-}> = ({ watchedTimestamp, setWatchedTimestamp, previewUrl, children }) => {
+}> = ({
+  watchedTimestamp,
+  setWatchedTimestamp,
+  previewUrl,
+  tmdbId,
+  children,
+}) => {
   const { isMobile } = useIsMobile();
   const { i18n } = useTranslation();
 
@@ -284,34 +292,29 @@ export const VideoPlayerProvider: React.FC<{
     ]
   );
 
-  const [previewImage, setPreviewImage] = useState<TPreview>();
+  const { data } = useQuery({
+    queryKey: ["movie-preview", tmdbId],
+    queryFn: async () => {
+      const response = await fetch(previewUrl);
+      const blob = await response.blob();
+      const bitmap = await createImageBitmap(blob);
+      const headers = response.headers;
 
-  useEffect(() => {
-    const getPreviewImage = async () => {
-      try {
-        const response = await fetch(previewUrl);
-        const blob = await response.blob();
-        const bitmap = await createImageBitmap(blob);
-        const headers = response.headers;
-
-        setPreviewImage({
-          previewUrl,
-          bitmap,
-          metadata: {
-            cols: Number(headers.get("x-amz-meta-cols")),
-            rows: Number(headers.get("x-amz-meta-rows")),
-            width: Number(headers.get("x-amz-meta-width")),
-            height: Number(headers.get("x-amz-meta-height")),
-            tileWidth: Number(headers.get("x-amz-meta-tileWidth")),
-            tileHeight: Number(headers.get("x-amz-meta-tileHeight")),
-          },
-        });
-      } catch {
-        return;
-      }
-    };
-    getPreviewImage();
-  }, [previewUrl]);
+      return {
+        previewUrl,
+        bitmap,
+        metadata: {
+          cols: Number(headers.get("x-amz-meta-cols")),
+          rows: Number(headers.get("x-amz-meta-rows")),
+          width: Number(headers.get("x-amz-meta-width")),
+          height: Number(headers.get("x-amz-meta-height")),
+          tileWidth: Number(headers.get("x-amz-meta-tileWidth")),
+          tileHeight: Number(headers.get("x-amz-meta-tileHeight")),
+        },
+      };
+    },
+    retry: false,
+  });
 
   return (
     <VideoPlayerContext.Provider
@@ -359,7 +362,7 @@ export const VideoPlayerProvider: React.FC<{
         selectedSubtitlesLanguage: userSelectedSubtitlesLanguage,
         setSelectedSubtitlesLanguage,
 
-        previewImage,
+        previewImage: data,
       }}
     >
       {children}

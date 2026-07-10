@@ -10,6 +10,12 @@ import Stream, { PassThrough } from "stream";
 import { storageService } from "../../main.js";
 import { VideoMetadata } from "./download-torrent-subtitles.js";
 
+const COLS = 10;
+const ROWS = 10;
+// 16:9 ratio by default
+const TILE_WIDTH = 240;
+const TILE_HEIGHT = 135;
+
 const getMoviePreviewPath = (movieId: string) => `${movieId}/preview.jpg`;
 
 const hasMoviePreview = async (movieId: string) => {
@@ -33,12 +39,9 @@ const downloadMoviePreview = ({
   stream: Stream.Readable;
   movieMetadata: VideoMetadata;
 }) => {
-  const cols = 10;
-  const rows = 10;
-  const tileWidth = 240;
-  let tileHeight = 135; // 16:9 ratio by default
+  let tileHeight = TILE_HEIGHT;
   if (movieMetadata.width && movieMetadata.height) {
-    tileHeight = movieMetadata.height * (tileWidth / movieMetadata.width);
+    tileHeight = movieMetadata.height * (TILE_WIDTH / movieMetadata.width);
   }
 
   const uploadStream = new PassThrough();
@@ -48,7 +51,7 @@ const downloadMoviePreview = ({
       .inputOptions(["-threads", "1"])
       .outputOptions([
         "-vf",
-        `fps=${(cols * rows) / movieMetadata.duration},scale=${tileWidth}:${tileHeight},tile=${cols}x${rows}`,
+        `fps=${(COLS * ROWS) / movieMetadata.duration},scale=${TILE_WIDTH}:${tileHeight},tile=${COLS}x${ROWS}`,
         "-q:v",
         "10",
       ])
@@ -57,11 +60,11 @@ const downloadMoviePreview = ({
       })
       .on("end", async () => {
         const metadata: TpreviewMetadata = {
-          cols,
-          rows,
-          width: tileWidth * cols,
-          height: tileHeight * rows,
-          tileWidth,
+          cols: COLS,
+          rows: ROWS,
+          width: TILE_WIDTH * COLS,
+          height: TILE_HEIGHT * ROWS,
+          tileWidth: TILE_WIDTH,
           tileHeight,
         };
 

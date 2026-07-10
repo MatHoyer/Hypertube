@@ -53,6 +53,7 @@ worker.on("completed", async (job) => {
     case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
       return downloadMovieSuccessHandler(job);
     case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
+      hypertubeLogger.info(`[${job.data.movie.id}] Movie preview success`);
       return;
     default:
       throw new Error(`Unknown job name: ${job.name}`);
@@ -69,6 +70,9 @@ worker.on("failed", async (job, err) => {
     case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
       return downloadMovieFailureHandler(job, err);
     case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
+      hypertubeLogger.info(
+        `[${job.data.movie.id}] Movie preview failed: ${err}`
+      );
       return;
     default:
       throw new Error(`Unknown job name: ${job.name}`);
