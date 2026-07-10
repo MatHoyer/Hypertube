@@ -288,25 +288,27 @@ export const VideoPlayerProvider: React.FC<{
 
   useEffect(() => {
     const getPreviewImage = async () => {
-      const response = await fetch(previewUrl);
-      if (!response.ok) return;
+      try {
+        const response = await fetch(previewUrl);
+        const blob = await response.blob();
+        const bitmap = await createImageBitmap(blob);
+        const headers = response.headers;
 
-      const blob = await response.blob();
-      const bitmap = await createImageBitmap(blob);
-      const headers = response.headers;
-
-      setPreviewImage({
-        previewUrl,
-        bitmap,
-        metadata: {
-          cols: Number(headers.get("x-amz-meta-cols")),
-          rows: Number(headers.get("x-amz-meta-rows")),
-          width: Number(headers.get("x-amz-meta-width")),
-          height: Number(headers.get("x-amz-meta-height")),
-          tileWidth: Number(headers.get("x-amz-meta-tileWidth")),
-          tileHeight: Number(headers.get("x-amz-meta-tileHeight")),
-        },
-      });
+        setPreviewImage({
+          previewUrl,
+          bitmap,
+          metadata: {
+            cols: Number(headers.get("x-amz-meta-cols")),
+            rows: Number(headers.get("x-amz-meta-rows")),
+            width: Number(headers.get("x-amz-meta-width")),
+            height: Number(headers.get("x-amz-meta-height")),
+            tileWidth: Number(headers.get("x-amz-meta-tileWidth")),
+            tileHeight: Number(headers.get("x-amz-meta-tileHeight")),
+          },
+        });
+      } catch {
+        return;
+      }
     };
     getPreviewImage();
   }, [previewUrl]);

@@ -26,11 +26,12 @@ import {
   TResolutionSchema,
   typedKeys,
 } from "@hypertube/libs";
-import { BUCKETS, minio, prisma } from "@hypertube/server-core";
+import { BUCKETS, prisma } from "@hypertube/server-core";
 import { Context } from "hono";
 import { streamSSE } from "hono/streaming";
 import i18next from "i18next";
 import z from "zod";
+import { container } from "../../container";
 import { ProwlarrApi } from "../../lib/apis/prowlarr.api";
 import { SubtitleProxyApi } from "../../lib/apis/subtitle-proxy.api";
 import { TmdbApi } from "../../lib/apis/tmdb.api";
@@ -179,7 +180,7 @@ export const getMovie = async (
   });
   const watchedTimestamp = watchTimer ? watchTimer.timestamp : 0;
 
-  const preview = await minio.presignedGetObject(
+  const preview = await container.storageService.presignedGetObject(
     BUCKETS.MOVIES,
     `${String(tmdbId)}/preview.jpg`
   );

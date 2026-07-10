@@ -2,19 +2,22 @@ import { hypertubeLogger, TpreviewMetadata } from "@hypertube/libs";
 import {
   BUCKETS,
   getStoragePath,
-  minio,
   TPreviewJobData,
 } from "@hypertube/server-core";
 import { Job } from "bullmq";
 import ffmpeg from "fluent-ffmpeg";
 import Stream, { PassThrough } from "stream";
+import { storageService } from "../../main.js";
 import { VideoMetadata } from "./download-torrent-subtitles.js";
 
 const getMoviePreviewPath = (movieId: string) => `${movieId}/preview.jpg`;
 
 const hasMoviePreview = async (movieId: string) => {
   try {
-    await minio.statObject(BUCKETS.MOVIES, getMoviePreviewPath(movieId));
+    await storageService.statObject(
+      BUCKETS.MOVIES,
+      getMoviePreviewPath(movieId)
+    );
     return true;
   } catch {
     return false;
@@ -82,7 +85,7 @@ const putPreviewToObjectStockage = async (
 ) => {
   hypertubeLogger.info(`Put preview on object storage for : ${movieId}`);
   try {
-    await minio.putObject(
+    await storageService.putObject(
       BUCKETS.MOVIES,
       getMoviePreviewPath(movieId),
       uploadStream,
@@ -103,12 +106,12 @@ export const downloadMoviePreviews = async (
 
   if (await hasMoviePreview(movieId)) return;
 
-  const stream = await minio.getObject(
+  const stream = await storageService.getObject(
     BUCKETS.MOVIES,
     getStoragePath(movieId, "resolutions", resolutionId, "movie.mp4")
   );
 
-  const { metaData } = await minio.statObject(
+  const { metaData } = await storageService.statObject(
     BUCKETS.MOVIES,
     getStoragePath(movieId, "resolutions", resolutionId, "movie.mp4")
   );

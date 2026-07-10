@@ -6,7 +6,7 @@ export interface IStorageService {
   statObject: (
     bucketName: TBuckets,
     objectName: string
-  ) => Promise<{ metaData: Record<string, string>; size: number }>;
+  ) => Promise<{ metaData: Record<string, string | number>; size: number }>;
   getPartialObject: (
     bucketName: TBuckets,
     objectName: string,
@@ -18,8 +18,12 @@ export interface IStorageService {
     objectName: string,
     stream: string | Readable | Buffer<ArrayBufferLike>,
     size?: number,
-    metaData?: Record<string, string>
+    metaData?: Record<string, string | number>
   ) => Promise<void>;
   removeObject: (bucketName: TBuckets, objectName: string) => Promise<void>;
   removeObjectsByPrefix: (bucketName: TBuckets, prefix: string) => void;
+  presignedGetObject: (
+    bucketName: TBuckets,
+    objectName: string
+  ) => Promise<string>;
 }
