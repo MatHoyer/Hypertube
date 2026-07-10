@@ -4,7 +4,7 @@
 # container is replaced, or DNS/networking breaks inside Prowlarr/Transmission.
 refresh-vpn-sidecars:
 	docker compose -f docker-compose.yml -f docker-compose.override.yml up -d --force-recreate transmission
-	docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml up -d --force-recreate prowlarr subtitle-proxy
+	docker compose -f docker-compose-prod.yml up -d --force-recreate prowlarr subtitle-proxy
 
 # VPN
 vpn:
@@ -44,13 +44,13 @@ logs-helpers:
 
 # Prod
 prod: infra
-	docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml up -d
+	docker compose -f docker-compose-prod.yml up -d
 
 stop-prod:
-	docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml down
+	docker compose -f docker-compose-prod.yml down
 
 logs-prod:
-	docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml logs -f
+	docker compose -f docker-compose-prod.yml logs -f
 
 # Stop everything
 stop-all: stop-prod stop-vpn stop-helpers stop-infra
@@ -68,7 +68,7 @@ rebuild-helpers: stop-helpers
 	$(MAKE) helpers
 
 rebuild-prod: stop-prod
-	docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml build --no-cache
+	docker compose -f docker-compose-prod.yml build --no-cache
 	$(MAKE) prod
 
 reset: stop-all

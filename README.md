@@ -117,7 +117,7 @@ pnpm dev
 ### 🔹 Option 2 — Prod with Docker (no hot reload)
 
 ```bash
-docker compose -f docker-compose-prod.yml -f docker-compose-prod.override.yml up
+docker compose -f docker-compose-prod.yml up
 ```
 
 or
