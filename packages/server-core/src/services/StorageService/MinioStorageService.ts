@@ -88,4 +88,11 @@ export class MinioStorageService implements IStorageService {
       await minioClient.removeObjects(bucketName, chunk);
     }
   };
+
+  presignedGetObject: IStorageService["presignedGetObject"] = async (
+    bucketName,
+    objectName
+  ) => {
+    return await this.minioClient.presignedGetObject(bucketName, objectName);
+  };
 }
