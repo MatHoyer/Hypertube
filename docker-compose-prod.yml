@@ -16,6 +16,8 @@ services:
       context: .
       dockerfile: ./apps/client/Dockerfile.prod
     env_file: .env
+    ports:
+      - "${CLIENT_PORT}:8080"
     networks:
       - hypertube-network
     healthcheck:
@@ -31,17 +33,11 @@ services:
       dockerfile: ./apps/server/Dockerfile.prod
     env_file: .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - NODE_ENV=PROD
-      - PROWLARR_URL=http://vpn:${PROWLARR_PORT}
-      - SUBTITLE_PROXY_URL=http://vpn:${SUBTITLE_PROXY_PORT}
-      - REDIS_HOST=redis
-      - MINIO_ENDPOINT=minio
       - PROWLARR_API_KEY_FILE=/prowlarr-config/api_key
     volumes:
       - prowlarr_config:/prowlarr-config:ro
-    networks:
-      - hypertube-network
+    network_mode: host
     depends_on:
       migrate:
         condition: service_completed_successfully

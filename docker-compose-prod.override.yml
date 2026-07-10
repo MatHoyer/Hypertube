@@ -1,8 +1,0 @@
-services:
-  client:
-    ports:
-      - "${CLIENT_PORT}:8080"
-
-  server:
-    ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
