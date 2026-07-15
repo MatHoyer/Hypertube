@@ -4,8 +4,11 @@ import {
   MOVIE_EVENTS,
   TGetMovieSSESchemas,
 } from "@hypertube/libs";
-import { getMovieQueue, TDownloadJobData } from "@hypertube/server-core";
-import { Job } from "bullmq";
+import {
+  getMovieQueue,
+  MOVIE_QUEUE_JOB_NAMES,
+  TDownloadJobData,
+} from "@hypertube/server-core";
 import { SSEStreamingApi } from "hono/streaming";
 import { SSEClients } from "../../lib/SSEClients";
 
@@ -20,28 +23,60 @@ export const ensureDownloaderQueueListeners = () => {
   const movieQueue = getMovieQueue();
 
   movieQueue.on("completed", (job) => {
-    sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-      sendSSEDownloadStateChange(job.data, DownloadStates.DOWNLOADED, stream);
-    });
+    switch (job.name) {
+      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
+        sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+          sendSSEDownloadStateChange(
+            job.data,
+            DownloadStates.DOWNLOADED,
+            stream
+          );
+        });
+        return;
+      case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
+        return;
+    }
   });
   movieQueue.on("failed", (job) => {
-    sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-      sendSSEDownloadStateChange(
-        job.data,
-        DownloadStates.NOT_DOWNLOADED,
-        stream
-      );
-    });
+    switch (job.name) {
+      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
+        sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+          sendSSEDownloadStateChange(
+            job.data,
+            DownloadStates.NOT_DOWNLOADED,
+            stream
+          );
+        });
+        return;
+      case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
+        return;
+    }
   });
   movieQueue.on("waiting", (job) => {
-    sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-      sendSSEDownloadStateChange(job.data, DownloadStates.WAITING, stream);
-    });
+    switch (job.name) {
+      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
+        sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+          sendSSEDownloadStateChange(job.data, DownloadStates.WAITING, stream);
+        });
+        return;
+      case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
+        return;
+    }
   });
-  movieQueue.on("progress", (job) => {
-    sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-      sendSSEProgress(job, stream);
-    });
+  movieQueue.on("active", (job) => {
+    switch (job.name) {
+      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
+        sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+          sendSSEDownloadStateChange(
+            job.data,
+            DownloadStates.DOWNLOADING,
+            stream
+          );
+        });
+        return;
+      case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
+        return;
+    }
   });
 };
 
@@ -55,19 +90,6 @@ const sendSSEDownloadStateChange = (
     data: JSON.stringify({
       resolutionId: jobData.resolutionId,
       downloadState: downloadState,
-    }),
-  });
-};
-
-const sendSSEProgress = (
-  job: Job<TDownloadJobData>,
-  stream: SSEStreamingApi
-) => {
-  stream.writeSSE({
-    event: MOVIE_EVENTS.RESOLUTION_DOWNLOAD_PROGRESS,
-    data: JSON.stringify({
-      resolutionId: job.data.resolutionId,
-      progress: job.progress,
     }),
   });
 };

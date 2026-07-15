@@ -293,7 +293,7 @@ export const VideoPlayerProvider: React.FC<{
   );
 
   const { data } = useQuery({
-    queryKey: ["movie-preview", tmdbId],
+    queryKey: ["movie-preview", tmdbId, previewUrl],
     queryFn: async () => {
       const response = await fetch(previewUrl);
       const blob = await response.blob();
@@ -314,6 +314,7 @@ export const VideoPlayerProvider: React.FC<{
       };
     },
     retry: false,
+    refetchOnWindowFocus: false,
   });
 
   return (

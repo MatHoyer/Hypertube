@@ -1,6 +1,5 @@
 export const MOVIE_EVENTS = {
   RESOLUTION_STATE_CHANGE: "resolutionStateChange",
-  RESOLUTION_DOWNLOAD_PROGRESS: "resolutionDownloadProgress",
   SUBTITLE_STATE_CHANGE: "subtitleStateChange",
 } as const;
 

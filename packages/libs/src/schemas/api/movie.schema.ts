@@ -114,10 +114,6 @@ export const getMovieSSESchemas = {
       resolutionId: resolutionSchema.shape.id,
       downloadState: z.enum(DownloadStates),
     }),
-    [MOVIE_EVENTS.RESOLUTION_DOWNLOAD_PROGRESS]: z.object({
-      resolutionId: resolutionSchema.shape.id,
-      progress: z.coerce.number(),
-    }),
     [MOVIE_EVENTS.SUBTITLE_STATE_CHANGE]: z.object({
       id: subtitleSchema.shape.id,
       downloadState: subtitleSchema.shape.downloadState,
@@ -129,9 +125,6 @@ export type TGetMovieSSESchemas = {
   response: {
     [MOVIE_EVENTS.RESOLUTION_STATE_CHANGE]: z.infer<
       typeof getMovieSSESchemas.response.resolutionStateChange
-    >;
-    [MOVIE_EVENTS.RESOLUTION_DOWNLOAD_PROGRESS]: z.infer<
-      typeof getMovieSSESchemas.response.resolutionDownloadProgress
     >;
     [MOVIE_EVENTS.SUBTITLE_STATE_CHANGE]: z.infer<
       typeof getMovieSSESchemas.response.subtitleStateChange
