@@ -94,20 +94,6 @@ const MoviePage = () => {
         queryKey: getQueryKey(ROUTES.API.MOVIES_RESOLUTIONS, { tmdbId }),
       });
     };
-    const handleResolutionDownloadProgress = (event: MessageEvent<string>) => {
-      const { success, data } = getMovieSSESchemas.response[
-        MOVIE_EVENTS.RESOLUTION_DOWNLOAD_PROGRESS
-      ].safeParse(JSON.parse(event.data));
-      if (!success) {
-        console.error("invalid downloadProgress data", event.data);
-        return;
-      }
-      if (data.progress === 0) {
-        queryClient.invalidateQueries({
-          queryKey: getQueryKey(ROUTES.API.MOVIES_RESOLUTIONS, { tmdbId }),
-        });
-      }
-    };
     const handleSubtitleStateChange = (event: MessageEvent<string>) => {
       const { success } = getMovieSSESchemas.response[
         MOVIE_EVENTS.SUBTITLE_STATE_CHANGE
@@ -125,10 +111,6 @@ const MoviePage = () => {
       handleResolutionStateChange
     );
     eventSource.addEventListener(
-      MOVIE_EVENTS.RESOLUTION_DOWNLOAD_PROGRESS,
-      handleResolutionDownloadProgress
-    );
-    eventSource.addEventListener(
       MOVIE_EVENTS.SUBTITLE_STATE_CHANGE,
       handleSubtitleStateChange
     );
@@ -138,10 +120,6 @@ const MoviePage = () => {
       eventSource.removeEventListener(
         MOVIE_EVENTS.RESOLUTION_STATE_CHANGE,
         handleResolutionStateChange
-      );
-      eventSource.removeEventListener(
-        MOVIE_EVENTS.RESOLUTION_DOWNLOAD_PROGRESS,
-        handleResolutionDownloadProgress
       );
       eventSource.removeEventListener(
         MOVIE_EVENTS.SUBTITLE_STATE_CHANGE,

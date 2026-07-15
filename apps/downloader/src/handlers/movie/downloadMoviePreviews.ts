@@ -63,7 +63,7 @@ const downloadMoviePreview = ({
           cols: COLS,
           rows: ROWS,
           width: TILE_WIDTH * COLS,
-          height: TILE_HEIGHT * ROWS,
+          height: tileHeight * ROWS,
           tileWidth: TILE_WIDTH,
           tileHeight,
         };

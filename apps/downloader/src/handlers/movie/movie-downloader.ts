@@ -403,12 +403,6 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       );
     }
 
-    await prisma.resolution.update({
-      where: {
-        id: resolutionId,
-      },
-      data: { downloadState: DownloadStates.DOWNLOADING },
-    });
     notifySubscribers(movie.id, DownloadStates.DOWNLOADING);
     hypertubeLogger.info(`Movie downloaded started successfully`);
 

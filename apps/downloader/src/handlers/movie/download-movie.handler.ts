@@ -16,6 +16,11 @@ import { downloadMovie } from "./movie-downloader.js";
 export const downloadMovieHandler = async (job: Job<TDownloadJobData>) => {
   hypertubeLogger.info(`[${job.data.movie.id}] Download torrent job started`);
 
+  await prisma.resolution.update({
+    where: { id: job.data.resolutionId },
+    data: { downloadState: DownloadStates.DOWNLOADING },
+  });
+
   return downloadMovie(job);
 };
 
