@@ -20,6 +20,35 @@ RUN pnpm lint
 RUN pnpm --filter server-core prisma:generate
 RUN pnpm build:scheduler
 
+RUN find /hypertube/node_modules -type f \
+  \( -name "*.md" -o -name "*.markdown" -o -name "*.map" -o -name "*.ts" -o -name "*.mts" -o -name "*.cts" -o -name "*.d.ts" \) \
+  -delete
+
+# Prisma 7 client bundles query-compiler WASM for every DB (postgres/mysql/sqlite/
+# sqlserver/cockroach) x fast/small x js/mjs (~70MB). Generator has no compilerBuild
+# override so it defaults to bundling both; we only ever run postgresql + small, drop the rest.
+RUN find /hypertube/node_modules \
+  -path "*/@prisma/client/runtime/query_compiler_*" \
+  ! -name "*small_bg.postgresql*" \
+  -delete
+
+# @prisma/client declares the `prisma` CLI as an OPTIONAL peer dependency, which
+# `pnpm install` still installs. The CLI drags in Studio, the local dev server
+# (@prisma/dev + pglite) and migration engines (@prisma/engines) — never used at
+# runtime (queries go through @prisma/adapter-pg + the WASM compiler above).
+RUN rm -rf \
+  /hypertube/node_modules/.pnpm/prisma@* \
+  /hypertube/node_modules/.pnpm/@prisma+dev@* \
+  /hypertube/node_modules/.pnpm/@prisma+studio-core@* \
+  /hypertube/node_modules/.pnpm/@prisma+config@* \
+  /hypertube/node_modules/.pnpm/@prisma+engines@* \
+  /hypertube/node_modules/.pnpm/@prisma+fetch-engine@* \
+  /hypertube/node_modules/.pnpm/@prisma+get-platform@* \
+  /hypertube/node_modules/.pnpm/@electric-sql+pglite* \
+  /hypertube/node_modules/.pnpm/node_modules/prisma \
+  /hypertube/node_modules/.pnpm/node_modules/@prisma \
+  && rm -f /hypertube/node_modules/.pnpm/node_modules/.bin/prisma 2>/dev/null || true
+
 FROM node:22-alpine AS runner
 
 WORKDIR /hypertube
