@@ -16,7 +16,7 @@ services:
     ports:
       - "${EXPOSED_REDIS_PORT}:${REDIS_PORT}"
 
-  minio:
+  s3:
     ports:
       - "9000:9000"
       - "9001:9001"

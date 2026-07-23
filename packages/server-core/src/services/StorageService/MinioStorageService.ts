@@ -5,11 +5,11 @@ import { IStorageService } from "./IStorageService.js";
 const REMOVE_BATCH = 1000;
 
 const minioClient = new Client({
-  endPoint: env.MINIO_ENDPOINT,
-  port: env.MINIO_PORT,
-  useSSL: env.MINIO_USE_SSL,
-  accessKey: env.MINIO_ROOT_USER,
-  secretKey: env.MINIO_ROOT_PASSWORD,
+  endPoint: env.S3_ENDPOINT,
+  port: env.S3_PORT,
+  useSSL: env.S3_USE_SSL,
+  accessKey: env.S3_ROOT_USER,
+  secretKey: env.S3_ROOT_PASSWORD,
 });
 
 export class MinioStorageService implements IStorageService {
