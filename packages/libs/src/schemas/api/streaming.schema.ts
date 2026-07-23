@@ -30,12 +30,12 @@ export const getStreamingPreviewSchemas = {
   response: z.object({
     url: z.url(),
     metadata: z.object({
-      cols: z.number(),
-      rows: z.number(),
-      width: z.number(),
-      height: z.number(),
-      tileWidth: z.number(),
-      tileHeight: z.number(),
+      cols: z.coerce.number(),
+      rows: z.coerce.number(),
+      width: z.coerce.number(),
+      height: z.coerce.number(),
+      tilewidth: z.coerce.number(),
+      tileheight: z.coerce.number(),
     }),
   }),
 };
