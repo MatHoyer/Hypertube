@@ -1,0 +1,15 @@
+FROM debian:12-slim
+
+RUN apt-get update
+RUN apt-get install sed -y
+RUN apt-get install wget -y
+
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc
+
+RUN chmod +x mc
+RUN ./mc --help
+
+COPY /scripts/minio-init.sh ./
+COPY /scripts/minio-cors-config.xml ./
+
+CMD [ "sh", "minio-init.sh" ]
