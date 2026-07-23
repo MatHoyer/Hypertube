@@ -9,7 +9,6 @@ import {
   languageYTSCodes,
   type TResolutionSchema,
 } from "@hypertube/libs";
-import { useQuery } from "@tanstack/react-query";
 import {
   useCallback,
   useEffect,
@@ -27,16 +26,8 @@ import type { Speed } from "./video-player.type";
 export const VideoPlayerProvider: React.FC<{
   watchedTimestamp: number;
   setWatchedTimestamp: (timestamp: number) => void;
-  previewUrl: string;
-  tmdbId: number;
   children: React.ReactNode;
-}> = ({
-  watchedTimestamp,
-  setWatchedTimestamp,
-  previewUrl,
-  tmdbId,
-  children,
-}) => {
+}> = ({ watchedTimestamp, setWatchedTimestamp, children }) => {
   const { isMobile } = useIsMobile();
   const { i18n } = useTranslation();
 
@@ -292,31 +283,6 @@ export const VideoPlayerProvider: React.FC<{
     ]
   );
 
-  const { data } = useQuery({
-    queryKey: ["movie-preview", tmdbId, previewUrl],
-    queryFn: async () => {
-      const response = await fetch(previewUrl);
-      const blob = await response.blob();
-      const bitmap = await createImageBitmap(blob);
-      const headers = response.headers;
-
-      return {
-        previewUrl,
-        bitmap,
-        metadata: {
-          cols: Number(headers.get("x-amz-meta-cols")),
-          rows: Number(headers.get("x-amz-meta-rows")),
-          width: Number(headers.get("x-amz-meta-width")),
-          height: Number(headers.get("x-amz-meta-height")),
-          tileWidth: Number(headers.get("x-amz-meta-tileWidth")),
-          tileHeight: Number(headers.get("x-amz-meta-tileHeight")),
-        },
-      };
-    },
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
-
   return (
     <VideoPlayerContext.Provider
       value={{
@@ -362,8 +328,6 @@ export const VideoPlayerProvider: React.FC<{
 
         selectedSubtitlesLanguage: userSelectedSubtitlesLanguage,
         setSelectedSubtitlesLanguage,
-
-        previewImage: data,
       }}
     >
       {children}

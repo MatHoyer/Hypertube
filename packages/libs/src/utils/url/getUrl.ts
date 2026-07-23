@@ -6,7 +6,10 @@ import {
 import { commentSchema } from "../../schemas/database/comments.schema.js";
 import { credentialSchema } from "../../schemas/database/credential.schema.js";
 import { imageSchema } from "../../schemas/database/image.schema.js";
-import { movieSchema, resolutionSchema } from "../../schemas/database/movie.schema.js";
+import {
+  movieSchema,
+  resolutionSchema,
+} from "../../schemas/database/movie.schema.js";
 import { notificationSchema } from "../../schemas/database/notifications.schema.js";
 import { playlistSchema } from "../../schemas/database/playlist.schema.js";
 import { userSchema } from "../../schemas/database/user.schema.js";
@@ -62,6 +65,7 @@ export const ROUTES = {
     NOTIFICATIONS_TEST: "api-notifications-test",
     STREAMING_MOVIE_RESOLUTION: "api-streaming-movie-resolution",
     STREAMING_MOVIE_SUBTITLES: "api-streaming-movie-subtitles",
+    STREAMING_MOVIE_PREVIEW: "api-streaming-movie-preview",
     SSE_MOVIES: "sse-movies",
     SSE_NOTIFICATIONS: "sse-notifications",
     MOVIES_LIKE: "api-movies-like",
@@ -207,6 +211,11 @@ const routeSchemas = {
           z.literal("{subtitlesLanguage}"),
           z.string(),
         ])
+        .optional(),
+    }),
+    [ROUTES.API.STREAMING_MOVIE_PREVIEW]: z.object({
+      tmdbId: z
+        .union([movieSchema.shape.tmdbId, z.literal("{tmdbId}")])
         .optional(),
     }),
     [ROUTES.API.MOVIES_LIKE]: z.object({
@@ -392,6 +401,8 @@ const routes: {
     `/api/streaming/movie/${tmdbId}/resolution/${resolutionId}`,
   [ROUTES.API.STREAMING_MOVIE_SUBTITLES]: ({ tmdbId, subtitlesLanguage }) =>
     `/api/streaming/movie/${tmdbId}/subtitles/${subtitlesLanguage}`,
+  [ROUTES.API.STREAMING_MOVIE_PREVIEW]: ({ tmdbId }) =>
+    `/api/streaming/movie/${tmdbId}/preview`,
 
   [ROUTES.API.HISTORY]: ({ tmdbId }) =>
     tmdbId !== undefined ? `/api/history/${tmdbId}` : `/api/history`,

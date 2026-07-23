@@ -24,3 +24,22 @@ export type TGetStreamingSubtitlesSchemas = {
   urlParams: z.infer<typeof getStreamingSubtitlesSchemas.urlParams>;
   response: z.infer<typeof getStreamingSubtitlesSchemas.response>;
 };
+
+export const getStreamingPreviewSchemas = {
+  urlParams: z.object({ movieId: movieSchema.shape.tmdbId }),
+  response: z.object({
+    url: z.url(),
+    metadata: z.object({
+      cols: z.number(),
+      rows: z.number(),
+      width: z.number(),
+      height: z.number(),
+      tileWidth: z.number(),
+      tileHeight: z.number(),
+    }),
+  }),
+};
+export type TGetStreamingPreviewSchemas = {
+  urlParams: z.infer<typeof getStreamingPreviewSchemas.urlParams>;
+  response: z.infer<typeof getStreamingPreviewSchemas.response>;
+};
