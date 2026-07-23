@@ -3,6 +3,7 @@ import {
   commentSchema,
   getMoviesSchemas,
   getStreamingResolutionSchemas,
+  getStreamingSubtitlesSchemas,
   movieSchema,
   notificationReadStatuses,
   playlistSchema,
@@ -64,6 +65,11 @@ const apiRouteQueryKeySchemas = {
       getStreamingResolutionSchemas.urlParams.shape.resolutionId,
       z.string(),
     ]),
+  }),
+  [ROUTES.API.STREAMING_MOVIE_SUBTITLES]: z.object({
+    movieId: getStreamingSubtitlesSchemas.urlParams.shape.movieId,
+    subtitlesLanguage:
+      getStreamingSubtitlesSchemas.urlParams.shape.subtitlesLanguage,
   }),
 };
 
@@ -134,6 +140,11 @@ const queryKeys: {
     ROUTES.API.STREAMING_MOVIE_RESOLUTION,
     movieId,
     resolutionId,
+  ],
+  [ROUTES.API.STREAMING_MOVIE_SUBTITLES]: ({ movieId, subtitlesLanguage }) => [
+    ROUTES.API.STREAMING_MOVIE_RESOLUTION,
+    movieId,
+    subtitlesLanguage,
   ],
 };
 

@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import {
   DownloadStates,
   getStreamingResolutionSchemas,
+  getStreamingSubtitlesSchemas,
   getUrl,
   putMovieWatchTimerSchemas,
   ROUTES,
@@ -35,8 +36,6 @@ import { useTranslation } from "react-i18next";
 import { useVideoPlayer } from "../contexts/video-player/video-player.context";
 import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 import SettingsButton from "./dropdown-menu-navigating/dropdown-menu-navigating";
-
-const serverUrl = import.meta.env.PUBLIC_SERVER_URL;
 
 const MiddleScreenInfo: React.FC<{
   type: "volume" | "play" | null;
@@ -460,7 +459,7 @@ const VideoPlayer = () => {
     };
   }, [updateWatchTimer]);
 
-  const { data } = useQuery({
+  const { data: streamingResolution } = useQuery({
     queryKey: getQueryKey(ROUTES.API.STREAMING_MOVIE_RESOLUTION, {
       movieId: tmdbId,
       resolutionId: selectedResolution?.id ?? "",
@@ -470,11 +469,28 @@ const VideoPlayer = () => {
         method: "GET",
         schemas: getStreamingResolutionSchemas,
         url: getUrl(ROUTES.API.STREAMING_MOVIE_RESOLUTION, {
-          tmdbId: tmdbId,
+          tmdbId,
           resolutionId: selectedResolution!.id,
         }),
       }),
     enabled: !!selectedResolution,
+  });
+
+  const { data: streamingSubtitles } = useQuery({
+    queryKey: getQueryKey(ROUTES.API.STREAMING_MOVIE_SUBTITLES, {
+      movieId: tmdbId,
+      subtitlesLanguage: selectedSubtitlesLanguage ?? "",
+    }),
+    queryFn: () =>
+      axiosFetch({
+        method: "GET",
+        schemas: getStreamingSubtitlesSchemas,
+        url: getUrl(ROUTES.API.STREAMING_MOVIE_SUBTITLES, {
+          tmdbId,
+          subtitlesLanguage: selectedSubtitlesLanguage!,
+        }),
+      }),
+    enabled: !!selectedSubtitlesLanguage,
   });
 
   return (
@@ -492,7 +508,7 @@ const VideoPlayer = () => {
             }
       }
     >
-      {data && selectedResolution ? (
+      {streamingResolution && selectedResolution ? (
         <>
           <video
             ref={(ref) =>
@@ -506,16 +522,10 @@ const VideoPlayer = () => {
             disableRemotePlayback
             crossOrigin="use-credentials"
           >
-            <source src={data.url} type="video/mp4" />
-            {selectedSubtitlesLanguage && (
+            <source src={streamingResolution.url} type="video/mp4" />
+            {streamingSubtitles && selectedSubtitlesLanguage && (
               <track
-                src={
-                  serverUrl +
-                  getUrl(ROUTES.API.STREAMING_MOVIE_SUBTITLES, {
-                    tmdbId,
-                    subtitlesLanguage: selectedSubtitlesLanguage,
-                  })
-                }
+                src={streamingSubtitles.url}
                 kind="subtitles"
                 srcLang={selectedSubtitlesLanguage}
                 default
