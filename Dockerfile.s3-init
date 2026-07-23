@@ -1,0 +1,14 @@
+FROM debian:12-slim
+
+RUN apt-get update
+RUN apt-get install sed -y
+RUN apt-get install wget -y
+
+RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc
+
+RUN chmod +x mc
+
+COPY /scripts/s3-init.sh ./
+COPY /scripts/s3-cors-config.xml ./
+
+CMD [ "sh", "s3-init.sh" ]
