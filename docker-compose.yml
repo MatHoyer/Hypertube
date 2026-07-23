@@ -38,32 +38,29 @@ services:
     networks:
       - hypertube-network
 
-  minio:
-    container_name: hypertube_minio
-    image: minio/minio:latest
+  s3:
+    container_name: hypertube_s3
+    image: rustfs/rustfs:latest
     ports:
       - 9000
       - 9001
     networks:
       - hypertube-network
     environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-    volumes:
-      - minio_data:/data
-    command: server /data --console-address ":9001"
+      - RUSTFS_ACCESS_KEY=${S3_ROOT_USER}
+      - RUSTFS_SECRET_KEY=${S3_ROOT_PASSWORD}
 
-  minio-init:
+  s3-init:
     image: minio/mc:latest
     depends_on:
-      - minio
+      - s3
     networks:
       - hypertube-network
     entrypoint: /bin/sh
     command:
       - -c
       - |
-        until mc alias set local http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD}; do sleep 1; done
+        until mc alias set local http://s3:9000 ${S3_ROOT_USER} ${S3_ROOT_PASSWORD}; do sleep 1; done
         mc mb -p local/movies || true
         mc mb -p local/images || true
         mc anonymous set download local/images
@@ -71,7 +68,6 @@ services:
 
 volumes:
   hypertube_data:
-  minio_data:
   downloads_transmission:
     name: hypertube_downloads_transmission
 

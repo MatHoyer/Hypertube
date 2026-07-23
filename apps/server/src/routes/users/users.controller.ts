@@ -244,7 +244,7 @@ export const patchUser = async (
   }
 
   const image = body.imageId
-    ? `${env.MINIO_URL}/images/${body.imageId}.webp`
+    ? `${env.S3_URL}/images/${body.imageId}.webp`
     : body.imageId;
 
   await prisma.user.update({
