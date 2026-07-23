@@ -1,13 +1,7 @@
-import type { TpreviewMetadata, TResolutionSchema } from "@hypertube/libs";
+import type { TResolutionSchema } from "@hypertube/libs";
 import type { KeyboardEvent } from "react";
 
 export type Speed = 0.5 | 1 | 1.5 | 2;
-
-export type TPreview = {
-  previewUrl: string;
-  bitmap: ImageBitmap;
-  metadata: TpreviewMetadata;
-};
 
 export type VideoPlayerContextType = {
   videoRef: React.RefObject<HTMLVideoElement | null>;
@@ -52,6 +46,4 @@ export type VideoPlayerContextType = {
 
   selectedSubtitlesLanguage: string | null | undefined;
   setSelectedSubtitlesLanguage: (language: string | null) => void;
-
-  previewImage: TPreview | undefined;
 };

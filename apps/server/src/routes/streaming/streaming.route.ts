@@ -1,4 +1,5 @@
 import {
+  getStreamingPreviewSchemas,
   getStreamingResolutionSchemas,
   getStreamingSubtitlesSchemas,
 } from "@hypertube/libs";
@@ -7,6 +8,7 @@ import { TApiContext } from "../../middlewares/injectApiContext";
 import { isLogged } from "../../middlewares/isLogged";
 import { urlParamsParser } from "../../middlewares/urlParamsParser";
 import {
+  getStreamingPreview,
   getStreamingResolution,
   getStreamingSubtitles,
 } from "./streaming.controller";
@@ -25,6 +27,13 @@ streamingRouter.get(
   isLogged,
   urlParamsParser(getStreamingSubtitlesSchemas.urlParams),
   getStreamingSubtitles
+);
+
+streamingRouter.get(
+  "/movie/:movieId/preview",
+  isLogged,
+  urlParamsParser(getStreamingPreviewSchemas.urlParams),
+  getStreamingPreview
 );
 
 export default streamingRouter;

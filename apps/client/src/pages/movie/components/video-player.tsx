@@ -14,6 +14,7 @@ import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import {
   DownloadStates,
+  getStreamingPreviewSchemas,
   getStreamingResolutionSchemas,
   getStreamingSubtitlesSchemas,
   getUrl,
@@ -199,13 +200,9 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
   className,
   ...props
 }) => {
-  const {
-    progress,
-    bufferedProgress,
-    handleSeek,
-    selectedResolution,
-    previewImage,
-  } = useVideoPlayer();
+  const { tmdbId } = useConvertParams(MoviePageParamsSchema);
+  const { progress, bufferedProgress, handleSeek, selectedResolution } =
+    useVideoPlayer();
 
   const [preview, setPreview] = useState<TPreview | null>(null);
 
@@ -216,19 +213,33 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
     );
   }, [selectedResolution]);
 
+  const { data: streamingPreview } = useQuery({
+    queryKey: getQueryKey(ROUTES.API.STREAMING_MOVIE_PREVIEW, {
+      movieId: tmdbId,
+    }),
+    queryFn: () =>
+      axiosFetch({
+        method: "GET",
+        schemas: getStreamingPreviewSchemas,
+        url: getUrl(ROUTES.API.STREAMING_MOVIE_PREVIEW, { tmdbId }),
+      }),
+    refetchInterval: 5 * 60 * 1000,
+    retry: false,
+  });
+
   const handleMouseMove = (e: MouseEvent) => {
-    if (!previewImage) return;
+    if (!streamingPreview) return;
     const rect = e.currentTarget.getBoundingClientRect();
 
     const mouseX = e.clientX - rect.left;
     const percent = Math.floor((mouseX / rect.width) * 100);
 
-    const x = percent % previewImage.metadata.cols;
-    const y = Math.floor(percent / previewImage.metadata.rows);
+    const x = percent % streamingPreview.metadata.cols;
+    const y = Math.floor(percent / streamingPreview.metadata.rows);
 
     const positionX = Math.min(
-      Math.max(mouseX - previewImage.metadata.tileWidth / 2, 0),
-      rect.width - previewImage.metadata.tileWidth
+      Math.max(mouseX - streamingPreview.metadata.tileWidth / 2, 0),
+      rect.width - streamingPreview.metadata.tileWidth
     );
 
     setPreview({
@@ -262,17 +273,17 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
           value={progress}
         />
 
-        {preview && previewImage && (
+        {preview && streamingPreview && (
           <div
             style={{
               position: "absolute",
               left: preview.positionX,
-              top: -(previewImage.metadata.tileHeight + 5),
-              width: previewImage.metadata.tileWidth,
-              height: previewImage.metadata.tileHeight,
-              backgroundImage: `url(${previewImage.previewUrl})`,
-              backgroundPosition: `-${preview.x * previewImage.metadata.tileWidth}px -${preview.y * previewImage.metadata.tileHeight}px`,
-              backgroundSize: `${previewImage.metadata.width}px ${previewImage.metadata.height}px`,
+              top: -(streamingPreview.metadata.tileHeight + 5),
+              width: streamingPreview.metadata.tileWidth,
+              height: streamingPreview.metadata.tileHeight,
+              backgroundImage: `url(${streamingPreview.url})`,
+              backgroundPosition: `-${preview.x * streamingPreview.metadata.tileWidth}px -${preview.y * streamingPreview.metadata.tileHeight}px`,
+              backgroundSize: `${streamingPreview.metadata.width}px ${streamingPreview.metadata.height}px`,
             }}
           />
         )}

@@ -2,6 +2,7 @@ import {
   ROUTES,
   commentSchema,
   getMoviesSchemas,
+  getStreamingPreviewSchemas,
   getStreamingResolutionSchemas,
   getStreamingSubtitlesSchemas,
   movieSchema,
@@ -70,6 +71,9 @@ const apiRouteQueryKeySchemas = {
     movieId: getStreamingSubtitlesSchemas.urlParams.shape.movieId,
     subtitlesLanguage:
       getStreamingSubtitlesSchemas.urlParams.shape.subtitlesLanguage,
+  }),
+  [ROUTES.API.STREAMING_MOVIE_PREVIEW]: z.object({
+    movieId: getStreamingPreviewSchemas.urlParams.shape.movieId,
   }),
 };
 
@@ -145,6 +149,11 @@ const queryKeys: {
     ROUTES.API.STREAMING_MOVIE_RESOLUTION,
     movieId,
     subtitlesLanguage,
+  ],
+  [ROUTES.API.STREAMING_MOVIE_PREVIEW]: ({ movieId }) => [
+    ROUTES.API.STREAMING_MOVIE_RESOLUTION,
+    movieId,
+    "preview",
   ],
 };
 
