@@ -191,7 +191,7 @@ const findMainVideoFile = (files: TorrentFile[]): TorrentFile | undefined => {
 
 const convertMovie = (
   input: { path: string },
-  output: PassThrough,
+  output: string,
   handler?: {
     onStart?: () => Promise<void>;
     onProgress?: (progress: { percent: number }) => Promise<void>;
@@ -200,58 +200,47 @@ const convertMovie = (
   }
 ): Promise<void> => {
   return new Promise((resolvePromise, rejectPromise) => {
-    const run = async () => {
-      ffmpeg(input.path)
-        .inputOptions([
-          "-fflags",
-          "+genpts",
-          "-threads",
-          "1",
-          ...FFPROBE_LOW_MEM,
-        ])
-        .outputOptions([
-          "-map",
-          "0:v:0",
-          "-map",
-          "0:a:0?",
-          "-c",
-          "copy",
-          "-threads",
-          "1",
-          "-max_muxing_queue_size",
-          "256",
-          "-movflags",
-          "frag_keyframe+empty_moov+default_base_moof",
-        ])
-        .format("mp4")
-        .on("start", async (commandLine) => {
-          hypertubeLogger.info(`Conversion started: ${commandLine}`);
-          await handler?.onStart?.();
-        })
-        .on("progress", async (progress) => {
-          hypertubeLogger.info(
-            `Conversion progress: ${progress.percent?.toFixed(2) || 0}%`
-          );
-          await handler?.onProgress?.({ percent: progress.percent || 0 });
-        })
-        .on("end", async () => {
-          hypertubeLogger.info(`Conversion ended`);
-          await handler?.onEnd?.();
-          resolvePromise();
-        })
-        .on("error", async (error) => {
-          hypertubeLogger.error(
-            `Conversion error: ${formatUnknownError(error)}`
-          );
-          await handler?.onError?.(error);
-          rejectPromise(
-            error instanceof Error ? error : new Error(String(error))
-          );
-        })
-        .pipe(output, { end: true });
-    };
-
-    void run();
+    ffmpeg(input.path)
+      .inputOptions(["-fflags", "+genpts", "-threads", "1", ...FFPROBE_LOW_MEM])
+      .outputOptions([
+        "-map",
+        "0:v:0",
+        "-map",
+        "0:a:0?",
+        "-c",
+        "copy",
+        "-threads",
+        "1",
+        "-max_muxing_queue_size",
+        "256",
+        "-movflags",
+        "+faststart",
+      ])
+      .format("mp4")
+      .on("start", async (commandLine) => {
+        hypertubeLogger.info(`Conversion started: ${commandLine}`);
+        await handler?.onStart?.();
+      })
+      .on("progress", async (progress) => {
+        hypertubeLogger.info(
+          `Conversion progress: ${progress.percent?.toFixed(2) || 0}%`
+        );
+        await handler?.onProgress?.({ percent: progress.percent || 0 });
+      })
+      .on("end", async () => {
+        hypertubeLogger.info(`Conversion ended`);
+        await handler?.onEnd?.();
+        resolvePromise();
+      })
+      .on("error", async (error) => {
+        hypertubeLogger.error(`Conversion error: ${formatUnknownError(error)}`);
+        await handler?.onError?.(error);
+        rejectPromise(
+          error instanceof Error ? error : new Error(String(error))
+        );
+      })
+      .output(output)
+      .run();
   });
 };
 
@@ -472,36 +461,38 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
               hypertubeLogger.info(
                 `Uploading movie with metadata: duration=${movieMetadata.duration}s, resolution=${movieMetadata.resolution}`
               );
-              const uploadStream = new PassThrough();
+              const moviePath = "/movie.mp4";
 
-              await Promise.all([
-                convertMovie({ path: endFile }, uploadStream),
-                storageService.putObject(
-                  BUCKETS.MOVIES,
-                  movieObjectPath,
-                  uploadStream,
-                  undefined,
-                  movieMetadata
-                ),
-                Promise.allSettled([
-                  handleEmbeddedSubtitles({
-                    videoPath: endFile,
-                    videoFileName: videoFile.name,
-                    onSubtitle: async ({
-                      language,
-                      vttStream,
-                      downloadLink,
-                    }) => {
-                      await uploadSubtitle({
-                        movie,
-                        language,
-                        vttStream,
-                        downloadLink,
-                      });
-                    },
-                  }),
-                ]),
-              ]);
+              await convertMovie({ path: endFile }, moviePath);
+
+              const movieStat = await fs.promises.stat(moviePath);
+              if (movieStat.size === 0) {
+                await fs.promises.rm(moviePath, { force: true });
+                throw new Error(`Converted movie file is empty: ${moviePath}`);
+              }
+
+              await storageService.putObject(
+                BUCKETS.MOVIES,
+                movieObjectPath,
+                fs.createReadStream(moviePath),
+                movieStat.size,
+                movieMetadata
+              );
+
+              await fs.promises.rm(moviePath, { force: true });
+
+              await handleEmbeddedSubtitles({
+                videoPath: endFile,
+                videoFileName: videoFile.name,
+                onSubtitle: async ({ language, vttStream, downloadLink }) => {
+                  await uploadSubtitle({
+                    movie,
+                    language,
+                    vttStream,
+                    downloadLink,
+                  });
+                },
+              });
 
               const uploadedStat = await storageService.statObject(
                 BUCKETS.MOVIES,
