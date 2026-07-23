@@ -238,8 +238,8 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
     const y = Math.floor(percent / streamingPreview.metadata.rows);
 
     const positionX = Math.min(
-      Math.max(mouseX - streamingPreview.metadata.tileWidth / 2, 0),
-      rect.width - streamingPreview.metadata.tileWidth
+      Math.max(mouseX - streamingPreview.metadata.tilewidth / 2, 0),
+      rect.width - streamingPreview.metadata.tilewidth
     );
 
     setPreview({
@@ -278,11 +278,11 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
             style={{
               position: "absolute",
               left: preview.positionX,
-              top: -(streamingPreview.metadata.tileHeight + 5),
-              width: streamingPreview.metadata.tileWidth,
-              height: streamingPreview.metadata.tileHeight,
+              top: -(streamingPreview.metadata.tileheight + 5),
+              width: streamingPreview.metadata.tilewidth,
+              height: streamingPreview.metadata.tileheight,
               backgroundImage: `url(${streamingPreview.url})`,
-              backgroundPosition: `-${preview.x * streamingPreview.metadata.tileWidth}px -${preview.y * streamingPreview.metadata.tileHeight}px`,
+              backgroundPosition: `-${preview.x * streamingPreview.metadata.tilewidth}px -${preview.y * streamingPreview.metadata.tileheight}px`,
               backgroundSize: `${streamingPreview.metadata.width}px ${streamingPreview.metadata.height}px`,
             }}
           />
