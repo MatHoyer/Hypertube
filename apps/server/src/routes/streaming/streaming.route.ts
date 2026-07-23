@@ -17,14 +17,14 @@ streamingRouter.get(
   "/movie/:movieId/resolution/:resolutionId",
   isLogged,
   urlParamsParser(getStreamingResolutionSchemas.urlParams),
-  getStreamingResolution
+  getStreamingResolution,
 );
 
 streamingRouter.get(
   "/movie/:movieId/subtitles/:subtitlesLanguage",
   isLogged,
   urlParamsParser(getStreamingSubtitlesSchemas.urlParams),
-  getStreamingSubtitles
+  getStreamingSubtitles,
 );
 
 export default streamingRouter;
