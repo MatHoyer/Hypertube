@@ -18,7 +18,9 @@ export const getStreamingSubtitlesSchemas = {
     movieId: movieSchema.shape.tmdbId,
     subtitlesLanguage: z.string(),
   }),
+  response: z.object({ url: z.url() }),
 };
 export type TGetStreamingSubtitlesSchemas = {
   urlParams: z.infer<typeof getStreamingSubtitlesSchemas.urlParams>;
+  response: z.infer<typeof getStreamingSubtitlesSchemas.response>;
 };
