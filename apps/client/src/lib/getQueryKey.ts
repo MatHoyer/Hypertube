@@ -2,6 +2,7 @@ import {
   ROUTES,
   commentSchema,
   getMoviesSchemas,
+  getStreamingResolutionSchemas,
   movieSchema,
   notificationReadStatuses,
   playlistSchema,
@@ -56,6 +57,13 @@ const apiRouteQueryKeySchemas = {
   }),
   [ROUTES.API.COMMENTS_REPLIES]: z.object({
     commentId: commentSchema.shape.id,
+  }),
+  [ROUTES.API.STREAMING_MOVIE_RESOLUTION]: z.object({
+    movieId: getStreamingResolutionSchemas.urlParams.shape.movieId,
+    resolutionId: z.union([
+      getStreamingResolutionSchemas.urlParams.shape.resolutionId,
+      z.string(),
+    ]),
   }),
 };
 
@@ -121,6 +129,11 @@ const queryKeys: {
   [ROUTES.API.COMMENTS_REPLIES]: ({ commentId }) => [
     ROUTES.API.COMMENTS_REPLIES,
     commentId,
+  ],
+  [ROUTES.API.STREAMING_MOVIE_RESOLUTION]: ({ movieId, resolutionId }) => [
+    ROUTES.API.STREAMING_MOVIE_RESOLUTION,
+    movieId,
+    resolutionId,
   ],
 };
 

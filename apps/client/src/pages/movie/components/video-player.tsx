@@ -14,12 +14,13 @@ import { getQueryKey } from "@/lib/getQueryKey";
 import { cn } from "@/lib/utils";
 import {
   DownloadStates,
+  getStreamingResolutionSchemas,
   getUrl,
   putMovieWatchTimerSchemas,
   ROUTES,
   secondsToHMS,
 } from "@hypertube/libs";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Expand, Pause, Play, Shrink, Volume2, VolumeX } from "lucide-react";
 import React, {
   useCallback,
@@ -459,6 +460,23 @@ const VideoPlayer = () => {
     };
   }, [updateWatchTimer]);
 
+  const { data } = useQuery({
+    queryKey: getQueryKey(ROUTES.API.STREAMING_MOVIE_RESOLUTION, {
+      movieId: tmdbId,
+      resolutionId: selectedResolution?.id ?? "",
+    }),
+    queryFn: () =>
+      axiosFetch({
+        method: "GET",
+        schemas: getStreamingResolutionSchemas,
+        url: getUrl(ROUTES.API.STREAMING_MOVIE_RESOLUTION, {
+          tmdbId: tmdbId,
+          resolutionId: selectedResolution!.id,
+        }),
+      }),
+    enabled: !!selectedResolution,
+  });
+
   return (
     <div
       tabIndex={0}
@@ -474,7 +492,7 @@ const VideoPlayer = () => {
             }
       }
     >
-      {selectedResolution ? (
+      {data && selectedResolution ? (
         <>
           <video
             ref={(ref) =>
@@ -488,16 +506,7 @@ const VideoPlayer = () => {
             disableRemotePlayback
             crossOrigin="use-credentials"
           >
-            <source
-              src={
-                serverUrl +
-                getUrl(ROUTES.API.STREAMING_MOVIE_RESOLUTION, {
-                  tmdbId,
-                  resolutionId: selectedResolution.id,
-                })
-              }
-              type="video/mp4"
-            />
+            <source src={data.url} type="video/mp4" />
             {selectedSubtitlesLanguage && (
               <track
                 src={
