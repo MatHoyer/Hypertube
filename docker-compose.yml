@@ -53,19 +53,17 @@ services:
       - s3_data:/data
 
   s3-init:
-    image: minio/mc:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.s3-init
     depends_on:
       - s3
     networks:
       - hypertube-network
-    entrypoint: /bin/sh
-    command:
-      - -c
-      - |
-        until mc alias set local http://s3:9000 ${S3_ROOT_USER} ${S3_ROOT_PASSWORD}; do sleep 1; done
-        mc mb -p local/movies || true
-        mc mb -p local/images || true
-        mc anonymous set download local/images
+    environment:
+      - S3_ROOT_USER=${S3_ROOT_USER}
+      - S3_ROOT_PASSWORD=${S3_ROOT_PASSWORD}
+      - CLIENT_URL=${CLIENT_URL}
     restart: no
 
 volumes:
