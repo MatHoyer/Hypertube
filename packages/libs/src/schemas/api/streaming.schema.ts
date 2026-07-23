@@ -6,9 +6,11 @@ export const getStreamingResolutionSchemas = {
     movieId: movieSchema.shape.tmdbId,
     resolutionId: resolutionSchema.shape.id,
   }),
+  response: z.object({ url: z.url() }),
 };
 export type TGetStreamingResolutionSchemas = {
   urlParams: z.infer<typeof getStreamingResolutionSchemas.urlParams>;
+  response: z.infer<typeof getStreamingResolutionSchemas.response>;
 };
 
 export const getStreamingSubtitlesSchemas = {
