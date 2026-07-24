@@ -34,15 +34,18 @@ import React, {
   type MouseEvent,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { useVideoPlayer } from "../contexts/video-player/video-player.context";
+import {
+  useVideoPlayerControls,
+  useVideoPlayerFast,
+} from "../contexts/video-player/video-player.context";
 import { MoviePageParamsSchema } from "../schemas/urlParams.schema";
 import SettingsButton from "./dropdown-menu-navigating/dropdown-menu-navigating";
 
 const MiddleScreenInfo: React.FC<{
   type: "volume" | "play" | null;
-}> = ({ type }) => {
+}> = React.memo(({ type }) => {
   const { isMobile } = useIsMobile();
-  const { volume, playing } = useVideoPlayer();
+  const { volume, playing } = useVideoPlayerControls();
 
   if (type === null) return null;
 
@@ -75,31 +78,31 @@ const MiddleScreenInfo: React.FC<{
         </div>
       );
   }
-};
+});
 
-const PlayPauseButton: React.FC<ComponentProps<typeof Button>> = ({
-  className,
-  ...props
-}) => {
-  const { playing, handlePlay } = useVideoPlayer();
-  return (
-    <Button
-      variant="ghost"
-      onClick={handlePlay}
-      className={cn("p-2 rounded-full", className)}
-      {...props}
-    >
-      {playing ? (
-        <Pause size={20} color="white" />
-      ) : (
-        <Play size={20} color="white" />
-      )}
-    </Button>
-  );
-};
+const PlayPauseButton: React.FC<ComponentProps<typeof Button>> = React.memo(
+  ({ className, ...props }) => {
+    const { playing, handlePlay } = useVideoPlayerControls();
+    return (
+      <Button
+        variant="ghost"
+        onClick={handlePlay}
+        className={cn("p-2 rounded-full", className)}
+        {...props}
+      >
+        {playing ? (
+          <Pause size={20} color="white" />
+        ) : (
+          <Play size={20} color="white" />
+        )}
+      </Button>
+    );
+  }
+);
 
-const VolumeControl = () => {
-  const { muted, volume, toggleMute, handleVolumeChange } = useVideoPlayer();
+const VolumeControl = React.memo(() => {
+  const { muted, volume, toggleMute, handleVolumeChange } =
+    useVideoPlayerControls();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const { mouseIn } = useMouse(containerRef);
@@ -142,10 +145,11 @@ const VolumeControl = () => {
       </div>
     </div>
   );
-};
+});
 
-const Timer = () => {
-  const { videoRef, progress } = useVideoPlayer();
+const Timer = React.memo(() => {
+  const { videoRef } = useVideoPlayerControls();
+  const { progress } = useVideoPlayerFast();
   const [currentDuration, setCurrentDuration] = useState(0);
 
   useEffect(() => {
@@ -187,7 +191,7 @@ const Timer = () => {
       )}
     </div>
   );
-};
+});
 
 type TPreview = {
   positionX: number;
@@ -196,119 +200,118 @@ type TPreview = {
   percent: number;
 };
 
-const ProgressBar: React.FC<ComponentProps<"div">> = ({
-  className,
-  ...props
-}) => {
-  const { tmdbId } = useConvertParams(MoviePageParamsSchema);
-  const { progress, bufferedProgress, handleSeek, selectedResolution } =
-    useVideoPlayer();
+const ProgressBar: React.FC<ComponentProps<"div">> = React.memo(
+  ({ className, ...props }) => {
+    const { tmdbId } = useConvertParams(MoviePageParamsSchema);
+    const { handleSeek, selectedResolution } = useVideoPlayerControls();
+    const { progress, bufferedProgress } = useVideoPlayerFast();
 
-  const [preview, setPreview] = useState<TPreview | null>(null);
+    const [preview, setPreview] = useState<TPreview | null>(null);
 
-  const isExplorable = useMemo(() => {
-    return (
-      selectedResolution &&
-      selectedResolution.downloadState === DownloadStates.DOWNLOADED
-    );
-  }, [selectedResolution]);
+    const isExplorable = useMemo(() => {
+      return (
+        selectedResolution &&
+        selectedResolution.downloadState === DownloadStates.DOWNLOADED
+      );
+    }, [selectedResolution]);
 
-  const { data: streamingPreview } = useQuery({
-    queryKey: getQueryKey(ROUTES.API.STREAMING_MOVIE_PREVIEW, {
-      movieId: tmdbId,
-    }),
-    queryFn: () =>
-      axiosFetch({
-        method: "GET",
-        schemas: getStreamingPreviewSchemas,
-        url: getUrl(ROUTES.API.STREAMING_MOVIE_PREVIEW, { tmdbId }),
+    const { data: streamingPreview } = useQuery({
+      queryKey: getQueryKey(ROUTES.API.STREAMING_MOVIE_PREVIEW, {
+        movieId: tmdbId,
       }),
-    retry: false,
-  });
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!streamingPreview) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-
-    const mouseX = e.clientX - rect.left;
-    const percent = Math.floor((mouseX / rect.width) * 100);
-
-    const x = percent % streamingPreview.metadata.cols;
-    const y = Math.floor(percent / streamingPreview.metadata.rows);
-
-    const positionX = Math.min(
-      Math.max(mouseX - streamingPreview.metadata.tileWidth / 2, 0),
-      rect.width - streamingPreview.metadata.tileWidth
-    );
-
-    setPreview({
-      positionX,
-      x,
-      y,
-      percent: percent,
+      queryFn: () =>
+        axiosFetch({
+          method: "GET",
+          schemas: getStreamingPreviewSchemas,
+          url: getUrl(ROUTES.API.STREAMING_MOVIE_PREVIEW, { tmdbId }),
+        }),
+      retry: false,
     });
-  };
 
-  return (
-    <div className={cn("flex items-center w-full", className)} {...props}>
-      <div className="relative flex-1">
-        {/* Background track */}
-        <Progress
-          className="absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 bg-white/20"
-          value={0}
-        />
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!streamingPreview) return;
+      const rect = e.currentTarget.getBoundingClientRect();
 
-        {/* Buffered progress */}
-        <Progress
-          className="absolute inset-y-0 left-0 right-0 bg-transparent top-1/2 transform -translate-y-1/2"
-          progressClassName="bg-white/40 duration-500"
-          value={bufferedProgress}
-        />
+      const mouseX = e.clientX - rect.left;
+      const percent = Math.floor((mouseX / rect.width) * 100);
 
-        {/* Current progress */}
-        <Progress
-          className="absolute inset-y-0 left-0 right-0 bg-transparent top-1/2 transform -translate-y-1/2"
-          progressClassName="transition-none"
-          value={progress}
-        />
+      const x = percent % streamingPreview.metadata.cols;
+      const y = Math.floor(percent / streamingPreview.metadata.rows);
 
-        {preview && streamingPreview && (
-          <div
-            style={{
-              position: "absolute",
-              left: preview.positionX,
-              top: -(streamingPreview.metadata.tileHeight + 5),
-              width: streamingPreview.metadata.tileWidth,
-              height: streamingPreview.metadata.tileHeight,
-              backgroundImage: `url(${streamingPreview.url})`,
-              backgroundPosition: `-${preview.x * streamingPreview.metadata.tileWidth}px -${preview.y * streamingPreview.metadata.tileHeight}px`,
-              backgroundSize: `${streamingPreview.metadata.width}px ${streamingPreview.metadata.height}px`,
-            }}
+      const positionX = Math.min(
+        Math.max(mouseX - streamingPreview.metadata.tileWidth / 2, 0),
+        rect.width - streamingPreview.metadata.tileWidth
+      );
+
+      setPreview({
+        positionX,
+        x,
+        y,
+        percent: percent,
+      });
+    };
+
+    return (
+      <div className={cn("flex items-center w-full", className)} {...props}>
+        <div className="relative flex-1">
+          {/* Background track */}
+          <Progress
+            className="absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 bg-white/20"
+            value={0}
           />
-        )}
 
-        <input
-          type="range"
-          min="0"
-          max="100"
-          step="0.1"
-          value={progress}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={() => setPreview(null)}
-          onChange={(e) => handleSeek(e.target.valueAsNumber)}
-          className={cn(
-            "absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10",
-            !isExplorable ? "cursor-not-allowed" : "cursor-pointer"
+          {/* Buffered progress */}
+          <Progress
+            className="absolute inset-y-0 left-0 right-0 bg-transparent top-1/2 transform -translate-y-1/2"
+            progressClassName="bg-white/40 duration-500"
+            value={bufferedProgress}
+          />
+
+          {/* Current progress */}
+          <Progress
+            className="absolute inset-y-0 left-0 right-0 bg-transparent top-1/2 transform -translate-y-1/2"
+            progressClassName="transition-none"
+            value={progress}
+          />
+
+          {preview && streamingPreview && (
+            <div
+              style={{
+                position: "absolute",
+                left: preview.positionX,
+                top: -(streamingPreview.metadata.tileHeight + 5),
+                width: streamingPreview.metadata.tileWidth,
+                height: streamingPreview.metadata.tileHeight,
+                backgroundImage: `url(${streamingPreview.url})`,
+                backgroundPosition: `-${preview.x * streamingPreview.metadata.tileWidth}px -${preview.y * streamingPreview.metadata.tileHeight}px`,
+                backgroundSize: `${streamingPreview.metadata.width}px ${streamingPreview.metadata.height}px`,
+              }}
+            />
           )}
-          disabled={!isExplorable}
-        />
-      </div>
-    </div>
-  );
-};
 
-const FullscreenButton = () => {
-  const { isFullscreen, toggleFullscreen } = useVideoPlayer();
+          <input
+            type="range"
+            min="0"
+            max="100"
+            step="0.1"
+            value={progress}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={() => setPreview(null)}
+            onChange={(e) => handleSeek(e.target.valueAsNumber)}
+            className={cn(
+              "absolute inset-y-0 left-0 right-0 top-1/2 transform -translate-y-1/2 accent-primary z-10",
+              !isExplorable ? "cursor-not-allowed" : "cursor-pointer"
+            )}
+            disabled={!isExplorable}
+          />
+        </div>
+      </div>
+    );
+  }
+);
+
+const FullscreenButton = React.memo(() => {
+  const { isFullscreen, toggleFullscreen } = useVideoPlayerControls();
 
   return (
     <Button
@@ -323,16 +326,17 @@ const FullscreenButton = () => {
       )}
     </Button>
   );
-};
+});
 
-const ControlsBar = () => {
+const ControlsBar = React.memo(() => {
   const { isMobile } = useIsMobile();
 
   const controlsRef = useRef<HTMLDivElement>(null);
   const { mouseIn } = useMouse(controlsRef);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const { playing, mouseMoving, mouseClicked } = useVideoPlayer();
+  const { playing } = useVideoPlayerControls();
+  const { mouseMoving, mouseClicked } = useVideoPlayerFast();
 
   return (
     <>
@@ -390,7 +394,7 @@ const ControlsBar = () => {
       </AnimateApparition>
     </>
   );
-};
+});
 
 const VideoPlayer = () => {
   const { tmdbId } = useConvertParams(MoviePageParamsSchema);
@@ -413,9 +417,8 @@ const VideoPlayer = () => {
     selectedResolution,
     selectedSubtitlesLanguage,
 
-    progress,
     setWatchedTimestamp,
-  } = useVideoPlayer();
+  } = useVideoPlayerControls();
 
   const { isMobile } = useIsMobile();
   const queryClient = useQueryClient();
@@ -431,14 +434,12 @@ const VideoPlayer = () => {
     setMiddleScreenInfo("volume");
   }, [volume, setMiddleScreenInfo]);
 
-  const progressRef = useRef(progress);
-  if (progressRef.current === null) progressRef.current = progress;
-
   const updateWatchTimer = useCallback(() => {
-    if (!progressRef.current) return;
+    const video = videoRef.current;
+    if (!video || !video.currentTime) return;
 
-    const duration = videoRef.current?.duration ?? 0;
-    const timestamp = Math.round((progressRef.current * duration) / 100);
+    const duration = video.duration || 0;
+    const timestamp = Math.round(video.currentTime);
 
     axiosFetch({
       method: "PUT",
@@ -454,7 +455,7 @@ const VideoPlayer = () => {
     queryClient.invalidateQueries({
       queryKey: getQueryKey(ROUTES.API.MOVIES_WATCH_TIMER),
     });
-  }, [tmdbId, progressRef, videoRef, queryClient, setWatchedTimestamp]);
+  }, [tmdbId, videoRef, queryClient, setWatchedTimestamp]);
 
   useEffect(() => {
     const interval = setInterval(updateWatchTimer, 10000);
