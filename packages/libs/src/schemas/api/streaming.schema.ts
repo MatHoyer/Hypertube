@@ -34,8 +34,8 @@ export const getStreamingPreviewSchemas = {
       rows: z.coerce.number(),
       width: z.coerce.number(),
       height: z.coerce.number(),
-      tilewidth: z.coerce.number(),
-      tileheight: z.coerce.number(),
+      tileWidth: z.coerce.number(),
+      tileHeight: z.coerce.number(),
     }),
   }),
 };
