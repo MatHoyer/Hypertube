@@ -91,8 +91,13 @@ export class MinioStorageService implements IStorageService {
 
   presignedGetObject: IStorageService["presignedGetObject"] = async (
     bucketName,
-    objectName
+    objectName,
+    expirySeconds
   ) => {
-    return await this.minioClient.presignedGetObject(bucketName, objectName);
+    return await this.minioClient.presignedGetObject(
+      bucketName,
+      objectName,
+      expirySeconds
+    );
   };
 }
