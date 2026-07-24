@@ -12,6 +12,7 @@ import {
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type KeyboardEvent,
@@ -20,8 +21,15 @@ import { useTranslation } from "react-i18next";
 import { useResolutions } from "../resolutions/resolutions.context";
 import { useSubtitles } from "../subtitles/subtitles.context";
 import { usedKeys } from "./video-player.const";
-import { VideoPlayerContext } from "./video-player.context";
-import type { Speed } from "./video-player.type";
+import {
+  VideoPlayerControlsContext,
+  VideoPlayerFastContext,
+} from "./video-player.context";
+import type {
+  Speed,
+  VideoPlayerControlsContextType,
+  VideoPlayerFastContextType,
+} from "./video-player.type";
 
 export const VideoPlayerProvider: React.FC<{
   watchedTimestamp: number;
@@ -75,10 +83,15 @@ export const VideoPlayerProvider: React.FC<{
   const [speed, setSpeed] = useState<Speed>(1);
 
   const handlePlay = useCallback(() => {
-    if (!playing && progress >= 100) setProgress(0);
+    const video = videoRef.current;
+    const isEnded =
+      video && video.duration && video.currentTime >= video.duration;
+    if (!playing && isEnded) {
+      setProgress(0);
+    }
 
     togglePlay();
-  }, [playing, progress, togglePlay]);
+  }, [playing, videoRef, togglePlay]);
 
   const { mouseMoving, mouseClicked, triggerMouseMove, triggerMouseClick } =
     useMouse(containerRef, isMobile ? 3000 : undefined);
@@ -119,7 +132,7 @@ export const VideoPlayerProvider: React.FC<{
       videoRef.current.pause();
     }
     videoRef.current.volume = volume / 100;
-  }, [videoRef, playing, volume, progress]);
+  }, [videoRef, playing, volume]);
 
   // Mute/Unmute
   useEffect(() => {
@@ -224,14 +237,11 @@ export const VideoPlayerProvider: React.FC<{
   // Code shortcuts
   const handleJumpVideo = useCallback(
     (seconds: number) => {
-      const currentTimeInSeconds =
-        (progress * (videoRef.current?.duration ?? 0)) / 100;
-      handleSeek(
-        ((currentTimeInSeconds + seconds) / (videoRef.current?.duration ?? 0)) *
-          100
-      );
+      const video = videoRef.current;
+      if (!video || !video.duration) return;
+      handleSeek(((video.currentTime + seconds) / video.duration) * 100);
     },
-    [videoRef, handleSeek, progress]
+    [videoRef, handleSeek]
   );
 
   const handleJumpVolume = useCallback(
@@ -283,54 +293,94 @@ export const VideoPlayerProvider: React.FC<{
     ]
   );
 
+  const controlsValue = useMemo<VideoPlayerControlsContextType>(
+    () => ({
+      videoRef,
+      setVideoRef,
+      containerRef,
+
+      handleKeyDown,
+
+      playing,
+      handlePlay,
+
+      muted,
+      toggleMute,
+
+      volume,
+      handleVolumeChange,
+      handleJumpVolume,
+
+      isFullscreen,
+      toggleFullscreen,
+      setIsFullscreen,
+
+      handleProgress,
+      handleSeek,
+      handleJumpVideo,
+      watchedTimestamp,
+      setWatchedTimestamp,
+
+      speed,
+      handleSetSpeed,
+
+      triggerMouseMove,
+      triggerMouseClick,
+
+      isResolutionsLoading,
+      selectedResolution: userSelectedResolution,
+      setSelectedResolution,
+
+      selectedSubtitlesLanguage: userSelectedSubtitlesLanguage,
+      setSelectedSubtitlesLanguage,
+    }),
+    [
+      videoRef,
+      setVideoRef,
+      containerRef,
+      handleKeyDown,
+      playing,
+      handlePlay,
+      muted,
+      toggleMute,
+      volume,
+      handleVolumeChange,
+      handleJumpVolume,
+      isFullscreen,
+      toggleFullscreen,
+      setIsFullscreen,
+      handleProgress,
+      handleSeek,
+      handleJumpVideo,
+      watchedTimestamp,
+      setWatchedTimestamp,
+      speed,
+      handleSetSpeed,
+      triggerMouseMove,
+      triggerMouseClick,
+      isResolutionsLoading,
+      userSelectedResolution,
+      setSelectedResolution,
+      userSelectedSubtitlesLanguage,
+      setSelectedSubtitlesLanguage,
+    ]
+  );
+
+  const fastValue = useMemo<VideoPlayerFastContextType>(
+    () => ({
+      progress,
+      bufferedProgress,
+      mouseMoving,
+      mouseClicked,
+    }),
+    [progress, bufferedProgress, mouseMoving, mouseClicked]
+  );
+
   return (
-    <VideoPlayerContext.Provider
-      value={{
-        videoRef,
-        setVideoRef,
-        containerRef,
-
-        handleKeyDown,
-
-        playing,
-        handlePlay,
-
-        muted,
-        toggleMute,
-
-        volume,
-        handleVolumeChange,
-        handleJumpVolume,
-
-        isFullscreen,
-        toggleFullscreen,
-        setIsFullscreen,
-
-        progress,
-        bufferedProgress,
-        handleProgress,
-        handleSeek,
-        handleJumpVideo,
-        watchedTimestamp,
-        setWatchedTimestamp,
-
-        speed,
-        handleSetSpeed,
-
-        mouseMoving,
-        mouseClicked,
-        triggerMouseMove,
-        triggerMouseClick,
-
-        isResolutionsLoading,
-        selectedResolution: userSelectedResolution,
-        setSelectedResolution,
-
-        selectedSubtitlesLanguage: userSelectedSubtitlesLanguage,
-        setSelectedSubtitlesLanguage,
-      }}
-    >
-      {children}
-    </VideoPlayerContext.Provider>
+    <VideoPlayerControlsContext.Provider value={controlsValue}>
+      <VideoPlayerFastContext.Provider value={fastValue}>
+        {children}
+      </VideoPlayerFastContext.Provider>
+    </VideoPlayerControlsContext.Provider>
   );
 };
