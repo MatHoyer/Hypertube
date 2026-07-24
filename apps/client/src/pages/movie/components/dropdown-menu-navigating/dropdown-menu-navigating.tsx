@@ -17,11 +17,11 @@ import {
   Squirrel,
   Turtle,
 } from "lucide-react";
-import { useEffect, useState, type ComponentProps } from "react";
+import { memo, useEffect, useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";
 import { useResolutions } from "../../contexts/resolutions/resolutions.context";
 import { useSubtitles } from "../../contexts/subtitles/subtitles.context";
-import { useVideoPlayer } from "../../contexts/video-player/video-player.context";
+import { useVideoPlayerControls } from "../../contexts/video-player/video-player.context";
 import {
   DropdownMenuNavigatingPage,
   DropdownMenuSelectedItem,
@@ -67,7 +67,7 @@ const SpeedSettings: React.FC<{
   closePopup: () => void;
 }> = ({ goBack, closePopup }) => {
   const { t } = useTranslation();
-  const { speed, handleSetSpeed } = useVideoPlayer();
+  const { speed, handleSetSpeed } = useVideoPlayerControls();
 
   const handleClick = (speed: 0.5 | 1 | 1.5 | 2) => {
     handleSetSpeed(speed);
@@ -117,7 +117,7 @@ const ResolutionsSettings: React.FC<{
 }> = ({ goBack, closePopup }) => {
   const { t } = useTranslation();
   const { streamableResolutions, isLoading } = useResolutions();
-  const { selectedResolution, setSelectedResolution } = useVideoPlayer();
+  const { selectedResolution, setSelectedResolution } = useVideoPlayerControls();
 
   return (
     <DropdownMenuNavigatingPage
@@ -165,7 +165,7 @@ const SubtitlesSettings: React.FC<{
   const { t } = useTranslation();
   const { streamableSubtitles, isLoading } = useSubtitles();
   const { selectedSubtitlesLanguage, setSelectedSubtitlesLanguage } =
-    useVideoPlayer();
+    useVideoPlayerControls();
 
   return (
     <DropdownMenuNavigatingPage
@@ -227,7 +227,7 @@ const SettingsButton: React.FC<
     setSettingsOpen: (settingsOpen: boolean) => void;
     side?: "top" | "bottom";
   } & ComponentProps<typeof Button>
-> = ({ settingsOpen, setSettingsOpen, side = "top", className, ...props }) => {
+> = memo(({ settingsOpen, setSettingsOpen, side = "top", className, ...props }) => {
   const [type, setType] = useState<
     "global" | "speed" | "resolutions" | "subtitles"
   >("global");
@@ -243,7 +243,7 @@ const SettingsButton: React.FC<
     setType("global");
   };
 
-  const { containerRef } = useVideoPlayer();
+  const { containerRef } = useVideoPlayerControls();
   const [container, setContainer] = useState<HTMLDivElement | undefined>();
 
   useEffect(() => {
@@ -290,6 +290,6 @@ const SettingsButton: React.FC<
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+});
 
 export default SettingsButton;
