@@ -15,10 +15,22 @@ export const getStreamingResolution = async (
 ) => {
   const { movieId: tmdbId, resolutionId } = c.get("validatedUrlParams");
   const storageService = c.get("storageService");
+  const objectName = getStoragePath(
+    tmdbId.toString(),
+    "resolutions",
+    resolutionId,
+    "movie.mp4"
+  );
+
+  try {
+    await storageService.statObject(BUCKETS.MOVIES, objectName);
+  } catch {
+    return c.notFound();
+  }
 
   const url = await storageService.presignedGetObject(
     BUCKETS.MOVIES,
-    getStoragePath(tmdbId.toString(), "resolutions", resolutionId, "movie.mp4")
+    objectName
   );
 
   return c.json({ url });
@@ -31,15 +43,22 @@ export const getStreamingSubtitles = async (
 ) => {
   const { movieId: tmdbId, subtitlesLanguage } = c.get("validatedUrlParams");
   const storageService = c.get("storageService");
+  const objectName = getStoragePath(
+    tmdbId.toString(),
+    "subtitles",
+    subtitlesLanguage,
+    "subtitles.vtt"
+  );
+
+  try {
+    await storageService.statObject(BUCKETS.MOVIES, objectName);
+  } catch {
+    return c.notFound();
+  }
 
   const url = await storageService.presignedGetObject(
     BUCKETS.MOVIES,
-    getStoragePath(
-      tmdbId.toString(),
-      "subtitles",
-      subtitlesLanguage,
-      "subtitles.vtt"
-    )
+    objectName
   );
 
   return c.json({ url });
@@ -54,11 +73,18 @@ export const getStreamingPreview = async (
   const storageService = c.get("storageService");
   const objectName = `${tmdbId.toString()}/preview.jpg`;
 
+  let metaData;
+  try {
+    const statObject = await storageService.statObject(
+      BUCKETS.MOVIES,
+      objectName
+    );
+    metaData = statObject.metaData;
+  } catch {
+    return c.notFound();
+  }
+
   const url = await storageService.presignedGetObject(
-    BUCKETS.MOVIES,
-    objectName
-  );
-  const { metaData } = await storageService.statObject(
     BUCKETS.MOVIES,
     objectName
   );
