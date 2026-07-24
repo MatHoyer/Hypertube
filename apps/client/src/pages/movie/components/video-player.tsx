@@ -18,6 +18,7 @@ import {
   getStreamingResolutionSchemas,
   getStreamingSubtitlesSchemas,
   getUrl,
+  PRESIGNED_URL_EXPIRY_SECONDS,
   putMovieWatchTimerSchemas,
   ROUTES,
   secondsToHMS,
@@ -485,7 +486,37 @@ const VideoPlayer = () => {
         }),
       }),
     enabled: !!selectedResolution,
+    // Re-ask for a fresh presigned URL before the current one expires so
+    // playback never hits an expired S3 link.
+    refetchInterval: PRESIGNED_URL_EXPIRY_SECONDS * 1000 * 0.8,
   });
+
+  // Swapping the <source src> alone doesn't make an already-loaded video
+  // reconnect, so once a *new* presigned URL comes in (refreshed before
+  // expiry, or a different resolution), force a reload while preserving
+  // the current playback position.
+  const isFirstStreamingUrl = useRef(true);
+  useEffect(() => {
+    if (!streamingResolution) return;
+    if (isFirstStreamingUrl.current) {
+      isFirstStreamingUrl.current = false;
+      return;
+    }
+
+    const video = videoRef.current;
+    if (!video) return;
+
+    const resumeTime = video.currentTime;
+    const wasPlaying = !video.paused;
+
+    const handleLoadedMetadata = () => {
+      video.currentTime = resumeTime;
+      if (wasPlaying) video.play();
+      video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+    };
+    video.addEventListener("loadedmetadata", handleLoadedMetadata);
+    video.load();
+  }, [streamingResolution, videoRef]);
 
   const { data: streamingSubtitles } = useQuery({
     queryKey: getQueryKey(ROUTES.API.STREAMING_MOVIE_SUBTITLES, {
@@ -531,7 +562,6 @@ const VideoPlayer = () => {
             playsInline
             {...{ "webkit-playsinline": "" }}
             disableRemotePlayback
-            crossOrigin="use-credentials"
           >
             <source src={streamingResolution.url} type="video/mp4" />
             {streamingSubtitles && selectedSubtitlesLanguage && (
@@ -556,7 +586,7 @@ const VideoPlayer = () => {
         </>
       ) : (
         <div className="flex items-center justify-center size-full">
-          {isResolutionsLoading ? (
+          {isResolutionsLoading || selectedResolution ? (
             <AppLoader />
           ) : (
             <Typography textColor="muted">
