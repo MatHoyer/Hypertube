@@ -1,6 +1,7 @@
 export const MOVIE_EVENTS = {
   RESOLUTION_STATE_CHANGE: "resolutionStateChange",
   SUBTITLE_STATE_CHANGE: "subtitleStateChange",
+  PREVIEW_STATE_CHANGE: "previewStateChange",
 } as const;
 
 export type TMovieEvents = (typeof MOVIE_EVENTS)[keyof typeof MOVIE_EVENTS];
