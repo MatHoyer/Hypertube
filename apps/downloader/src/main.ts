@@ -9,12 +9,12 @@ import {
 } from "@hypertube/server-core";
 import { Job, Worker } from "bullmq";
 import { Redis } from "ioredis";
+import { downloadMoviePreviews } from "./handlers/movie/download-movie-previews.js";
 import {
   downloadMovieFailureHandler,
   downloadMovieHandler,
   downloadMovieSuccessHandler,
 } from "./handlers/movie/download-movie.handler.js";
-import { downloadMoviePreviews } from "./handlers/movie/downloadMoviePreviews.js";
 import { gracefulShutdown } from "./shutdown.js";
 
 export const storageService: IStorageService = new MinioStorageService();
