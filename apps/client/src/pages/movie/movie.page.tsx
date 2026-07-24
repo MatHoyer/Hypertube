@@ -106,6 +106,14 @@ const MoviePage = () => {
         queryKey: getQueryKey(ROUTES.API.MOVIES_SUBTITLES, { tmdbId }),
       });
     };
+    const handlePreviewStateChange = () => {
+      queryClient.invalidateQueries({
+        queryKey: getQueryKey(ROUTES.API.STREAMING_MOVIE_PREVIEW, {
+          movieId: tmdbId,
+        }),
+      });
+    };
+
     eventSource.addEventListener(
       MOVIE_EVENTS.RESOLUTION_STATE_CHANGE,
       handleResolutionStateChange
@@ -113,6 +121,10 @@ const MoviePage = () => {
     eventSource.addEventListener(
       MOVIE_EVENTS.SUBTITLE_STATE_CHANGE,
       handleSubtitleStateChange
+    );
+    eventSource.addEventListener(
+      MOVIE_EVENTS.PREVIEW_STATE_CHANGE,
+      handlePreviewStateChange
     );
 
     return () => {
@@ -124,6 +136,10 @@ const MoviePage = () => {
       eventSource.removeEventListener(
         MOVIE_EVENTS.SUBTITLE_STATE_CHANGE,
         handleSubtitleStateChange
+      );
+      eventSource.removeEventListener(
+        MOVIE_EVENTS.PREVIEW_STATE_CHANGE,
+        handlePreviewStateChange
       );
     };
   }, [tmdbId, queryClient]);

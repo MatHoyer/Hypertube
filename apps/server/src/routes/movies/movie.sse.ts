@@ -34,6 +34,9 @@ export const ensureDownloaderQueueListeners = () => {
         });
         return;
       case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
+        sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+          sendSSEPreviewStateChange(stream);
+        });
         return;
     }
   });
@@ -48,8 +51,6 @@ export const ensureDownloaderQueueListeners = () => {
           );
         });
         return;
-      case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
-        return;
     }
   });
   movieQueue.on("waiting", (job) => {
@@ -58,8 +59,6 @@ export const ensureDownloaderQueueListeners = () => {
         sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
           sendSSEDownloadStateChange(job.data, DownloadStates.WAITING, stream);
         });
-        return;
-      case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
         return;
     }
   });
@@ -73,8 +72,6 @@ export const ensureDownloaderQueueListeners = () => {
             stream
           );
         });
-        return;
-      case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
         return;
     }
   });
@@ -101,5 +98,12 @@ export const sendSSESubtitleStateChange = (
   stream.writeSSE({
     event: MOVIE_EVENTS.SUBTITLE_STATE_CHANGE,
     data: JSON.stringify(subtitle),
+  });
+};
+
+const sendSSEPreviewStateChange = (stream: SSEStreamingApi) => {
+  stream.writeSSE({
+    event: MOVIE_EVENTS.PREVIEW_STATE_CHANGE,
+    data: "",
   });
 };

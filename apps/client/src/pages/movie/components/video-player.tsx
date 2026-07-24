@@ -223,7 +223,6 @@ const ProgressBar: React.FC<ComponentProps<"div">> = ({
         schemas: getStreamingPreviewSchemas,
         url: getUrl(ROUTES.API.STREAMING_MOVIE_PREVIEW, { tmdbId }),
       }),
-    refetchInterval: 5 * 60 * 1000,
     retry: false,
   });
 
