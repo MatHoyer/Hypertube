@@ -64,8 +64,8 @@ const downloadMoviePreview = ({
           rows: ROWS,
           width: TILE_WIDTH * COLS,
           height: tileHeight * ROWS,
-          tileWidth: TILE_WIDTH,
-          tileHeight,
+          "tile-width": TILE_WIDTH,
+          "tile-height": tileHeight,
         };
 
         await putPreviewToObjectStockage(movieId, metadata, uploadStream);

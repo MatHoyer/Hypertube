@@ -63,5 +63,18 @@ export const getStreamingPreview = async (
     objectName
   );
 
-  return c.json({ url, metadata: metaData });
+  const {
+    "tile-width": tileWidth,
+    "tile-height": tileHeight,
+    ...metadata
+  } = metaData;
+
+  return c.json({
+    url,
+    metadata: {
+      tileWidth,
+      tileHeight,
+      ...metadata,
+    },
+  });
 };

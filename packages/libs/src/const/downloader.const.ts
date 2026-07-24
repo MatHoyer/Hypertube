@@ -3,6 +3,6 @@ export type TpreviewMetadata = {
   rows: number;
   width: number;
   height: number;
-  tileWidth: number;
-  tileHeight: number;
+  "tile-width": number;
+  "tile-height": number;
 };
