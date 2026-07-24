@@ -1,10 +1,12 @@
 import {
+  PRESIGNED_URL_EXPIRY_SECONDS,
   TGetStreamingPreviewSchemas,
   TGetStreamingResolutionSchemas,
   TGetStreamingSubtitlesSchemas,
 } from "@hypertube/libs";
 import { BUCKETS, getStoragePath } from "@hypertube/server-core";
 import { Context } from "hono";
+import { container } from "../../container";
 import { TApiContext } from "../../middlewares/injectApiContext";
 import { TUrlParamsParser } from "../../middlewares/urlParamsParser";
 
@@ -28,9 +30,10 @@ export const getStreamingResolution = async (
     return c.notFound();
   }
 
-  const url = await storageService.presignedGetObject(
+  const url = await container.storageService.presignedGetObject(
     BUCKETS.MOVIES,
-    objectName
+    objectName,
+    PRESIGNED_URL_EXPIRY_SECONDS
   );
 
   return c.json({ url });

@@ -24,6 +24,7 @@ export interface IStorageService {
   removeObjectsByPrefix: (bucketName: TBuckets, prefix: string) => void;
   presignedGetObject: (
     bucketName: TBuckets,
-    objectName: string
+    objectName: string,
+    expirySeconds?: number
   ) => Promise<string>;
 }
