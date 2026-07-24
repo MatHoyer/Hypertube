@@ -3,7 +3,13 @@ import type { KeyboardEvent } from "react";
 
 export type Speed = 0.5 | 1 | 1.5 | 2;
 
-export type VideoPlayerContextType = {
+/**
+ * Rarely-changing player state/handlers (play/pause, volume, fullscreen,
+ * speed, resolution/subtitles selection, refs, ...). Consumers subscribing
+ * only to this context do not re-render on high-frequency ticks such as
+ * video timeupdate or mouse move.
+ */
+export type VideoPlayerControlsContextType = {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   setVideoRef: (ref: HTMLVideoElement) => void;
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -24,8 +30,6 @@ export type VideoPlayerContextType = {
   toggleFullscreen: () => void;
   setIsFullscreen: (isFullscreen: boolean) => void;
 
-  progress: number;
-  bufferedProgress: number;
   handleProgress: () => void;
   handleSeek: (percent: number) => void;
   handleJumpVideo: (seconds: number) => void;
@@ -35,8 +39,6 @@ export type VideoPlayerContextType = {
   speed: Speed;
   handleSetSpeed: (speed: Speed) => void;
 
-  mouseMoving: boolean;
-  mouseClicked: boolean;
   triggerMouseMove: () => void;
   triggerMouseClick: () => void;
 
@@ -46,4 +48,19 @@ export type VideoPlayerContextType = {
 
   selectedSubtitlesLanguage: string | null | undefined;
   setSelectedSubtitlesLanguage: (language: string | null) => void;
+};
+
+/**
+ * High-frequency player state, updated several times per second during
+ * playback (progress/bufferedProgress via timeupdate) or on every mouse
+ * move (mouseMoving/mouseClicked). Kept in its own context so only
+ * components that actually need per-tick updates (ProgressBar, Timer,
+ * ControlsBar) re-render on these changes.
+ */
+export type VideoPlayerFastContextType = {
+  progress: number;
+  bufferedProgress: number;
+
+  mouseMoving: boolean;
+  mouseClicked: boolean;
 };
