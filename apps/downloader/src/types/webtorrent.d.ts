@@ -85,5 +85,5 @@ declare module "parse-torrent" {
 
   export default function parseTorrent(
     torrentId: string | Buffer
-  ): ParsedTorrent;
+  ): Promise<ParsedTorrent>;
 }

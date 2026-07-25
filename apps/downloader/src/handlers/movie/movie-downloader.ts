@@ -392,7 +392,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
   // infoHash must be known *before* adding the torrent (it keys the S3 store),
   // so we derive it ourselves with the same library WebTorrent uses
   // internally rather than trusting a possibly-null/stale DB value.
-  const { infoHash } = parseTorrent(torrentId);
+  const { infoHash } = await parseTorrent(torrentId);
   if (dbResolution.infoHash !== infoHash) {
     await prisma.resolution.update({
       where: { id: resolutionId },
