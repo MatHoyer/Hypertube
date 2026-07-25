@@ -1,4 +1,4 @@
-import { hypertubeLogger } from "@hypertube/libs";
+import { formatUnknownError, hypertubeLogger } from "@hypertube/libs";
 import {
   env,
   IStorageService,
@@ -6,6 +6,7 @@ import {
   MOVIE_QUEUE,
   MOVIE_QUEUE_JOB_NAMES,
   TDownloadJobData,
+  TStopSeedingJobData,
 } from "@hypertube/server-core";
 import { Job, Worker } from "bullmq";
 import { Redis } from "ioredis";
@@ -15,6 +16,8 @@ import {
   downloadMovieHandler,
   downloadMovieSuccessHandler,
 } from "./handlers/movie/download-movie.handler.js";
+import { reconcileSeeds } from "./handlers/movie/seed-reconciliation.js";
+import { stopSeeding } from "./handlers/movie/webtorrent.client.js";
 import { gracefulShutdown } from "./shutdown.js";
 
 export const storageService: IStorageService = new MinioStorageService();
@@ -33,6 +36,8 @@ const worker = new Worker<TDownloadJobData>(
         return downloadMovieHandler(job);
       case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
         return downloadMoviePreviews(job);
+      case MOVIE_QUEUE_JOB_NAMES.STOP_SEEDING:
+        return stopSeeding((job.data as TStopSeedingJobData).infoHash);
       default:
         throw new Error(`Unknown job name: ${job.name}`);
     }
@@ -41,6 +46,12 @@ const worker = new Worker<TDownloadJobData>(
 );
 
 hypertubeLogger.info(`Downloader worker started`);
+
+// Non-blocking: resume seeding whatever's still within retention without
+// delaying the worker's ability to pick up new jobs.
+reconcileSeeds().catch((err) => {
+  hypertubeLogger.error(`Seed reconciliation failed: ${formatUnknownError(err)}`);
+});
 
 // Handle graceful shutdown
 process
@@ -54,6 +65,8 @@ worker.on("completed", async (job) => {
       return downloadMovieSuccessHandler(job);
     case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
       hypertubeLogger.info(`[${job.data.movie.id}] Movie preview success`);
+      return;
+    case MOVIE_QUEUE_JOB_NAMES.STOP_SEEDING:
       return;
     default:
       throw new Error(`Unknown job name: ${job.name}`);
@@ -73,6 +86,9 @@ worker.on("failed", async (job, err) => {
       hypertubeLogger.info(
         `[${job.data.movie.id}] Movie preview failed: ${err}`
       );
+      return;
+    case MOVIE_QUEUE_JOB_NAMES.STOP_SEEDING:
+      hypertubeLogger.error(`Stop-seeding job failed: ${err}`);
       return;
     default:
       throw new Error(`Unknown job name: ${job.name}`);

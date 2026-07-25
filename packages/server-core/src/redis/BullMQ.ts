@@ -6,11 +6,12 @@ import {
   MOVIE_QUEUE_JOB_NAMES,
   TDownloadJobData,
   TPreviewJobData,
+  TStopSeedingJobData,
 } from "./const.js";
 
 type TQueueName = typeof MOVIE_QUEUE;
 type TQueueJobData = {
-  [MOVIE_QUEUE]: TDownloadJobData | TPreviewJobData;
+  [MOVIE_QUEUE]: TDownloadJobData | TPreviewJobData | TStopSeedingJobData;
 };
 type TQueueJobName = {
   [MOVIE_QUEUE]: (typeof MOVIE_QUEUE_JOB_NAMES)[keyof typeof MOVIE_QUEUE_JOB_NAMES];
