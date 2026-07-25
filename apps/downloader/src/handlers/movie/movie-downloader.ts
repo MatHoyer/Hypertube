@@ -44,6 +44,19 @@ const WAIT_SUBTITLE_TIMEOUT = 10000;
 const STALL_TIMEOUT = 180000;
 const PROGRESS_LOG_INTERVAL = 30000;
 
+// BullMQ job progress (visible in bull-board): torrent download is the bulk
+// of the wait, conversion is comparatively quick.
+const DOWNLOAD_PROGRESS_WEIGHT = 90;
+const CONVERT_PROGRESS_WEIGHT = 10;
+
+const reportJobProgress = (job: Job<TDownloadJobData>, percent: number) => {
+  job.updateProgress(Math.round(percent)).catch((error: unknown) => {
+    hypertubeLogger.error(
+      `Failed to update job progress: ${formatUnknownError(error)}`
+    );
+  });
+};
+
 const VIDEO_EXTENSIONS = [
   ".mp4",
   ".mkv",
@@ -442,6 +455,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       hypertubeLogger.info(
         `Progress: ${(torrent.progress * 100).toFixed(2)}%, speed=${(torrent.downloadSpeed / 1024).toFixed(2)} KB/s, peers=${torrent.numPeers}`
       );
+      reportJobProgress(job, torrent.progress * DOWNLOAD_PROGRESS_WEIGHT);
     }, PROGRESS_LOG_INTERVAL);
 
     try {
@@ -474,8 +488,19 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     const sourceMetadata = await probeVideoMetadata(sourcePath);
     const codecOptions = decideConversionCodecOptions(sourceMetadata);
 
+    reportJobProgress(job, DOWNLOAD_PROGRESS_WEIGHT);
+
     const convertedPath = path.join(scratchDir, "movie.mp4");
-    await convertMovie({ path: sourcePath }, convertedPath, codecOptions);
+    await convertMovie({ path: sourcePath }, convertedPath, codecOptions, {
+      onProgress: async ({ percent }) => {
+        reportJobProgress(
+          job,
+          DOWNLOAD_PROGRESS_WEIGHT +
+            (Math.min(Math.max(percent, 0), 100) / 100) *
+              CONVERT_PROGRESS_WEIGHT
+        );
+      },
+    });
 
     const convertedStat = await fs.promises.stat(convertedPath);
     if (convertedStat.size === 0) {
@@ -524,6 +549,8 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     if (uploadedStat.size === 0) {
       throw new Error(`Uploaded movie file is empty: ${movieObjectPath}`);
     }
+
+    reportJobProgress(job, 100);
 
     // Keep seeding from the S3-backed piece store after the job resolves —
     // do not destroy the torrent on success.
