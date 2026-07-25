@@ -8,9 +8,8 @@ services:
       - /dev/net/tun
     env_file: .env
     ports:
-      - ${TRANSMISSION_RCP_PORT}
-      - ${TRANSMISSION_TORRENT_PORT}
-      - ${TRANSMISSION_TORRENT_PORT}/udp
+      - ${WEBTORRENT_TORRENT_PORT}
+      - ${WEBTORRENT_TORRENT_PORT}/udp
       - ${PROWLARR_PORT}
       - ${SUBTITLE_PROXY_PORT}
     environment:
