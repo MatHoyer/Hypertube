@@ -453,18 +453,35 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     const stallWatchdog = watchForStall(torrent, {
       timeoutMs: STALL_TIMEOUT,
       onStalled: () => {
+        let progressPercent = "unknown";
+        try {
+          progressPercent = (torrent.progress * 100).toFixed(2);
+        } catch {
+          // best-effort only — see readDownloadedSafely's comment
+        }
         torrent.emit(
           "error",
-          new Error(
-            `Torrent stalled at ${(torrent.progress * 100).toFixed(2)}%`
-          )
+          new Error(`Torrent stalled at ${progressPercent}%`)
         );
       },
     });
     const progressInterval = setInterval(() => {
-      const progressMessage = `Progress: ${(torrent.progress * 100).toFixed(2)}%, speed=${(torrent.downloadSpeed / 1024).toFixed(2)} KB/s, peers=${torrent.numPeers}`;
+      if (torrent.destroyed) return;
+      // torrent.progress reads pieces[index] internally, which can throw
+      // transiently — see readDownloadedSafely's comment in
+      // webtorrent.client.ts. Skip this tick rather than crash on it.
+      let progress: number;
+      try {
+        progress = torrent.progress;
+      } catch (error) {
+        hypertubeLogger.error(
+          `Transient error reading torrent.progress: ${formatUnknownError(error)}`
+        );
+        return;
+      }
+      const progressMessage = `Progress: ${(progress * 100).toFixed(2)}%, speed=${(torrent.downloadSpeed / 1024).toFixed(2)} KB/s, peers=${torrent.numPeers}`;
       hypertubeLogger.info(progressMessage);
-      reportJobProgress(job, torrent.progress * DOWNLOAD_PROGRESS_WEIGHT);
+      reportJobProgress(job, progress * DOWNLOAD_PROGRESS_WEIGHT);
       reportJobLog(job, progressMessage);
     }, PROGRESS_LOG_INTERVAL);
 

@@ -135,6 +135,27 @@ export type StallWatchdogHandle = { stop: () => void };
  * "stopped" torrent status exists in WebTorrent (unlike Transmission's RPC
  * status enum), so we track progress ourselves.
  */
+/**
+ * torrent.downloaded (and anything built on it, like .progress) can throw
+ * transiently: webtorrent's own piece-received handling has a known,
+ * unfixed race between marking a piece verified and its async sha1 hash
+ * completing (see the "TODO: might need to set self.pieces[index] = null
+ * here since sha1 is async" comment in webtorrent/lib/torrent.js), which can
+ * leave pieces[index] briefly inconsistent with the bitfield. Not something
+ * we can fix upstream — treat a read failure as "no sample this tick"
+ * rather than letting it crash the process.
+ */
+const readDownloadedSafely = (torrent: Torrent): number | null => {
+  try {
+    return torrent.downloaded;
+  } catch (error) {
+    hypertubeLogger.error(
+      `Transient error reading torrent.downloaded: ${formatUnknownError(error)}`
+    );
+    return null;
+  }
+};
+
 export const watchForStall = (
   torrent: Torrent,
   {
@@ -147,13 +168,15 @@ export const watchForStall = (
     onStalled: () => void;
   }
 ): StallWatchdogHandle => {
-  let lastDownloaded = torrent.downloaded;
+  let lastDownloaded = readDownloadedSafely(torrent) ?? 0;
   let lastProgressAt = Date.now();
 
   const interval = setInterval(() => {
     if (torrent.destroyed) return;
-    if (torrent.downloaded > lastDownloaded) {
-      lastDownloaded = torrent.downloaded;
+    const downloaded = readDownloadedSafely(torrent);
+    if (downloaded === null) return;
+    if (downloaded > lastDownloaded) {
+      lastDownloaded = downloaded;
       lastProgressAt = Date.now();
       return;
     }
