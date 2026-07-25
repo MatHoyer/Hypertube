@@ -79,10 +79,10 @@ export const waitForMetadata = (
   });
 };
 
-/** Selects exactly one file to download, deselecting every other file in the torrent. */
-export const selectOnlyFile = (torrent: Torrent, targetFile: TorrentFile): void => {
+/** Selects exactly the given files to download, deselecting every other file in the torrent. */
+export const selectFiles = (torrent: Torrent, wantedFiles: TorrentFile[]): void => {
   torrent.files.forEach((file) => {
-    if (file === targetFile) file.select();
+    if (wantedFiles.includes(file)) file.select();
     else file.deselect();
   });
 };

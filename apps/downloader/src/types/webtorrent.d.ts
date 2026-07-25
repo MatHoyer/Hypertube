@@ -75,3 +75,15 @@ declare module "webtorrent" {
     destroy(cb?: (err?: Error) => void): void;
   }
 }
+
+declare module "parse-torrent" {
+  export type ParsedTorrent = {
+    infoHash: string;
+    name?: string;
+    length?: number;
+  };
+
+  export default function parseTorrent(
+    torrentId: string | Buffer
+  ): ParsedTorrent;
+}

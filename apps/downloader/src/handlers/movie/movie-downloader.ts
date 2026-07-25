@@ -9,14 +9,16 @@ import {
   getStoragePath,
   prisma,
   TDownloadJobData,
-  waitFile,
 } from "@hypertube/server-core";
 import { Job } from "bullmq";
 import ffmpeg from "fluent-ffmpeg";
 import * as fs from "fs";
+import * as os from "os";
 import { PassThrough } from "node:stream";
 import { buffer } from "node:stream/consumers";
 import path from "path";
+import parseTorrent from "parse-torrent";
+import { TorrentFile } from "webtorrent";
 import { storageService } from "../../main.js";
 import { notifySubscribers } from "../../notifications/notifySubscriber.js";
 import {
@@ -27,22 +29,20 @@ import {
   isSidecarSubtitle,
   VideoMetadata,
 } from "./download-torrent-subtitles.js";
-import { downloader, TransmissionTorrent } from "./transmission.client.js";
+import {
+  addTorrent,
+  registerSeed,
+  selectFiles,
+  waitForFileDone,
+  waitForMetadata,
+  watchForStall,
+} from "./webtorrent.client.js";
 
-const WAIT_FILE_TIMEOUT = 1000000;
+const WAIT_FILE_DONE_TIMEOUT = 24 * 60 * 60 * 1000; // safety net; real bound is the stall watchdog
+const WAIT_METADATA_TIMEOUT = 120000;
 const WAIT_SUBTITLE_TIMEOUT = 10000;
-const CHECK_DOWNLOAD_INTERVAL = 30000;
-const COMPLETE_THRESHOLD = 0.99;
-
-const Status = {
-  STOPPED: 0,
-  CHECK_WAIT: 1,
-  CHECKING: 2,
-  DOWNLOAD_WAIT: 3,
-  DOWNLOADING: 4,
-  SEED_WAIT: 5,
-  SEEDING: 6,
-} as const;
+const STALL_TIMEOUT = 180000;
+const PROGRESS_LOG_INTERVAL = 30000;
 
 const VIDEO_EXTENSIONS = [
   ".mp4",
@@ -57,7 +57,8 @@ const VIDEO_EXTENSIONS = [
   ".m2ts",
 ];
 
-type TorrentFile = { name: string; length?: number };
+const BROWSER_COMPATIBLE_VIDEO_CODECS = ["h264"];
+const BROWSER_COMPATIBLE_AUDIO_CODECS = ["aac"];
 
 const probeVideoMetadata = (filePath: string): Promise<VideoMetadata> => {
   return new Promise((resolve, reject) => {
@@ -107,6 +108,38 @@ const probeVideoMetadata = (filePath: string): Promise<VideoMetadata> => {
       });
     });
   });
+};
+
+/**
+ * Decision A (apps/downloader/WEBTORRENT_ARCHITECTURE.md): prefer a fast
+ * remux over a full transcode whenever the source is already browser
+ * compatible, only paying for libx264 when the source video codec itself
+ * isn't playable in-browser.
+ */
+const decideConversionCodecOptions = (source: VideoMetadata): string[] => {
+  const videoCompatible =
+    source.videoCodec != null &&
+    BROWSER_COMPATIBLE_VIDEO_CODECS.includes(source.videoCodec);
+  const audioCompatible =
+    source.audioCodec == null ||
+    BROWSER_COMPATIBLE_AUDIO_CODECS.includes(source.audioCodec);
+
+  if (videoCompatible && audioCompatible) {
+    hypertubeLogger.info(
+      `Remuxing (source already browser-compatible): video=${source.videoCodec} audio=${source.audioCodec ?? "none"}`
+    );
+    return ["-c:v", "copy", "-c:a", "copy"];
+  }
+  if (videoCompatible) {
+    hypertubeLogger.info(
+      `Remuxing video, transcoding audio: video=${source.videoCodec} audio=${source.audioCodec}`
+    );
+    return ["-c:v", "copy", "-c:a", "aac"];
+  }
+  hypertubeLogger.info(
+    `Full transcode required: video=${source.videoCodec ?? "unknown"} audio=${source.audioCodec ?? "none"}`
+  );
+  return ["-c:v", "libx264", "-c:a", "aac"];
 };
 
 const buildMovieObjectMetadata = ({
@@ -172,26 +205,40 @@ const isVideoFile = (filename: string): boolean => {
   return VIDEO_EXTENSIONS.some((ext) => lower.endsWith(ext));
 };
 
-const isTorrentComplete = (torrent: TransmissionTorrent): boolean =>
-  torrent.percentDone >= COMPLETE_THRESHOLD ||
-  torrent.status === Status.SEEDING;
-
-const isTorrentStalled = (torrent: TransmissionTorrent): boolean =>
-  torrent.status === Status.STOPPED && torrent.percentDone < COMPLETE_THRESHOLD;
-
 const findMainVideoFile = (files: TorrentFile[]): TorrentFile | undefined => {
   const videoFiles = files.filter((file) => isVideoFile(file.name));
   if (videoFiles.length === 0) return undefined;
   if (videoFiles.length === 1) return videoFiles[0];
 
   return videoFiles.reduce((largest, file) =>
-    (file.length ?? 0) > (largest.length ?? 0) ? file : largest
+    file.length > largest.length ? file : largest
   );
 };
 
+/** Materializes an already-fully-downloaded torrent file to a local scratch path. */
+const materializeToLocalFile = (
+  file: TorrentFile,
+  destPath: string
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const readStream = file.createReadStream();
+    const writeStream = fs.createWriteStream(destPath);
+    readStream.on("error", reject);
+    writeStream.on("error", reject);
+    writeStream.on("finish", () => resolve());
+    readStream.pipe(writeStream);
+  });
+};
+
+/**
+ * Decision B (apps/downloader/WEBTORRENT_ARCHITECTURE.md): faststart requires
+ * a seekable output, so ffmpeg writes to this local scratch file, and only
+ * the finished, faststart file is streamed to S3.
+ */
 const convertMovie = (
   input: { path: string },
   output: string,
+  codecOptions: string[],
   handler?: {
     onStart?: () => Promise<void>;
     onProgress?: (progress: { percent: number }) => Promise<void>;
@@ -207,8 +254,7 @@ const convertMovie = (
         "0:v:0",
         "-map",
         "0:a:0?",
-        "-c",
-        "copy",
+        ...codecOptions,
         "-threads",
         "1",
         "-max_muxing_queue_size",
@@ -281,16 +327,12 @@ const uploadSubtitle = async ({
 
 const handleSidecarSubtitleFile = async (
   movie: TMovieSchema,
-  subtitleFile: { name: string }
+  subtitleFile: TorrentFile,
+  scratchDir: string
 ) => {
-  const target = path.resolve(
-    process.cwd(),
-    `./downloads-transmission/incomplete/${subtitleFile.name}`
-  );
-  hypertubeLogger.info(
-    `Waiting for sidecar subtitle file to be downloaded ${target}`
-  );
-  await waitFile(target, WAIT_SUBTITLE_TIMEOUT);
+  const target = path.join(scratchDir, path.basename(subtitleFile.name));
+  hypertubeLogger.info(`Materializing sidecar subtitle file ${target}`);
+  await materializeToLocalFile(subtitleFile, target);
 
   const language = formatSidecarSubtitleLanguage(subtitleFile.name);
   const uploadStream = new PassThrough();
@@ -330,29 +372,34 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
   );
   const torrentBuf = await buffer(resolutionStream);
   const isMagnet = torrentBuf.toString("utf-8").startsWith("magnet:");
+  const torrentId: string | Buffer = isMagnet
+    ? torrentBuf.toString("utf-8")
+    : torrentBuf;
 
-  const downloadDir = `/downloads-transmission/${movie.tmdbId}/resolutions/${resolutionId}`;
-  await fs.promises.mkdir(downloadDir, { recursive: true });
+  // infoHash must be known *before* adding the torrent (it keys the S3 store),
+  // so we derive it ourselves with the same library WebTorrent uses
+  // internally rather than trusting a possibly-null/stale DB value.
+  const { infoHash } = parseTorrent(torrentId);
+  if (dbResolution.infoHash !== infoHash) {
+    await prisma.resolution.update({
+      where: { id: resolutionId },
+      data: { infoHash },
+    });
+  }
+
   hypertubeLogger.info(
-    `Adding ${isMagnet ? "magnet" : "torrent"} for movie ${movie.tmdbId} resolution ${dbResolution.resolution} (${dbResolution.indexerName})`
+    `Adding ${isMagnet ? "magnet" : "torrent"} for movie ${movie.tmdbId} resolution ${dbResolution.resolution} (${dbResolution.indexerName}), infoHash=${infoHash}`
   );
 
-  const addOptions = { "download-dir": downloadDir, paused: true };
-  const result = isMagnet
-    ? await downloader.addMagnet(torrentBuf.toString("utf-8"), addOptions)
-    : await downloader.addTorrentMetainfo(torrentBuf, addOptions);
-  hypertubeLogger.info(`Torrent added with ID: ${result.id}`);
+  const torrent = addTorrent(torrentId, { infoHash, storageService });
+  const scratchDir = path.join(
+    os.tmpdir(),
+    "hypertube-downloader",
+    resolutionId
+  );
 
   try {
-    let files: { name: string }[];
-    if (isMagnet) {
-      hypertubeLogger.info("Waiting for magnet metadata");
-      await downloader.start(result.id);
-      files = await downloader.waitForFiles(result.id);
-    } else {
-      const info = await downloader.get(result.id, ["files"]);
-      files = info.torrents[0].files as { name: string }[];
-    }
+    const files = await waitForMetadata(torrent, WAIT_METADATA_TIMEOUT);
 
     const videoFile = findMainVideoFile(files);
     if (!videoFile) {
@@ -361,6 +408,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       );
     }
     hypertubeLogger.info(`Video file found ${videoFile.name}`);
+
     const sidecarSubtitleFiles = files.filter((file) =>
       isSidecarSubtitle(file.name)
     );
@@ -372,154 +420,118 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       );
     }
 
-    if (!isMagnet) {
-      await downloader.start(result.id);
+    selectFiles(torrent, [videoFile, ...sidecarSubtitleFiles]);
+
+    notifySubscribers(movie.id, DownloadStates.DOWNLOADING);
+    hypertubeLogger.info(`Movie download started successfully`);
+
+    await fs.promises.mkdir(scratchDir, { recursive: true });
+
+    const stallWatchdog = watchForStall(torrent, {
+      timeoutMs: STALL_TIMEOUT,
+      onStalled: () => {
+        torrent.emit(
+          "error",
+          new Error(
+            `Torrent stalled at ${(torrent.progress * 100).toFixed(2)}%`
+          )
+        );
+      },
+    });
+    const progressInterval = setInterval(() => {
+      hypertubeLogger.info(
+        `Progress: ${(torrent.progress * 100).toFixed(2)}%, speed=${(torrent.downloadSpeed / 1024).toFixed(2)} KB/s, peers=${torrent.numPeers}`
+      );
+    }, PROGRESS_LOG_INTERVAL);
+
+    try {
+      await waitForFileDone(torrent, videoFile, WAIT_FILE_DONE_TIMEOUT);
+    } finally {
+      stallWatchdog.stop();
+      clearInterval(progressInterval);
     }
-
-    const target = `/downloads-transmission/incomplete/${videoFile.name}`;
-
-    hypertubeLogger.info(`Waiting for torrent download to start (${target})`);
-    await downloader.waitForDownloadProgress(result.id);
 
     try {
       const sidecarPromises = sidecarSubtitleFiles.map((subtitleFile) =>
-        handleSidecarSubtitleFile(movie, subtitleFile)
+        handleSidecarSubtitleFile(movie, subtitleFile, scratchDir)
       );
-      await Promise.allSettled(sidecarPromises);
+      await Promise.race([
+        Promise.allSettled(sidecarPromises),
+        new Promise((resolve) => setTimeout(resolve, WAIT_SUBTITLE_TIMEOUT)),
+      ]);
     } catch (error) {
       hypertubeLogger.error(
         `Error handling sidecar subtitle files: ${formatUnknownError(error)}`
       );
     }
 
-    notifySubscribers(movie.id, DownloadStates.DOWNLOADING);
-    hypertubeLogger.info(`Movie downloaded started successfully`);
+    const sourcePath = path.join(
+      scratchDir,
+      `source${path.extname(videoFile.name)}`
+    );
+    await materializeToLocalFile(videoFile, sourcePath);
 
-    return new Promise<void>((resolve, reject) => {
-      const intervalId = setInterval(async () => {
-        try {
-          hypertubeLogger.info("Checking torrent status");
-          const res = await downloader.get(result.id);
-          const torrent = res.torrents[0];
-          if (!torrent) {
-            clearInterval(intervalId);
-            reject(new Error("Torrent not found"));
-            return;
-          }
-          hypertubeLogger.info(`Torrent found: ${torrent.name}`);
+    const sourceMetadata = await probeVideoMetadata(sourcePath);
+    const codecOptions = decideConversionCodecOptions(sourceMetadata);
 
-          const name = torrent.name;
-          const percentDone = torrent.percentDone * 100;
-          const downloadSpeed = torrent.rateDownload / 1024; // Ko/s
-          const status = torrent.status;
+    const convertedPath = path.join(scratchDir, "movie.mp4");
+    await convertMovie({ path: sourcePath }, convertedPath, codecOptions);
 
-          hypertubeLogger.info(`Status: ${status}`);
-          hypertubeLogger.info(
-            `Name: ${name}, Percent done: ${percentDone.toFixed(
-              2
-            )}, Download speed: ${downloadSpeed.toFixed(2)}, Status: ${status}`
-          );
+    const convertedStat = await fs.promises.stat(convertedPath);
+    if (convertedStat.size === 0) {
+      throw new Error(`Converted movie file is empty: ${convertedPath}`);
+    }
 
-          if (isTorrentStalled(torrent)) {
-            clearInterval(intervalId);
-            reject(
-              new Error(
-                `Torrent stalled at ${(torrent.percentDone * 100).toFixed(2)}% (${torrent.errorString ?? "no error"})`
-              )
-            );
-            return;
-          }
-
-          if (isTorrentComplete(torrent)) {
-            clearInterval(intervalId);
-
-            const endFile = downloadDir + "/" + videoFile.name;
-            await waitFile(endFile, WAIT_FILE_TIMEOUT);
-
-            const endFileStat = await fs.promises.stat(endFile);
-            if (endFileStat.size === 0) {
-              reject(new Error(`Downloaded file is empty: ${endFile}`));
-              return;
-            }
-
-            try {
-              const movieObjectPath = getStoragePath(
-                movie.tmdbId.toString(),
-                "resolutions",
-                resolutionId,
-                "movie.mp4"
-              );
-              const videoMetadata = await probeVideoMetadata(endFile);
-              const movieMetadata = buildMovieObjectMetadata({
-                videoMetadata,
-                movie,
-                resolutionId,
-                resolution: dbResolution,
-                sourceFilename: videoFile.name,
-                sourceSizeBytes: endFileStat.size,
-              });
-              hypertubeLogger.info(
-                `Uploading movie with metadata: duration=${movieMetadata.duration}s, resolution=${movieMetadata.resolution}`
-              );
-              const moviePath = "/movie.mp4";
-
-              await convertMovie({ path: endFile }, moviePath);
-
-              const movieStat = await fs.promises.stat(moviePath);
-              if (movieStat.size === 0) {
-                await fs.promises.rm(moviePath, { force: true });
-                throw new Error(`Converted movie file is empty: ${moviePath}`);
-              }
-
-              await storageService.putObject(
-                BUCKETS.MOVIES,
-                movieObjectPath,
-                fs.createReadStream(moviePath),
-                movieStat.size,
-                movieMetadata
-              );
-
-              await fs.promises.rm(moviePath, { force: true });
-
-              await handleEmbeddedSubtitles({
-                videoPath: endFile,
-                videoFileName: videoFile.name,
-                onSubtitle: async ({ language, vttStream, downloadLink }) => {
-                  await uploadSubtitle({
-                    movie,
-                    language,
-                    vttStream,
-                    downloadLink,
-                  });
-                },
-              });
-
-              const uploadedStat = await storageService.statObject(
-                BUCKETS.MOVIES,
-                movieObjectPath
-              );
-              if (uploadedStat.size === 0) {
-                throw new Error(
-                  `Uploaded movie file is empty: ${movieObjectPath}`
-                );
-              }
-
-              resolve();
-            } catch (err) {
-              reject(err instanceof Error ? err : new Error(String(err)));
-            }
-            return;
-          }
-        } catch (error) {
-          clearInterval(intervalId);
-          reject(
-            new Error(`Error in ending download: ${formatUnknownError(error)}`)
-          );
-        }
-      }, CHECK_DOWNLOAD_INTERVAL);
+    const finalMetadata = await probeVideoMetadata(convertedPath);
+    const movieObjectPath = getStoragePath(
+      movie.tmdbId.toString(),
+      "resolutions",
+      resolutionId,
+      "movie.mp4"
+    );
+    const movieMetadata = buildMovieObjectMetadata({
+      videoMetadata: finalMetadata,
+      movie,
+      resolutionId,
+      resolution: dbResolution,
+      sourceFilename: videoFile.name,
+      sourceSizeBytes: videoFile.length,
     });
+    hypertubeLogger.info(
+      `Uploading movie with metadata: duration=${movieMetadata.duration}s, resolution=${movieMetadata.resolution}`
+    );
+
+    await storageService.putObject(
+      BUCKETS.MOVIES,
+      movieObjectPath,
+      fs.createReadStream(convertedPath),
+      convertedStat.size,
+      movieMetadata
+    );
+
+    await handleEmbeddedSubtitles({
+      videoPath: sourcePath,
+      videoFileName: videoFile.name,
+      onSubtitle: async ({ language, vttStream, downloadLink }) => {
+        await uploadSubtitle({ movie, language, vttStream, downloadLink });
+      },
+    });
+
+    const uploadedStat = await storageService.statObject(
+      BUCKETS.MOVIES,
+      movieObjectPath
+    );
+    if (uploadedStat.size === 0) {
+      throw new Error(`Uploaded movie file is empty: ${movieObjectPath}`);
+    }
+
+    // Keep seeding from the S3-backed piece store after the job resolves —
+    // do not destroy the torrent on success.
+    registerSeed(torrent);
   } catch (error) {
-    await downloader.remove(result.id);
+    torrent.destroy();
     throw error instanceof Error ? error : new Error(formatUnknownError(error));
+  } finally {
+    await fs.promises.rm(scratchDir, { recursive: true, force: true });
   }
 };
