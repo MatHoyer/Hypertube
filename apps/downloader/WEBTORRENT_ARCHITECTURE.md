@@ -19,6 +19,38 @@ API this codebase actually calls (`client.add`, `torrent` events/properties, `fi
 stream/select methods, the `store` factory option). If the used surface grows, extend that
 file rather than reaching for `@types/webtorrent`.
 
+## Native dependency gotchas
+
+Two things bit us running the downloader in Docker after adding webtorrent,
+both worth recording so they aren't rediscovered the hard way:
+
+1. **pnpm silently skips dependency install scripts by default.**
+   `node-datachannel` (webtorrent's native WebRTC peer implementation, pulled
+   in via `@thaunknown/simple-peer` → `webrtc-polyfill`) needs its `install`
+   script to run (`prebuild-install`, fetching a prebuilt binary from GitHub)
+   or it throws `Cannot find module '.../build/Release/node_datachannel.node'`
+   at import time — and that import is unconditional, not wrapped in
+   try/catch, so it takes the whole process down. pnpm's default policy
+   (since v9/v10) is to *ignore* install/postinstall scripts for dependencies
+   not explicitly allow-listed, and does so silently unless you happen to
+   run a full, uncached `pnpm install`. Fixed by adding `node-datachannel`
+   (and `utp-native`, same failure mode but see point 2) to
+   `onlyBuiltDependencies` in `pnpm-workspace.yaml`, which also makes the
+   Docker builder's non-interactive `pnpm i --frozen-lockfile` do the right
+   thing without needing `pnpm approve-builds` run by a human first.
+2. **`utp-native` (webtorrent's µTP transport) has the same missing-binary
+   failure mode but is *not* fatal** — webtorrent requires it through a
+   `.cjs` wrapper (`lib/utp.cjs`) that catches the error and disables µTP
+   support, falling back to TCP-only peers. Included in
+   `onlyBuiltDependencies` anyway so µTP actually works instead of silently
+   degrading.
+3. **The Docker builder/runner base images must share a libc.** The prod
+   Dockerfile built the `downloader` image on `node:22` (glibc) but ran it on
+   `node:22-alpine` (musl) — a classic native-addon multi-stage mismatch,
+   same symptom (`node_datachannel.node` fails to load) even once the binary
+   is correctly built. Runner switched to `node:22-slim` (Debian, glibc) to
+   match the builder.
+
 ## Decision A — remux vs. transcode
 
 Always transcoding is expensive and lossy for the common case (torrent releases that are

@@ -1,3 +1,13 @@
 packages:
   - apps/*
   - packages/*
+
+# node-datachannel (webtorrent's native WebRTC peer dep) crashes on import
+# if its prebuilt binary was never fetched — pnpm blocks dependency install
+# scripts by default. utp-native fails the same way but webtorrent wraps
+# that require in try/catch (degrades to TCP-only); node-datachannel has no
+# such guard, so it must be allowed to run its install script.
+# See apps/downloader/WEBTORRENT_ARCHITECTURE.md.
+onlyBuiltDependencies:
+  - node-datachannel
+  - utp-native
