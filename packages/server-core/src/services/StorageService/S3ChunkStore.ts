@@ -46,18 +46,30 @@ export class S3ChunkStore {
     return getTorrentPieceObjectName(this.infoHash, index);
   }
 
-  put(index: number, buf: Buffer, cb: TChunkStoreCallback = () => {}): void {
+  put(
+    index: number,
+    buf: Uint8Array,
+    cb: TChunkStoreCallback = () => {}
+  ): void {
     if (this.closed) {
       queueMicrotask(() => cb(new Error("Storage is closed")));
       return;
     }
 
+    // WebTorrent hands us plain Uint8Arrays (it uses uint8-util, not Buffer,
+    // internally), but minio's client strictly requires a real Buffer
+    // instance (Buffer.isBuffer() rejects a non-Buffer Uint8Array even
+    // though Buffer extends Uint8Array). Zero-copy view, not a data copy.
+    const nodeBuffer = Buffer.isBuffer(buf)
+      ? buf
+      : Buffer.from(buf.buffer, buf.byteOffset, buf.byteLength);
+
     this.storageService
       .putObject(
         BUCKETS.TORRENT_PIECES,
         this.objectName(index),
-        buf,
-        buf.length
+        nodeBuffer,
+        nodeBuffer.length
       )
       .then(() => cb(null))
       .catch((err: unknown) =>
