@@ -57,6 +57,13 @@ const reportJobProgress = (job: Job<TDownloadJobData>, percent: number) => {
   });
 };
 
+/** Surfaces a message in bull-board's job Logs tab (job.log), separate from hypertubeLogger's stdout output. */
+const reportJobLog = (job: Job<TDownloadJobData>, message: string) => {
+  job.log(message).catch((error: unknown) => {
+    hypertubeLogger.error(`Failed to write job log: ${formatUnknownError(error)}`);
+  });
+};
+
 const VIDEO_EXTENSIONS = [
   ".mp4",
   ".mkv",
@@ -129,7 +136,11 @@ const probeVideoMetadata = (filePath: string): Promise<VideoMetadata> => {
  * compatible, only paying for libx264 when the source video codec itself
  * isn't playable in-browser.
  */
-const decideConversionCodecOptions = (source: VideoMetadata): string[] => {
+type TConversionDecision = { options: string[]; description: string };
+
+const decideConversionCodecOptions = (
+  source: VideoMetadata
+): TConversionDecision => {
   const videoCompatible =
     source.videoCodec != null &&
     BROWSER_COMPATIBLE_VIDEO_CODECS.includes(source.videoCodec);
@@ -138,21 +149,18 @@ const decideConversionCodecOptions = (source: VideoMetadata): string[] => {
     BROWSER_COMPATIBLE_AUDIO_CODECS.includes(source.audioCodec);
 
   if (videoCompatible && audioCompatible) {
-    hypertubeLogger.info(
-      `Remuxing (source already browser-compatible): video=${source.videoCodec} audio=${source.audioCodec ?? "none"}`
-    );
-    return ["-c:v", "copy", "-c:a", "copy"];
+    const description = `Remuxing (source already browser-compatible): video=${source.videoCodec} audio=${source.audioCodec ?? "none"}`;
+    hypertubeLogger.info(description);
+    return { options: ["-c:v", "copy", "-c:a", "copy"], description };
   }
   if (videoCompatible) {
-    hypertubeLogger.info(
-      `Remuxing video, transcoding audio: video=${source.videoCodec} audio=${source.audioCodec}`
-    );
-    return ["-c:v", "copy", "-c:a", "aac"];
+    const description = `Remuxing video, transcoding audio: video=${source.videoCodec} audio=${source.audioCodec}`;
+    hypertubeLogger.info(description);
+    return { options: ["-c:v", "copy", "-c:a", "aac"], description };
   }
-  hypertubeLogger.info(
-    `Full transcode required: video=${source.videoCodec ?? "unknown"} audio=${source.audioCodec ?? "none"}`
-  );
-  return ["-c:v", "libx264", "-c:a", "aac"];
+  const description = `Full transcode required: video=${source.videoCodec ?? "unknown"} audio=${source.audioCodec ?? "none"}`;
+  hypertubeLogger.info(description);
+  return { options: ["-c:v", "libx264", "-c:a", "aac"], description };
 };
 
 const buildMovieObjectMetadata = ({
@@ -400,9 +408,9 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     });
   }
 
-  hypertubeLogger.info(
-    `Adding ${isMagnet ? "magnet" : "torrent"} for movie ${movie.tmdbId} resolution ${dbResolution.resolution} (${dbResolution.indexerName}), infoHash=${infoHash}`
-  );
+  const addingMessage = `Adding ${isMagnet ? "magnet" : "torrent"} for movie ${movie.tmdbId} resolution ${dbResolution.resolution} (${dbResolution.indexerName}), infoHash=${infoHash}`;
+  hypertubeLogger.info(addingMessage);
+  reportJobLog(job, addingMessage);
 
   const torrent = addTorrent(torrentId, { infoHash, storageService });
   const scratchDir = path.join(
@@ -421,6 +429,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       );
     }
     hypertubeLogger.info(`Video file found ${videoFile.name}`);
+    reportJobLog(job, `Video file found: ${videoFile.name}`);
 
     const sidecarSubtitleFiles = files.filter((file) =>
       isSidecarSubtitle(file.name)
@@ -437,6 +446,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
 
     notifySubscribers(movie.id, DownloadStates.DOWNLOADING);
     hypertubeLogger.info(`Movie download started successfully`);
+    reportJobLog(job, "Download started");
 
     await fs.promises.mkdir(scratchDir, { recursive: true });
 
@@ -452,10 +462,10 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
       },
     });
     const progressInterval = setInterval(() => {
-      hypertubeLogger.info(
-        `Progress: ${(torrent.progress * 100).toFixed(2)}%, speed=${(torrent.downloadSpeed / 1024).toFixed(2)} KB/s, peers=${torrent.numPeers}`
-      );
+      const progressMessage = `Progress: ${(torrent.progress * 100).toFixed(2)}%, speed=${(torrent.downloadSpeed / 1024).toFixed(2)} KB/s, peers=${torrent.numPeers}`;
+      hypertubeLogger.info(progressMessage);
       reportJobProgress(job, torrent.progress * DOWNLOAD_PROGRESS_WEIGHT);
+      reportJobLog(job, progressMessage);
     }, PROGRESS_LOG_INTERVAL);
 
     try {
@@ -486,9 +496,11 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     await materializeToLocalFile(videoFile, sourcePath);
 
     const sourceMetadata = await probeVideoMetadata(sourcePath);
-    const codecOptions = decideConversionCodecOptions(sourceMetadata);
+    const { options: codecOptions, description: conversionDescription } =
+      decideConversionCodecOptions(sourceMetadata);
 
     reportJobProgress(job, DOWNLOAD_PROGRESS_WEIGHT);
+    reportJobLog(job, `Conversion started: ${conversionDescription}`);
 
     const convertedPath = path.join(scratchDir, "movie.mp4");
     await convertMovie({ path: sourcePath }, convertedPath, codecOptions, {
@@ -499,6 +511,9 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
             (Math.min(Math.max(percent, 0), 100) / 100) *
               CONVERT_PROGRESS_WEIGHT
         );
+      },
+      onEnd: async () => {
+        reportJobLog(job, "Conversion finished");
       },
     });
 
@@ -551,13 +566,17 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     }
 
     reportJobProgress(job, 100);
+    reportJobLog(job, "Upload complete");
 
     // Keep seeding from the S3-backed piece store after the job resolves —
     // do not destroy the torrent on success.
     registerSeed(torrent);
   } catch (error) {
+    const err =
+      error instanceof Error ? error : new Error(formatUnknownError(error));
+    reportJobLog(job, `FAILED: ${err.message}`);
     torrent.destroy();
-    throw error instanceof Error ? error : new Error(formatUnknownError(error));
+    throw err;
   } finally {
     await fs.promises.rm(scratchDir, { recursive: true, force: true });
   }
