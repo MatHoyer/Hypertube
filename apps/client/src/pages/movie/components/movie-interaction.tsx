@@ -1,4 +1,5 @@
 import { LoadingButton } from "@/components/LoadingButton";
+import { PlaylistDropdownMenu } from "@/components/playlists/PlaylistDropdownMenu";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -119,15 +120,16 @@ export const MovieInteraction = ({
           {t("movie.comments.comments", { count: data?.pages[0].total })}
         </Typography>
         <div className="flex-1" />
-        <SubscriptionButton
-          tmdbId={movie.details.id}
-          isSubscribed={movie.isSubscribed}
-        />
         <MovieLikeButton
           tmdbId={movie.details.id}
           isLiked={movie.isLikedByUser}
           likesNumber={movie.likesNumber}
         />
+        <SubscriptionButton
+          tmdbId={movie.details.id}
+          isSubscribed={movie.isSubscribed}
+        />
+        <PlaylistDropdownMenu movie={movie} />
       </div>
       <PostMovieComment tmdbId={movie.details.id} />
       <div>

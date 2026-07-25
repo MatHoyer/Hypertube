@@ -12,7 +12,6 @@ import {
   postMovieToPlaylistSchemas,
   ROUTES,
   type TDeleteMovieFromPlaylistSchemas,
-  type TGetMoviesSchemas,
   type TPostMovieToPlaylistSchemas,
 } from "@hypertube/libs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -52,7 +51,7 @@ const fetchPlaylists = async ({ pageParam }: { pageParam: number }) => {
 
 const Playlist: React.FC<{
   playlist: TPlaylistsWithMoviesSet[number];
-  movie: TGetMoviesSchemas["response"]["movies"][number];
+  movie: { details: { id: number } };
 }> = ({ playlist, movie }) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -138,7 +137,7 @@ const Playlist: React.FC<{
 const ScrollContext = createContext<HTMLElement | null>(null);
 
 export const PlaylistList: React.FC<{
-  movie: TGetMoviesSchemas["response"]["movies"][number];
+  movie: { details: { id: number } };
 }> = ({ movie }) => {
   const { t } = useTranslation();
   const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null);
