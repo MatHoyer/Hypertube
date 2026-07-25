@@ -130,27 +130,29 @@ export const waitForFileDone = (
 export type StallWatchdogHandle = { stop: () => void };
 
 /**
- * Equivalent of the old Transmission client's isTorrentStalled: if downloaded
- * bytes haven't advanced for `timeoutMs`, calls onStalled once. No built-in
+ * Equivalent of the old Transmission client's isTorrentStalled: if no bytes
+ * have arrived from peers for `timeoutMs`, calls onStalled once. No built-in
  * "stopped" torrent status exists in WebTorrent (unlike Transmission's RPC
  * status enum), so we track progress ourselves.
+ *
+ * Deliberately uses torrent.received, not torrent.downloaded/.progress:
+ * `downloaded` only counts *fully verified pieces*, which — for large
+ * pieces on a slow swarm — can legitimately take longer than a reasonable
+ * stall window to increment even while data is actively (if slowly)
+ * trickling in, producing false positives. `received` is a plain counter
+ * incremented per chunk received from any peer, independent of piece
+ * completion, so it reflects real forward progress at a much finer grain.
+ * It's also a plain property, not a getter computed from pieces[index] like
+ * .downloaded/.progress are, so it doesn't carry their transient-throw risk
+ * (see the pieces[index]/async-sha1 note on readReceivedSafely below) —
+ * kept defensive anyway since we can't be certain webtorrent won't change.
  */
-/**
- * torrent.downloaded (and anything built on it, like .progress) can throw
- * transiently: webtorrent's own piece-received handling has a known,
- * unfixed race between marking a piece verified and its async sha1 hash
- * completing (see the "TODO: might need to set self.pieces[index] = null
- * here since sha1 is async" comment in webtorrent/lib/torrent.js), which can
- * leave pieces[index] briefly inconsistent with the bitfield. Not something
- * we can fix upstream — treat a read failure as "no sample this tick"
- * rather than letting it crash the process.
- */
-const readDownloadedSafely = (torrent: Torrent): number | null => {
+const readReceivedSafely = (torrent: Torrent): number | null => {
   try {
-    return torrent.downloaded;
+    return torrent.received;
   } catch (error) {
     hypertubeLogger.error(
-      `Transient error reading torrent.downloaded: ${formatUnknownError(error)}`
+      `Transient error reading torrent.received: ${formatUnknownError(error)}`
     );
     return null;
   }
@@ -168,15 +170,15 @@ export const watchForStall = (
     onStalled: () => void;
   }
 ): StallWatchdogHandle => {
-  let lastDownloaded = readDownloadedSafely(torrent) ?? 0;
+  let lastReceived = readReceivedSafely(torrent) ?? 0;
   let lastProgressAt = Date.now();
 
   const interval = setInterval(() => {
     if (torrent.destroyed) return;
-    const downloaded = readDownloadedSafely(torrent);
-    if (downloaded === null) return;
-    if (downloaded > lastDownloaded) {
-      lastDownloaded = downloaded;
+    const received = readReceivedSafely(torrent);
+    if (received === null) return;
+    if (received > lastReceived) {
+      lastReceived = received;
       lastProgressAt = Date.now();
       return;
     }

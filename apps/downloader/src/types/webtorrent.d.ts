@@ -38,6 +38,7 @@ declare module "webtorrent" {
     name: string;
     length: number;
     downloaded: number;
+    received: number;
     downloadSpeed: number;
     uploadSpeed: number;
     progress: number;
