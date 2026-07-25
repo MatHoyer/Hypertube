@@ -68,7 +68,7 @@ export const Library = () => {
 
   const virtualizerOptions = {
     getScrollElement: () => mainScrollElement,
-    estimateSize: () => 373,
+    estimateSize: () => 385,
     gap: 8,
     overscan: 5,
   };

@@ -1,34 +1,23 @@
 import { openDialog } from "@/components/dialogs/dialog.store";
 import { getDownloadStateIcon } from "@/components/download-state/getDownloadStateIcon";
 import { MovieBaseInfo } from "@/components/movies/MovieBaseInfo";
+import { PlaylistDropdownMenu } from "@/components/playlists/PlaylistDropdownMenu";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Typography } from "@/components/ui/typography";
 import { type TGetMoviesSchemas } from "@hypertube/libs";
-import { Check, EllipsisVertical, Plus } from "lucide-react";
-import { memo, useState } from "react";
+import { Check } from "lucide-react";
+import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { PlaylistList } from "./PlaylistList";
 
 export const Thumbnail: React.FC<{
   movie: TGetMoviesSchemas["response"]["movies"][number];
 }> = memo(({ movie }) => {
   const { t } = useTranslation();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
     <div>
@@ -59,37 +48,7 @@ export const Thumbnail: React.FC<{
                 <TooltipContent>{t("library.seen")}</TooltipContent>
               </Tooltip>
             )}
-            <DropdownMenu
-              open={isDropdownOpen}
-              onOpenChange={setIsDropdownOpen}
-            >
-              <DropdownMenuTrigger asChild className="cursor-pointer">
-                <EllipsisVertical size={15} />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-[208px]"
-                side="top"
-                align="start"
-              >
-                <DropdownMenuLabel>
-                  <Typography textSize="lg">{t("playlist.save")}</Typography>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <PlaylistList movie={movie} />
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => {
-                    setIsDropdownOpen(false);
-                    setTimeout(() => openDialog("playlist"), 200);
-                  }}
-                >
-                  <Plus />
-                  {t("playlist.new")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <PlaylistDropdownMenu movie={movie} />
           </div>
         </div>
       </Card>
