@@ -1,6 +1,7 @@
 import { Logo } from "@/components/images/Logo";
 import { Navbar } from "@/components/navigation/Navbar";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Typography } from "@/components/ui/typography";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
@@ -17,18 +18,22 @@ const Footer = () => {
         <Typography variant="h3">Hypertube</Typography>
       </div>
       <div className="flex flex-col md:flex-row items-center justify-around w-full gap-2">
-        <Button variant="link" asChild>
-          <Link to="https://github.com/MatHoyer/Hypertube" target="_blank">
-            {t("footer.sourceCode")}
-          </Link>
-        </Button>
-        <div className="flex flex-col">
-          <Typography variant="h3">{t("footer.providers")}</Typography>
+        <Card className="p-0">
           <Button variant="link" asChild>
-            <Link to="https://github.com/Prowlarr/Prowlarr" target="_blank">
-              Prowlarr
+            <Link to="https://github.com/MatHoyer/Hypertube" target="_blank">
+              {t("footer.sourceCode")}
             </Link>
           </Button>
+        </Card>
+        <div className="flex flex-col">
+          <Typography variant="h3">{t("footer.providers")}</Typography>
+          <Card className="p-0">
+            <Button variant="link" asChild>
+              <Link to="https://github.com/Prowlarr/Prowlarr" target="_blank">
+                Prowlarr
+              </Link>
+            </Button>
+          </Card>
         </div>
       </div>
     </footer>
