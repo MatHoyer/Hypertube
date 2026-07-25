@@ -8,6 +8,7 @@ import {
   getMovieQueue,
   MOVIE_QUEUE_JOB_NAMES,
   TDownloadJobData,
+  TPreviewJobData,
 } from "@hypertube/server-core";
 import { SSEStreamingApi } from "hono/streaming";
 import { SSEClients } from "../../lib/SSEClients";
@@ -24,55 +25,57 @@ export const ensureDownloaderQueueListeners = () => {
 
   movieQueue.on("completed", (job) => {
     switch (job.name) {
-      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
-        sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-          sendSSEDownloadStateChange(
-            job.data,
-            DownloadStates.DOWNLOADED,
-            stream
-          );
+      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE: {
+        const data = job.data as TDownloadJobData;
+        sseClients.mapClients(data.movie.tmdbId.toString(), (stream) => {
+          sendSSEDownloadStateChange(data, DownloadStates.DOWNLOADED, stream);
         });
         return;
-      case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
-        sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+      }
+      case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE: {
+        const data = job.data as TPreviewJobData;
+        sseClients.mapClients(data.movie.tmdbId.toString(), (stream) => {
           sendSSEPreviewStateChange(stream);
         });
         return;
+      }
     }
   });
   movieQueue.on("failed", (job) => {
     switch (job.name) {
-      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
-        sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
+      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE: {
+        const data = job.data as TDownloadJobData;
+        sseClients.mapClients(data.movie.tmdbId.toString(), (stream) => {
           sendSSEDownloadStateChange(
-            job.data,
+            data,
             DownloadStates.NOT_DOWNLOADED,
             stream
           );
         });
         return;
+      }
     }
   });
   movieQueue.on("waiting", (job) => {
     switch (job.name) {
-      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
-        sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-          sendSSEDownloadStateChange(job.data, DownloadStates.WAITING, stream);
+      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE: {
+        const data = job.data as TDownloadJobData;
+        sseClients.mapClients(data.movie.tmdbId.toString(), (stream) => {
+          sendSSEDownloadStateChange(data, DownloadStates.WAITING, stream);
         });
         return;
+      }
     }
   });
   movieQueue.on("active", (job) => {
     switch (job.name) {
-      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
-        sseClients.mapClients(job.data.movie.tmdbId.toString(), (stream) => {
-          sendSSEDownloadStateChange(
-            job.data,
-            DownloadStates.DOWNLOADING,
-            stream
-          );
+      case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE: {
+        const data = job.data as TDownloadJobData;
+        sseClients.mapClients(data.movie.tmdbId.toString(), (stream) => {
+          sendSSEDownloadStateChange(data, DownloadStates.DOWNLOADING, stream);
         });
         return;
+      }
     }
   });
 };
