@@ -1,5 +1,5 @@
 import { hypertubeLogger } from "@hypertube/libs";
-import { Job, Queue, QueueEvents, QueueEventsListener } from "bullmq";
+import { Job, JobsOptions, Queue, QueueEvents, QueueEventsListener } from "bullmq";
 import { getRedisConnectionQueues } from "./Redis.js";
 import {
   MOVIE_QUEUE,
@@ -31,9 +31,13 @@ export class BullMQ<T extends TQueueName> {
     });
   }
 
-  async produce(jobName: TQueueJobName[T], data: TQueueJobData[T]) {
+  async produce(
+    jobName: TQueueJobName[T],
+    data: TQueueJobData[T],
+    opts?: JobsOptions
+  ) {
     // @ts-expect-error bullmq is shit and doesn't support generics :)
-    await this.queue.add(jobName, data);
+    await this.queue.add(jobName, data, opts);
   }
 
   async on(

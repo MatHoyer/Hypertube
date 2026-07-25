@@ -44,6 +44,13 @@ export const ensureDownloaderQueueListeners = () => {
   movieQueue.on("failed", (job) => {
     switch (job.name) {
       case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE: {
+        // BullMQ retries (see downloadTorrent.ts's producer opts) resume
+        // from the S3 piece store rather than restarting, so an
+        // intermediate attempt failing isn't really "not downloaded" yet —
+        // only tell the client once every attempt has been exhausted.
+        const attemptsLimit = job.opts.attempts ?? 1;
+        if (job.attemptsMade < attemptsLimit) return;
+
         const data = job.data as TDownloadJobData;
         sseClients.mapClients(data.movie.tmdbId.toString(), (stream) => {
           sendSSEDownloadStateChange(
