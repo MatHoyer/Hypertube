@@ -418,6 +418,7 @@ const VideoPlayer = () => {
     selectedResolution,
     selectedSubtitlesLanguage,
 
+    watchedTimestamp,
     setWatchedTimestamp,
   } = useVideoPlayerControls();
 
@@ -489,7 +490,14 @@ const VideoPlayer = () => {
     // Re-ask for a fresh presigned URL before the current one expires so
     // playback never hits an expired S3 link.
     refetchInterval: PRESIGNED_URL_EXPIRY_SECONDS * 1000 * 0.8,
+    refetchIntervalInBackground: true,
+    refetchOnWindowFocus: false,
   });
+
+  const watchedTimestampRef = useRef(watchedTimestamp);
+  useEffect(() => {
+    watchedTimestampRef.current = watchedTimestamp;
+  }, [watchedTimestamp]);
 
   // Swapping the <source src> alone doesn't make an already-loaded video
   // reconnect, so once a *new* presigned URL comes in (refreshed before
@@ -506,7 +514,7 @@ const VideoPlayer = () => {
     const video = videoRef.current;
     if (!video) return;
 
-    const resumeTime = video.currentTime;
+    const resumeTime = watchedTimestampRef.current || video.currentTime;
     const wasPlaying = !video.paused;
 
     const handleLoadedMetadata = () => {
@@ -516,6 +524,10 @@ const VideoPlayer = () => {
     };
     video.addEventListener("loadedmetadata", handleLoadedMetadata);
     video.load();
+
+    return () => {
+      video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+    };
   }, [streamingResolution, videoRef]);
 
   const { data: streamingSubtitles } = useQuery({
@@ -562,6 +574,7 @@ const VideoPlayer = () => {
             playsInline
             {...{ "webkit-playsinline": "" }}
             disableRemotePlayback
+            crossOrigin="use-credentials"
           >
             <source src={streamingResolution.url} type="video/mp4" />
             {streamingSubtitles && selectedSubtitlesLanguage && (
