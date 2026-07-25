@@ -450,35 +450,30 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
 
     await fs.promises.mkdir(scratchDir, { recursive: true });
 
+    // torrent.progress/.downloaded read pieces[index] internally, which can
+    // throw persistently (not just transiently) on some torrents — observed
+    // in a real run, every single poll tick. torrent.received (a plain
+    // counter, not a pieces[]-derived getter) doesn't carry that risk, and
+    // dividing by videoFile.length rather than torrent.length is also more
+    // accurate for a multi-file torrent where we only ever download one
+    // file — torrent.length is the whole torrent's size.
+    const computeDownloadProgress = (): number =>
+      Math.min(torrent.received / videoFile.length, 1);
+
     const stallWatchdog = watchForStall(torrent, {
       timeoutMs: STALL_TIMEOUT,
       onStalled: () => {
-        let progressPercent = "unknown";
-        try {
-          progressPercent = (torrent.progress * 100).toFixed(2);
-        } catch {
-          // best-effort only — see readDownloadedSafely's comment
-        }
         torrent.emit(
           "error",
-          new Error(`Torrent stalled at ${progressPercent}%`)
+          new Error(
+            `Torrent stalled at ${(computeDownloadProgress() * 100).toFixed(2)}%`
+          )
         );
       },
     });
     const progressInterval = setInterval(() => {
       if (torrent.destroyed) return;
-      // torrent.progress reads pieces[index] internally, which can throw
-      // transiently — see readDownloadedSafely's comment in
-      // webtorrent.client.ts. Skip this tick rather than crash on it.
-      let progress: number;
-      try {
-        progress = torrent.progress;
-      } catch (error) {
-        hypertubeLogger.error(
-          `Transient error reading torrent.progress: ${formatUnknownError(error)}`
-        );
-        return;
-      }
+      const progress = computeDownloadProgress();
       const progressMessage = `Progress: ${(progress * 100).toFixed(2)}%, speed=${(torrent.downloadSpeed / 1024).toFixed(2)} KB/s, peers=${torrent.numPeers}`;
       hypertubeLogger.info(progressMessage);
       reportJobProgress(job, progress * DOWNLOAD_PROGRESS_WEIGHT);
