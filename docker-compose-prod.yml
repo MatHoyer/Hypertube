@@ -66,6 +66,10 @@ services:
     # still reaches redis/s3 by name because vpn itself is on
     # hypertube-network. See apps/downloader/WEBTORRENT_ARCHITECTURE.md.
     network_mode: container:vpn
+    # main.ts deliberately exits on a fatal/uncaught error after failing the
+    # in-flight job (see handleFatalError) — needs a restart policy or the
+    # worker just stays dead until someone notices.
+    restart: unless-stopped
     depends_on:
       - server
 
