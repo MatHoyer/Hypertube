@@ -163,3 +163,16 @@ that held its lock disappears. The redelivered job calls `downloadMovie` again w
 `resolutionId`/infoHash, which re-attaches to the same `torrent-pieces/<infoHash>/` store;
 per the resume behavior above, WebTorrent only re-fetches pieces that aren't already present
 in S3, not the whole torrent.
+
+**Known cost caveat**: verified in WebTorrent's own source (`Torrent#_verifyPieces` →
+`_verifyPiecesUsingHash`) — every `client.add()` (a fresh download, a BullMQ-redelivered
+resume, or the startup seed reconciliation) issues one `store.get()` per piece of the
+*entire original torrent*, not just the file we selected. Missing pieces (files we
+deliberately never downloaded, per `deselect()`) fail gracefully as "unverified" rather than
+erroring out, so this is correctness-safe, but it does mean re-attaching to a torrent with
+many files/pieces costs one S3 GET per piece just to find out most don't exist. Acceptable
+for this app's single-selected-video-file torrents; if startup reconciliation ever needs to
+re-attach many movies at once, a cheaper future optimization would be an S3 `list-objects`
+call per infoHash to build a startup bitfield (`opts.startupBitfield`) up front instead of
+letting WebTorrent probe piece-by-piece. Not implemented now — not worth the complexity
+until it's actually a measured problem.
