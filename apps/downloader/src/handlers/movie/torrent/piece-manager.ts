@@ -263,6 +263,21 @@ export class PieceManager extends EventEmitter implements SeedSource {
     return this.pieceState.get(index) === "done";
   }
 
+  get isDone(): boolean {
+    return this.doneEmitted;
+  }
+
+  get progress(): { verifiedPieces: number; totalPieces: number } {
+    return {
+      verifiedPieces: this.verifiedCount,
+      totalPieces: this.neededPieceIndices.length,
+    };
+  }
+
+  get connectedPeerCount(): number {
+    return this.peers.size;
+  }
+
   /** SeedSource: reads a piece's bytes back from the durable store to answer an inbound peer request. Local scratch files only ever hold a file-relative slice of a piece (see writePieceToFiles), so the durable store is the one place the exact original piece bytes live. */
   async readPieceRange(index: number, offset: number, length: number): Promise<Buffer> {
     if (!this.pieceStore) {

@@ -192,6 +192,11 @@ export class PeerConnectionPool extends EventEmitter {
     return this.pending.size + this.active.size;
   }
 
+  /** Currently connected (post-handshake) peer count — for progress/stall reporting. */
+  get connectionCount(): number {
+    return this.active.size;
+  }
+
   private pump(): void {
     while (
       !this.destroyed &&
