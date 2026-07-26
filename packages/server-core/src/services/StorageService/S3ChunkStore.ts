@@ -30,6 +30,22 @@ export class S3ChunkStore {
 
   private readonly infoHash: string;
   private readonly storageService: IStorageService;
+  // WebTorrent's endgame mode deliberately over-requests the last few
+  // missing pieces from multiple peers at once (the classic fix for a
+  // single slow peer stalling completion) — so for a piece with many
+  // holders, it's normal for two wires to complete the *same* piece index
+  // within moments of each other, each independently calling put() with
+  // (hash-identical) data. Without this guard, two concurrent PUTs to the
+  // same S3 key can race each other; observed live as a real, reproducible
+  // bug: WebTorrent's bitfield gets marked verified (the *first* put's
+  // callback resolves successfully) while the object that actually ends up
+  // in the store afterwards is missing or from the *second*, differently-
+  // timed write — leaving a piece permanently "verified but not present"
+  // that WebTorrent's own `_request` then refuses to ever re-fetch. Piece
+  // data is already hash-verified identical by the time put() is called, so
+  // a second concurrent write for the same index is redundant — just await
+  // the in-flight one instead of starting another.
+  private readonly inFlightPuts = new Map<number, Promise<void>>();
 
   constructor(chunkLength: number, opts: TS3ChunkStoreOpts) {
     if (!chunkLength) throw new Error("First argument must be a chunk length");
@@ -56,6 +72,12 @@ export class S3ChunkStore {
       return;
     }
 
+    const inFlight = this.inFlightPuts.get(index);
+    if (inFlight) {
+      inFlight.then(() => cb(null)).catch((err: unknown) => cb(err as Error));
+      return;
+    }
+
     // WebTorrent hands us plain Uint8Arrays (it uses uint8-util, not Buffer,
     // internally), but minio's client strictly requires a real Buffer
     // instance (Buffer.isBuffer() rejects a non-Buffer Uint8Array even
@@ -64,13 +86,17 @@ export class S3ChunkStore {
       ? buf
       : Buffer.from(buf.buffer, buf.byteOffset, buf.byteLength);
 
-    this.storageService
+    const putPromise = this.storageService
       .putObject(
         BUCKETS.TORRENT_PIECES,
         this.objectName(index),
         nodeBuffer,
         nodeBuffer.length
       )
+      .finally(() => this.inFlightPuts.delete(index));
+    this.inFlightPuts.set(index, putPromise);
+
+    putPromise
       .then(() => cb(null))
       .catch((err: unknown) =>
         cb(err instanceof Error ? err : new Error(String(err)))

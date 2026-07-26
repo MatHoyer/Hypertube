@@ -52,6 +52,9 @@
   "pnpm": {
     "overrides": {
       "bullmq>ioredis": "$ioredis"
+    },
+    "patchedDependencies": {
+      "webtorrent@3.0.16": "patches/webtorrent@3.0.16.patch"
     }
   },
   "devDependencies": {

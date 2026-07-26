@@ -10,6 +10,7 @@ COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY .env ./
 COPY eslint.config.js ./
+COPY patches ./patches
 
 COPY packages/libs ./packages/libs
 COPY packages/server-core ./packages/server-core

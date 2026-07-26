@@ -7,6 +7,7 @@ import {
 import { BUCKETS, getStoragePath, prisma } from "@hypertube/server-core";
 import { subMonths } from "date-fns";
 import { buffer } from "node:stream/consumers";
+import parseTorrent from "parse-torrent";
 import { storageService } from "../../main.js";
 import { addTorrent, registerSeed } from "./webtorrent.client.js";
 
@@ -58,9 +59,11 @@ export const reconcileSeeds = async (): Promise<void> => {
           ? torrentBuf.toString("utf-8")
           : torrentBuf;
 
-        const torrent = addTorrent(torrentId, {
+        const { pieces } = await parseTorrent(torrentId);
+        const torrent = await addTorrent(torrentId, {
           infoHash: resolution.infoHash as string,
           storageService,
+          pieces,
         });
         registerSeed(torrent);
       } catch (error) {

@@ -7,6 +7,11 @@ settings:
 overrides:
   bullmq>ioredis: ^5.11.1
 
+patchedDependencies:
+  webtorrent@3.0.16:
+    hash: 80432947b35fe37e9f4713b91887dc9e4277856d47c5c6bb481b48fd06779ef3
+    path: patches/webtorrent@3.0.16.patch
+
 importers:
 
   .:
@@ -213,7 +218,7 @@ importers:
         version: 11.0.23
       webtorrent:
         specifier: 3.0.16
-        version: 3.0.16(bare-url@2.4.5)
+        version: 3.0.16(patch_hash=80432947b35fe37e9f4713b91887dc9e4277856d47c5c6bb481b48fd06779ef3)(bare-url@2.4.5)
     devDependencies:
       '@types/fluent-ffmpeg':
         specifier: ^2.1.28
@@ -9498,7 +9503,7 @@ snapshots:
     dependencies:
       node-datachannel: 0.32.3
 
-  webtorrent@3.0.16(bare-url@2.4.5):
+  webtorrent@3.0.16(patch_hash=80432947b35fe37e9f4713b91887dc9e4277856d47c5c6bb481b48fd06779ef3)(bare-url@2.4.5):
     dependencies:
       '@silentbot1/nat-api': 0.4.9
       '@thaunknown/simple-peer': 10.1.1

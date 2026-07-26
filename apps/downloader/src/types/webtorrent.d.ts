@@ -31,6 +31,22 @@ declare module "webtorrent" {
     announce?: string[];
     skipVerify?: boolean;
     deselect?: boolean;
+    /** Startup bitfield (BitTorrent wire format: MSB-first bits) of pieces already present in the store, used to skip full hash verification. Must be exactly Math.ceil(pieceCount / 8) bytes or WebTorrent silently ignores it. */
+    bitfield?: Uint8Array;
+  }
+
+  export interface BitFieldLike {
+    get(index: number): boolean;
+  }
+
+  export interface PeerWire {
+    peerId: string;
+    remoteAddress?: string;
+    remotePort?: number;
+    peerPieces: BitFieldLike;
+    requests: { piece: number }[];
+    peerChoking: boolean;
+    amInterested: boolean;
   }
 
   export class Torrent extends EventEmitter {
@@ -46,9 +62,14 @@ declare module "webtorrent" {
     files: TorrentFile[];
     ready: boolean;
     destroyed: boolean;
+    pieces: unknown[];
+    bitfield: BitFieldLike;
+    wires: PeerWire[];
     select(start: number, end: number, priority?: number): void;
     deselect(start: number, end: number): void;
     destroy(opts?: { destroyStore?: boolean }, cb?: (err?: Error) => void): void;
+    /** Private by convention (underscore), not by enforcement — used deliberately to force a piece back to "needs download" when store-write reconciliation finds the bitfield claiming a piece we don't actually have. See webtorrent.client.ts's `verified` handler. */
+    _markUnverified(index: number): void;
   }
 
   export interface ClientOpts {
@@ -82,6 +103,8 @@ declare module "parse-torrent" {
     infoHash: string;
     name?: string;
     length?: number;
+    /** Per-piece hex-encoded SHA1 hashes. Only populated when parsed from full .torrent info (absent for magnet links). */
+    pieces?: string[];
   };
 
   export default function parseTorrent(

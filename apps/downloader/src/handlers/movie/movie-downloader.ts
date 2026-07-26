@@ -19,7 +19,7 @@ import { buffer } from "node:stream/consumers";
 import path from "path";
 import parseTorrent from "parse-torrent";
 import { TorrentFile } from "webtorrent";
-import { storageService } from "../../main.js";
+import { DOWNLOAD_JOB_LOCK_DURATION, storageService } from "../../main.js";
 import { notifySubscribers } from "../../notifications/notifySubscriber.js";
 import {
   convertSubtitleFileToVtt,
@@ -372,7 +372,10 @@ const handleSidecarSubtitleFile = async (
   ]);
 };
 
-export const downloadMovie = async (job: Job<TDownloadJobData>) => {
+export const downloadMovie = async (
+  job: Job<TDownloadJobData>,
+  token?: string
+) => {
   const { movie, resolutionId } = job.data;
 
   const dbResolution = await prisma.resolution.findUnique({
@@ -400,7 +403,7 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
   // infoHash must be known *before* adding the torrent (it keys the S3 store),
   // so we derive it ourselves with the same library WebTorrent uses
   // internally rather than trusting a possibly-null/stale DB value.
-  const { infoHash } = await parseTorrent(torrentId);
+  const { infoHash, pieces } = await parseTorrent(torrentId);
   if (dbResolution.infoHash !== infoHash) {
     await prisma.resolution.update({
       where: { id: resolutionId },
@@ -412,7 +415,11 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
   hypertubeLogger.info(addingMessage);
   reportJobLog(job, addingMessage);
 
-  const torrent = addTorrent(torrentId, { infoHash, storageService });
+  const torrent = await addTorrent(torrentId, {
+    infoHash,
+    storageService,
+    pieces,
+  });
   const scratchDir = path.join(
     os.tmpdir(),
     "hypertube-downloader",
@@ -473,11 +480,38 @@ export const downloadMovie = async (job: Job<TDownloadJobData>) => {
     });
     const progressInterval = setInterval(() => {
       if (torrent.destroyed) return;
+      // TEMP DIAGNOSTIC: is piece 523 (the last piece) actually held by any
+      // currently-connected peer, or is nobody in the swarm advertising it?
+      const lastPieceIndex = torrent.pieces.length - 1;
+      const lastPieceHave = torrent.bitfield.get(lastPieceIndex);
+      const holderWires = torrent.wires.filter((w) =>
+        w.peerPieces.get(lastPieceIndex)
+      );
+      const unchokedHolders = holderWires.filter((w) => !w.peerChoking).length;
+      const inFlightRequests = torrent.wires.filter((w) =>
+        w.requests.some((r) => r.piece === lastPieceIndex)
+      ).length;
+      const interestedInHolders = holderWires.filter(
+        (w) => w.amInterested
+      ).length;
+      hypertubeLogger.warn(
+        `[last-piece-diagnostic] pieces.length=${torrent.pieces.length} lastPieceIndex=${lastPieceIndex} haveIt=${lastPieceHave} holders=${holderWires.length}/${torrent.wires.length} unchokedHolders=${unchokedHolders} amInterestedInHolders=${interestedInHolders} inFlightRequestsForThisPiece=${inFlightRequests}`
+      );
       const progress = computeDownloadProgress();
-      const progressMessage = `Progress: ${(progress * 100).toFixed(2)}%, speed=${(torrent.downloadSpeed / 1024).toFixed(2)} KB/s, peers=${torrent.numPeers}`;
+      const progressMessage = `Progress: ${(progress * 100).toFixed(2)}%, speed=${(torrent.downloadSpeed / 1024).toFixed(2)} KB/s, peers=${torrent.numPeers}, ready=${torrent.ready}`;
       hypertubeLogger.info(progressMessage);
       reportJobProgress(job, progress * DOWNLOAD_PROGRESS_WEIGHT);
       reportJobLog(job, progressMessage);
+      // Ties lock renewal to this same tick rather than relying solely on
+      // BullMQ's own blind per-worker renewal timer — see
+      // DOWNLOAD_JOB_LOCK_DURATION in main.ts for why the lock is short.
+      if (token) {
+        job.extendLock(token, DOWNLOAD_JOB_LOCK_DURATION).catch((error: unknown) => {
+          hypertubeLogger.error(
+            `Failed to extend job lock: ${formatUnknownError(error)}`
+          );
+        });
+      }
     }, PROGRESS_LOG_INTERVAL);
 
     try {

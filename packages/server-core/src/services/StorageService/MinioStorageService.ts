@@ -71,6 +71,18 @@ export class MinioStorageService implements IStorageService {
     bucketName,
     prefix
   ) => {
+    const names = await this.listObjectNamesByPrefix(bucketName, prefix);
+    if (names.length === 0) return;
+    for (let i = 0; i < names.length; i += REMOVE_BATCH) {
+      const chunk = names.slice(i, i + REMOVE_BATCH);
+      await minioClient.removeObjects(bucketName, chunk);
+    }
+  };
+
+  listObjectNamesByPrefix: IStorageService["listObjectNamesByPrefix"] = async (
+    bucketName,
+    prefix
+  ) => {
     const normalized = prefix.endsWith("/") ? prefix : `${prefix}/`;
     const names: string[] = [];
     const stream = minioClient.listObjects(bucketName, normalized, true);
@@ -82,11 +94,7 @@ export class MinioStorageService implements IStorageService {
       stream.on("error", reject);
       stream.on("end", () => resolve());
     });
-    if (names.length === 0) return;
-    for (let i = 0; i < names.length; i += REMOVE_BATCH) {
-      const chunk = names.slice(i, i + REMOVE_BATCH);
-      await minioClient.removeObjects(bucketName, chunk);
-    }
+    return names;
   };
 
   presignedGetObject: IStorageService["presignedGetObject"] = async (

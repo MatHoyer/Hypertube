@@ -8,6 +8,7 @@ COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY .env ./
 COPY eslint.config.js ./
+COPY patches ./patches
 
 COPY apps/subtitle-proxy ./apps/subtitle-proxy
 COPY packages/libs ./packages/libs

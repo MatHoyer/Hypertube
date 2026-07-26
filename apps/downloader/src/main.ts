@@ -30,9 +30,21 @@ const connection = new Redis({
 
 // Tracked so a fatal (uncaught) error can still fail *this* job explicitly
 // instead of leaving it stuck "active" until BullMQ's stalled-job timeout
-// (lockDuration, currently 1h) notices the worker is gone. Cleared once the
-// job settles normally, so it's only non-null while genuinely in-flight.
+// (lockDuration, see DOWNLOAD_JOB_LOCK_DURATION) notices the worker is gone.
+// Cleared once the job settles normally, so it's only non-null while
+// genuinely in-flight.
 let activeJob: { job: Job; token: string } | null = null;
+
+// Movie downloads can run for hours, but the lock itself stays short: rather
+// than a single multi-hour lockDuration (which left a job unreclaimable for
+// up to an hour if the worker died mid-download — a container restart during
+// a real download orphaned the job with no way to resume until that expired),
+// downloadMovie explicitly extends the lock every PROGRESS_LOG_INTERVAL tick
+// via job.extendLock(token, ...). A crashed/killed worker stops ticking, so
+// the lock naturally expires within this window and BullMQ's stalled-job
+// detection (stalledInterval, default 30s) can reclaim it quickly instead of
+// waiting up to lockDuration.
+export const DOWNLOAD_JOB_LOCK_DURATION = 90000;
 
 const worker = new Worker<TDownloadJobData>(
   MOVIE_QUEUE,
@@ -41,7 +53,7 @@ const worker = new Worker<TDownloadJobData>(
     try {
       switch (job.name) {
         case MOVIE_QUEUE_JOB_NAMES.DOWNLOAD_MOVIE:
-          return await downloadMovieHandler(job);
+          return await downloadMovieHandler(job, token);
         case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
           return await downloadMoviePreviews(job);
         case MOVIE_QUEUE_JOB_NAMES.STOP_SEEDING:
@@ -53,7 +65,7 @@ const worker = new Worker<TDownloadJobData>(
       activeJob = null;
     }
   },
-  { connection, concurrency: 1, lockDuration: 3600000 }
+  { connection, concurrency: 1, lockDuration: DOWNLOAD_JOB_LOCK_DURATION }
 );
 
 hypertubeLogger.info(`Downloader worker started`);

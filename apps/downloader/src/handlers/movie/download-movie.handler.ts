@@ -13,7 +13,10 @@ import { Job } from "bullmq";
 import { notifySubscribers } from "../../notifications/notifySubscriber.js";
 import { downloadMovie } from "./movie-downloader.js";
 
-export const downloadMovieHandler = async (job: Job<TDownloadJobData>) => {
+export const downloadMovieHandler = async (
+  job: Job<TDownloadJobData>,
+  token?: string
+) => {
   hypertubeLogger.info(`[${job.data.movie.id}] Download torrent job started`);
 
   await prisma.resolution.update({
@@ -21,7 +24,7 @@ export const downloadMovieHandler = async (job: Job<TDownloadJobData>) => {
     data: { downloadState: DownloadStates.DOWNLOADING },
   });
 
-  return downloadMovie(job);
+  return downloadMovie(job, token);
 };
 
 export const downloadMovieSuccessHandler = async (

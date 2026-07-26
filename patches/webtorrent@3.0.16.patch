@@ -1,0 +1,64 @@
+diff --git a/lib/torrent.js b/lib/torrent.js
+index 771a87fa5004f5ff82e9b5c3d9d8b0d70e110dbf..d6bedee5145f6c50c9114f7f05e18299213a3853 100644
+--- a/lib/torrent.js
++++ b/lib/torrent.js
+@@ -224,7 +224,14 @@ export default class Torrent extends EventEmitter {
+         downloaded += (index === len - 1) ? this.lastPieceLength : this.pieceLength
+       } else { // "in progress" data
+         const piece = this.pieces[index]
+-        downloaded += (piece.length - piece.missing)
++        // HYPERTUBE PATCH: pieces[index] can be transiently null here even
++        // though bitfield.get(index) is still false — see the store.put()
++        // race note below. Treat as fully received (matches what actually
++        // triggered this codepath: the piece has been downloaded and is
++        // pending async hash/store verification, not literally in progress).
++        downloaded += piece
++          ? (piece.length - piece.missing)
++          : ((index === len - 1) ? this.lastPieceLength : this.pieceLength)
+       }
+     }
+     return downloaded
+@@ -1702,6 +1709,11 @@ export default class Torrent extends EventEmitter {
+       return index => {
+         if (!tries || self.bitfield.get(index)) return true
+ 
++        // HYPERTUBE PATCH: see downloaded getter — pieces[index] can be
++        // transiently null while bitfield.get(index) is still false.
++        // Treat as "done enough", same as the bitfield-true fast path.
++        if (!self.pieces[index]) return true
++
+         let missing = self.pieces[index].missing
+ 
+         for (; ptr < self.wires.length; ptr++) {
+@@ -1938,6 +1950,11 @@ export default class Torrent extends EventEmitter {
+     // var endGame = (wire.requests.length === 0 && self.store.numMissing < 30)
+ 
+     const piece = self.pieces[index]
++    // HYPERTUBE PATCH: see `downloaded` getter — pieces[index] can be
++    // transiently null while bitfield.get(index) is still false (piece
++    // fully received, pending async hash/store verification). Nothing to
++    // reserve in that state; treat like the bitfield-true case above.
++    if (!piece) return false
+     let reservation = isWebSeed ? piece.reserveRemaining() : piece.reserve()
+ 
+     if (reservation === -1 && hotswap && self._hotswap(wire, index)) {
+@@ -1984,7 +2001,18 @@ export default class Torrent extends EventEmitter {
+ 
+       const buf = piece.flush()
+ 
+-      // TODO: might need to set self.pieces[index] = null here since sha1 is async
++      // HYPERTUBE PATCH: implements this file's own TODO. Piece is fully
++      // received at this point but not yet hash/store verified — hash()
++      // and store.put() below are both async (S3-backed store.put in
++      // particular can take a while, far longer than a local-disk write),
++      // and nothing should keep treating this Piece object as live/spent
++      // during that window. bitfield.get(index) still correctly reads
++      // false until _markVerified fires later; the three read sites that
++      // check `pieces[index]` while bitfield is false (`downloaded`,
++      // `_request`, `speedRanker`'s rank fn) are patched to treat a null
++      // piece here as "fully received, pending verification" instead of
++      // crashing.
++      self.pieces[index] = null
+ 
+       const hex = await hash(buf, 'hex')
+       if (self.destroyed) return
