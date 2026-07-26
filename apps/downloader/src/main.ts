@@ -17,7 +17,7 @@ import {
   downloadMovieSuccessHandler,
 } from "./handlers/movie/download-movie.handler.js";
 import { reconcileSeeds } from "./handlers/movie/seed-reconciliation.js";
-import { stopSeeding } from "./handlers/movie/webtorrent.client.js";
+import * as engine from "./handlers/movie/torrent/engine.js";
 import { gracefulShutdown } from "./shutdown.js";
 
 export const storageService: IStorageService = new MinioStorageService();
@@ -57,7 +57,7 @@ const worker = new Worker<TDownloadJobData>(
         case MOVIE_QUEUE_JOB_NAMES.PREVIEW_MOVIE:
           return await downloadMoviePreviews(job);
         case MOVIE_QUEUE_JOB_NAMES.STOP_SEEDING:
-          return stopSeeding((job.data as TStopSeedingJobData).infoHash);
+          return engine.destroy((job.data as TStopSeedingJobData).infoHash);
         default:
           throw new Error(`Unknown job name: ${job.name}`);
       }

@@ -41,12 +41,11 @@ export const downloadTorrent = async ({
       resolutionId: resolution.id,
     },
     {
-      // Torrent downloads can fail transiently (swarm hiccups, a webtorrent
-      // internal scheduling race under many peers — see
-      // apps/downloader/WEBTORRENT_ARCHITECTURE.md) without the download
-      // itself being unrecoverable: retries resume from whatever was
-      // already verified into the S3 piece store rather than restarting
-      // from zero, so a few automatic retries are close to free.
+      // Torrent downloads can fail transiently (swarm hiccups, a stalled
+      // peer) without the download itself being unrecoverable: retries
+      // resume from whatever was already verified into the S3 piece store
+      // rather than restarting from zero, so a few automatic retries are
+      // close to free.
       attempts: 3,
       backoff: { type: "exponential", delay: 30000 },
     }

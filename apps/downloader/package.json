@@ -22,8 +22,7 @@
     "bittorrent-tracker": "^11.2.3",
     "fluent-ffmpeg": "^2.1.3",
     "parse-torrent": "11.0.23",
-    "ut_metadata": "^5.0.1",
-    "webtorrent": "3.0.16"
+    "ut_metadata": "^5.0.1"
   },
   "devDependencies": {
     "@types/fluent-ffmpeg": "^2.1.28",

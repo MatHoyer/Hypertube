@@ -7,9 +7,10 @@ import {
 import { BUCKETS, getStoragePath, prisma } from "@hypertube/server-core";
 import { subMonths } from "date-fns";
 import { buffer } from "node:stream/consumers";
-import parseTorrent from "parse-torrent";
 import { storageService } from "../../main.js";
-import { addTorrent, registerSeed } from "./webtorrent.client.js";
+import * as engine from "./torrent/engine.js";
+import { parseTorrentIdentifier } from "./torrent/metadata.js";
+import { selectTargetFiles } from "./torrent/select-target-files.js";
 
 /**
  * Every downloader process is disposable, but seeding shouldn't stop just
@@ -59,13 +60,32 @@ export const reconcileSeeds = async (): Promise<void> => {
           ? torrentBuf.toString("utf-8")
           : torrentBuf;
 
-        const { pieces } = await parseTorrent(torrentId);
-        const torrent = await addTorrent(torrentId, {
-          infoHash: resolution.infoHash as string,
-          storageService,
-          pieces,
-        });
-        registerSeed(torrent);
+        // Deliberately not engine.addTorrent — that would spin up live peer
+        // discovery/dialing (and register a handle that'd make
+        // resumeSeeding's no-op guard bail immediately). Reconciliation
+        // only needs metadata.files, resolved locally with no network
+        // access for a real .torrent buffer; a magnet with no cached
+        // metadata is handled inside resumeSeeding itself.
+        const identifier = await parseTorrentIdentifier(torrentId);
+        if (identifier.kind !== "full") {
+          hypertubeLogger.warn(
+            `Seed reconciliation: magnet with no cached metadata for resolution ${resolution.id}, skipping (would need a live peer round-trip just to re-seed)`
+          );
+          return;
+        }
+        const selected = selectTargetFiles(identifier.metadata.files);
+        if (!selected) {
+          hypertubeLogger.warn(
+            `Seed reconciliation: no video file found for resolution ${resolution.id}, skipping`
+          );
+          return;
+        }
+
+        await engine.resumeSeeding(
+          torrentId,
+          [selected.videoFile, ...selected.sidecarSubtitleFiles],
+          storageService
+        );
       } catch (error) {
         hypertubeLogger.error(
           `Seed reconciliation failed for resolution ${resolution.id}: ${formatUnknownError(error)}`

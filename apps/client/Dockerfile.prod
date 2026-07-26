@@ -9,7 +9,6 @@ WORKDIR /hypertube
 COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY .env ./
-COPY patches ./patches
 
 COPY apps/client ./apps/client
 COPY packages/libs ./packages/libs

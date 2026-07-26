@@ -17,8 +17,6 @@ import * as os from "os";
 import { PassThrough } from "node:stream";
 import { buffer } from "node:stream/consumers";
 import path from "path";
-import parseTorrent from "parse-torrent";
-import { TorrentFile } from "webtorrent";
 import { DOWNLOAD_JOB_LOCK_DURATION, storageService } from "../../main.js";
 import { notifySubscribers } from "../../notifications/notifySubscriber.js";
 import {
@@ -26,20 +24,13 @@ import {
   FFPROBE_LOW_MEM,
   formatSidecarSubtitleLanguage,
   handleEmbeddedSubtitles,
-  isSidecarSubtitle,
   VideoMetadata,
 } from "./download-torrent-subtitles.js";
-import {
-  addTorrent,
-  registerSeed,
-  selectFiles,
-  waitForFileDone,
-  waitForMetadata,
-  watchForStall,
-} from "./webtorrent.client.js";
+import * as engine from "./torrent/engine.js";
+import type { TargetFile } from "./torrent/piece-manager.js";
+import { selectTargetFiles, VIDEO_EXTENSIONS } from "./torrent/select-target-files.js";
 
 const WAIT_FILE_DONE_TIMEOUT = 24 * 60 * 60 * 1000; // safety net; real bound is the stall watchdog
-const WAIT_METADATA_TIMEOUT = 120000;
 const WAIT_SUBTITLE_TIMEOUT = 10000;
 const STALL_TIMEOUT = 180000;
 const PROGRESS_LOG_INTERVAL = 30000;
@@ -63,19 +54,6 @@ const reportJobLog = (job: Job<TDownloadJobData>, message: string) => {
     hypertubeLogger.error(`Failed to write job log: ${formatUnknownError(error)}`);
   });
 };
-
-const VIDEO_EXTENSIONS = [
-  ".mp4",
-  ".mkv",
-  ".avi",
-  ".m4v",
-  ".webm",
-  ".mov",
-  ".wmv",
-  ".flv",
-  ".ts",
-  ".m2ts",
-];
 
 const BROWSER_COMPATIBLE_VIDEO_CODECS = ["h264"];
 const BROWSER_COMPATIBLE_AUDIO_CODECS = ["aac"];
@@ -131,7 +109,7 @@ const probeVideoMetadata = (filePath: string): Promise<VideoMetadata> => {
 };
 
 /**
- * Decision A (apps/downloader/WEBTORRENT_ARCHITECTURE.md): prefer a fast
+ * Decision A (apps/downloader/TORRENT_ENGINE_ARCHITECTURE.md): prefer a fast
  * remux over a full transcode whenever the source is already browser
  * compatible, only paying for libx264 when the source video codec itself
  * isn't playable in-browser.
@@ -221,38 +199,8 @@ const buildMovieObjectMetadata = ({
   return metadata;
 };
 
-const isVideoFile = (filename: string): boolean => {
-  const lower = filename.toLowerCase();
-  return VIDEO_EXTENSIONS.some((ext) => lower.endsWith(ext));
-};
-
-const findMainVideoFile = (files: TorrentFile[]): TorrentFile | undefined => {
-  const videoFiles = files.filter((file) => isVideoFile(file.name));
-  if (videoFiles.length === 0) return undefined;
-  if (videoFiles.length === 1) return videoFiles[0];
-
-  return videoFiles.reduce((largest, file) =>
-    file.length > largest.length ? file : largest
-  );
-};
-
-/** Materializes an already-fully-downloaded torrent file to a local scratch path. */
-const materializeToLocalFile = (
-  file: TorrentFile,
-  destPath: string
-): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    const readStream = file.createReadStream();
-    const writeStream = fs.createWriteStream(destPath);
-    readStream.on("error", reject);
-    writeStream.on("error", reject);
-    writeStream.on("finish", () => resolve());
-    readStream.pipe(writeStream);
-  });
-};
-
 /**
- * Decision B (apps/downloader/WEBTORRENT_ARCHITECTURE.md): faststart requires
+ * Decision B (apps/downloader/TORRENT_ENGINE_ARCHITECTURE.md): faststart requires
  * a seekable output, so ffmpeg writes to this local scratch file, and only
  * the finished, faststart file is streamed to S3.
  */
@@ -346,28 +294,23 @@ const uploadSubtitle = async ({
   });
 };
 
+/** subtitleFilePath is already the fully-downloaded sidecar file — the piece manager wrote it straight to this path, no separate materialization step needed. */
 const handleSidecarSubtitleFile = async (
   movie: TMovieSchema,
-  subtitleFile: TorrentFile,
-  scratchDir: string
+  subtitleFileName: string,
+  subtitleFilePath: string
 ) => {
-  const target = path.join(scratchDir, path.basename(subtitleFile.name));
-  hypertubeLogger.info(`Materializing sidecar subtitle file ${target}`);
-  await materializeToLocalFile(subtitleFile, target);
-
-  const language = formatSidecarSubtitleLanguage(subtitleFile.name);
+  const language = formatSidecarSubtitleLanguage(subtitleFileName);
   const uploadStream = new PassThrough();
 
-  hypertubeLogger.info(
-    `Converting sidecar subtitle to VTT: ${subtitleFile.name}`
-  );
+  hypertubeLogger.info(`Converting sidecar subtitle to VTT: ${subtitleFileName}`);
   await Promise.all([
-    convertSubtitleFileToVtt(target, uploadStream),
+    convertSubtitleFileToVtt(subtitleFilePath, uploadStream),
     uploadSubtitle({
       movie,
       language,
       vttStream: uploadStream,
-      downloadLink: subtitleFile.name,
+      downloadLink: subtitleFileName,
     }),
   ]);
 };
@@ -400,10 +343,7 @@ export const downloadMovie = async (
     ? torrentBuf.toString("utf-8")
     : torrentBuf;
 
-  // infoHash must be known *before* adding the torrent (it keys the S3 store),
-  // so we derive it ourselves with the same library WebTorrent uses
-  // internally rather than trusting a possibly-null/stale DB value.
-  const { infoHash, pieces } = await parseTorrent(torrentId);
+  const { infoHash, metadata } = await engine.addTorrent(torrentId);
   if (dbResolution.infoHash !== infoHash) {
     await prisma.resolution.update({
       where: { id: resolutionId },
@@ -415,11 +355,6 @@ export const downloadMovie = async (
   hypertubeLogger.info(addingMessage);
   reportJobLog(job, addingMessage);
 
-  const torrent = await addTorrent(torrentId, {
-    infoHash,
-    storageService,
-    pieces,
-  });
   const scratchDir = path.join(
     os.tmpdir(),
     "hypertube-downloader",
@@ -427,20 +362,16 @@ export const downloadMovie = async (
   );
 
   try {
-    const files = await waitForMetadata(torrent, WAIT_METADATA_TIMEOUT);
-
-    const videoFile = findMainVideoFile(files);
-    if (!videoFile) {
+    const selected = selectTargetFiles(metadata.files);
+    if (!selected) {
       throw new Error(
         `Video file not found (supported: ${VIDEO_EXTENSIONS.join(", ")})`
       );
     }
+    const { videoFile, sidecarSubtitleFiles } = selected;
     hypertubeLogger.info(`Video file found ${videoFile.name}`);
     reportJobLog(job, `Video file found: ${videoFile.name}`);
 
-    const sidecarSubtitleFiles = files.filter((file) =>
-      isSidecarSubtitle(file.name)
-    );
     if (sidecarSubtitleFiles.length > 0) {
       hypertubeLogger.info(
         `${sidecarSubtitleFiles.length} sidecar subtitle file(s) found ${sidecarSubtitleFiles
@@ -449,58 +380,58 @@ export const downloadMovie = async (
       );
     }
 
-    selectFiles(torrent, [videoFile, ...sidecarSubtitleFiles]);
+    await fs.promises.mkdir(scratchDir, { recursive: true });
+
+    const sourcePath = path.join(
+      scratchDir,
+      `source${path.extname(videoFile.name)}`
+    );
+    const videoTarget: TargetFile = { file: videoFile, scratchFilePath: sourcePath };
+    const sidecarTargets: TargetFile[] = sidecarSubtitleFiles.map((file) => ({
+      file,
+      scratchFilePath: path.join(scratchDir, path.basename(file.name)),
+    }));
+
+    await engine.startDownload(
+      infoHash,
+      [videoTarget, ...sidecarTargets],
+      storageService
+    );
 
     notifySubscribers(movie.id, DownloadStates.DOWNLOADING);
     hypertubeLogger.info(`Movie download started successfully`);
     reportJobLog(job, "Download started");
 
-    await fs.promises.mkdir(scratchDir, { recursive: true });
+    let lastVerifiedPieces = 0;
+    let lastProgressAt = Date.now();
+    let stalled = false;
+    let rejectOnStall: ((err: Error) => void) | null = null;
+    const stallPromise = new Promise<never>((_, reject) => {
+      rejectOnStall = reject;
+    });
 
-    // torrent.progress/.downloaded read pieces[index] internally, which can
-    // throw persistently (not just transiently) on some torrents — observed
-    // in a real run, every single poll tick. torrent.received (a plain
-    // counter, not a pieces[]-derived getter) doesn't carry that risk, and
-    // dividing by videoFile.length rather than torrent.length is also more
-    // accurate for a multi-file torrent where we only ever download one
-    // file — torrent.length is the whole torrent's size.
-    const computeDownloadProgress = (): number =>
-      Math.min(torrent.received / videoFile.length, 1);
-
-    const stallWatchdog = watchForStall(torrent, {
-      timeoutMs: STALL_TIMEOUT,
-      onStalled: () => {
-        torrent.emit(
-          "error",
+    const progressInterval = setInterval(() => {
+      const progress = engine.getProgress(infoHash);
+      if (progress.verifiedPieces > lastVerifiedPieces) {
+        lastVerifiedPieces = progress.verifiedPieces;
+        lastProgressAt = Date.now();
+      } else if (!stalled && Date.now() - lastProgressAt > STALL_TIMEOUT) {
+        stalled = true;
+        rejectOnStall?.(
           new Error(
-            `Torrent stalled at ${(computeDownloadProgress() * 100).toFixed(2)}%`
+            `Torrent stalled at ${progress.verifiedPieces}/${progress.totalPieces} pieces`
           )
         );
-      },
-    });
-    const progressInterval = setInterval(() => {
-      if (torrent.destroyed) return;
-      // TEMP DIAGNOSTIC: is piece 523 (the last piece) actually held by any
-      // currently-connected peer, or is nobody in the swarm advertising it?
-      const lastPieceIndex = torrent.pieces.length - 1;
-      const lastPieceHave = torrent.bitfield.get(lastPieceIndex);
-      const holderWires = torrent.wires.filter((w) =>
-        w.peerPieces.get(lastPieceIndex)
-      );
-      const unchokedHolders = holderWires.filter((w) => !w.peerChoking).length;
-      const inFlightRequests = torrent.wires.filter((w) =>
-        w.requests.some((r) => r.piece === lastPieceIndex)
-      ).length;
-      const interestedInHolders = holderWires.filter(
-        (w) => w.amInterested
-      ).length;
-      hypertubeLogger.warn(
-        `[last-piece-diagnostic] pieces.length=${torrent.pieces.length} lastPieceIndex=${lastPieceIndex} haveIt=${lastPieceHave} holders=${holderWires.length}/${torrent.wires.length} unchokedHolders=${unchokedHolders} amInterestedInHolders=${interestedInHolders} inFlightRequestsForThisPiece=${inFlightRequests}`
-      );
-      const progress = computeDownloadProgress();
-      const progressMessage = `Progress: ${(progress * 100).toFixed(2)}%, speed=${(torrent.downloadSpeed / 1024).toFixed(2)} KB/s, peers=${torrent.numPeers}, ready=${torrent.ready}`;
+        return;
+      }
+
+      const ratio =
+        progress.totalPieces > 0
+          ? progress.verifiedPieces / progress.totalPieces
+          : 1;
+      const progressMessage = `Progress: ${(ratio * 100).toFixed(2)}%, pieces=${progress.verifiedPieces}/${progress.totalPieces}, peers=${progress.connectedPeers}`;
       hypertubeLogger.info(progressMessage);
-      reportJobProgress(job, progress * DOWNLOAD_PROGRESS_WEIGHT);
+      reportJobProgress(job, ratio * DOWNLOAD_PROGRESS_WEIGHT);
       reportJobLog(job, progressMessage);
       // Ties lock renewal to this same tick rather than relying solely on
       // BullMQ's own blind per-worker renewal timer — see
@@ -514,16 +445,28 @@ export const downloadMovie = async (
       }
     }, PROGRESS_LOG_INTERVAL);
 
+    let doneTimeoutId: ReturnType<typeof setTimeout>;
+    const doneTimeoutPromise = new Promise<never>((_, reject) => {
+      doneTimeoutId = setTimeout(
+        () => reject(new Error("Timeout waiting for torrent download to finish")),
+        WAIT_FILE_DONE_TIMEOUT
+      );
+    });
+
     try {
-      await waitForFileDone(torrent, videoFile, WAIT_FILE_DONE_TIMEOUT);
+      await Promise.race([engine.onDone(infoHash), stallPromise, doneTimeoutPromise]);
     } finally {
-      stallWatchdog.stop();
       clearInterval(progressInterval);
+      clearTimeout(doneTimeoutId!);
     }
 
     try {
-      const sidecarPromises = sidecarSubtitleFiles.map((subtitleFile) =>
-        handleSidecarSubtitleFile(movie, subtitleFile, scratchDir)
+      const sidecarPromises = sidecarSubtitleFiles.map((subtitleFile, i) =>
+        handleSidecarSubtitleFile(
+          movie,
+          subtitleFile.name,
+          sidecarTargets[i].scratchFilePath
+        )
       );
       await Promise.race([
         Promise.allSettled(sidecarPromises),
@@ -534,12 +477,6 @@ export const downloadMovie = async (
         `Error handling sidecar subtitle files: ${formatUnknownError(error)}`
       );
     }
-
-    const sourcePath = path.join(
-      scratchDir,
-      `source${path.extname(videoFile.name)}`
-    );
-    await materializeToLocalFile(videoFile, sourcePath);
 
     const sourceMetadata = await probeVideoMetadata(sourcePath);
     const { options: codecOptions, description: conversionDescription } =
@@ -614,14 +551,16 @@ export const downloadMovie = async (
     reportJobProgress(job, 100);
     reportJobLog(job, "Upload complete");
 
-    // Keep seeding from the S3-backed piece store after the job resolves —
-    // do not destroy the torrent on success.
-    registerSeed(torrent);
+    // Download already stopped dialing out for peers as soon as engine
+    // detected 'done' (see engine.startDownload); this only releases the
+    // scratch-file fds. The torrent stays registered with the peer server,
+    // seeding straight from the durable S3 piece store, indefinitely.
+    await engine.closeScratchFiles(infoHash);
   } catch (error) {
     const err =
       error instanceof Error ? error : new Error(formatUnknownError(error));
     reportJobLog(job, `FAILED: ${err.message}`);
-    torrent.destroy();
+    await engine.destroy(infoHash);
     throw err;
   } finally {
     await fs.promises.rm(scratchDir, { recursive: true, force: true });

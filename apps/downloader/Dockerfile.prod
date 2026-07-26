@@ -10,7 +10,6 @@ COPY pnpm-workspace.yaml ./
 COPY package.json pnpm-lock.yaml ./
 COPY .env ./
 COPY eslint.config.js ./
-COPY patches ./patches
 
 COPY packages/libs ./packages/libs
 COPY packages/server-core ./packages/server-core
@@ -23,11 +22,6 @@ RUN pnpm build:downloader
 
 FROM node:22-slim AS runner
 
-# webtorrent pulls in node-datachannel (native WebRTC addon, for web-peer
-# support) as an eager, unconditional import. Its prebuilt binary is built
-# against glibc, so the runner must stay glibc-based (Debian slim, not
-# alpine/musl) to match the builder stage, or the native binding fails to
-# load at startup. See apps/downloader/WEBTORRENT_ARCHITECTURE.md.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ffmpeg && \
     rm -rf /var/lib/apt/lists/*
