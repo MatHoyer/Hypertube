@@ -19,12 +19,25 @@ declare module "bittorrent-protocol" {
     [key: string]: unknown;
   }
 
+  export interface WireBitField {
+    get(index: number): boolean;
+    buffer: Uint8Array;
+  }
+
   export default class Wire extends Duplex {
     peerId: string | null;
     peerIdBuffer: Buffer | null;
     extended: boolean;
     extendedHandshake: ExtendedHandshake;
     destroyed: boolean;
+
+    peerChoking: boolean;
+    amChoking: boolean;
+    peerInterested: boolean;
+    amInterested: boolean;
+    peerPieces: WireBitField;
+    requests: { piece: number; offset: number; length: number }[];
+    peerRequests: { piece: number; offset: number; length: number }[];
 
     handshake(
       infoHash: string | Buffer,
@@ -33,10 +46,29 @@ declare module "bittorrent-protocol" {
     ): void;
     use(extension: (wire: Wire) => unknown): void;
     destroy(): void;
+    setTimeout(ms: number, unref?: boolean): void;
+    setKeepAlive(enable: boolean): void;
+
+    choke(): void;
+    unchoke(): void;
+    interested(): void;
+    uninterested(): void;
+    have(index: number): void;
+    bitfield(bitfield: Uint8Array): void;
+    request(
+      index: number,
+      offset: number,
+      length: number,
+      cb: (err: Error | null, block: Buffer) => void
+    ): void;
+    cancel(index: number, offset: number, length: number): void;
 
     on(event: "handshake", listener: (infoHash: string, peerId: string, extensions: HandshakeExtensions) => void): this;
     on(event: "extended", listener: (ext: string, buf: Buffer) => void): this;
-    on(event: "close", listener: () => void): this;
+    on(event: "choke" | "unchoke" | "interested" | "uninterested" | "timeout" | "keep-alive" | "close", listener: () => void): this;
+    on(event: "bitfield", listener: (bitfield: WireBitField) => void): this;
+    on(event: "have", listener: (index: number) => void): this;
+    on(event: "request", listener: (index: number, offset: number, length: number, cb: (err: Error | null, block: Buffer) => void) => void): this;
     on(event: "error", listener: (err: Error) => void): this;
     on(event: string, listener: (...args: unknown[]) => void): this;
     once(event: "handshake", listener: (infoHash: string, peerId: string, extensions: HandshakeExtensions) => void): this;
