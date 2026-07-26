@@ -61,6 +61,7 @@ declare module "bittorrent-dht" {
     constructor(opts?: DHTOpts);
     destroyed: boolean;
     listen(onlistening?: () => void): void;
+    listen(port?: number, onlistening?: () => void): void;
     listen(port?: number, address?: string, onlistening?: () => void): void;
     lookup(
       infoHash: string | Uint8Array,
