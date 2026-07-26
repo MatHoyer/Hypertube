@@ -29,10 +29,6 @@ const parseAddr = (addr: string): PeerAddress | null => {
   return { host, port };
 };
 
-export declare interface PeerDiscovery {
-  on(event: "peer", listener: (peer: PeerAddress) => void): this;
-}
-
 /**
  * Merges tracker announces and DHT lookups into one deduped peer pool,
  * emitting 'peer' once per newly-seen address until the cap is hit. Peer

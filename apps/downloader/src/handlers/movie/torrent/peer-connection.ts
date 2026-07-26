@@ -9,13 +9,6 @@ const HANDSHAKE_TIMEOUT_MS = 10000;
 /** Per BitTorrent wire protocol convention (BEP 3): 16KB, the block size virtually every client uses/expects for piece requests. */
 export const BLOCK_LENGTH = 16 * 1024;
 
-export declare interface PeerConnection {
-  on(event: "close", listener: () => void): this;
-  on(event: "error", listener: (err: Error) => void): this;
-  once(event: "close", listener: () => void): this;
-  once(event: "error", listener: (err: Error) => void): this;
-}
-
 /**
  * One dialed-out TCP connection to a peer, wrapped in the BitTorrent wire
  * protocol. Leech-only (see roadmap: "No incoming connections required") —
@@ -155,11 +148,6 @@ export type PeerConnectionPoolOptions = {
 
 const DEFAULT_CONCURRENCY = 30;
 const REFRESH_MIN_INTERVAL_MS = 15000;
-
-export declare interface PeerConnectionPool {
-  on(event: "wire", listener: (connection: PeerConnection) => void): this;
-  on(event: "wireClosed", listener: (address: PeerAddress) => void): this;
-}
 
 /**
  * Dials candidates handed out by a PeerDiscovery pool, bounded to
