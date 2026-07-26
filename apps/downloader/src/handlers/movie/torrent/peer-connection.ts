@@ -62,9 +62,11 @@ export class PeerConnection extends EventEmitter {
         settled = true;
         clearTimeout(settleTimeout);
         socket.removeListener("connect", onConnect);
-        socket.removeListener("error", onSocketError);
         socket.removeListener("timeout", onSocketTimeout);
         this.wire.removeListener("handshake", onHandshake);
+        // onSocketError deliberately NOT removed here — it stays attached
+        // for the connection's whole lifetime, forwarding post-handshake
+        // errors via this.emit("error", ...) once settled is true.
         if (err) {
           this.destroy();
           reject(err);
@@ -88,16 +90,29 @@ export class PeerConnection extends EventEmitter {
         }
         settle(null);
       };
-      const onSocketError = (err: Error) => settle(err);
       const onSocketTimeout = () =>
         settle(
           new Error(
             `Connect timeout to ${this.address.host}:${this.address.port}`
           )
         );
+      // Single handler for the socket's whole lifetime, not a once+on pair:
+      // both would fire for the same emitted 'error' (once-listeners don't
+      // suppress other listeners on the same event), and forwarding to
+      // this.emit("error", ...) before anything is listening on the
+      // PeerConnection itself throws — EventEmitter special-cases 'error'
+      // with zero listeners as an uncaught exception. Observed live: this
+      // crashed the whole downloader process on a peer connect ECONNRESET.
+      const onSocketError = (err: Error) => {
+        if (!settled) {
+          settle(err);
+          return;
+        }
+        this.forwardError(err);
+      };
 
       socket.once("connect", onConnect);
-      socket.once("error", onSocketError);
+      socket.on("error", onSocketError);
       socket.once("timeout", onSocketTimeout);
       this.wire.once("handshake", onHandshake);
 
@@ -108,13 +123,30 @@ export class PeerConnection extends EventEmitter {
       socket.on("close", () => {
         if (settled) this.emit("close");
       });
-      socket.on("error", (err) => {
-        if (settled) this.emit("error", err);
-      });
       this.wire.on("error", (err) => {
-        if (settled) this.emit("error", err);
+        if (settled) this.forwardError(err);
       });
     });
+  }
+
+  /**
+   * Consumers (PeerConnectionPool, PieceManager) attach a `.once("error", ...)`
+   * — enough for the first error a connection ever has, but not a second
+   * one after that listener's already fired and self-removed. Emitting
+   * "error" with zero listeners throws (Node special-cases it), so this
+   * falls back to a plain log instead of emit when nobody's listening, and
+   * always tears the connection down rather than leaving a half-dead
+   * socket free to emit more surprises later.
+   */
+  private forwardError(err: Error): void {
+    if (this.listenerCount("error") > 0) {
+      this.emit("error", err);
+    } else {
+      hypertubeLogger.warn(
+        `Unhandled error on connection to ${this.address.host}:${this.address.port}: ${formatUnknownError(err)}`
+      );
+    }
+    this.destroy();
   }
 
   requestBlock(index: number, offset: number, length: number): Promise<Buffer> {
