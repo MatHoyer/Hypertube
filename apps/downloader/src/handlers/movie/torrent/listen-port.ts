@@ -19,7 +19,7 @@ const FORWARDED_PORT_POLL_INTERVAL_MS = 1000;
  * One port for the whole process: advertised to trackers as our listening
  * port for every torrent (PeerDiscovery), and what PeerServer actually
  * binds to answer inbound connections. Falls back to the static
- * WEBTORRENT_TORRENT_PORT (outbound-only — no inbound connections/seeding
+ * TORRENT_PORT (outbound-only — no inbound connections/seeding
  * will actually reach us) if gluetun never writes the file, e.g.
  * VPN_PORT_FORWARDING isn't set, or a non-gluetun dev setup.
  */
@@ -41,7 +41,7 @@ export const resolveListenPort = async (): Promise<number> => {
     );
   }
   hypertubeLogger.error(
-    `No VPN forwarded port found after ${FORWARDED_PORT_WAIT_TIMEOUT_MS}ms, falling back to static WEBTORRENT_TORRENT_PORT (outbound-only, no seeding reachability)`
+    `No VPN forwarded port found after ${FORWARDED_PORT_WAIT_TIMEOUT_MS}ms, falling back to static TORRENT_PORT (outbound-only, no seeding reachability)`
   );
-  return env.WEBTORRENT_TORRENT_PORT;
+  return env.TORRENT_PORT;
 };

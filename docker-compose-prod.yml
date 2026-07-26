@@ -64,7 +64,7 @@ services:
     # RPC delegate), so it needs the same network_mode: container:vpn every
     # other torrent/scraping sidecar uses (prowlarr, subtitle-proxy) — it
     # still reaches redis/s3 by name because vpn itself is on
-    # hypertube-network. See apps/downloader/WEBTORRENT_ARCHITECTURE.md.
+    # hypertube-network. See apps/downloader/TORRENT_ENGINE_ARCHITECTURE.md.
     network_mode: container:vpn
     # Shares gluetun's network namespace above but not its filesystem — this
     # is how it reads the VPN_PORT_FORWARDING port gluetun negotiates (see

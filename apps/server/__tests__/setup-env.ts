@@ -23,7 +23,7 @@ const testEnv: Record<string, string> = {
   DISCORD_CLIENT_SECRET: "test-discord-secret",
   SCHOOL_42_CLIENT_ID: "test-42-id",
   SCHOOL_42_CLIENT_SECRET: "test-42-secret",
-  WEBTORRENT_TORRENT_PORT: "51413",
+  TORRENT_PORT: "51413",
   S3_ENDPOINT: "localhost",
   S3_PORT: "9000",
   S3_URL: "http://localhost:9000",

@@ -6,6 +6,7 @@ import {
 } from "@hypertube/libs";
 import {
   BUCKETS,
+  env,
   getStoragePath,
   prisma,
   TDownloadJobData,
@@ -356,8 +357,7 @@ export const downloadMovie = async (
   reportJobLog(job, addingMessage);
 
   const scratchDir = path.join(
-    os.tmpdir(),
-    "hypertube-downloader",
+    env.TORRENT_SCRATCH_DIR ?? path.join(os.tmpdir(), "hypertube-downloader"),
     resolutionId
   );
 
