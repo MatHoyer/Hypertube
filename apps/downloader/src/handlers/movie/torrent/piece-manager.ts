@@ -3,6 +3,8 @@ import { createHash } from "node:crypto";
 import { EventEmitter } from "node:events";
 import { open, type FileHandle } from "node:fs/promises";
 import { BLOCK_LENGTH, PeerConnection, PeerConnectionPool } from "./peer-connection.js";
+import type { SeedSource } from "./peer-server.js";
+import type { PieceStore } from "./piece-store.js";
 import type { TorrentFileMeta, TorrentMetadata } from "./metadata.js";
 
 type PieceState = "needed" | "in-flight" | "done";
@@ -21,6 +23,8 @@ export type PieceManagerOptions = {
   /** Every file within the torrent we actually want (typically the video plus any sidecar subtitle files) — every piece outside all of their byte ranges is never requested. */
   targetFiles: TargetFile[];
   pool: PeerConnectionPool;
+  /** Durable S3-backed piece store — enables resuming a restarted download without re-fetching pieces we already have, and lets this manager double as a SeedSource. Optional only so the class stays usable without S3 wired up (e.g. in isolation); production wiring always supplies one. */
+  pieceStore?: PieceStore;
 };
 
 /**
@@ -31,10 +35,11 @@ export type PieceManagerOptions = {
  * deliberately simple (sequential, lowest-needed-index-first) —
  * rarest-first/endgame are roadmap bonus-tier, not required for correctness.
  */
-export class PieceManager extends EventEmitter {
+export class PieceManager extends EventEmitter implements SeedSource {
   private readonly metadata: TorrentMetadata;
   private readonly targetFiles: TargetFile[];
   private readonly pool: PeerConnectionPool;
+  private readonly pieceStore?: PieceStore;
 
   private readonly neededPieceIndices: number[];
   private readonly pieceState = new Map<number, PieceState>();
@@ -48,11 +53,12 @@ export class PieceManager extends EventEmitter {
   private destroyed = false;
   private doneEmitted = false;
 
-  constructor({ metadata, targetFiles, pool }: PieceManagerOptions) {
+  constructor({ metadata, targetFiles, pool, pieceStore }: PieceManagerOptions) {
     super();
     this.metadata = metadata;
     this.targetFiles = targetFiles;
     this.pool = pool;
+    this.pieceStore = pieceStore;
     this.neededPieceIndices = this.computeNeededPieceIndices();
     for (const index of this.neededPieceIndices) this.pieceState.set(index, "needed");
   }
@@ -83,7 +89,24 @@ export class PieceManager extends EventEmitter {
       this.fileHandles.set(target, await open(target.scratchFilePath, "w+"));
     }
 
-    if (this.neededPieceIndices.length === 0) {
+    if (this.pieceStore) {
+      const alreadyVerified = await this.pieceStore.findVerifiedPieces(
+        this.neededPieceIndices
+      );
+      for (const index of alreadyVerified) {
+        const pieceBuffer = await this.pieceStore.readPiece(index);
+        await this.writePieceToFiles(index, pieceBuffer);
+        this.pieceState.set(index, "done");
+        this.verifiedCount++;
+      }
+      if (alreadyVerified.size > 0) {
+        hypertubeLogger.info(
+          `Torrent ${this.metadata.infoHash}: resumed ${alreadyVerified.size}/${this.neededPieceIndices.length} needed pieces from durable store`
+        );
+      }
+    }
+
+    if (this.verifiedCount === this.neededPieceIndices.length) {
       this.finish();
       return;
     }
@@ -181,7 +204,16 @@ export class PieceManager extends EventEmitter {
         return;
       }
 
-      await this.writePiece(index, pieceBuffer);
+      await this.writePieceToFiles(index, pieceBuffer);
+      if (this.pieceStore) {
+        try {
+          await this.pieceStore.writePiece(index, pieceBuffer);
+        } catch (storeError) {
+          hypertubeLogger.warn(
+            `Torrent ${this.metadata.infoHash}: failed to durably store piece ${index}: ${formatUnknownError(storeError)} — will re-download on restart`
+          );
+        }
+      }
       this.pieceState.set(index, "done");
       this.failedPeersByPiece.delete(index);
       this.verifiedCount++;
@@ -199,7 +231,7 @@ export class PieceManager extends EventEmitter {
   }
 
   /** Writes the verified piece into every target file it overlaps — a piece can span a skipped neighboring file, or (rarely) the boundary between two target files. */
-  private async writePiece(index: number, pieceBuffer: Buffer): Promise<void> {
+  private async writePieceToFiles(index: number, pieceBuffer: Buffer): Promise<void> {
     const pieceGlobalStart = index * this.metadata.pieceLength;
     const pieceGlobalEnd = pieceGlobalStart + pieceBuffer.length;
 
@@ -224,6 +256,21 @@ export class PieceManager extends EventEmitter {
       }
       await fileHandle.write(slice, 0, slice.length, position);
     }
+  }
+
+  /** SeedSource: whether we can currently answer a request for this piece. */
+  hasPiece(index: number): boolean {
+    return this.pieceState.get(index) === "done";
+  }
+
+  /** SeedSource: reads a piece's bytes back from the durable store to answer an inbound peer request. Local scratch files only ever hold a file-relative slice of a piece (see writePieceToFiles), so the durable store is the one place the exact original piece bytes live. */
+  async readPieceRange(index: number, offset: number, length: number): Promise<Buffer> {
+    if (!this.pieceStore) {
+      throw new Error(
+        `No durable piece store configured for ${this.metadata.infoHash}; cannot serve piece ${index} to a peer`
+      );
+    }
+    return this.pieceStore.readPieceRange(index, offset, length);
   }
 
   private finish(): void {
