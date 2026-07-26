@@ -4,6 +4,7 @@ import { EventEmitter } from "node:events";
 import { open, type FileHandle } from "node:fs/promises";
 import { BLOCK_LENGTH, PeerConnection, PeerConnectionPool } from "./peer-connection.js";
 import type { SeedSource } from "./peer-server.js";
+import { computeNeededPieceIndices, pieceByteLength } from "./piece-ranges.js";
 import type { PieceStore } from "./piece-store.js";
 import type { TorrentFileMeta, TorrentMetadata } from "./metadata.js";
 
@@ -59,29 +60,11 @@ export class PieceManager extends EventEmitter implements SeedSource {
     this.targetFiles = targetFiles;
     this.pool = pool;
     this.pieceStore = pieceStore;
-    this.neededPieceIndices = this.computeNeededPieceIndices();
+    this.neededPieceIndices = computeNeededPieceIndices(
+      metadata,
+      targetFiles.map(({ file }) => file)
+    );
     for (const index of this.neededPieceIndices) this.pieceState.set(index, "needed");
-  }
-
-  private computeNeededPieceIndices(): number[] {
-    const { pieceLength, pieces } = this.metadata;
-    const indices: number[] = [];
-    for (let index = 0; index < pieces.length; index++) {
-      const pieceStart = index * pieceLength;
-      const pieceEnd = pieceStart + this.pieceByteLength(index);
-      const overlapsAnyTarget = this.targetFiles.some(({ file }) => {
-        const fileStart = file.offset;
-        const fileEnd = fileStart + file.length;
-        return pieceEnd > fileStart && pieceStart < fileEnd;
-      });
-      if (overlapsAnyTarget) indices.push(index);
-    }
-    return indices;
-  }
-
-  private pieceByteLength(index: number): number {
-    const { pieceLength, lastPieceLength, pieces } = this.metadata;
-    return index === pieces.length - 1 ? lastPieceLength : pieceLength;
   }
 
   async start(): Promise<void> {
@@ -170,7 +153,7 @@ export class PieceManager extends EventEmitter implements SeedSource {
   }
 
   private async downloadPiece(peer: PeerConnection, index: number): Promise<void> {
-    const pieceLength = this.pieceByteLength(index);
+    const pieceLength = pieceByteLength(this.metadata, index);
     const blockCount = Math.ceil(pieceLength / BLOCK_LENGTH);
     const blocks: Buffer[] = new Array(blockCount);
 

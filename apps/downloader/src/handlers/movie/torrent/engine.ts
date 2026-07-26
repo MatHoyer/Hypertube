@@ -5,12 +5,15 @@ import { resolveListenPort } from "./listen-port.js";
 import {
   fetchMetadataFromPeer,
   parseTorrentIdentifier,
+  type TorrentFileMeta,
   type TorrentMetadata,
 } from "./metadata.js";
 import { getPeerId } from "./peer-id.js";
 import { PeerConnectionPool } from "./peer-connection.js";
 import { PeerDiscovery } from "./peer-discovery.js";
+import type { SeedSource } from "./peer-server.js";
 import { PeerServer } from "./peer-server.js";
+import { computeNeededPieceIndices } from "./piece-ranges.js";
 import { PieceManager, type TargetFile } from "./piece-manager.js";
 import { PieceStore } from "./piece-store.js";
 
@@ -174,6 +177,70 @@ export const stopDownloading = (infoHash: string): void => {
   handle.pool.destroy();
 };
 
+/** Closes the target files' local scratch file handles without touching seeding — call once conversion/upload has read everything it needs, so an indefinitely-seeded torrent isn't holding scratch-dir fds (and the disk space behind them, even after the scratch dir itself is rm'd) open for its whole seeding lifetime. Reading/serving pieces to peers goes through the durable store, not these handles, so closing them is always safe once local materialization is done. */
+export const closeScratchFiles = async (infoHash: string): Promise<void> => {
+  const handle = handles.get(infoHash);
+  await handle?.pieceManager?.destroy();
+};
+
+class StaticSeedSource implements SeedSource {
+  constructor(
+    private readonly verifiedIndices: Set<number>,
+    private readonly pieceStore: PieceStore
+  ) {}
+
+  hasPiece(index: number): boolean {
+    return this.verifiedIndices.has(index);
+  }
+
+  readPieceRange(index: number, offset: number, length: number): Promise<Buffer> {
+    return this.pieceStore.readPieceRange(index, offset, length);
+  }
+}
+
+/**
+ * Re-registers a previously-completed download as a seed after a process
+ * restart, without spinning up peer discovery/dialing or touching local
+ * scratch files at all — there's nothing left to fetch, so this only
+ * self-verifies (SHA1) whatever the durable store already has for the
+ * given target files and serves straight from there. No-op if this
+ * infoHash is already active (e.g. a genuine download already in
+ * progress registered it). Only works for a torrent whose full metadata
+ * we can resolve without a peer round-trip (a real .torrent buffer, or a
+ * magnet already cached — see the roadmap's note on trackerless magnets
+ * needing a live peer for BEP 9); a magnet with no cached metadata is
+ * skipped with a warning rather than spinning up a whole discovery/pool
+ * just to re-seed.
+ */
+export const resumeSeeding = async (
+  torrentIdOrMagnet: string | Buffer,
+  targetFiles: TorrentFileMeta[],
+  storageService: IStorageService
+): Promise<void> => {
+  const identifier = await parseTorrentIdentifier(torrentIdOrMagnet);
+  const infoHash = infoHashOf(identifier);
+  if (handles.has(infoHash)) return;
+
+  if (identifier.kind !== "full") {
+    hypertubeLogger.warn(
+      `Cannot resume seeding ${infoHash} from a magnet with no cached metadata — would need a live peer round-trip just to re-seed, skipping`
+    );
+    return;
+  }
+
+  const { metadata } = identifier;
+  const pieceStore = new PieceStore({ metadata, storageService });
+  const neededPieceIndices = computeNeededPieceIndices(metadata, targetFiles);
+  const verifiedIndices = await pieceStore.findVerifiedPieces(neededPieceIndices);
+
+  const peerServer = await getPeerServer();
+  peerServer.register(
+    infoHash,
+    metadata.pieces.length,
+    new StaticSeedSource(verifiedIndices, pieceStore)
+  );
+};
+
 export const isSeeding = async (infoHash: string): Promise<boolean> => {
   const peerServer = await getPeerServer();
   return peerServer.isRegistered(infoHash);
@@ -184,14 +251,15 @@ export const listSeedingInfoHashes = async (): Promise<string[]> => {
   return peerServer.listInfoHashes();
 };
 
-/** Full teardown: stops downloading, stops seeding, closes the scratch file handle(s), forgets the torrent entirely. Does not touch the durable S3 piece store or the local scratch files themselves — callers own that cleanup. */
+/** Full teardown: stops downloading, stops seeding, closes the scratch file handle(s), forgets the torrent entirely. Does not touch the durable S3 piece store or the local scratch files themselves — callers own that cleanup. Always unregisters from the peer server, even for a resumeSeeding-only source with no `handles` entry (no discovery/pool/pieceManager to tear down in that case). */
 export const destroy = async (infoHash: string): Promise<void> => {
   const handle = handles.get(infoHash);
-  if (!handle) return;
+  if (handle) {
+    stopDownloading(infoHash);
+    await handle.pieceManager?.destroy();
+    handles.delete(infoHash);
+  }
 
-  stopDownloading(infoHash);
   const peerServer = await getPeerServer();
   peerServer.unregister(infoHash);
-  await handle.pieceManager?.destroy();
-  handles.delete(infoHash);
 };

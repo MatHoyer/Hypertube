@@ -32,7 +32,7 @@ export type PieceStoreOptions = {
  * Cleanup of the `torrent-pieces/<infoHash>/` prefix is intentionally NOT
  * done here — apps/scheduler's monthly cleanup cron already owns deleting
  * it, and does so before the downloader is told to stop seeding (see
- * S3ChunkStore.destroy's comment for the same convention on the old path).
+ * TORRENT_ENGINE_ARCHITECTURE.md, Decision D).
  */
 export class PieceStore {
   private readonly metadata: TorrentMetadata;
