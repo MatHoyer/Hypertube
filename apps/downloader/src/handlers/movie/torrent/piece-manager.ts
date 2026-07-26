@@ -10,27 +10,30 @@ type PieceState = "needed" | "in-flight" | "done";
 const MAX_IN_FLIGHT_PER_PEER = 5;
 const BLOCK_PIPELINE_DEPTH = 4;
 
+export type TargetFile = {
+  file: TorrentFileMeta;
+  /** Local path this file's bytes get written to, sized exactly file.length. Caller owns cleanup. */
+  scratchFilePath: string;
+};
+
 export type PieceManagerOptions = {
   metadata: TorrentMetadata;
-  /** The one file within the torrent we actually want — every piece outside its byte range is never requested. */
-  targetFile: TorrentFileMeta;
-  /** Local path this file's bytes get written to, sized exactly targetFile.length. Caller owns cleanup. */
-  scratchFilePath: string;
+  /** Every file within the torrent we actually want (typically the video plus any sidecar subtitle files) — every piece outside all of their byte ranges is never requested. */
+  targetFiles: TargetFile[];
   pool: PeerConnectionPool;
 };
 
 /**
  * The core download engine: assigns needed pieces to available unchoked
  * peers, requests their blocks, verifies each completed piece against its
- * SHA1 hash, and writes the verified bytes into the scratch file at the
- * right file-relative offset. Piece selection is deliberately simple
- * (sequential, lowest-needed-index-first) — rarest-first/endgame are
- * roadmap bonus-tier, not required for correctness.
+ * SHA1 hash, and writes the verified bytes into every target file it
+ * overlaps, at each file's own relative offset. Piece selection is
+ * deliberately simple (sequential, lowest-needed-index-first) —
+ * rarest-first/endgame are roadmap bonus-tier, not required for correctness.
  */
 export class PieceManager extends EventEmitter {
   private readonly metadata: TorrentMetadata;
-  private readonly targetFile: TorrentFileMeta;
-  private readonly scratchFilePath: string;
+  private readonly targetFiles: TargetFile[];
   private readonly pool: PeerConnectionPool;
 
   private readonly neededPieceIndices: number[];
@@ -40,16 +43,15 @@ export class PieceManager extends EventEmitter {
   private readonly failedPeersByPiece = new Map<number, Set<PeerConnection>>();
   private readonly peers = new Set<PeerConnection>();
 
-  private fileHandle: FileHandle | null = null;
+  private readonly fileHandles = new Map<TargetFile, FileHandle>();
   private verifiedCount = 0;
   private destroyed = false;
   private doneEmitted = false;
 
-  constructor({ metadata, targetFile, scratchFilePath, pool }: PieceManagerOptions) {
+  constructor({ metadata, targetFiles, pool }: PieceManagerOptions) {
     super();
     this.metadata = metadata;
-    this.targetFile = targetFile;
-    this.scratchFilePath = scratchFilePath;
+    this.targetFiles = targetFiles;
     this.pool = pool;
     this.neededPieceIndices = this.computeNeededPieceIndices();
     for (const index of this.neededPieceIndices) this.pieceState.set(index, "needed");
@@ -57,13 +59,16 @@ export class PieceManager extends EventEmitter {
 
   private computeNeededPieceIndices(): number[] {
     const { pieceLength, pieces } = this.metadata;
-    const fileStart = this.targetFile.offset;
-    const fileEnd = fileStart + this.targetFile.length;
     const indices: number[] = [];
     for (let index = 0; index < pieces.length; index++) {
       const pieceStart = index * pieceLength;
       const pieceEnd = pieceStart + this.pieceByteLength(index);
-      if (pieceEnd > fileStart && pieceStart < fileEnd) indices.push(index);
+      const overlapsAnyTarget = this.targetFiles.some(({ file }) => {
+        const fileStart = file.offset;
+        const fileEnd = fileStart + file.length;
+        return pieceEnd > fileStart && pieceStart < fileEnd;
+      });
+      if (overlapsAnyTarget) indices.push(index);
     }
     return indices;
   }
@@ -74,7 +79,9 @@ export class PieceManager extends EventEmitter {
   }
 
   async start(): Promise<void> {
-    this.fileHandle = await open(this.scratchFilePath, "w+");
+    for (const target of this.targetFiles) {
+      this.fileHandles.set(target, await open(target.scratchFilePath, "w+"));
+    }
 
     if (this.neededPieceIndices.length === 0) {
       this.finish();
@@ -191,25 +198,32 @@ export class PieceManager extends EventEmitter {
     }
   }
 
+  /** Writes the verified piece into every target file it overlaps — a piece can span a skipped neighboring file, or (rarely) the boundary between two target files. */
   private async writePiece(index: number, pieceBuffer: Buffer): Promise<void> {
     const pieceGlobalStart = index * this.metadata.pieceLength;
     const pieceGlobalEnd = pieceGlobalStart + pieceBuffer.length;
-    const fileStart = this.targetFile.offset;
-    const fileEnd = fileStart + this.targetFile.length;
 
-    const writeStart = Math.max(pieceGlobalStart, fileStart);
-    const writeEnd = Math.min(pieceGlobalEnd, fileEnd);
-    if (writeStart >= writeEnd) return; // piece entirely outside target file — shouldn't happen given computeNeededPieceIndices, but harmless if it does
+    for (const target of this.targetFiles) {
+      const fileStart = target.file.offset;
+      const fileEnd = fileStart + target.file.length;
 
-    const slice = pieceBuffer.subarray(
-      writeStart - pieceGlobalStart,
-      writeEnd - pieceGlobalStart
-    );
-    const position = writeStart - fileStart;
-    if (!this.fileHandle) {
-      throw new Error(`Scratch file handle missing while writing piece ${index}`);
+      const writeStart = Math.max(pieceGlobalStart, fileStart);
+      const writeEnd = Math.min(pieceGlobalEnd, fileEnd);
+      if (writeStart >= writeEnd) continue;
+
+      const slice = pieceBuffer.subarray(
+        writeStart - pieceGlobalStart,
+        writeEnd - pieceGlobalStart
+      );
+      const position = writeStart - fileStart;
+      const fileHandle = this.fileHandles.get(target);
+      if (!fileHandle) {
+        throw new Error(
+          `Scratch file handle missing for ${target.scratchFilePath} while writing piece ${index}`
+        );
+      }
+      await fileHandle.write(slice, 0, slice.length, position);
     }
-    await this.fileHandle.write(slice, 0, slice.length, position);
   }
 
   private finish(): void {
@@ -221,7 +235,9 @@ export class PieceManager extends EventEmitter {
   async destroy(): Promise<void> {
     if (this.destroyed) return;
     this.destroyed = true;
-    await this.fileHandle?.close();
-    this.fileHandle = null;
+    await Promise.all(
+      [...this.fileHandles.values()].map((handle) => handle.close())
+    );
+    this.fileHandles.clear();
   }
 }
