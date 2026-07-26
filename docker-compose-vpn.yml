@@ -30,7 +30,7 @@ services:
       # and writes it to VPN_PORT_FORWARDING_STATUS_FILE (default
       # /tmp/gluetun/forwarded_port, see the gluetun_data volume below) —
       # the downloader reads that file at startup and listens on whatever
-      # port comes back (apps/downloader/src/handlers/movie/webtorrent.client.ts).
+      # port comes back (apps/downloader/src/handlers/movie/torrent/listen-port.ts).
       # gluetun also opens its own firewall for that port automatically.
       - VPN_PORT_FORWARDING=on
       - OPENVPN_MSSFIX=1280

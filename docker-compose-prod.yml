@@ -60,8 +60,8 @@ services:
       - REDIS_HOST=redis
       - NODE_ENV=PROD
       - S3_ENDPOINT=s3
-    # Runs WebTorrent's DHT/peer networking directly now (no more Transmission
-    # RPC delegate), so it needs the same network_mode: container:vpn every
+    # Runs its own tracker/DHT/peer-wire networking in-process (no external
+    # torrent daemon), so it needs the same network_mode: container:vpn every
     # other torrent/scraping sidecar uses (prowlarr, subtitle-proxy) — it
     # still reaches redis/s3 by name because vpn itself is on
     # hypertube-network. See apps/downloader/TORRENT_ENGINE_ARCHITECTURE.md.
