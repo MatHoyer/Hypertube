@@ -4,3 +4,4 @@ sed "s|__CLIENT_URL__|${CLIENT_URL}|g" /s3-cors-config.xml > /tmp/cors.xml
 ./mc cors set local/movies /tmp/cors.xml
 ./mc mb -p local/images || true
 ./mc anonymous set download local/images
+./mc mb -p local/torrent-pieces || true
