@@ -69,8 +69,14 @@ export class PeerDiscovery extends EventEmitter {
   private readonly tracker: TrackerClient | null;
   private readonly useDht: boolean;
   private dht: DHT | null = null;
-  private readonly onDhtPeer = (peer: DHTPeer, peerInfoHash: string): void => {
-    if (peerInfoHash.toLowerCase() === this.infoHash.toLowerCase()) {
+  private readonly onDhtPeer = (
+    peer: DHTPeer,
+    peerInfoHash: string | Buffer
+  ): void => {
+    const peerInfoHashHex = Buffer.isBuffer(peerInfoHash)
+      ? peerInfoHash.toString("hex")
+      : peerInfoHash;
+    if (peerInfoHashHex.toLowerCase() === this.infoHash.toLowerCase()) {
       this.handleCandidate(peer);
     }
   };
