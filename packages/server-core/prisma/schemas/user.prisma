@@ -1,25 +1,25 @@
 model User {
-  id               String              @id
-  name             String
-  email            String
-  emailVerified    Boolean             @default(false)
-  image            String?
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @default(now()) @updatedAt
-  username         String?
-  displayUsername  String?
-  firstName        String?
-  lastName         String?
-  imageId          String?
-  sessions         Session[]
-  accounts         Account[]
-  credentials      Credential[]
-  notifications    Notification[]
-  subscriptions    MovieSubscription[]
-  likes            Like[]
-  comments         Comment[]
-  history          MovieHistory[]
-  playlists        Playlist[]
+  id              String    @id
+  name            String
+  email           String
+  emailVerified   Boolean   @default(false)
+  image           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now()) @updatedAt
+  username        String?
+  displayUsername String?
+  firstName       String?
+  lastName        String?
+  imageId         String?
+  sessions        Session[]
+  accounts        Account[]
+  credentials     Credential[]
+  notifications   Notification[]
+  subscriptions   MovieSubscription[]
+  likes           Like[]
+  comments        Comment[]
+  history         MovieHistory[]
+  playlists       Playlist[]
 
   @@unique([email])
   @@unique([username])
@@ -37,10 +37,12 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
+  @@index([userId])
 }
 
 model Account {
   id                    String    @id
+  issuer                String
   accountId             String
   providerId            String
   userId                String
@@ -54,6 +56,9 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+
+  @@unique([issuer, accountId], map: "account_issuer_accountId_uidx")
+  @@index([userId])
 }
 
 model Verification {
@@ -63,6 +68,8 @@ model Verification {
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
+
+  @@index([identifier])
 }
 
 model Credential {
