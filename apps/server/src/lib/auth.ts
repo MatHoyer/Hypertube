@@ -41,6 +41,17 @@ const beforeSendEmail = async (cacheKey: string, userId: TUserSchema["id"]) => {
   cacheService.set(`${cacheKey}:${userId}`, 1, 5 * 60);
 };
 
+const beforeSignUp = async (ctx: AuthMiddleware) => {
+  const user = await prisma.user.findUnique({
+    where: { email: ctx.body.email },
+  });
+  if (user) {
+    throw new APIError("CONFLICT", {
+      code: "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL",
+    });
+  }
+};
+
 const beforeSignIn = async (ctx: AuthMiddleware) => {
   const user = await prisma.user.findUnique({
     where: { username: ctx.body.username },
@@ -155,6 +166,8 @@ export const auth = betterAuth({
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
       switch (ctx.path) {
+        case "/sign-up/email":
+          return beforeSignUp(ctx);
         case "/sign-in/username":
           return beforeSignIn(ctx);
         case "/request-password-reset":
