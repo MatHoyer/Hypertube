@@ -200,7 +200,9 @@ export const unlinkProvider = async (
   const { providerId } = c.get("validatedUrlParams");
 
   const unlinkAccount = async () => {
-    const accounts = await auth.api.listUserAccounts();
+    const accounts = await auth.api.listUserAccounts({
+      headers: c.req.raw.headers,
+    });
     const account = accounts.find(
       (account) => account.providerId === providerId
     );
