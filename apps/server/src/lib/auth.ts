@@ -205,21 +205,23 @@ export const auth = betterAuth({
     google: {
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-      mapProfileToUser: (profile) => {
-        return { ...profile, username: null };
+      mapProfileToUser: (googleProfile) => {
+        return { ...googleProfile, username: null };
       },
     },
     github: {
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
-      mapProfileToUser: (profile) => {
+      mapProfileToUser: (githubProfile) => {
+        const { id: _, ...profile } = githubProfile;
         return { ...profile, username: null };
       },
     },
     discord: {
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
-      mapProfileToUser: (profile) => {
+      mapProfileToUser: (discordProfile) => {
+        const { id: _, ...profile } = discordProfile;
         return { ...profile, username: null };
       },
     },
